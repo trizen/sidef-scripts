@@ -5,4 +5,4 @@ A simple collection of Sidef scripts.
 ## Summary
 
 * Math
-    * [Symbolic fractions](./Math/symbolic_fractions.sf)
+    * [Unreduced fractions](./Math/unreduced_fractions.sf)

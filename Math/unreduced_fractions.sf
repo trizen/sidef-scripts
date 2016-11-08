@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 #
-## A very basic Fraction() class, implementing a few symbolic relations.
+## A very basic Fraction() class, implementing the most common fraction identities.
 #
 
 class Fraction(num, den) {
