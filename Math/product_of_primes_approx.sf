@@ -5,7 +5,7 @@
 # Date: 08 November 2016
 # Website: https://github.com/trizen
 
-# Approximation to prod(k=1, pi(n), prime(n)).
+# Approximation to product of primes:
 
 #   _n_
 #   | | (1 - 1/p) =~ exp(-gamma) / log(n)
