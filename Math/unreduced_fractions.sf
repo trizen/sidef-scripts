@@ -1,7 +1,12 @@
 #!/usr/bin/ruby
 
+# Daniel "Trizen" Șuteu
+# License: GPLv3
+# Date: 08 November 2016
+# Website: https://github.com/trizen
+
 #
-## A very basic Fraction() class, implementing the most common fraction identities.
+## A basic Fraction() class, implementing some common fraction identities.
 #
 
 class Fraction(num, den) {

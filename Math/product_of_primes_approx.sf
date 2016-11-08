@@ -1,0 +1,30 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# License: GPLv3
+# Date: 08 November 2016
+# Website: https://github.com/trizen
+
+# Approximation to prod(k=1, pi(n), prime(n)).
+
+#   _n_
+#   | | (1 - 1/p) =~ exp(-gamma) / log(n)
+#    p
+
+# where `gamma` is the Euler-Mascheroni constant.
+
+# See also:
+#   http://trizenx.blogspot.ro/2016/11/euler-mascheroni-constant.html
+
+var p = 2
+var n = 1e5
+
+var prod = 1
+
+while (p <= n) {
+    prod *= (1 - 1/p)
+    p.next_prime!
+}
+
+var approx = exp(-Num.Y)/log(n)
+say "#{prod.round(-10)} =~ #{approx.round(-10)}"
