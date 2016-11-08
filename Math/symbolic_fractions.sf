@@ -1,0 +1,95 @@
+#!/usr/bin/ruby
+
+#
+## A very basic Fraction() class, implementing a few symbolic relations.
+#
+
+class Fraction(num, den) {
+
+    method +(Number o) {
+        self + Fraction(o, 1)
+    }
+
+    method +(Fraction o) {
+        Fraction(
+            num*o.den + o.num*den,
+            den*o.den
+        )
+    }
+
+    method -(Number o) {
+        self + -o
+    }
+
+    method -(Fraction o) {
+        self + -o
+    }
+
+    method *(Number o) {
+        Fraction(num*o, den)
+    }
+
+    method *(Fraction o) {
+        Fraction(num*o.num, den*o.den)
+    }
+
+    method /(Number o) {
+        Fraction(
+            num,
+            den * o
+        )
+    }
+
+    method /(Fraction o) {
+        Fraction(
+            num * o.den,
+            den * o.num,
+        )
+    }
+
+    method **(Number o) {
+        if (o < 0) {
+            var a = o.abs
+            Fraction(den**a, num**a)
+        }
+        else {
+            Fraction(num**o, den**o)
+        }
+    }
+
+    method neg {
+        Fraction(-num, den)
+    }
+
+    method to_s {
+        "Fraction(#{num}, #{den})"
+    }
+}
+
+class Number {
+    method +(Fraction o) {
+        o + self
+    }
+
+    method -(Fraction o) {
+        -o + self
+    }
+
+    method *(Fraction o) {
+        o * self
+    }
+
+    method /(Fraction o) {
+        o**(-1) * self
+    }
+}
+
+var p = 2
+
+var r = Fraction(1, 1)
+
+10.times {
+    r *= (1 - Fraction(1, p))
+    say r
+    p.next_prime!
+}
