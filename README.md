@@ -37,6 +37,10 @@ A simple collection of Sidef scripts.
 * GUI
     * [Fbrowse tray](./GUI/fbrowse_tray.sf)
 * Image
+    * [Barnsley fern](./Image/barnsley_fern.sf)
+    * [Barnsley fern ifs](./Image/barnsley_fern_ifs.sf)
+    * [Chaos game](./Image/chaos_game.sf)
+    * [Fractal tree](./Image/fractal_tree.sf)
     * LSystem
         * [LSystem](./Image/LSystem/LSystem.sf)
         * [Turtle](./Image/LSystem/Turtle.sf)
@@ -44,6 +48,7 @@ A simple collection of Sidef scripts.
     * [Lsystem plant 2](./Image/lsystem_plant_2.sf)
     * [Lsystem sierpinski triangle](./Image/lsystem_sierpinski_triangle.sf)
     * [Plasma effect](./Image/plasma_effect.sf)
+    * [Pythagoras tree](./Image/pythagoras_tree.sf)
 * Math
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
