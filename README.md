@@ -41,6 +41,7 @@ A simple collection of Sidef scripts.
     * [Barnsley fern ifs](./Image/barnsley_fern_ifs.sf)
     * [Chaos game](./Image/chaos_game.sf)
     * [Fractal tree](./Image/fractal_tree.sf)
+    * [Image difference](./Image/image_difference.sf)
     * LSystem
         * [LSystem](./Image/LSystem/LSystem.sf)
         * [Turtle](./Image/LSystem/Turtle.sf)
