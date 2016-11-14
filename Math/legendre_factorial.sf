@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+# An efficient algorithm for computing N-factorial, using power of primes.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Legendre%27s_formula
+
+func legendre_power(p,n) {
+    var s = 0
+    while (n >= p) {
+        s += n.idiv!(p)
+    }
+    return s
+}
+
+func legendre_factorial(n) {
+    var f = 1
+    for p in (primes(n)) {
+        f *= p**legendre_power(p,n)
+    }
+    return f
+}
+
+for n in (0..20) {
+    say "#{'%2d' % n}! = #{legendre_factorial(n)}"
+}
