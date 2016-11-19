@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+# Solves for w,x,y and z, using Math::MatrixReal:
+#
+#   2w -  x + 5y +  z = - 3
+#   3w + 2x + 2y - 6z = -32
+#    w + 3x + 3y -  z = -47
+#   5w - 2x - 3y + 3z =  49
+#
+
+# See also:
+#   https://en.wikipedia.org/wiki/System_of_linear_equations
+
+require('Math::MatrixReal')
+
+var matrix = %s<Math::MatrixReal>.new_from_rows([
+    [2, -1,  5,  1],
+    [3,  2,  2, -6],
+    [1,  3,  3, -1],
+    [5, -2, -3,  3],
+])
+
+var vector = %s<Math::MatrixReal>.new_from_cols([[-3, -32, -47, 49]])
+var(_, solution, _) = matrix.decompose_LR.solve_LR(vector)
+
+say [solution.as_list]

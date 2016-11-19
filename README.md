@@ -88,6 +88,7 @@ A simple collection of Sidef scripts.
     * [Sierpinski triangle 90](./Math/sierpinski_triangle_90.sf)
     * [Sierpinski x](./Math/sierpinski_x.sf)
     * [Stable marriage problem](./Math/stable_marriage_problem.sf)
+    * [System of linear equations](./Math/system_of_linear_equations.sf)
     * [Tonelli shanks algorithm](./Math/tonelli_shanks_algorithm.sf)
     * [Towers of hanoi](./Math/towers_of_hanoi.sf)
     * [Unreduced fractions](./Math/unreduced_fractions.sf)
