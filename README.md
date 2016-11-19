@@ -102,6 +102,7 @@ A simple collection of Sidef scripts.
     * [Binary search iter](./Search/binary_search_iter.sf)
     * [Binary search rec](./Search/binary_search_rec.sf)
 * Simulation
+    * [Pendulum animation](./Simulation/pendulum_animation.sf)
     * [Universal turing machine](./Simulation/universal_turing_machine.sf)
     * [Virtual machine](./Simulation/virtual_machine.sf)
 * Socket
