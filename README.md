@@ -50,6 +50,7 @@ A simple collection of Sidef scripts.
     * [Lsystem sierpinski triangle](./Image/lsystem_sierpinski_triangle.sf)
     * [Plasma effect](./Image/plasma_effect.sf)
     * [Pythagoras tree](./Image/pythagoras_tree.sf)
+    * [Voronoi diagram](./Image/voronoi_diagram.sf)
 * Math
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
