@@ -15,6 +15,8 @@ A simple collection of Sidef scripts.
     * [Huffman coding](./Encoding/huffman_coding.sf)
     * [Lzw compression](./Encoding/lzw_compression.sf)
     * [Run length encoding](./Encoding/run_length_encoding.sf)
+* Encryption
+    * [One-time pad](./Encryption/one-time_pad.sf)
 * File
     * [Fdf](./File/fdf.sf)
 * Games
