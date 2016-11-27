@@ -1,0 +1,27 @@
+#!/usr/bin/ruby
+
+# Generates a Curlicue Fractal
+
+# See also:
+#   http://mathworld.wolfram.com/CurlicueFractal.html
+
+require('GD::Simple')
+
+define τ = Num.tau
+define σ = sqrt(2)
+
+var (width=700, height=700)
+var img = %s<GD::Simple>.new(width, height)
+img.fgcolor('black')
+img.moveTo(width/2, height/2)
+
+var θ = 0
+
+100_000.times {
+    θ = (θ + τ*σ)
+    img.turn(θ.rad2deg)
+    img.line(1)
+}
+
+var file = File('curlicue.png')
+file.write(img.png, :raw)
