@@ -8,7 +8,7 @@ require('Imager')
 
 class Plasma(width=400, height=400) {
 
-    has img = nil
+    has img
 
     method init {
         img = %s|Imager|.new(xsize => width, ysize => height)

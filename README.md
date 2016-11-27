@@ -19,6 +19,8 @@ A simple collection of Sidef scripts.
     * [One-time pad](./Encryption/one-time_pad.sf)
 * File
     * [Fdf](./File/fdf.sf)
+* Game solvers
+    * [Sudoku](./Game solvers/sudoku.sf)
 * Games
     * [Asciiplanes](./Games/asciiplanes.sf)
     * [Bulls and cows](./Games/bulls_and_cows.sf)
