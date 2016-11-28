@@ -2,12 +2,13 @@
 
 func fibonacci (n) {
 
-    define S = (1.25.sqrt + 0.5);
-    define T = (-S + 1);
+    define S = (1.25.sqrt + 0.5)
+    define T = (-S + 1)
+    define U = (-T + S)
 
-    (S**n - T**n) / (-T + S) -> roundf(0);
+    (S**n - T**n) / U -> round(0)
 }
 
-for (0..10) { |i|
-    say fibonacci(i);
+for i in (0..20) {
+    say fibonacci(i)
 }
