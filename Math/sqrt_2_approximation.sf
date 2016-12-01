@@ -1,0 +1,39 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# 01 December 2016
+
+# Approximation for sqrt(2).
+
+# Numerator
+#   a(n) = cos(2^(n-1) * arccos(3))
+
+# Denominator
+#   b(1) = 1
+#   b(2) = 2
+#   b(n) = 2 * a(n-2) * b(n-1)
+
+# Fun facts:
+#   gcd(a(n), b(n+1)) = 1
+#   cos(acos(3) / 2) = sqrt(2)
+
+# See also:
+#   a(n) = https://oeis.org/A001601
+#   b(n) = https://oeis.org/A051009
+
+# Numerator
+func a(n) {
+    cos(2**(n-1) * acos(3))
+}
+
+# Denominator
+func b((1)) { 1 }
+func b((2)) { 2 }
+
+func b(n) is cached {
+    2 * b(n-1) * a(n-2)
+}
+
+for n in (1..10) {
+    say a(n)/b(n+1)
+}

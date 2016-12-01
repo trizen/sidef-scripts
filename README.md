@@ -93,6 +93,7 @@ A simple collection of Sidef scripts.
     * [Sierpinski triangle](./Math/sierpinski_triangle.sf)
     * [Sierpinski triangle 90](./Math/sierpinski_triangle_90.sf)
     * [Sierpinski x](./Math/sierpinski_x.sf)
+    * [Sqrt 2 approximation](./Math/sqrt_2_approximation.sf)
     * [Stable marriage problem](./Math/stable_marriage_problem.sf)
     * [System of linear equations](./Math/system_of_linear_equations.sf)
     * [Tonelli shanks algorithm](./Math/tonelli_shanks_algorithm.sf)
