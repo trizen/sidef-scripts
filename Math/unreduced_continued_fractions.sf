@@ -1,0 +1,39 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# License: GPLv3
+# Date: 02 December 2016
+# https://github.com/trizen
+
+# Recursive evaluation of continued fractions rationally,
+# by computing the numerator and the denominator individually.
+
+# For every continued fraction, we have the following relation:
+#
+#    n
+#   | / a(k)    kn(n)
+#   |/ ----- = -------
+#   | \ b(k)    kd(n)
+#   k=0
+
+#
+## Example for:
+##   K(n^2 / (2n+1)) = 4/Pi - 1
+#
+
+func a(n) { n**2 }
+func b(n) { 2*n + 1 }
+
+func kn(n) is cached {
+    n < 2 ? (n == 0 ? 1 : 0)
+          : (b(n - 1)*kn(n - 1) + a(n - 1)*kn(n - 2))
+}
+
+func kd(n) is cached {
+    n < 2 ? n
+          : (b(n - 1)*kd(n - 1) + a(n - 1)*kd(n - 2))
+}
+
+for n in (0 .. 10) {
+    printf("%2d. %20s %-20s\n", n, kn(n), kd(n));
+}

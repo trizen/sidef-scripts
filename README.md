@@ -98,6 +98,7 @@ A simple collection of Sidef scripts.
     * [System of linear equations](./Math/system_of_linear_equations.sf)
     * [Tonelli shanks algorithm](./Math/tonelli_shanks_algorithm.sf)
     * [Towers of hanoi](./Math/towers_of_hanoi.sf)
+    * [Unreduced continued fractions](./Math/unreduced_continued_fractions.sf)
     * [Unreduced fractions](./Math/unreduced_fractions.sf)
     * [Y combinator](./Math/y_combinator.sf)
     * [Zeta 2n](./Math/zeta_2n.sf)
