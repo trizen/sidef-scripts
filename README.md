@@ -68,6 +68,7 @@ A simple collection of Sidef scripts.
     * [Gamma function](./Math/gamma_function.sf)
     * [Haversine formula](./Math/haversine_formula.sf)
     * [Is even perfect](./Math/is_even_perfect.sf)
+    * [Is even perfect 2](./Math/is_even_perfect_2.sf)
     * [Julia set](./Math/julia_set.sf)
     * [Knapsack problem 0 1](./Math/knapsack_problem_0_1.sf)
     * [Knapsack problem bounded](./Math/knapsack_problem_bounded.sf)
