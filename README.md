@@ -62,6 +62,7 @@ A simple collection of Sidef scripts.
     * [Coin change](./Math/coin_change.sf)
     * [Continued fraction](./Math/continued_fraction.sf)
     * [Elementary cellular automaton](./Math/elementary_cellular_automaton.sf)
+    * [Factorial approximations](./Math/factorial_approximations.sf)
     * [Fast fourier transform](./Math/fast_fourier_transform.sf)
     * [Faulhaber's formula](./Math/faulhaber_s_formula.sf)
     * [Fibonacci closed solution](./Math/fibonacci_closed_solution.sf)
