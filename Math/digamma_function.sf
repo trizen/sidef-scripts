@@ -1,0 +1,21 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# License: GPLv3
+# Date: 14 December 2016
+# https://github.com/trizen
+
+# Implementation for the digamma(n) function.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Digamma_function
+
+define γ = Num.Y
+
+func digamma(n) {
+    -γ - ::sum(1 ..^ n, { |k|
+        ((-1)**k / k) * binomial(n-1, k)
+    })
+}
+
+say digamma(100)    #=> 4.60016185273808740019860558557585072686681279076853

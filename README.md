@@ -61,6 +61,7 @@ A simple collection of Sidef scripts.
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Coin change](./Math/coin_change.sf)
     * [Continued fraction](./Math/continued_fraction.sf)
+    * [Digamma function](./Math/digamma_function.sf)
     * [Elementary cellular automaton](./Math/elementary_cellular_automaton.sf)
     * [Factorial approximations](./Math/factorial_approximations.sf)
     * [Fast fourier transform](./Math/fast_fourier_transform.sf)
