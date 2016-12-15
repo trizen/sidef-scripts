@@ -7,12 +7,12 @@
 
 # Generate a provable n-bit random prime.
 
-func nbit_random_prime(Number bits { _ >= 2 }) {
+func nbit_random_prime(Number bits { _ >= 3 }) {
 
-    bits -= 1
+    bits -= 2
 
     loop {
-        var num = Num('1' + bits.of { 2.irand }.join, 2)
+        var num = Num('1' + bits.of { 2.irand }.join + '1', 2)
         if (num.is_prime) {
             if (!num.is_prov_prime) {
                 warn "Got a false positive: #{num} (first BSPW counter-example)"
