@@ -1,0 +1,33 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# License: GPLv3
+# Date: 15 December 2016
+# https://github.com/trizen
+
+# Generate a provable n-bit random prime.
+
+func nbit_random_prime(Number bits { _ >= 2 }) {
+
+    bits -= 1
+
+    loop {
+        var num = Num('1' + bits.of { 2.irand }.join, 2)
+        if (num.is_prime) {
+            if (!num.is_prov_prime) {
+                warn "Got a false positive: #{num} (first BSPW counter-example)"
+                next
+            }
+            if (!num.is_prob_prime) {
+                warn "Strange error for: #{num}"
+                next
+            }
+            return num
+        }
+    }
+}
+
+var bits = 512
+var p = nbit_random_prime(bits)
+
+say "P(#{bits}) = #{p}"

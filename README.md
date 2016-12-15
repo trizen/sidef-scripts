@@ -85,6 +85,7 @@ A simple collection of Sidef scripts.
     * [Miller rabin primality test](./Math/miller_rabin_primality_test.sf)
     * [Modular exponentiation](./Math/modular_exponentiation.sf)
     * [Modular inverse](./Math/modular_inverse.sf)
+    * [N-bit random prime](./Math/n-bit_random_prime.sf)
     * [Permutations iter](./Math/permutations_iter.sf)
     * [Permutations rec](./Math/permutations_rec.sf)
     * [Problem of apollonius](./Math/problem_of_apollonius.sf)
