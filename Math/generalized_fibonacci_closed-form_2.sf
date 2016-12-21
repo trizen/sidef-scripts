@@ -14,7 +14,7 @@
 #   a(n) = (2^(-n) * ((sqrt(x^2 + 4*y) + x)^n - (x - sqrt(x^2 + 4*y))^n)) / sqrt(x^2 + 4*y)
 
 func f(x, y, n) {
-    (pow(sqrt(x*x + 4*y) + x,n) - pow(x - sqrt(x*x + 4*y), n)) / 2**n / sqrt(x*x + 4*y)
+    (pow(sqrt(x*x + 4*y) + x, n) - pow(x - sqrt(x*x + 4*y), n)) / 2**n / sqrt(x*x + 4*y)
 }
 
 for x,y in (1..5 ~X 1..5) {
