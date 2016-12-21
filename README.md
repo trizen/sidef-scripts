@@ -57,6 +57,7 @@ A simple collection of Sidef scripts.
     * [Pythagoras tree](./Image/pythagoras_tree.sf)
     * [Voronoi diagram](./Image/voronoi_diagram.sf)
 * Math
+    * [Bernoulli approx](./Math/bernoulli_approx.sf)
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Coin change](./Math/coin_change.sf)
