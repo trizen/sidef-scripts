@@ -13,7 +13,7 @@ define π = Num.pi
 ## B_n = (-1)^(-n/2) * (-2)^(1 - n) * pi^(-n) * n! * zeta(n)
 #
 func bern_float(n) {
-     pow(-1, n/2) * pow(-2, 1 - n) * pow(π, -n) * gamma(n+1) * ζ(n)
+     pow(-1, n/2) * pow(-2, 1 - n) * pow(π, -n) * Γ(n+1) * ζ(n)
 }
 
 #
