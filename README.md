@@ -68,6 +68,7 @@ A simple collection of Sidef scripts.
     * [Faulhaber's formula](./Math/faulhaber_s_formula.sf)
     * [Fibonacci closed solution](./Math/fibonacci_closed_solution.sf)
     * [Gamma function](./Math/gamma_function.sf)
+    * [Generalized fibonacci closed-form](./Math/generalized_fibonacci_closed-form.sf)
     * [Haversine formula](./Math/haversine_formula.sf)
     * [Is even perfect](./Math/is_even_perfect.sf)
     * [Is even perfect 2](./Math/is_even_perfect_2.sf)
