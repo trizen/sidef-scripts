@@ -69,6 +69,7 @@ A simple collection of Sidef scripts.
     * [Faulhaber's formula](./Math/faulhaber_s_formula.sf)
     * [Fibonacci closed solution](./Math/fibonacci_closed_solution.sf)
     * [Gamma function](./Math/gamma_function.sf)
+    * [Gauss logarithm approx](./Math/gauss_logarithm_approx.sf)
     * [Generalized fibonacci closed-form](./Math/generalized_fibonacci_closed-form.sf)
     * [Generalized fibonacci closed-form 2](./Math/generalized_fibonacci_closed-form_2.sf)
     * [Haversine formula](./Math/haversine_formula.sf)
