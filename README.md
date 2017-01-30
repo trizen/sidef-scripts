@@ -21,6 +21,7 @@ A simple collection of Sidef scripts.
     * [Fdf](./File/fdf.sf)
 * Game solvers
     * [Sudoku](./Game solvers/sudoku.sf)
+    * [Sudoku v2](./Game solvers/sudoku_v2.sf)
 * Games
     * [Asciiplanes](./Games/asciiplanes.sf)
     * [Bulls and cows](./Games/bulls_and_cows.sf)
