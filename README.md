@@ -68,6 +68,7 @@ A simple collection of Sidef scripts.
     * [Factorial approximations](./Math/factorial_approximations.sf)
     * [Fast fourier transform](./Math/fast_fourier_transform.sf)
     * [Faulhaber's formula](./Math/faulhaber_s_formula.sf)
+    * [Faulhaber's triangle](./Math/faulhaber_s_triangle.sf)
     * [Fibonacci closed solution](./Math/fibonacci_closed_solution.sf)
     * [Gamma function](./Math/gamma_function.sf)
     * [Gauss logarithm approx](./Math/gauss_logarithm_approx.sf)
