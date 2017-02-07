@@ -5,7 +5,7 @@
 # Date: 07 February 2017
 # https://github.com/trizen
 
-# Faulhaber's triangle (in reverse order).
+# Generation of Faulhaber's triangle.
 
 # Each row of the triangle represents the coefficients
 # for the sum 1^p + 2^p + 3^p + ... + n^p.
@@ -14,7 +14,7 @@
 #  1^2 + 2^2 + 3^2 + ... + n^2
 #
 # which can be written as:
-#   1/3 * (1/2*n^1 + 3/2*n^2 + 1*n^3)
+#   1/3 * (1*n^3 + 3/2*n^2 + 1/2*n^1)
 
 # See also:
 #   https://en.wikipedia.org/wiki/Faulhaber%27s_formula
@@ -23,29 +23,27 @@
 #    https://www.youtube.com/watch?v=Uy1B_eGXQ0g
 
 func faulhaber_s_triangle(p) {
-    var formula = gather {
+    gather {
         for j in (0 .. p) {
-            take(("%6s" % (binomial(p+1, j) * j.bernfrac -> as_rat)))
+            take(binomial(p+1, j) * j.bernfrac -> as_rat.center(5))
         }
-    }
-    formula.reverse.join(' ')
+    }.join(' ')
 }
 
 for p in (0 .. 11) {
     printf("%s\n", faulhaber_s_triangle(p))
 }
 
-
 __END__
-     1
-     1      1
-   1/2    3/2      1
-     0      1      2      1
-  -1/6      0    5/3    5/2      1
-     0   -1/2      0    5/2      3      1
-   1/6      0   -7/6      0    7/2    7/2      1
-     0    2/3      0   -7/3      0   14/3      4      1
- -3/10      0      2      0  -21/5      0      6    9/2      1
-     0   -3/2      0      5      0     -7      0   15/2      5      1
-   5/6      0  -11/2      0     11      0    -11      0   55/6   11/2      1
-     0      5      0  -33/2      0     22      0  -33/2      0     11      6      1
+  1
+  1     1
+  1    3/2   1/2
+  1     2     1     0
+  1    5/2   5/3    0   -1/6
+  1     3    5/2    0   -1/2    0
+  1    7/2   7/2    0   -7/6    0    1/6
+  1     4   14/3    0   -7/3    0    2/3    0
+  1    9/2    6     0   -21/5   0     2     0   -3/10
+  1     5   15/2    0    -7     0     5     0   -3/2    0
+  1   11/2  55/6    0    -11    0    11     0   -11/2   0    5/6
+  1     6    11     0   -33/2   0    22     0   -33/2   0     5     0
