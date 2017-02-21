@@ -1,0 +1,50 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# License: GPLv3
+# Date: 21 February 2017
+# https://github.com/trizen
+
+# Recursive implementation of the arithmetic derivative rule.
+#     (with support for rational and negative values)
+
+# See also:
+#   https://oeis.org/A003415
+#   https://en.wikipedia.org/wiki/Arithmetic_derivative
+
+subset Integer  < Number   { .is_int   }
+subset Positive < Integer  { .is_pos   }
+subset Negative < Integer  { .is_neg   }
+subset Prime    < Positive { .is_prime }
+
+func arithmetic_derivative((0)) { 0 }
+func arithmetic_derivative((1)) { 1 }
+
+func arithmetic_derivative(_ < Prime) { 1 }
+
+func arithmetic_derivative(n < Negative) {
+    -arithmetic_derivative(-n)
+}
+
+func arithmetic_derivative(n < Positive) is cached {
+
+    var a = n.factor.rand
+    var b = n/a
+
+    arithmetic_derivative(a)*b + a*arithmetic_derivative(b)
+}
+
+func arithmetic_derivative(Number n) {
+    var (a, b) = n.parts
+    (arithmetic_derivative(a)*b - arithmetic_derivative(b)*a) / b**2
+}
+
+for n in (-10..20) {
+    printf("%2s' = %s\n", n, arithmetic_derivative(n))
+}
+
+say "\n=> Other values:"
+printf("( 3/4)' = %s\n", arithmetic_derivative(3/4).as_frac)
+printf("(24/7)' = %s\n", arithmetic_derivative(24/7).as_frac)
+printf("(  7!)' = %s\n", arithmetic_derivative(7!))
+printf("( 11#)' = %s\n", arithmetic_derivative(11.primorial))
