@@ -1,0 +1,369 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# License: GPLv3
+# Date: 25 February 2017
+# https://github.com/trizen
+
+# An experimental implementation of symbolic mathematical relations,
+# storing all the intermediate steps of calculations, which may reveal
+# interesting patterns that can be used to analyze the calculation itself.
+
+class Power() {}
+class Fraction() {}
+class Sum() {}
+class Product() {}
+class Log() {}
+
+class Symbol(name) {
+    method +(o) {
+        Sum(self, o)
+    }
+
+    method -(o) {
+        Sum(self, o.neg)
+    }
+
+    method *(o) {
+        Product(self, o)
+    }
+
+    method /(o) {
+        Product(self, o.inv)
+    }
+
+    method **(o) {
+        Power(self, o)
+    }
+
+    method neg {
+        Product(-1, self)
+    }
+
+    method inv {
+        Product(1, self)
+    }
+
+    method to_s {
+        "#{name}"
+    }
+}
+
+class Fraction(num, den) {
+
+    method +(Number o) {
+        self + Fraction(o, 1)
+    }
+
+    method +(Fraction o) {
+        Fraction(
+            num*o.den + o.num*den,
+            den*o.den
+        )
+    }
+
+    method +(o) {
+        Sum(self, o)
+    }
+
+    method -(Number o) {
+        self + -o
+    }
+
+    method -(Fraction o) {
+        self + -o
+    }
+
+    method -(o) {
+        Sum(self, o.neg)
+    }
+
+    method *(Number o) {
+        Fraction(num*o, den)
+    }
+
+    method *(Fraction o) {
+        Fraction(num*o.num, den*o.den)
+    }
+
+    method *(o) {
+        Product(self, o)
+    }
+
+    method /(Number o) {
+        Fraction(
+            num,
+            den * o
+        )
+    }
+
+    method /(Fraction o) {
+        Fraction(
+            num * o.den,
+            den * o.num,
+        )
+    }
+
+    method /(o) {
+        Product(self, o.inv)
+    }
+
+    method **(Number o) {
+        if (o < 0) {
+            var a = o.abs
+            Fraction(den**a, num**a)
+        }
+        else {
+            Fraction(num**o, den**o)
+        }
+    }
+
+    method ==(Fraction o) {
+        (o.num == num) &&
+        (o.den == den)
+    }
+
+    method ==(_) {
+        false
+    }
+
+    method inv {
+        Fraction(den, num)
+    }
+
+    method neg {
+        Fraction(-num, den)
+    }
+
+    method numeric {
+        num.numeric / den.numeric
+    }
+
+    method to_s {
+        "Fraction(#{num}, #{den})"
+    }
+}
+
+class Sum(*values) {
+    method -(o) {
+        var copy = [values...]
+        #~ if (copy.remove_first(o)) {
+            #~ Sum(copy...)
+        #~ }
+        #~ else {
+            Sum(copy..., o.neg)
+        #~ }
+    }
+
+    method +(o) {
+        var copy = [values...]
+        #~ if (copy.remove_first(o.neg)) {
+            #~ Sum(copy...)
+        #~ }
+        #~ else {
+            Sum(copy..., o)
+        #~ }
+    }
+
+    method *(o) {
+        Sum(values.map { _ * o }...)
+    }
+
+    method /(o) {
+        Sum(values.map { _ / o }...)
+    }
+
+    method numeric {
+        values.map { .numeric }.sum
+    }
+
+    method to_s {
+        "Sum(#{values.join(', ')})"
+    }
+}
+
+class Product(*values) {
+    method /(o) {
+        var copy = [values...]
+        #~ if (copy.remove_first(o)) {
+            #~ Product(copy...)
+        #~ }
+        #~ else {
+            Product(copy..., o.inv)
+        #~ }
+    }
+
+    method *(o) {
+        var copy = [values...]
+        #~ if (copy.remove_first(o.inv)) {
+            #~ Product(copy...)
+        #~ }
+        #~ else {
+            Product(copy..., o)
+        #~ }
+    }
+
+    method +(o) {
+        Sum(self, o)
+    }
+
+    method neg {
+        if (values) {
+            Product(values[0].neg, values.ft(1)...)
+        }
+        else {
+            Product(-1)
+        }
+    }
+
+    method numeric {
+        values.map { .numeric }.prod
+    }
+
+    method to_s {
+        "Product(#{values.join(', ')})"
+    }
+}
+
+class Log(v) {
+    method *(o) {
+        Product(self, o)
+    }
+
+    method /(o) {
+        Product(self, o.inv)
+    }
+
+    method +(Log o) {
+        Log(v * o.v)
+    }
+
+    method -(Log o) {
+        Log(v / o.v)
+    }
+
+    method inv {
+        Fraction(1, self)
+    }
+
+    method neg {
+        Product(-1, self)
+    }
+
+    method numeric {
+        log(v.numeric)
+    }
+
+    method to_s {
+        "Log(#{v})"
+    }
+}
+
+class Power(v, n) {
+
+    method **(Number o) {
+        Power(v, n * o)
+    }
+
+    method **(Fraction o) {
+        Power(v, n * o)
+    }
+
+    method ==(Power o) {
+        (v == o.v) &&
+        (n == o.n)
+    }
+
+    method *(o) {
+        Product(self, o)
+    }
+
+    method ==(_) {
+        false
+    }
+
+    method inv {
+        Power(v, n.neg)
+    }
+
+    method neg {
+        Product(-1, self)
+    }
+
+    method numeric {
+        v.numeric ** n.numeric
+    }
+
+    method to_s {
+        "Power(#{v}, #{n})"
+    }
+}
+
+class Number {
+    method +(Fraction o) {
+        o + self
+    }
+
+    method -(Fraction o) {
+        -o + self
+    }
+
+    method *(Fraction o) {
+        o * self
+    }
+
+    method *(Log o) {
+        o * self
+    }
+
+    method +(Product o) {
+        Sum(self, o)
+    }
+
+    method *(Product o) {
+        o * self
+    }
+
+    method *(Power o) {
+        o * self
+    }
+
+    method /(Fraction o) {
+        o**(-1) * self
+    }
+
+    method numeric {
+        self
+    }
+}
+
+if (__MAIN__ == __FILE__) {
+
+    var n = Power(5, Fraction(1,2))
+    say n
+    say n**2
+    say n**3
+    say n**Fraction(2, 1)
+
+    say Log(42)-Log(6)
+    say Product(3, 4, 5)*Fraction(1, 3)
+    say Log(42)/Log(6)
+    say Log(Symbol(:x))
+    say Log(Symbol(:x))+Log(Symbol(:y))
+    say Fraction(Symbol(:a), Symbol(:b))+Fraction(Symbol(:c), Symbol(:d))
+
+    say "\n=> Summing..."
+
+    var sum = Fraction(0, 1)
+
+    for n in (0..10) {
+        sum += Fraction(1, n!)
+        #sum += Fraction(Symbol(:x), n!)
+        #sum += Power(n!, Fraction(1, 2)).inv
+        say sum
+    }
+
+    try {
+        say sum.numeric
+    }
+}
