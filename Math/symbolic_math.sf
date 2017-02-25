@@ -7,13 +7,31 @@
 
 # Experimental implementation of symbolic mathematical identities.
 
-class Power() {}
-class Fraction() {}
-class Sum() {}
-class Product() {}
-class Log() {}
-class Exp() {}
-class Symbol() {}
+class Base()            {}
+class Power()    < Base {}
+class Fraction() < Base {}
+class Sum()      < Base {}
+class Product()  < Base {}
+class Log()      < Base {}
+class Exp()      < Base {}
+class Symbol()   < Base {}
+
+class Base {
+    #const I = Exp(Fraction(1, 2) * Log(-1))
+    const I = Power(-1, Fraction(1, 2))
+
+    method sin {
+        Fraction(Exp(I * self) - Exp(-I * self), (2*I))
+    }
+
+    method cos {
+        Fraction(Exp(-I * self) + Exp(I * self), 2)
+    }
+
+    method i {
+        Product(I, self)
+    }
+}
 
 class Symbol(name) {
     method +(Object o) {
@@ -48,8 +66,16 @@ class Symbol(name) {
         self
     }
 
+    method ==(Symbol o) {
+        name == o.name
+    }
+
+    method ==(_) {
+        false
+    }
+
     method to_s {
-        "#{name}"
+        "Symbol('#{name}')"
     }
 }
 
@@ -71,11 +97,11 @@ class Fraction(num, den) {
     }
 
     method -(Number o) {
-        self + -o
+        self + o.neg
     }
 
     method -(Fraction o) {
-        self + -o
+        self + o.neg
     }
 
     method -(Object o) {
@@ -136,7 +162,7 @@ class Fraction(num, den) {
     }
 
     method neg {
-        Fraction(-num, den)
+        Fraction(num.neg, den)
     }
 
     method simplify {
@@ -181,6 +207,14 @@ class Sum(*values) {
         #~ }
     }
 
+    #~ method *(Sum o) {
+        #~ var terms = []
+        #~ for i,j in (values ~X o.values) {
+            #~ terms << i*j
+        #~ }
+        #~ Sum(terms...)
+    #~ }
+
     method *(Object o) {
         Sum(values.map { _ * o }...)
     }
@@ -204,6 +238,10 @@ class Sum(*values) {
 
     method inv {
         Fraction(1, self)
+    }
+
+    method neg {
+        Sum(values.map{.neg}...)
     }
 
     method numeric {
@@ -250,6 +288,10 @@ class Product(*values) {
 
     method +(Object o) {
         Sum(self, o)
+    }
+
+    method -(Object o) {
+        Sum(self, o.neg)
     }
 
     method neg {
@@ -308,6 +350,10 @@ class Exp(v) {
         Sum(self, o)
     }
 
+    method -(Object o) {
+        Sum(self, o.neg)
+    }
+
     method **(Object o) {
         Exp(v * o)
     }
@@ -334,6 +380,10 @@ class Exp(v) {
                 Exp(simple)
             }
         }
+    }
+
+    method neg {
+        Product(-1, self)
     }
 
     method numeric {
@@ -425,6 +475,28 @@ class Power(v, n) {
     method ==(Power o) {
         (v == o.v) &&
         (n == o.n)
+    }
+
+    method /(Power o) {
+        #~ if (o.v == v) {
+            #~ Power(v, n - o.n)
+        #~ }
+        #~ else {
+            Product(self, o.inv)
+        #~ }
+    }
+
+    method /(Object o) {
+        Product(self, o.inv)
+    }
+
+    method *(Power o) {
+        #~ if (o.v == v) {
+            #~ Power(v, n + o.n)
+        #~ }
+        #~ else {
+            Product(self, o)
+        #~ }
     }
 
     method *(Object o) {
