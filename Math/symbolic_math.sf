@@ -59,7 +59,7 @@ class Symbol(name) {
     }
 
     method inv {
-        Product(1, self)
+        Fraction(1, self)
     }
 
     method simplify {
