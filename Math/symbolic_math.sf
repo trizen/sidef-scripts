@@ -5,34 +5,34 @@
 # Date: 25 February 2017
 # https://github.com/trizen
 
-# An experimental implementation of symbolic mathematical relations,
-# storing all the intermediate steps of calculations, which may reveal
-# interesting patterns that can be used to analyze the calculation itself.
+# Experimental implementation of symbolic mathematical identities.
 
 class Power() {}
 class Fraction() {}
 class Sum() {}
 class Product() {}
 class Log() {}
+class Exp() {}
+class Symbol() {}
 
 class Symbol(name) {
-    method +(o) {
+    method +(Object o) {
         Sum(self, o)
     }
 
-    method -(o) {
+    method -(Object o) {
         Sum(self, o.neg)
     }
 
-    method *(o) {
+    method *(Object o) {
         Product(self, o)
     }
 
-    method /(o) {
+    method /(Object o) {
         Product(self, o.inv)
     }
 
-    method **(o) {
+    method **(Object o) {
         Power(self, o)
     }
 
@@ -42,6 +42,10 @@ class Symbol(name) {
 
     method inv {
         Product(1, self)
+    }
+
+    method simplify {
+        self
     }
 
     method to_s {
@@ -62,7 +66,7 @@ class Fraction(num, den) {
         )
     }
 
-    method +(o) {
+    method +(Object o) {
         Sum(self, o)
     }
 
@@ -74,7 +78,7 @@ class Fraction(num, den) {
         self + -o
     }
 
-    method -(o) {
+    method -(Object o) {
         Sum(self, o.neg)
     }
 
@@ -86,7 +90,7 @@ class Fraction(num, den) {
         Fraction(num*o.num, den*o.den)
     }
 
-    method *(o) {
+    method *(Object o) {
         Product(self, o)
     }
 
@@ -104,7 +108,7 @@ class Fraction(num, den) {
         )
     }
 
-    method /(o) {
+    method /(Object o) {
         Product(self, o.inv)
     }
 
@@ -135,6 +139,10 @@ class Fraction(num, den) {
         Fraction(-num, den)
     }
 
+    method simplify {
+        Fraction(num.simplify, den.simplify)
+    }
+
     method numeric {
         num.numeric / den.numeric
     }
@@ -145,7 +153,11 @@ class Fraction(num, den) {
 }
 
 class Sum(*values) {
-    method -(o) {
+    method -(Sum o) {
+        Sum(values..., o.values.map{.neg}...)
+    }
+
+    method -(Object o) {
         var copy = [values...]
         #~ if (copy.remove_first(o)) {
             #~ Sum(copy...)
@@ -155,7 +167,11 @@ class Sum(*values) {
         #~ }
     }
 
-    method +(o) {
+    method +(Sum o) {
+        Sum(values..., o.values...)
+    }
+
+    method +(Object o) {
         var copy = [values...]
         #~ if (copy.remove_first(o.neg)) {
             #~ Sum(copy...)
@@ -165,12 +181,29 @@ class Sum(*values) {
         #~ }
     }
 
-    method *(o) {
+    method *(Object o) {
         Sum(values.map { _ * o }...)
     }
 
-    method /(o) {
+    method /(Object o) {
         Sum(values.map { _ / o }...)
+    }
+
+    method simplify {
+        var simple = values.map { .simplify }
+        var types = simple.map{ .ref }.uniq
+        var arr = (
+            gather {
+                for type in types {
+                    take(simple.grep { .kind_of(type) }.reduce('+'))
+                }
+            }
+        )
+        arr.len == 1 ? arr[0] : arr.reduce('+')
+    }
+
+    method inv {
+        Fraction(1, self)
     }
 
     method numeric {
@@ -183,7 +216,15 @@ class Sum(*values) {
 }
 
 class Product(*values) {
-    method /(o) {
+    method *(Product o) {
+        Product(values..., o.values...)
+    }
+
+    method /(Product o) {
+        Product(values..., o.values.map{.inv}...)
+    }
+
+    method /(Object o) {
         var copy = [values...]
         #~ if (copy.remove_first(o)) {
             #~ Product(copy...)
@@ -193,7 +234,7 @@ class Product(*values) {
         #~ }
     }
 
-    method *(o) {
+    method *(Object o) {
         var copy = [values...]
         #~ if (copy.remove_first(o.inv)) {
             #~ Product(copy...)
@@ -203,7 +244,11 @@ class Product(*values) {
         #~ }
     }
 
-    method +(o) {
+    method **(Object o) {
+        Product(values.map{ _ ** o }...)
+    }
+
+    method +(Object o) {
         Sum(self, o)
     }
 
@@ -216,6 +261,23 @@ class Product(*values) {
         }
     }
 
+    method simplify {
+        var simple = values.map { .simplify }
+        var types = simple.map{ .ref }.uniq
+        var arr = (
+            gather {
+                for type in types {
+                    take(simple.grep { .kind_of(type) }.reduce('*'))
+                }
+            }
+        )
+        arr.len == 1 ? arr[0] : arr.reduce('*')
+    }
+
+    method inv {
+        Product(values.map { .inv }...)
+    }
+
     method numeric {
         values.map { .numeric }.prod
     }
@@ -225,21 +287,93 @@ class Product(*values) {
     }
 }
 
-class Log(v) {
-    method *(o) {
+class Exp(v) {
+    method *(Exp o) {
+        Exp(v + o.v)
+    }
+
+    method *(Object o) {
         Product(self, o)
     }
 
-    method /(o) {
-        Product(self, o.inv)
+    method /(Exp o) {
+        Exp(v + o.v.neg)
+    }
+
+    method /(Object o) {
+        o.inv * self
+    }
+
+    method +(Object o) {
+        Sum(self, o)
+    }
+
+    method **(Object o) {
+        Exp(v * o)
+    }
+
+    method simplify {
+        var simple = v.simplify
+        given() {
+            case (simple.kind_of(Log)) {
+                simple.v
+            }
+            case (simple.kind_of(Product) && (simple.values.len == 2)) {
+                var (a, b) = simple.values...
+                if (a.class == :Log) {
+                    Power(a.v, b)
+                }
+                elsif (b.class == :Log) {
+                    Power(b.v, a)
+                }
+                else {
+                    continue
+                }
+            }
+            default {
+                Exp(simple)
+            }
+        }
+    }
+
+    method numeric {
+        v.numeric.exp
+    }
+
+    method to_s {
+        "Exp(#{v})"
+    }
+}
+
+class Log(v) {
+    method *(Object o) {
+        #Fraction(self, o.inv)
+        Product(self, o)
+        #Log(Power(v, o))
+        #o * self
+    }
+
+    method /(Object o) {
+        #Fraction(self, o)
+        o.inv * self
+        #Product(self, o.inv)
+        #Log(Power(v, o.inv))
     }
 
     method +(Log o) {
         Log(v * o.v)
     }
 
+    method +(Object o) {
+        Sum(self, o)
+    }
+
     method -(Log o) {
         Log(v / o.v)
+    }
+
+    method -(Object o) {
+        Sum(self, o.neg)
     }
 
     method inv {
@@ -250,8 +384,19 @@ class Log(v) {
         Product(-1, self)
     }
 
+    method simplify {
+        var simple = v.simplify
+
+        if (simple.kind_of(Exp)) {
+            simple.v
+        }
+        else {
+            Log(simple)
+        }
+    }
+
     method numeric {
-        log(v.numeric)
+        v.numeric.log
     }
 
     method to_s {
@@ -260,6 +405,14 @@ class Log(v) {
 }
 
 class Power(v, n) {
+
+    method +(Object o) {
+        Sum(self, o)
+    }
+
+    method -(Object o) {
+        Sum(self, o.neg)
+    }
 
     method **(Number o) {
         Power(v, n * o)
@@ -274,7 +427,7 @@ class Power(v, n) {
         (n == o.n)
     }
 
-    method *(o) {
+    method *(Object o) {
         Product(self, o)
     }
 
@@ -290,6 +443,10 @@ class Power(v, n) {
         Product(-1, self)
     }
 
+    method simplify {
+        Power(v.simplify, n.simplify)
+    }
+
     method numeric {
         v.numeric ** n.numeric
     }
@@ -300,24 +457,72 @@ class Power(v, n) {
 }
 
 class Number {
+
+    # Addition
+    method +(Product o) {
+        o + self
+    }
+
+    method +(Sum o) {
+        o + self
+    }
+
+    method +(Power o) {
+        o + self
+    }
+
+    method +(Log o) {
+        o + self
+    }
+
+    method +(Symbol o) {
+        o + self
+    }
+
     method +(Fraction o) {
         o + self
     }
 
-    method -(Fraction o) {
-        -o + self
+    method +(Exp o) {
+        o + self
     }
 
+    # Subtraction
+    method -(Fraction o) {
+        o.neg + self
+    }
+
+    method -(Product o) {
+        o.neg + self
+    }
+
+    method -(Symbol o) {
+        o.neg + self
+    }
+
+    method -(Sum o) {
+        o.neg + self
+    }
+
+    method -(Log o) {
+        o.neg + self
+    }
+
+    method -(Power o) {
+        o.neg + self
+    }
+
+    method -(Exp o) {
+        o.neg + self
+    }
+
+    # Multiplication
     method *(Fraction o) {
         o * self
     }
 
     method *(Log o) {
         o * self
-    }
-
-    method +(Product o) {
-        Sum(self, o)
     }
 
     method *(Product o) {
@@ -328,8 +533,54 @@ class Number {
         o * self
     }
 
+    method *(Symbol o) {
+        o * self
+    }
+
+    method *(Sum o) {
+        o * self
+    }
+
+    method *(Exp o) {
+        o * self
+    }
+
+    # Division
+    method /(Sum o) {
+        o.inv * self
+    }
+
+    method /(Product o) {
+        o.inv * self
+    }
+
     method /(Fraction o) {
-        o**(-1) * self
+        o.inv * self
+    }
+
+    method /(Log o) {
+        o.inv * self
+    }
+
+    method /(Power o) {
+        o.inv * self
+    }
+
+    method /(Symbol o) {
+        o.inv * self
+    }
+
+    method /(Exp o) {
+        o.inv * self
+    }
+
+    # Other
+    method inv {
+        Fraction(1, self)
+    }
+
+    method simplify {
+        self
     }
 
     method numeric {
@@ -344,6 +595,9 @@ if (__MAIN__ == __FILE__) {
     say n**2
     say n**3
     say n**Fraction(2, 1)
+
+    say Exp(Log(5) * 3).simplify
+    say Power(3, Log(Exp(Sum(3, 4)))).simplify
 
     say Log(42)-Log(6)
     say Product(3, 4, 5)*Fraction(1, 3)
