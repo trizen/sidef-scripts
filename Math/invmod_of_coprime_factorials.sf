@@ -1,0 +1,28 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# License: GPLv3
+# Date: 07 March 2017
+# https://github.com/trizen
+
+# An interesting sequence: invmod(A095996(n), n)
+
+# For prime numbers p, a(p) = p-1.
+# However, there are some composite numbers that also share this property.
+# First few of those numbers, are: 1, 4, 6, 30, 36, 48, 225, 375, 390, 962, 3005, 15125, 29670, 61411
+
+# See also:
+#   https://oeis.org/A095996
+
+func a(n) {
+    var f = n!
+    factor(n).each {|p| f.remove!(p) }
+    invmod(f, n)
+}
+
+for n in (1..50) {
+    say "a(#{n}) = #{a(n)}"
+}
+
+__END__
+First 50 terms are: 0, 1, 2, 3, 4, 5, 6, 3, 4, 3, 10, 5, 12, 9, 1, 3, 16, 11, 18, 1, 13, 3, 22, 7, 1, 23, 14, 3, 28, 29, 30, 3, 20, 9, 31, 35, 36, 5, 28, 1, 40, 11, 42, 1, 7, 3, 46, 47, 36, 39

@@ -77,6 +77,7 @@ A simple collection of Sidef scripts.
     * [Generalized fibonacci closed-form 2](./Math/generalized_fibonacci_closed-form_2.sf)
     * [Haversine formula](./Math/haversine_formula.sf)
     * [Inverse of factorial](./Math/inverse_of_factorial.sf)
+    * [Invmod of coprime factorials](./Math/invmod_of_coprime_factorials.sf)
     * [Is even perfect](./Math/is_even_perfect.sf)
     * [Is even perfect 2](./Math/is_even_perfect_2.sf)
     * [Julia set](./Math/julia_set.sf)
