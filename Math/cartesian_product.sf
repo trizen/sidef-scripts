@@ -1,0 +1,38 @@
+#!/usr/bin/ruby
+
+# Cartesian product of a 2D-array.
+
+func carti(arr) {
+
+    var c = []
+    var r = []
+    var C = arr.clone
+
+    func {
+        if (c.len < C.len) {
+            for item in (C[c.len]) {
+                c.push(item)
+                __FUNC__()
+                c.pop
+            }
+        }
+        else {
+            r.push(c.clone)
+        }
+    }()
+
+    return r
+}
+
+var a = [['a', 'b'], ['c', 'd'], ['e', 'f']]
+carti(a).each{ .say }
+
+__END__
+["a", "c", "e"]
+["a", "c", "f"]
+["a", "d", "e"]
+["a", "d", "f"]
+["b", "c", "e"]
+["b", "c", "f"]
+["b", "d", "e"]
+["b", "d", "f"]
