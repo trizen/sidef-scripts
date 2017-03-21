@@ -18,7 +18,7 @@ func f(x, y, n) {
 }
 
 for x,y in (1..5 ~X 1..5) {
-    say ("f(#{x},#{y}) = ", 10.of { |n| f(x, y, n).round(0) })
+    say ("f(#{x},#{y}) = ", 10.of { |n| f(x, y, n).round })
 }
 
 __END__

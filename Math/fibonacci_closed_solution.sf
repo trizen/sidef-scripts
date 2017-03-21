@@ -6,7 +6,7 @@ func fibonacci (n) {
     define T = (-S + 1)
     define U = (-T + S)
 
-    (S**n - T**n) / U -> round(0)
+    (S**n - T**n) / U -> round
 }
 
 for i in (0..20) {
