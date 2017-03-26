@@ -21,8 +21,7 @@ cnp ~~ /[^0-9]/ &&
 
 
 # Transform it into an array of numbers
-cnp.split!('').map!{.to_num};
-
+cnp.chars!.map!{Num(_)}
 
 var years = :(
                 1 => :(era => 1900),
@@ -113,7 +112,7 @@ var months = %w(
   Decembrie
 );
 
-(var days = Hash.new){months} = (
+(var days = Hash()){months...} = (
   31,
   29,
   31,
