@@ -1,0 +1,25 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 20 May 2017
+# https://github.com/trizen
+
+# A very fast converging series for zeta(3).
+
+# The formula is:
+#   zeta(3) = -8*pi^2/14 * (log(26/16) + Sum_{n>=0}(zeta(2n) - 1)/((2n + 1) * (2n + 2) * 2^(2n)))
+
+# The formula is based on the following two formulas:
+#   -14*zeta(3) / (8*pi^2) = Sum_{n>=0} zeta(2n)/((2n + 1) * (2n + 2) * 2^(2n))
+#   log(27/16) = Sum_{n>=0} 1/((2n + 1) * (2n + 2) * 2^(2n))
+
+var sum = log(27/16)
+
+for n in (0..40) {
+    sum += (zeta(2*n) - 1)/((2*n + 1) * (2*n + 2) * 2**(2*n))
+}
+
+var f = -(8 * Num.pi**2)/14
+
+say sum*f           #=> 1.20205690315959428539973816151144999076498629234
+say zeta(3)         #=> 1.20205690315959428539973816151144999076498629234
