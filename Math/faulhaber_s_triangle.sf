@@ -16,6 +16,12 @@
 # which can be written as:
 #   1/3 * (1*n^3 + 3/2*n^2 + 1/2*n^1)
 
+# In general, we have:
+#       1^p + 2^p + 3^p + ... + n^p
+#
+# is equal with:
+#       1/(p+1) * (F[0] * n^(p+1) + F[1] * n^p + F[2] * n^(p-1) + ... + F[p] * n^1)
+
 # See also:
 #   https://en.wikipedia.org/wiki/Faulhaber%27s_formula
 
