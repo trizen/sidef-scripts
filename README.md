@@ -21,7 +21,6 @@ A simple collection of Sidef scripts.
     * [Fdf](./File/fdf.sf)
 * Game solvers
     * [Sudoku](./Game%20solvers/sudoku.sf)
-    * [Sudoku v2](./Game%20solvers/sudoku_v2.sf)
 * Games
     * [Asciiplanes](./Games/asciiplanes.sf)
     * [Bulls and cows](./Games/bulls_and_cows.sf)
@@ -45,6 +44,7 @@ A simple collection of Sidef scripts.
     * [Barnsley fern](./Image/barnsley_fern.sf)
     * [Barnsley fern ifs](./Image/barnsley_fern_ifs.sf)
     * [Chaos game](./Image/chaos_game.sf)
+    * [Color wheel](./Image/color_wheel.sf)
     * [Curlicue fractal](./Image/curlicue_fractal.sf)
     * [Fractal tree](./Image/fractal_tree.sf)
     * [Image difference](./Image/image_difference.sf)

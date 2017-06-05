@@ -27,7 +27,7 @@ if (year % 400 == 0 || (year % 4 == 0 && (year % 100 != 0))) {
 
 year--
 var st = (1 + year*365 + year//4 - year//100 + year//400);
-{|i| st += mons{i} } * (mon-1)
+for i (1 ..^ mon) { st += mons{i} }
 
 #
 ## Displaying the calendar
@@ -43,9 +43,9 @@ var monName = t.strftime("%B");
 
 ' ' * 3 * (st % 7) -> print;
 
-{ |i|
+for i (1..mons{mon}) {
     printf(i == day ? "\e[7m%2d\e[0m " : "%2d ", i);
     st+i %% 7 && ((i != mons{mon}) && ("\n".print));
-} * mons{mon};
+}
 
 "\n".print;

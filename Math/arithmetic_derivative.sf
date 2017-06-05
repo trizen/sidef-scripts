@@ -35,7 +35,7 @@ func arithmetic_derivative(n < Positive) is cached {
 }
 
 func arithmetic_derivative(Number n) {
-    var (a, b) = n.parts
+    var (a, b) = n.nude
     (arithmetic_derivative(a)*b - arithmetic_derivative(b)*a) / b**2
 }
 
