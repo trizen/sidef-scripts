@@ -103,6 +103,7 @@ A simple collection of Sidef scripts.
     * [Problem of apollonius](./Math/problem_of_apollonius.sf)
     * [Product of primes approx](./Math/product_of_primes_approx.sf)
     * [Pythagorean means](./Math/pythagorean_means.sf)
+    * [Reformulation of the arctangent function](./Math/reformulation_of_the_arctangent_function.sf)
     * [Round half to even](./Math/round_half_to_even.sf)
     * [RSA algorithm](./Math/RSA_algorithm.sf)
     * [Sierpinski diamond](./Math/sierpinski_diamond.sf)
