@@ -1,0 +1,36 @@
+#!/usr/bin/ruby
+
+# Formula due to S. M. Abrarov and B. M. Quine.
+# Described in their paper: "A reformulated series expansion of the arctangent function"
+
+func arctan(x, z) {
+    sum(1..z, {|m|
+        sum(1..(2*m - 1), {|n|
+            (-1)**n / (2*m - 1) / (1 + (x**2 / 4))**(2*m - 1) * (x/2)**(4*m - 2*n - 1) * binomial(2*m - 1, 2*n - 1)
+        })
+    }) * -2
+}
+
+say atan(1)             # Pi/4 (built-in function)
+say arctan(1, 70)       # Pi/4
+
+say "\nFractions converging to Pi/4:"
+for z in (1..10) {
+    say arctan(1, z).as_frac
+}
+
+__END__
+0.785398163397448309615660845819875721049292349844
+0.785398163397448309615660845819875721049292349844
+
+Fractions converging to Pi/4:
+4/5
+296/375
+36772/46875
+1288688/1640625
+96641548/123046875
+26576092808/33837890625
+8637277012172/10997314453125
+1079658805128928/1374664306640625
+91770997994914276/116846466064453125
+43591225139846360008/55502071380615234375
