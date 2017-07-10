@@ -61,6 +61,7 @@ A simple collection of Sidef scripts.
     * [Arithmetic derivative](./Math/arithmetic_derivative.sf)
     * [Bernoulli approx](./Math/bernoulli_approx.sf)
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)
+    * [Binary exponentiation](./Math/binary_exponentiation.sf)
     * [Cartesian product](./Math/cartesian_product.sf)
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Coin change](./Math/coin_change.sf)
