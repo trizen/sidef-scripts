@@ -87,6 +87,7 @@ A simple collection of Sidef scripts.
     * [Knapsack problem 0 1](./Math/knapsack_problem_0_1.sf)
     * [Knapsack problem bounded](./Math/knapsack_problem_bounded.sf)
     * [Knapsack problem unbounded](./Math/knapsack_problem_unbounded.sf)
+    * [Krzysztof reformulated zeta function](./Math/krzysztof_reformulated_zeta_function.sf)
     * [Lanczos approximation](./Math/lanczos_approximation.sf)
     * [Legendre factorial](./Math/legendre_factorial.sf)
     * [Levenshtein distance iter](./Math/levenshtein_distance_iter.sf)
