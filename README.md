@@ -126,6 +126,7 @@ A simple collection of Sidef scripts.
     * [Y combinator](./Math/y_combinator.sf)
     * [Zeta 2n](./Math/zeta_2n.sf)
     * [Zeta 3 fast convergence](./Math/zeta_3_fast_convergence.sf)
+    * [Zeta derivative at trivial zeros](./Math/zeta_derivative_at_trivial_zeros.sf)
 * PL
     * [Sidef interpreter](./PL/sidef_interpreter.sf)
 * Probability
