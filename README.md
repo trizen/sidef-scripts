@@ -61,6 +61,7 @@ A simple collection of Sidef scripts.
     * [Arithmetic derivative](./Math/arithmetic_derivative.sf)
     * [Bernoulli approx](./Math/bernoulli_approx.sf)
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)
+    * [Binary exponentiation](./Math/binary_exponentiation.sf)
     * [Cartesian product](./Math/cartesian_product.sf)
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Coin change](./Math/coin_change.sf)
@@ -87,6 +88,7 @@ A simple collection of Sidef scripts.
     * [Knapsack problem 0 1](./Math/knapsack_problem_0_1.sf)
     * [Knapsack problem bounded](./Math/knapsack_problem_bounded.sf)
     * [Knapsack problem unbounded](./Math/knapsack_problem_unbounded.sf)
+    * [Krzysztof reformulated zeta function](./Math/krzysztof_reformulated_zeta_function.sf)
     * [Lanczos approximation](./Math/lanczos_approximation.sf)
     * [Legendre factorial](./Math/legendre_factorial.sf)
     * [Levenshtein distance iter](./Math/levenshtein_distance_iter.sf)
@@ -105,6 +107,7 @@ A simple collection of Sidef scripts.
     * [Problem of apollonius](./Math/problem_of_apollonius.sf)
     * [Product of primes approx](./Math/product_of_primes_approx.sf)
     * [Pythagorean means](./Math/pythagorean_means.sf)
+    * [Recursive gcd prime generator](./Math/recursive_gcd_prime_generator.sf)
     * [Reformulation of the arctangent function](./Math/reformulation_of_the_arctangent_function.sf)
     * [Round half to even](./Math/round_half_to_even.sf)
     * [RSA algorithm](./Math/RSA_algorithm.sf)
@@ -125,6 +128,7 @@ A simple collection of Sidef scripts.
     * [Y combinator](./Math/y_combinator.sf)
     * [Zeta 2n](./Math/zeta_2n.sf)
     * [Zeta 3 fast convergence](./Math/zeta_3_fast_convergence.sf)
+    * [Zeta derivative at trivial zeros](./Math/zeta_derivative_at_trivial_zeros.sf)
 * PL
     * [Sidef interpreter](./PL/sidef_interpreter.sf)
 * Probability
