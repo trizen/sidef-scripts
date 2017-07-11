@@ -1,0 +1,20 @@
+#!/usr/bin/ruby
+
+# An interesting recursive function, involving the gcd() function for generating prime numbers.
+
+# If R(n) = 2*n + 2, then n+1 is prime. (conjectured?)
+
+func R((1)) { 7 }
+
+func R(n) is cached {
+    R(n-1) + gcd(R(n-1), n)
+}
+
+each(1..10000, { |n|
+    if (R(n) == (2*n + 2)) {
+        say n+1
+    }
+})
+
+__END__
+[5, 11, 23, 47, 101, 233, 467, 941, 1889, 3779, 7559]

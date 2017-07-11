@@ -1,0 +1,18 @@
+#!/usr/bin/ruby
+
+# Formula due to Krzysztof Maslanka
+
+func Ak(k) {
+    sum(0..k, {|j|
+        (-1)**j * binomial(k, j) * (2*j + 1) * zeta(2*j + 2)
+    })
+}
+
+func krzysztof_zeta(s, r=100) {
+    sum(0..r, {|k|
+        (gamma(k + 1 - s/2) / gamma(1 - s/2)) * (Ak(k) / k!)
+    }) / (s - 1)
+}
+
+say krzysztof_zeta(3)       #=> 1.2020569022705898699637409727804911671219286162
+say krzysztof_zeta(5)       #=> 1.0369277551507417486201175962997774385468699839

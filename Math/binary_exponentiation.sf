@@ -1,0 +1,13 @@
+#!/usr/bin/ruby
+
+# A simple implementation of the "binary exponentiation" algorithm.
+
+func binary_exp(n, k) {
+    k == 0 && return 1
+    k == 1 && return n
+
+    var p = binary_exp(n, k >> 1)
+    k.is_even ? p*p : p*p*n
+}
+
+say binary_exp(10, 6)
