@@ -68,6 +68,11 @@ display((2 * π**2 / 9) * (log(2) + 2*sum(0..^n, {|n|
     zeta(2*n) / (2*n + 3) / 4**n
 })), zeta(3))
 
+# Formula due to Euler
+display(prod(1..n, {|n|
+    1/(1 - prime(n)**(-3))
+}), zeta(3))
+
 #
 ## Pi
 #
@@ -128,6 +133,11 @@ display(sqrt(8*(1 + sum(1..n, {|n|
 display(2 * sum(0..^n, {|n|
     (n!) / (2*n + 1)!!
 }), π)
+
+# Formula due to Euler (?)
+display(sqrt(8 * sum(0..^n, {|n|
+    1 / (2*n + 1)**2
+})), π)
 
 # Wallis' product (1)
 display(2 * prod(1..n, {|n|
@@ -218,6 +228,11 @@ display(sqrt(6 * (sum(1..n, {|n|
     1 / n**2 / 2**(n-1)
 }) + log(2)**2)), π)
 
+# The gamma function at 1/2, which is sqrt(π).
+display((exp(γ/2)/2 * prod(1..n, {|n|
+    (1 + 1/(2*n)) * exp(-1/(2*n))
+}))**(-2), π)
+
 #
 ## exp(1)
 #
@@ -259,6 +274,45 @@ display(1 - sum(2..(n+1), {|n|
 # Limit_{n->Infinity} zeta((n+1)/n) - n} = gamma
 display(zeta((n+1)/n) - n, γ)
 
+# Series due to Euler (1731).
+display(sum(2..(n+1), {|n|
+    (-1)**n * zeta(n) / n
+}),  γ)
+
+# Original definition of the Euler-Mascheroni constant, due to Euler (1731)
+display(sum(1..n, {|n|
+    1/n
+}) - log(n), γ)
+
+# Formula due to Euler
+display(harmfrac(n) - log(n) - 1/(2*n) - sum(1..n, {|k|
+    -bernfrac(2*k) / 2*k / n**(2*k)
+}), γ)
+
+# Formula derived by the author from the above formula of Euler
+display(harmfrac(n) - log(n) - 1/(2*n) - sum(1..n, {|k|
+    (-1)**k * 4 * sqrt(π*k) * (π * ℯ)**(-2*k) * k**(2*k) / 2*k / n**(2*k)
+}), γ)
+
+# Formula derived by the author from the above formula of Euler
+display(harmfrac(n) - log(n) - 1/(2*n) - sum(1..n, {|k|
+    (-1)**k * 2 / (2*π)**(2*k) * ((2*k)!) / 2*k / n**(2*k)
+}), γ)
+
+# Formula due to Euler in terms of log(2) and the odd zeta values
+display(3/4 - log(2)/2 + sum(1..n, {|n|
+    (1 - 1/(2*n + 1)) * (zeta(2*n + 1) - 1)
+}), γ)
+
+# Formula due to Euler in terms of log(2) and the odd zeta values (VII)
+display(log(2) - sum(1..n, {|n|
+    zeta(2*n + 1) / (2*n + 1) / 2**(2*n)
+}), γ)
+
+# Formula due to Vacca (1910)
+display(sum(1..n, {|n|
+    (-1)**n * floor(log2(n)) / n
+}), γ)
 
 #
 ## Catalan constant
