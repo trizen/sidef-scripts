@@ -1,0 +1,23 @@
+#!/usr/bin/ruby
+
+# Implementation of the Solovay-Strassen primality test.
+
+func solovay_strassen(n, k=10) {
+    n == 2 && return true
+    n %% 2 && return false
+    n  < 0 && return false
+
+    k.times {
+        var a = irand(2, n-1)
+        var z = kronecker(a, n)
+        var p = powmod(a, (n-1) >> 1, n)
+
+        if ((z == 0) || ((z == -1) ? (p != n-1) : (p != 1))) {
+            return false
+        }
+    }
+
+    return true
+}
+
+say (1..100 -> grep { solovay_strassen(_, 5) })
