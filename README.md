@@ -116,6 +116,7 @@ A simple collection of Sidef scripts.
     * [Sierpinski triangle](./Math/sierpinski_triangle.sf)
     * [Sierpinski triangle 90](./Math/sierpinski_triangle_90.sf)
     * [Sierpinski x](./Math/sierpinski_x.sf)
+    * [Solovay-strassen primality test](./Math/solovay-strassen_primality_test.sf)
     * [Sqrt 2 approximation](./Math/sqrt_2_approximation.sf)
     * [Stable marriage problem](./Math/stable_marriage_problem.sf)
     * [Symbolic math](./Math/symbolic_math.sf)
