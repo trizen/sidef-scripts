@@ -102,6 +102,7 @@ A simple collection of Sidef scripts.
     * [Modular exponentiation](./Math/modular_exponentiation.sf)
     * [Modular inverse](./Math/modular_inverse.sf)
     * [N-bit random prime](./Math/n-bit_random_prime.sf)
+    * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
     * [Permutations iter](./Math/permutations_iter.sf)
     * [Permutations rec](./Math/permutations_rec.sf)
     * [Problem of apollonius](./Math/problem_of_apollonius.sf)
