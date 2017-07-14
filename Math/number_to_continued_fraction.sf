@@ -1,14 +1,17 @@
 #!/usr/bin/ruby
 
+# Daniel "Trizen" Șuteu
+# Date: 14 July 2017
+# https://github.com/trizen
+
 # A simple algorithm to convert a real number into a continued fraction representation.
 
 func num2cfrac(n, r=100) {
     gather {
         r.times {
-            var m = floor(n)
+            var m = n.floor.int
             take(m)
-            var d = (n - m) || break
-            n = 1/d
+            n = 1/((n - m) || break)
         }
     }
 }

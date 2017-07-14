@@ -11,7 +11,7 @@ func num2cfrac(n, r=10) {
         r.times {
             var m = n.floor.int
             take(m)
-            n = (1 / ((n - m) || break))
+            n = 1/((n - m) || break)
         }
     }
 }
