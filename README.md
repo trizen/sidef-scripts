@@ -74,6 +74,7 @@ A simple collection of Sidef scripts.
     * [Faulhaber's triangle](./Math/faulhaber_s_triangle.sf)
     * [Fibonacci closed solution](./Math/fibonacci_closed_solution.sf)
     * [Fibonacci polynomial numbers](./Math/fibonacci_polynomial_numbers.sf)
+    * [Fraction approximation](./Math/fraction_approximation.sf)
     * [Gamma function](./Math/gamma_function.sf)
     * [Gauss logarithm approx](./Math/gauss_logarithm_approx.sf)
     * [Generalized fibonacci closed-form](./Math/generalized_fibonacci_closed-form.sf)
