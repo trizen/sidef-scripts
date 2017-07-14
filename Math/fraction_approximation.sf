@@ -1,0 +1,57 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# License: GPLv3
+# Date: 14 July 2017
+# https://github.com/trizen
+
+# Simple and efficient algorithm for finding the smallest fraction
+# approximation to any given real number, using continued fractions.
+
+func num2cfrac(Block callback, Number n) {
+    loop {
+        var m = n.floor.int
+        callback(m) && return true
+        n = 1/((n - m) || break)
+    }
+}
+
+func cfrac2num(Array f) {
+    func (i) {
+        (i < f.end) ? (f[i] + 1/__FUNC__(i+1)) : f[i]
+    }(0)
+}
+
+func fraction_approximation(Number num) {
+
+    num.float!
+
+    var rat = 0
+    var cfrac = []
+
+    var str = num.as_dec
+
+    num2cfrac({|n|
+            cfrac.append(n)
+            rat = cfrac2num(cfrac)
+            index(rat.as_dec, str) == 0
+        }, num
+    )
+
+    return rat
+}
+
+say fraction_approximation(0.6180339887).as_frac                   #=> 260497/421493
+say fraction_approximation(1.008155930329).as_frac                 #=> 7293/7234
+say fraction_approximation(1.0019891835756).as_frac                #=> 524875/523833
+say fraction_approximation(529.12424242424).as_frac                #=> 174611/330
+
+say fraction_approximation(float(1/6)).as_frac                     #=> 1/6
+say fraction_approximation(float(13/6)).as_frac                    #=> 13/6
+say fraction_approximation(float(6/13)).as_frac                    #=> 6/13
+
+say fraction_approximation(5.010893246187).as_frac                 #=> 2300/459
+say fraction_approximation(5.054466230936).as_frac                 #=> 2320/459
+
+say fraction_approximation(5.0108932461873638344226579520697167755991285403).as_frac    #=> 2300/459
+say fraction_approximation(5.0544662309368191721132897603485838779956427015).as_frac    #=> 2320/459
