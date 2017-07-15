@@ -1,0 +1,49 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 15 July 2017
+# https://github.com/trizen
+
+# Convert a finite continued fraction to a fraction.
+
+#
+## Straightforward solution
+#
+func cfrac2num(f) {
+    func (i) {
+        (i < f.end) ? (f[i] + 1/__FUNC__(i+1)) : f[i]
+    }(0)
+}
+
+#
+## Computing the numerator and the denominator separately
+#
+func contfrac2num(f) {
+
+    f = [f[-1], f...]
+
+    func kd((0)) { 1 }
+    func kd((1)) { 0 }
+    func kd (n) is cached {
+        f[n-1]*kd(n - 1) + kd(n - 2)
+    }
+
+    func kn((0)) { 0 }
+    func kn((1)) { 1 }
+    func kn (n) is cached {
+        f[n-1]*kn(n - 1) + kn(n - 2)
+    }
+
+    kn(f.len) / kd(f.len)
+}
+
+
+var b = [2,3,4,7,8,12,13,4]
+say cfrac2num(b).as_frac            # 1141741/494582
+say contfrac2num(b).as_frac         # =//=
+
+say ''
+
+var d = [19,2,3,19,42,13,9,66,7]
+say cfrac2num(d).as_frac            #=> 6047225352/311237315
+say contfrac2num(d).as_frac         # =//=
