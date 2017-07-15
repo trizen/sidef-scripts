@@ -1,0 +1,49 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 14 July 2017
+# https://github.com/trizen
+
+# A simple algorithm to get the continued fraction convergents for a given real value.
+
+func num2cfrac(n, r=10) {
+    gather {
+        r.times {
+            var m = n.floor.int
+            take(m)
+            n = 1/((n - m) || break)
+        }
+    }
+}
+
+func cfrac2num(f) {
+    func (i) {
+        (i < f.end) ? (f[i] + 1/__FUNC__(i+1)) : f[i]
+    }(0)
+}
+
+func convergents(n, r) {
+    r.of { |i|
+        cfrac2num(num2cfrac(n, i+1))
+    }
+}
+
+# Any real value
+var v = exp(Num.Y)
+
+# Get the convergent fractions and display them
+convergents(v, 10).each {
+    .as_frac.say
+}
+
+__END__
+1/1
+2/1
+7/4
+9/5
+16/9
+57/32
+301/169
+1261/708
+1562/877
+2823/1585
