@@ -1,0 +1,63 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 26 July 2017
+# https://github.com/trizen
+
+# Ramanujan's sum:
+#   c_k(n) = Sum_{m mod k; gcd(m, k) = 1} exp(2*pi*i*m*n/k)
+
+# For n = 1, c_k(1) is equivalent to moebius(k).
+
+# For integer real values of `n` and `k`, Ramanujan's sum is equivalent to:
+#   c_k(n) = Sum_{m mod k; gcd(m, k) = 1} cos(2*pi*m*n/k)
+
+# Alternatively, when n = k, `c_n(n)` is equivalent with `euler_phi(n)`.
+
+# The record values, `c_n(n) + 1`, are the prime numbers.
+
+define tau_i = Num.tau.i
+
+func ramanujan_sum(n, k) {
+    sum(1..k, {|m|
+        gcd(m, k) == 1 ? exp(tau_i * m * n / k)
+                       : 0
+    }).round(-40)
+}
+
+each(1..30, {|n|
+    var r = ramanujan_sum(n, n**2)
+    say "R(#{n}, #{n**2}) = #{r}"
+})
+
+__END__
+R(1, 1) = 1
+R(2, 4) = -2
+R(3, 9) = -3
+R(4, 16) = 0
+R(5, 25) = -5
+R(6, 36) = 6
+R(7, 49) = -7
+R(8, 64) = 0
+R(9, 81) = 0
+R(10, 100) = 10
+R(11, 121) = -11
+R(12, 144) = 0
+R(13, 169) = -13
+R(14, 196) = 14
+R(15, 225) = 15
+R(16, 256) = 0
+R(17, 289) = -17
+R(18, 324) = 0
+R(19, 361) = -19
+R(20, 400) = 0
+R(21, 441) = 21
+R(22, 484) = 22
+R(23, 529) = -23
+R(24, 576) = 0
+R(25, 625) = 0
+R(26, 676) = 26
+R(27, 729) = 0
+R(28, 784) = 0
+R(29, 841) = -29
+R(30, 900) = -30
