@@ -37,7 +37,7 @@ func encrypt(in_fh, out_fh, seed) {
 
     loop {
         var len = in_fh.read(\var chunk, READ_SIZE)
-        var key = len.of { 256.irand }.pack('C*')
+        var key = len.of { 255.irand }.pack('C*')
 
         out_fh.print(chunk ^ key)
         len == READ_SIZE || break
