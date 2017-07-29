@@ -83,6 +83,7 @@ A simple collection of Sidef scripts.
     * [Generalized fibonacci closed-form](./Math/generalized_fibonacci_closed-form.sf)
     * [Generalized fibonacci closed-form 2](./Math/generalized_fibonacci_closed-form_2.sf)
     * [Harmonic numbers from powers](./Math/harmonic_numbers_from_powers.sf)
+    * [Harmonic numbers from powers simple](./Math/harmonic_numbers_from_powers_simple.sf)
     * [Haversine formula](./Math/haversine_formula.sf)
     * [Inverse of factorial](./Math/inverse_of_factorial.sf)
     * [Invmod of coprime factorials](./Math/invmod_of_coprime_factorials.sf)

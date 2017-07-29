@@ -1,0 +1,30 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# License: GPLv3
+# Date: 29 July 2017
+# https://github.com/trizen
+
+# Computation of the nth-harmonic number, using perfect powers.
+
+func harmonic_numbers_from_powers(n) {
+
+    var seen = []
+    var harm = (n <= 0 ? 0 : 1)
+
+    for k in (2 .. n) {
+        var p = perfect_root(k)
+
+        if (!seen.exists(p)) {
+            var g = p**n.ilog(p)
+            harm += ((g-1) // (p-1) / g)
+            seen[p] = nil
+        }
+    }
+
+    return harm
+}
+
+for n in (0 .. 30) {
+    printf("%20s / %-20s\n", harmonic_numbers_from_powers(n).nude)
+}
