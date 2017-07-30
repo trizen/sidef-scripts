@@ -8,7 +8,7 @@ var denominations = [.01, .05, .1, .25, .5, 1, 2, 5, 10, 20, 50, 100];
 
 func change(n, pos=0, solution=[]) {
 
-    var sum = solution.sum\\0;
+    var sum = solution.sum;
 
     if (solution.sum == n) {
         return [solution];    # found a solution
@@ -28,7 +28,7 @@ say "There are #{solutions.len} solutions for #{amount} dollars.";
 
 # Find the best solution
 var best = solutions.min_by{.len};
-say "The best solution is: #{best.dump}";
+say "The best solution is: #{best}";
 
 # Test the best solution
 assert_eq(best, [0.01, 0.25]);

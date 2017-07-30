@@ -9,7 +9,7 @@ func expmod(a, b, n) {
     do {
         (c *= a) %= n if b.is_odd
         (a *= a) %= n
-    } while (b //= 2)
+    } while (b >>= 1)
     c
 }
 
