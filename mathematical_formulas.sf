@@ -1,0 +1,367 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 10 July 2017
+# https://github.com/trizen
+
+# A collection of formulas for common mathematical constants.
+
+const n = (ARGV ? Num(ARGV[0]) : 30)       # number of iterations
+
+define ℯ = Num.e
+define π = Num.pi
+define γ = Num.Y
+define C = Num.C
+
+func display(r, t) {
+    say "#{r}\terror: #{ '%.0g' % abs(r - t) }"
+}
+
+#
+## zeta(3)
+#
+
+say "=> zeta(3)"
+
+# Accelerating series for zeta(3), due to Apery.
+display(5/2 * sum(1..n, {|n|
+    (-1)**(n-1) / n**3 / binomial(2*n, n)
+}), zeta(3))
+
+# Accelerating series for zeta(3), due to Gosper (1976)
+display(sum(1..n, {|n|
+    (30*n - 11) / 16 / (2*n - 1) / n**3 / binomial(2*n - 1, n)**2
+}), zeta(3))
+
+# A formula due to Ewell for zeta(3)
+display(-(π**2 / 3) * sum(0..^n, {|n|
+    (2*n + 5) * zeta(2*n) / (2*n + 1) / (2*n + 2) / (2*n + 3) / 2**(2*n)
+}), zeta(3))
+
+# A formula related to one found by Ewell for zeta(3)
+display(sum(0..^n, {|n|
+    zeta(2*n) / (2*n + 1) / (2*n + 2) / 2**(2*n)
+}) * -(4 * π**2)/7, zeta(3))
+
+# A formula related to one found by Ewell for zeta(3), with convergence improved by the author.
+display((log(27/16) + sum(0..^n, {|n|
+    (zeta(2*n) - 1) / (2*n + 1) / (2*n + 2) / 2**(2*n)
+})) * -(4 * π**2)/7, zeta(3))
+
+# Formula due to Cezar Lupu and Derek Orr for zeta(3) (with good convergence)
+display((4 * π**2 / 35) * (3/2 - log(π/2) + sum(1..n, {|n|
+    zeta(2*n) / n / (n + 1) / (2*n + 1) / 16**n
+})), zeta(3))
+
+# Formula due to Cezar Lupu and Derek Orr for zeta(3) (with very good convergence)
+display((2 * π**2 / 35) * (9 + 138*log(2) - 18*log(3) - 50*log(5) - 2*log(π) + 2*sum(1..n, {|n|
+    (zeta(2*n) - 1) / n / (2*n + 1) / (n + 1) / 16**n
+})), zeta(3))
+
+# Formula involving the Catalan constant
+display((4 * π**2 / 35) * (1/2 + (2*C / π) - sum(1..n, {|n|
+    zeta(2*n) / (n + 1) / (2*n + 1) / 16**n
+})), zeta(3))
+
+# Formula due to Strivastava, Glasser and Adamchik
+display((2 * π**2 / 9) * (log(2) + 2*sum(0..^n, {|n|
+    zeta(2*n) / (2*n + 3) / 4**n
+})), zeta(3))
+
+# Formula due to Euler
+display(prod(1..n, {|n|
+    1/(1 - prime(n)**(-3))
+}), zeta(3))
+
+#
+## Pi
+#
+
+say "\n=> Pi"
+
+# Famous series of Srinivasa Ramanujan for 1/Pi
+display(1/(2 * sqrt(2) / 9801 * sum(0..^n, {|n|
+    (4*n)! * (1103 + 26390*n) / (n!)**4 / 396**(4*n)
+})), π)
+
+# Formula due to Cezar Lupu and Derek Orr, involving zeta(2n)
+display(exp(1 + sum(1..n, {|n|
+    zeta(2*n) / n / (2*n + 1) / 4**n
+})), π)
+
+# Formula due to Cezar Lupu and Derek Orr, involving zeta(2n)
+display(sqrt(8 * (1/2 + sum(1..n, {|n|
+    zeta(2*n) * (2*n - 1) / 4**n
+}))), π)
+
+# Formula due to Cezar Lupu and Derek Orr, involving zeta(2n)
+display(sqrt(16 * sum(1..n, {|n|
+    zeta(2*n) * n / 4**n
+})), π)
+
+# Formula due to Cezar Lupu and Derek Orr, involving zeta(2n)
+display(sqrt(32/3 * sum(1..n, {|n|
+    zeta(2*n) * n**2 / 4**n
+})), π)
+
+# Formula due to Cezar Lupu and Derek Orr, involving zeta(2n)
+display(2*sqrt(2)*exp(sum(1..n, {|n|
+    zeta(2*n) / n / 16**n
+})), π)
+
+# Formula due to Cezar Lupu and Derek Orr, involving zeta(2n)
+display(sqrt(16 * (1/2 + sum(1..n, {|n|
+    zeta(2*n) * (2*n - 1) / 16**n
+}))), π)
+
+# Formula due to Cezar Lupu and Derek Orr, involving zeta(2n) (corrected by the author)
+display(cbrt(32 * (1 - sum(1..n, {|n|
+    zeta(2*n) * (2*n - 1) * (2*n - 2) / 16**n
+}))), π)
+
+# Formula due to Cezar Lupu and Derek Orr, involving zeta(2n)
+display(4 - (8 * sum(1..n, {|n|
+    zeta(2*n) / 16**n
+})), π)
+
+# Formula for Pi^2, independently discovered by Oyama Shokei and Yamaji Nushizumi (~1765).
+display(sqrt(8*(1 + sum(1..n, {|n|
+    2**(n+1) * (n!)**2 / (2*n + 2)!
+}))), π)
+
+# Formula (re?)discovered by the author.
+display(2 * sum(0..^n, {|n|
+    (n!) / (2*n + 1)!!
+}), π)
+
+# Formula due to Euler (?)
+display(sqrt(8 * sum(0..^n, {|n|
+    1 / (2*n + 1)**2
+})), π)
+
+# Wallis' product (1)
+display(2 * prod(1..n, {|n|
+    (4 * n**2) / (4 * n**2 - 1)
+}), π)
+
+# Wallis'product (2)
+display(4*prod(1..n, {|n|
+    ((2*n + 1)**2 - 1) / (2*n + 1)**2
+}), π)
+
+# Wallis'product (3)
+display((2*prod(1..n, {|n|
+    (4 * n**2) / (4 * n**2 - 1)
+}) + 4*prod(1..n, {|n|
+    ((2*n + 1)**2 - 1) / (2*n + 1)**2
+})) / 2, π)
+
+# Formula (re?)discovered by the author.
+display(prod(1..n, {|n|
+    (4 * n**3) / ((4 * n**3) - 3*n + 1)
+}), π)
+
+# Formula (re?)discovered by the author.
+display(3/2 * sqrt(3) * sum(0..^n, {|n|
+    (n!)**2 / (2*n + 1)!
+}), π)
+
+# Formula (re?)discovered by the author.
+display(sqrt(6 * (2 - sum(1..n, {|n|
+    1/(n * (n+1)**2)
+}))), π)
+
+# Formula (re?)discovered by the author.
+display(6 * (-log(2) + sum(0..^n, {|n|
+    1/(n + (2*n + 1)**2)
+})), π)
+
+# Spigot algorithm for Pi
+display(sum(0..^n, {|n|
+    (-1/4)**n * (1/(2*n + 1) + 2/(4*n + 1) + 1/(4*n + 3))
+}), π)
+
+# beta(3)
+display(cbrt(32 * sum(0..^n, {|n|
+    (-1)**n / (2*n + 1)**3
+})), π)
+
+# Based on Stirling's asymptotic formula for n!
+display((n!)**2 * exp(2*n) / n**(2*n + 1) / 2, π)
+
+# Limit derived by the author from gamma(1/2).
+display(4 * 16**n * n * (n!)**4 / ((2*n + 1)!)**2, π)
+
+# Limit derived by the author from gamma(1/2).
+display(4 * 2**(4*n - 1) * (n!)**4 / (2*n + 1) / ((2*n)!)**2, π)
+
+# Limit derived by the author from gamma(1/2).
+display(2 * 4**n * (n!)**2 / ((2*n - 1)!!) / ((2*n + 1)!!), π)
+
+# Limit derived by the author from gamma(1/2).
+display(4 * 16**n * (n!)**3 * ((n+1)!) / ((2*n + 1)!)**2, π)
+
+# Limit derived by the author from gamma(1/2).
+display(16**n * (n!)**3 * ((n-1)!) / ((2*n)!)**2, π)
+
+# Limit derived by the author from gamma(1/2).
+display(sqrt(16 * 256**n * n * ((n+1)!) * (n!)**7 / ((2*n + 1)!)**4), π)
+
+# Limit derived by the author from gamma(1/2).
+display(sqrt(128 * 256**n * (n + 1)**4 * ((2 * n**2) + 2*n + 1) * (n!)**8 / ((2*n + 2)!)**4), π)
+
+# Formula due to S. M. Abrarov and B. M. Quine.
+# Described in their paper: "A reformulated series expansion of the arctangent function"
+display(-8 * sum(1..n, {|n|
+    sum(1..(2*n - 1), {|k|
+        (-1)**k / (2*n - 1) / (1 + (1**2 / 4))**(2*n - 1) * (1/2)**(4*n - 2*k - 1) * binomial(2*n - 1, 2*k - 1)
+    })
+}), π)
+
+# Formula (re?)discovered by the author.
+display(sqrt(12 * (sum(1..n, {|n|
+    1 / n**2 / 2**n
+}) + (log(2)**2 / 2))), π)
+
+# Formula (re?)discovered by the author (equivalent with the above formula).
+display(sqrt(6 * (sum(1..n, {|n|
+    1 / n**2 / 2**(n-1)
+}) + log(2)**2)), π)
+
+# The gamma function at 1/2, which is sqrt(π).
+display((exp(γ/2)/2 * prod(1..n, {|n|
+    (1 + 1/(2*n)) * exp(-1/(2*n))
+}))**(-2), π)
+
+#
+## exp(1)
+#
+
+say "\n=> exp(1)"
+
+# Formula (re?)discovered by the author.
+display(sqr(sum(0..^n, {|n|
+    ((2*n + 1)!!) / (2*n + 1)!
+})), ℯ)
+
+# Basic formula for `e`, due to Euler
+display(sum(0..^n, {|n|
+    1/n!
+}), ℯ)
+
+# Definition of e
+display((1 + 1/n)**n, ℯ)
+
+# Binomial expansion (1 + 1/n)^n
+display(sum(0..n, {|k|
+    n! * n**(k-n) / (k!) / (n-k)!
+}), ℯ)
+
+# Limit_{n->Infinity} (n-1)^(-n) * (n+1)^n = exp(2)
+display(sqrt((n - 1)**(-n) * (n+1)**n), ℯ)
+
+#
+## Euler-Mascheroni constant
+#
+
+say "\n=> Euler-Mascheroni"
+
+# Euler-Mascheroni constant, involving zeta(n)
+display(1 - sum(2..(n+1), {|n|
+    (zeta(n) - 1) / n
+}), γ)
+
+# Limit_{n->Infinity} zeta((n+1)/n) - n} = gamma
+display(zeta((n+1)/n) - n, γ)
+
+# Series due to Euler (1731).
+display(sum(2..(n+1), {|n|
+    (-1)**n * zeta(n) / n
+}),  γ)
+
+# Original definition of the Euler-Mascheroni constant, due to Euler (1731)
+display(sum(1..n, {|n|
+    1/n
+}) - log(n), γ)
+
+# Original definition of the Euler-Mascheroni constant,
+# with an additional correction term (re)discovered by the author.
+display(sum(1..n, {|n|
+    1/n
+}) - log(n) - 3/(6*n + 1), γ)
+
+# Formula due to Euler
+display(harmfrac(n) - log(n) - 1/(2*n) - sum(1..n, {|k|
+    -bernfrac(2*k) / 2*k / n**(2*k)
+}), γ)
+
+# Formula derived by the author from the above formula of Euler
+display(harmfrac(n) - log(n) - 1/(2*n) - sum(1..n, {|k|
+    (-1)**k * 4 * sqrt(π*k) * (π * ℯ)**(-2*k) * k**(2*k) / 2*k / n**(2*k)
+}), γ)
+
+# Formula derived by the author from the above formula of Euler
+display(harmfrac(n) - log(n) - 1/(2*n) - sum(1..n, {|k|
+    (-1)**k * 2 / (2*π)**(2*k) * ((2*k)!) / 2*k / n**(2*k)
+}), γ)
+
+# Formula due to Euler in terms of log(2) and the odd zeta values
+display(3/4 - log(2)/2 + sum(1..n, {|n|
+    (1 - 1/(2*n + 1)) * (zeta(2*n + 1) - 1)
+}), γ)
+
+# Formula due to Euler in terms of log(2) and the odd zeta values (VII)
+display(log(2) - sum(1..n, {|n|
+    zeta(2*n + 1) / (2*n + 1) / 2**(2*n)
+}), γ)
+
+# Formula due to Vacca (1910)
+display(sum(1..n, {|n|
+    (-1)**n * floor(log2(n)) / n
+}), γ)
+
+#
+## Catalan constant
+#
+
+say "\n=> Catalan constant"
+
+display(π/2 * (sum(1..n, {|n|
+    zeta(2*n) / n / (2*n + 1) / 16**n
+}) - log(π/2) + 1), C)
+
+#
+## log(2)
+#
+
+say "\n=> log(2)"
+
+# The log(2) constant involving zeta(2n)
+display(sum(1..n, {|n|
+    (zeta(2*n) - 1) / n
+}), log(2))
+
+# A geometric series for log(2)
+display(sum(1..n, {|n|
+    1 / n / 2**n
+}), log(2))
+
+# Formula reformulated by the author based on the above formula.
+display(sum(0..^n, {|n|
+    (n!) / (2*n + 2)!!
+}), log(2))
+
+# Formula reformulated by the author (equivalent with the above one)
+display(sum(0..^n, {|n|
+    1 / (2*n + 2) / 2**n
+}), log(2))
+
+# Formula (re?)discovered by the author.
+display(sum(0..^n, {|n|
+    1 / ((2*n + 1) * (2*n + 2))
+}), log(2))
+
+# Formula based on: log(x) = 2*Sum_{n>=0} ((x-1)/(x+1))^(2n+1)/(2n+1)
+display(2 * sum(0..^n, {|n|
+    (1 / 3)**(2*n + 1) / (2*n + 1)
+}), log(2))
