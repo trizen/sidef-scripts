@@ -290,6 +290,11 @@ display(sum(1..n, {|n|
     1/n
 }) - log(n) - 3/(6*n + 1), γ)
 
+# Original definition of the Euler-Mascheroni constant, with additional correction terms.
+display(sum(1..n, {|n|
+    1/n
+}) - log(n) - 1/(2*n) + 1/(12 * n**2) - 1/(120 * n**4) + 1/(252 * n**6) - 1/(240 * n**8) + 1/(132 * n**10) - 1/(47 * n**12), γ)
+
 # Formula due to Euler
 display(harmfrac(n) - log(n) - 1/(2*n) - sum(1..n, {|k|
     -bernfrac(2*k) / 2*k / n**(2*k)
