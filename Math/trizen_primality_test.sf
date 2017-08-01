@@ -4,7 +4,7 @@
 # Date: 01 August 2017
 # https://github.com/trizen
 
-# A very high-level implementation of a new primilaty test, inspired from the AKS primality test.
+# An efficient implementation of a new primilaty test, inspired from the AKS primality test.
 
 # When n>2 is a (pseudo)prime:
 #
@@ -40,13 +40,48 @@
 #   b(1) = 1; b(2) = 4; b(n) = 4*b(n-2) - 5*b(n-2)
 #
 
-# For small numbers (< 10^5), the performance of this test is pretty good.
-# For larger numbers, more optimizations are needed.
+# Currently, we use only the `b(n)` branch, as it is strong enough to reject most composites.
 
-# An obvious optimization would be to compute `a(n)` and `b(n)` modulo `n` directly.
-
-# Known counter-examples (in order):
+# Known counter-examples (for both branches) (in order):
 #   [1105, 2465, 10585, 15841, 29341, 38081, 40501, 41041, 46657, 75361, ...]
+
+# Known counter-examples (for `b(n)` branch) (in order):
+#   [1105, 1729, 2465, 10585, 15841, 29341, 38081, 40501, 41041, 46657, ...]
+
+###########################--CURRENT TEST--################################
+
+func modulo_test(n, mod) {
+
+    var cache = Hash()
+
+    func (n) {
+
+        n.is_zero && return 1
+        n.is_one  && return 4
+
+        if (cache.exists(n)) {
+            return cache{n}
+        }
+
+        var k = (n >> 1)
+
+        cache{n} = (
+            n.is_even
+                ? (((__FUNC__(k) * __FUNC__(k    )) - (5 * __FUNC__(k - 1) * __FUNC__(k - 1))) % mod)
+                : (((__FUNC__(k) * __FUNC__(k + 1)) - (5 * __FUNC__(k - 1) * __FUNC__(k    ))) % mod)
+        )
+
+    }(n - 1)
+}
+
+func is_probably_prime(n) {
+
+    var r = modulo_test(n, n)
+
+    (n % 4 == 3) ? (r == n-1) : (r == 1)
+}
+
+###########################--OLD TEST--################################
 
 func a(n) is cached {       # real((2 + sqrt(-1))^n)
     n == 1 && return 2
@@ -62,7 +97,7 @@ func b(n) is cached {       # imag((2 + sqrt(-1))^n)
     4*b(n-1) - 5*b(n-2)
 }
 
-func is_probably_prime(n) {
+func is_probably_prime_old_1(n) {
 
     var _a_ = (a(n) % n) == 2 || return false
     var _b_ = (b(n) % n)
@@ -70,7 +105,9 @@ func is_probably_prime(n) {
     (n % 4 == 3) ? (_b_ == n-1) : (_b_ == 1)
 }
 
-func is_probably_prime_old(n) {
+###########################--OLD TEST--################################
+
+func is_probably_prime_old_2(n) {
 
     define r = 1/2
     local Number!PREC = ceil(log2(5) * (n*r) + 2*log(n))
@@ -85,10 +122,12 @@ func is_probably_prime_old(n) {
     (n % 4 == 3) ? (_b_ == n-1) : (_b_ == 1)
 }
 
-each(3..1000, { |n|
-    if (is_probably_prime(n)) {
+######################################################################
 
-        say n
+say "=> Testing for counter-examples..."
+
+each(3..100, { |n|
+    if (is_probably_prime(n)) {
 
         if (!n.is_prime) {
             warn "Counter-example: #{n}"
@@ -99,3 +138,27 @@ each(3..1000, { |n|
         Sys.sleep(1)
     }
 })
+
+#
+## Run a few tests
+#
+
+say (is_probably_prime(6760517005636313)   ? 'prime' : 'error')    #=> prime
+say (is_probably_prime(204524538079257577) ? 'prime' : 'error')    #=> prime
+say (is_probably_prime(904935283655003749) ? 'prime' : 'error')    #=> prime
+
+say "=> Testing a few large primes..."
+
+say (is_probably_prime(90123127846128741241234935283655003749)                             ? 'prime' : 'error')    #=> prime
+say (is_probably_prime(793534607085486631526003804503819188867498912352777)                ? 'prime' : 'error')    #=> prime
+say (is_probably_prime(6297842947207644396587450668076662882608856575233692384596461)      ? 'prime' : 'error')    #=> prime
+say (is_probably_prime(396090926269155174167385236415542573007935497117155349994523806173) ? 'prime' : 'error')    #=> prime
+
+say "=> Testing a few large Mersenne primes...";
+
+# Mersenne primes
+say (is_probably_prime(2**127  - 1) ? 'prime' : 'error')   #=> prime
+say (is_probably_prime(2**521  - 1) ? 'prime' : 'error')   #=> prime
+say (is_probably_prime(2**1279 - 1) ? 'prime' : 'error')   #=> prime
+say (is_probably_prime(2**3217 - 1) ? 'prime' : 'error')   #=> prime
+say (is_probably_prime(2**4423 - 1) ? 'prime' : 'error')   #=> prime
