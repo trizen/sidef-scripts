@@ -89,7 +89,12 @@ display(1/(2 * sqrt(2) / 9801 * sum(0..^n, {|n|
     (4*n)! * (1103 + 26390*n) / (n!)**4 / 396**(4*n)
 })), π)
 
-# The Ramanujan series for 1/π, improved by Chudnovsky
+# Formula due to Srinivasa Ramanujan for 1/Pi
+display(1/sum(0..^n, {|n|
+    binomial(2*n, n)**3 * (42*n + 5) / 2**(12*n + 4)
+}), π)
+
+# The Ramanujan series for 1/π, improved by David and Gregory Chudnovsky
 display(1/(12/(640320**(3/2)) * sum(0..^n, {|n|
     (-1)**n * (6*n)! * (13591409 + n*545140134) / ((3*n)!) / (n!)**3 / 640320**(3*n)
 })), π)
@@ -139,7 +144,7 @@ display(sqrt(8*(1 + sum(1..n, {|n|
     2**(n+1) * (n!)**2 / (2*n + 2)!
 }))), π)
 
-# Formula (re?)discovered by the author.
+# Formula due to Ajima Naonobu (1795) (rediscovered by the author).
 display(2 * sum(0..^n, {|n|
     (n!) / (2*n + 1)!!
 }), π)
@@ -242,6 +247,63 @@ display(sqrt(6 * (sum(1..n, {|n|
 display((exp(γ/2)/2 * prod(1..n, {|n|
     (1 + 1/(2*n)) * exp(-1/(2*n))
 }))**(-2), π)
+
+# Formula due to Abraham Sharp (1699)
+display(sum(0..^n, {|n|
+    (-1)**n / 3**n / (2*n + 1)
+}) / sqrt(3) * 6, π)
+
+# Formula due to John Machin (1706)
+display(4*(4*sum(0..^n, {|n|
+    (-1)**n / (2*n + 1) / 5**(2*n + 1)
+}) - sum(0..^n, {|n|
+    (-1)**n / (2*n + 1) / 239**(2*n + 1)
+})), π)
+
+# Formula due to Matsunaga Yoshisuke (1739)
+display(sqrt(18*sum(0..^n, {|n|
+    n!**2 / (2*n + 2)!
+})), π)
+
+# Formula due to Karl Heinrich Schellbach (1832)
+display(4 * sum(0..^n, {|n|
+    (-1)**n * (1/(2**(2*n + 1)) + 1/(3**(2*n + 1))) / (2*n + 1)
+}), π)
+
+# Formula due to Louis Comtet (1974)
+display((3240/17 * sum(1..n, {|n|
+    1 / n**4 / binomial(2*n, n)
+}))**(1/4), π)
+
+# Formula due to Jonathan Borwein and Peter Borwein (1988)
+display(1/(12*sum(0..^n, {|n|
+    (-1)**n * (6*n)! * ((212175710912*sqrt(61) + 1657145277365) + (13773980892672*sqrt(61) + 107578229802750)*n) / n!**3 / ((3*n)!) / (5280 * (236674 + 30303*sqrt(61)))**(3*n + 3/2)
+})), π)
+
+# Formula due to David Bailey, Peter Borwein and Simon Plouffe (1995)
+display(sum(0..^n, {|n|
+    (4/(8*n + 1) - 2/(8*n + 4) - 1/(8*n + 5) - 1/(8*n + 6)) / 16**n
+}), π)
+
+# Formula due to Fabrice Bellard (1997)
+display(sum(0..^n, {|n|
+    (-1)**n / 2**(10*n) * (-32/(4*n + 1) - 1/(4*n + 3) + 256/(10*n + 1) - 64/(10*n + 3) - 4/(10*n + 5) - 4/(10*n + 7) + 1/(10*n + 9))
+}) / 64, π)
+
+# Formula due to Fabrice Bellard (1997)
+display((sum(1..n, {|n|
+    3 * (-(885673181 * n**5) + (3125347237 * n**4) - (2942969225 * n**3) + (1031962795 * n**2) - (196882274 * n) + 10996648) / binomial(7*n, 2*n) / 2**(n-1)
+}) - 20379280)/ 740025, π)
+
+# Formula due to Cetin Hakimoglu-Brown (2009)
+display(sqrt(3) / 7776 * sum(0..^n, {|n|
+    ((4*n)!)**2 * ((6*n)!) / 9**(n+1) / ((12*n)!) / ((2*n)!) * (127169/(12*n + 1) - 1070/(12*n + 5) - 131/(12*n + 7) + 2/(2*n + 11))
+}), π)
+
+# Formual due to Cetin Hakimoglu-Brown (2009)
+display(sum(0..^n, {|n|
+    1 / binomial(8*n, 4*n) / 9**n * (5717/(8*n + 1) - 413/(8*n + 3) - 45/(8*n + 5) + 5/(8*n + 7))
+}) / 1024 / sqrt(3), π)
 
 #
 ## exp(1)
