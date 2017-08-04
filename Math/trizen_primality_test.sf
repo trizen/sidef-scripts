@@ -51,25 +51,16 @@
 ###########################--CURRENT TEST--################################
 
 func modulo_test(n, mod) {
-
-    var cache = Hash()
-
-    func (n) {
+    func (n) is cached {
 
         n.is_zero && return 1
         n.is_one  && return 4
 
-        if (cache.exists(n)) {
-            return cache{n}
-        }
-
         var k = (n >> 1)
 
-        cache{n} = (
-            n.is_even
-                ? (((__FUNC__(k) * __FUNC__(k    )) - (5 * __FUNC__(k - 1) * __FUNC__(k - 1))) % mod)
-                : (((__FUNC__(k) * __FUNC__(k + 1)) - (5 * __FUNC__(k - 1) * __FUNC__(k    ))) % mod)
-        )
+        n.is_even
+            ? (((__FUNC__(k) * __FUNC__(k    )) - (5 * __FUNC__(k - 1) * __FUNC__(k - 1))) % mod)
+            : (((__FUNC__(k) * __FUNC__(k + 1)) - (5 * __FUNC__(k - 1) * __FUNC__(k    ))) % mod)
 
     }(n - 1)
 }
