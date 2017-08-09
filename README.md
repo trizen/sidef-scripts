@@ -66,6 +66,7 @@ A simple collection of Sidef scripts.
     * [Cartesian product](./Math/cartesian_product.sf)
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Coin change](./Math/coin_change.sf)
+    * [Complex zeta function representations](./Math/complex_zeta_function_representations.sf)
     * [Continued fraction](./Math/continued_fraction.sf)
     * [Continued fraction to fraction](./Math/continued_fraction_to_fraction.sf)
     * [Continued fractions convergents](./Math/continued_fractions_convergents.sf)
