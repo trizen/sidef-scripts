@@ -63,6 +63,7 @@ A simple collection of Sidef scripts.
     * [Bernoulli numbers from zeta](./Math/bernoulli_numbers_from_zeta.sf)
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)
     * [Binary exponentiation](./Math/binary_exponentiation.sf)
+    * [Binary gcd algorithm](./Math/binary_gcd_algorithm.sf)
     * [Cartesian product](./Math/cartesian_product.sf)
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Coin change](./Math/coin_change.sf)
