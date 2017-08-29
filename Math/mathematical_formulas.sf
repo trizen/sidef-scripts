@@ -369,17 +369,17 @@ display(sum(1..n, {|n|
 
 # Formula due to Euler
 display(harmfrac(n) - log(n) - 1/(2*n) - sum(1..n, {|k|
-    -bernfrac(2*k) / 2*k / n**(2*k)
+    -bernfrac(2*k) / (2*k) / n**(2*k)
 }), γ)
 
 # Formula derived by the author from the above formula of Euler
 display(harmfrac(n) - log(n) - 1/(2*n) - sum(1..n, {|k|
-    (-1)**k * 4 * sqrt(π*k) * (π * ℯ)**(-2*k) * k**(2*k) / 2*k / n**(2*k)
+    (-1)**k * 4 * sqrt(π*k) * (π * ℯ)**(-2*k) * k**(2*k) / (2*k) / n**(2*k)
 }), γ)
 
 # Formula derived by the author from the above formula of Euler
 display(harmfrac(n) - log(n) - 1/(2*n) - sum(1..n, {|k|
-    (-1)**k * 2 / (2*π)**(2*k) * ((2*k)!) / 2*k / n**(2*k)
+    (-1)**k * 2 / (2*π)**(2*k) * ((2*k)!) / (2*k) / n**(2*k)
 }), γ)
 
 # Formula due to Euler in terms of log(2) and the odd zeta values
