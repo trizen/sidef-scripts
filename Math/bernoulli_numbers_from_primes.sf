@@ -1,0 +1,45 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# License: GPLv3
+# Date: 14 October 2017
+# https://github.com/trizen
+
+# A very high-level computation of the nth-Bernoulli number, using prime numbers.
+
+# Algorithm due to Kevin J. McGown (December 8, 2005)
+# See his paper: "Computing Bernoulli Numbers Quickly"
+
+func bern_from_primes(n) {
+
+    n == 0 && return 1
+    n == 1 && return 1/2
+    n  < 0 && return NaN
+    n  & 1 && return 0
+
+    var log2B = (log(4*Num.tau*n)/2 + n*log(n) - n*log(Num.tau) - n)/log(2)
+
+    local Number!PREC = *(int(n + log2B) + (n <= 90 ? 18 : 0))
+
+    var K = (n! * 2 / Num.tau**n)
+    var d = 1
+
+    for k in (divisors(n)) {
+        if (is_prime(k + 1)) {
+            d *= k+1
+        }
+    }
+
+    var N = ceil((K * d).root(n - 1))
+
+    var z = 1
+    for p in (primes(N)) {
+        z *= (1 - float(p)**(-n))
+    }
+
+    (-1)**(n/2 + 1) * int(ceil(d * K / z)) / d
+}
+
+for n in (0..50) {
+    printf("B%-3d = %s\n", 2*n, bern_from_primes(2*n).as_rat)
+}
