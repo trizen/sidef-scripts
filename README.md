@@ -178,6 +178,7 @@ A simple collection of Sidef scripts.
 * Term
     * [Draw a clock](./Term/draw_a_clock.sf)
 * Text
+    * [Boyer-moore string search algorithm](./Text/boyer-moore_string_search_algorithm.sf)
     * [Jaro distance](./Text/jaro_distance.sf)
     * [Longest common prefix](./Text/longest_common_prefix.sf)
     * [Longest common subsequence](./Text/longest_common_subsequence.sf)
