@@ -18,7 +18,7 @@
 
 require('ntheory')
 
-func sum_of_two_squares_solutions(n) {
+func sum_of_two_squares_solutions(n) is cached {
 
     n == 0 && return [[0, 0]]
 
