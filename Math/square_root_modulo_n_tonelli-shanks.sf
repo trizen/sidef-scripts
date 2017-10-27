@@ -90,9 +90,6 @@ func sqrt_mod_n(a, n) is cached {
     }
 
     if (n.is_prime) {               # n is a prime
-
-        kronecker(a, n) == 1 || return []
-
         return gather {
             var r = tonelli(a, n)
             take(r, n - r)
@@ -102,6 +99,7 @@ func sqrt_mod_n(a, n) is cached {
     var pe = n.factor_exp           # factorize `n` into prime powers
 
     if (pe.len == 1) {              # `n` is an odd prime power
+
         var p = pe[0][0]
         var k = pe[0][1]
 
@@ -110,7 +108,7 @@ func sqrt_mod_n(a, n) is cached {
         var roots = gather {
             var r = tonelli(a, p)
             take(r, n - r)
-        }.sort
+        }
 
         var pk = p
         var pi = p*p
@@ -126,7 +124,7 @@ func sqrt_mod_n(a, n) is cached {
             pi *= p
         }
 
-        return roots
+        return roots.sort
     }
 
     var solutions = []

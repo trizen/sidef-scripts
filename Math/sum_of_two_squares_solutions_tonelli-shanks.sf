@@ -79,25 +79,23 @@ func sqrt_mod_n(a, n) is cached {
                     var r = (s + (i << (k - 2)))
                     take(r, n - r)
                 }
-            }.sort
+            }
         }
 
         return []
     }
 
     if (n.is_prime) {               # n is a prime
-
-        kronecker(a, n) == 1 || return []
-
         return gather {
             var r = tonelli(a, n)
             take(r, n - r)
-        }.sort
+        }
     }
 
     var pe = n.factor_exp           # factorize `n` into prime powers
 
     if (pe.len == 1) {              # `n` is an odd prime power
+
         var p = pe[0][0]
         var k = pe[0][1]
 
@@ -106,7 +104,7 @@ func sqrt_mod_n(a, n) is cached {
         var roots = gather {
             var r = tonelli(a, p)
             take(r, n - r)
-        }.sort
+        }
 
         var pk = p
         var pi = p*p
@@ -137,7 +135,7 @@ func sqrt_mod_n(a, n) is cached {
         solutions.cartesian {|*a|
             take(Math.chinese(a...))
         }
-    }.uniq.sort
+    }.uniq
 }
 
 func sum_of_two_squares_solutions(n) is cached {
