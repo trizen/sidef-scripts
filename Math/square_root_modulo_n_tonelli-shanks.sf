@@ -23,6 +23,41 @@
 # Code inspired from:
 #   https://github.com/Magtheridon96/Square-Root-Modulo-N
 
+func tonelli(n, p) {
+
+    var q = p-1
+    var s = valuation(q, 2)
+
+    s == 1 && return powmod(n, (p + 1) >> 2, p)
+
+    q >>= s
+
+    var c = powmod(2 ..^ p -> first {|z| legendre(z, p) == -1 }, q, p)
+    var r = powmod(n, (q + 1) >> 1, p)
+    var t = powmod(n, q, p)
+
+    while (!p.divides(t - 1)) {
+
+        var b = 1
+        var t2 = (t*t % p)
+
+        for i in (1 ..^ s) {
+            if (p.divides(t2 - 1)) {
+                b = powmod(c, 1 << (s - i - 1), p)
+                s = i
+                break
+            }
+            t2 = (t2*t2 % p)
+        }
+
+        r = (r*b % p)
+        c = (b*b % p)
+        t = (t*c % p)
+    }
+
+    return r
+}
+
 func sqrt_mod_n(a, n) is cached {
 
     kronecker(a, n) == 1 || return []
@@ -59,7 +94,7 @@ func sqrt_mod_n(a, n) is cached {
         kronecker(a, n) == 1 || return []
 
         return gather {
-            var r = a.sqrtmod(n)
+            var r = tonelli(a, n)
             take(r, n - r)
         }.sort
     }
@@ -73,7 +108,7 @@ func sqrt_mod_n(a, n) is cached {
         kronecker(a, p) == 1 || return []
 
         var roots = gather {
-            var r = a.sqrtmod(p)
+            var r = tonelli(a, p)
             take(r, n - r)
         }.sort
 

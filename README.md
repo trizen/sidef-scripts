@@ -132,6 +132,7 @@ A simple collection of Sidef scripts.
     * [Solovay-strassen primality test](./Math/solovay-strassen_primality_test.sf)
     * [Sqrt 2 approximation](./Math/sqrt_2_approximation.sf)
     * [Square root modulo n](./Math/square_root_modulo_n.sf)
+    * [Square root modulo n tonelli-shanks](./Math/square_root_modulo_n_tonelli-shanks.sf)
     * [Stable marriage problem](./Math/stable_marriage_problem.sf)
     * [Sum of two squares solutions](./Math/sum_of_two_squares_solutions.sf)
     * [Symbolic math](./Math/symbolic_math.sf)
