@@ -11,6 +11,9 @@
 # Example:
 #   99025 = 41^2 + 312^2 = 48^2 + 311^2 = 95^2 + 300^2 = 104^2 + 297^2 = 183^2 + 256^2 = 220^2 + 225^2
 
+# Blog post:
+#   https://trizenx.blogspot.com/2017/10/representing-integers-as-sum-of-two.html
+
 # This algorithm is efficient when the factorization of `n` can be computed.
 
 # See also:
@@ -92,9 +95,9 @@ func sum_of_two_squares_solutions(n) is cached {
         }
     }
 
-    solutions.map {|pair| pair.sort }   \
-             .uniq_by {|pair| pair[0] } \
-             .sort_by {|pair| pair[0] }
+    solutions.map     {|pair| pair.sort } \
+             .uniq_by {|pair| pair[0]   } \
+             .sort_by {|pair| pair[0]   }
 }
 
 for n in (1 .. 1e4) {
