@@ -135,6 +135,7 @@ A simple collection of Sidef scripts.
     * [Square root modulo n tonelli-shanks](./Math/square_root_modulo_n_tonelli-shanks.sf)
     * [Stable marriage problem](./Math/stable_marriage_problem.sf)
     * [Sum of two squares solutions](./Math/sum_of_two_squares_solutions.sf)
+    * [Sum of two squares solutions tonelli-shanks](./Math/sum_of_two_squares_solutions_tonelli-shanks.sf)
     * [Symbolic math](./Math/symbolic_math.sf)
     * [System of linear equations](./Math/system_of_linear_equations.sf)
     * [Tonelli shanks algorithm](./Math/tonelli_shanks_algorithm.sf)
