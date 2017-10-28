@@ -7,9 +7,9 @@
 # Find all the solutions to the congruence equation:
 #   x^2 = a (mod n)
 
-# For any values of `a` and `n` for which `kronecker(a, n) = 1`.
+# Defined for any values of `a` and `n` for which `kronecker(a, n) = 1`.
 
-# Known issue: for some input values, such as:
+# When `kronecker(a, n) != 1`, for example:
 #
 #   a = 472
 #   n = 972
