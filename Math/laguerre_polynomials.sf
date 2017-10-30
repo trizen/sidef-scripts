@@ -1,0 +1,39 @@
+#!/usr/bin/ruby
+
+# Closed-form for Laguerre polynomials.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Laguerre_polynomials
+#   http://mathworld.wolfram.com/LaguerrePolynomial.html
+
+func laguerre_polynomial(n, x) {
+    sum(0..n, {|k|
+        (-1)**k * binomial(n, k) * x**k / k!
+    })
+}
+
+for n in (1..20) {
+    say laguerre_polynomial(4, 6*n)
+}
+
+__END__
+-5
+97
+1387
+6241
+18331
+42625
+85387
+154177
+257851
+406561
+611755
+886177
+1243867
+1700161
+2271691
+2976385
+3833467
+4863457
+6088171
+7530721
