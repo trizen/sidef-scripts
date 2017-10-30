@@ -1,0 +1,17 @@
+#!/usr/bin/ruby
+
+# Simple implementation of the confluent hypergeometric function of the first kind.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Confluent_hypergeometric_function
+#   http://mathworld.wolfram.com/ConfluentHypergeometricFunctionoftheFirstKind.html
+
+func F1(a, b, z, limit=1000) {
+    sum(0..limit, {|k|
+        rising_factorial(a, k) / rising_factorial(b, k) * z**k / k!
+    })
+}
+
+say F1(1, 1, 1)         #=> 2.71828182845904523536028747...
+say F1(13, 23, 14)      #=> 6902.70292322962697731908950...
+say F1(-2, 4, -3)       #=> 2.95

@@ -69,6 +69,7 @@ A simple collection of Sidef scripts.
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Coin change](./Math/coin_change.sf)
     * [Complex zeta function representations](./Math/complex_zeta_function_representations.sf)
+    * [Confluent hypergeometric function of the first kind](./Math/confluent_hypergeometric_function_of_the_first_kind.sf)
     * [Continued fraction](./Math/continued_fraction.sf)
     * [Continued fraction to fraction](./Math/continued_fraction_to_fraction.sf)
     * [Continued fractions convergents](./Math/continued_fractions_convergents.sf)
