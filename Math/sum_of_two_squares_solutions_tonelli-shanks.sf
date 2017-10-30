@@ -61,7 +61,8 @@ func sqrt_mod_n(a, n) is cached {
     a = (a % n)
 
     if ((n & (n - 1)) == 0) {       # n is a power of 2
-        if (a % (8 `min` n) == 1) {
+
+        if (a % 8 == 1) {
 
             var k = n.valuation(2)
 
@@ -79,7 +80,7 @@ func sqrt_mod_n(a, n) is cached {
                     var r = (s + (i << (k - 2)))
                     take(r, n - r)
                 }
-            }
+            }.uniq
         }
 
         return []
