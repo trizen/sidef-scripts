@@ -58,6 +58,7 @@ A simple collection of Sidef scripts.
     * [Pythagoras tree](./Image/pythagoras_tree.sf)
     * [Voronoi diagram](./Image/voronoi_diagram.sf)
 * Math
+    * [Akiyama-tanigawa numerators](./Math/akiyama-tanigawa_numerators.sf)
     * [Arithmetic derivative](./Math/arithmetic_derivative.sf)
     * [Bernoulli approx](./Math/bernoulli_approx.sf)
     * [Bernoulli numbers from primes](./Math/bernoulli_numbers_from_primes.sf)
