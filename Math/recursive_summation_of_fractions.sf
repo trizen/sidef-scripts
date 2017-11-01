@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
 
 # Daniel "Trizen" Șuteu
-# Date: 01 November 2016
+# Date: 01 November 2017
 # https://github.com/trizen
 
-# Rationalized summation of fractions, based on the identity:
+# Recursive summation of fractions, based on the identity:
 #
 #  a     c     ad + bc
 # --- + --- = ----------
@@ -55,9 +55,9 @@
 #   Sum_{ n>=1 } 1/(n * (n+1)^2) = 2 - PI^2/6
 
 do {
-    func g(n)   { n! * (n+1)!**2 }
+    func g (n)  { n! * (n+1)!**2 }
     func f((0)) { 0 }
-    func f(n)   { (n * (n+1)**2)*f(n-1) + g(n-1) }
+    func f (n)  { (n * (n+1)**2)*f(n-1) + g(n-1) }
 
     say f(1000)/g(1000)         #=> 0.355065434316443192865935983169793400358884566492
     say (2 - (Num.pi**2 / 6))   #=> 0.355065933151773563527584833353974810781050098793
@@ -70,11 +70,11 @@ do {
     func a(n) is cached { 2**n }
     func b(n) is cached {  n!  }
 
-    func g((0))          { b(0) }
-    func g(n)  is cached { b(n) * g(n-1) }
+    func g((0))           { b(0) }
+    func g (n)  is cached { b(n) * g(n-1) }
 
-    func f((0))         { a(0) }
-    func f(n) is cached { b(n)*f(n-1) + a(n)*g(n-1) }
+    func f((0))          { a(0) }
+    func f (n) is cached { b(n)*f(n-1) + a(n)*g(n-1) }
 
     say f(40)/g(40)         #=> 7.389056098930650227230427460575007813111297142421
     say exp(2)              #=> 7.38905609893065022723042746057500781318031557055
