@@ -124,6 +124,7 @@ A simple collection of Sidef scripts.
     * [Pythagorean means](./Math/pythagorean_means.sf)
     * [Ramanujan sum](./Math/ramanujan_sum.sf)
     * [Recursive gcd prime generator](./Math/recursive_gcd_prime_generator.sf)
+    * [Recursive summation of fractions](./Math/recursive_summation_of_fractions.sf)
     * [Reformulation of the arctangent function](./Math/reformulation_of_the_arctangent_function.sf)
     * [Round half to even](./Math/round_half_to_even.sf)
     * [RSA algorithm](./Math/RSA_algorithm.sf)
