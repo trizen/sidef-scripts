@@ -1,0 +1,66 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 02 November 2017
+# https://github.com/trizen
+
+# A recursive algorithm for expanding a shell string.
+
+# It supports an arbitray number of nested curly braces, and it also
+# supports combining multiple individual groups, such as: "{a,b}{x,y}".
+
+# See also:
+#   https://trizenx.blogspot.com/2012/03/expand-string.html
+
+func shell_string_expand(str) {
+
+    if (var match = (str =~ /^(.*?)(?<brackets>\{(?:[^{}]++|(?&brackets))*\})(.*)\z/)) {
+
+        var pt = __FUNC__(match[0])              .map { .split(',', -1) }
+        var mt = __FUNC__(match[1].substr(1, -1)).map { .split(',', -1) }
+        var st = __FUNC__(match[2])              .map { .split(',', -1) }
+
+        return gather {
+            [pt, st].cartesian { |prefix, suffix|
+
+                var *P = prefix...
+                var *S = suffix...
+
+                var p = (P.pop   \\ '')
+                var s = (S.shift \\ '')
+
+                take(P..., mt.map { .map { p + _ + s }... }..., S...)
+            }
+        }
+    }
+
+    return [str]
+}
+
+say shell_string_expand("{a,b{1,2,3},c}")                #=> ["a", "b1", "b2", "b3", "c"]
+say shell_string_expand("{a,b{1,2,3}z,c}")               #=> ["a", "b1z", "b2z", "b3z", "c"]
+say shell_string_expand("T{a,b{1,2,3},c}V")              #=> ["TaV", "Tb1V", "Tb2V", "Tb3V", "TcV"]
+
+say shell_string_expand("{a,b}{x,y}")                    #=> ["ax", "bx", "ay", "by"]
+say shell_string_expand("{a,b,c}d")                      #=> ["ad", "bd", "cd"]
+say shell_string_expand("d{a,b,c}")                      #=> ["da", "db", "dc"]
+
+say shell_string_expand("{a,{b,c},d}")                   #=> ["a", "b", "c", "d"]
+say shell_string_expand("{a,{b,{c}},d}")                 #=> ["a", "b", "c", "d"]
+say shell_string_expand("{a,{{b},c},d}")                 #=> ["a", "b", "c", "d"]
+
+say shell_string_expand("{a,{P{b,z},c}S,d}")             #=> ["a", "PbS", "PzS", "cS", "d"]
+say shell_string_expand("{a,S{{b,z}P,c},d}")             #=> ["a", "SbP", "SzP", "Sc", "d"]
+
+say shell_string_expand("{f,t}{a,b}{x,z}")               #=> ["fax", "tax", "fbx", "tbx", "faz", "taz", "fbz", "tbz"]
+say shell_string_expand("{f,t}{{a,b},{x,z}}")            #=> ["fa", "ta", "fb", "tb", "fax", "tax", "fbx", "tbx", "faz", "taz", "fbz", "tbz"]
+
+say shell_string_expand("{a,b{1,f{x,y}}}")               #=> ["a", "b1", "bfx", "bfy"]
+say shell_string_expand("{a,b{{x,y}f,1}}")               #=> ["a", "bxf", "byf", "b1"]
+say shell_string_expand("{{{x,y}f,1}a,2}z")              #=> ["xfaz", "yfaz", "1az", "2z"]
+say shell_string_expand("{{{x,y}f,1}a}z")                #=> ["xfaz", "yfaz", "1az"]
+say shell_string_expand("{{{x,y}f,1}a,2}{z,b}")          #=> ["xfaz", "yfaz", "1az", "2z", "xfab", "yfab", "1ab", "2b"]
+say shell_string_expand("{{{x,y}f,1}a,2}{z,{b,T}}")      #=> ["xfaz", "yfaz", "1az", "2z", "xfab", "yfab", "1ab", "2b", "xfaT", "yfaT", "1aT", "2T"]
+say shell_string_expand("{K,P}{{{x,y}f,1}a,2}{z,{b,T}}") #=> ["Kxfaz", "Pxfaz", "Kyfaz", "Pyfaz", "K1az", "P1az", "K2z", "P2z", "Kxfab", "Pxfab", "Kyfab", "Pyfab", "K1ab", "P1ab", "K2b", "P2b", "KxfaT", "PxfaT", "KyfaT", "PyfaT", "K1aT", "P1aT", "K2T", "P2T"]
+
+say shell_string_expand("perl-{file-{which,basedir,copy-recursive},pathtools,path-class}")      #=> ["perl-file-which", "perl-file-basedir", "perl-file-copy-recursive", "perl-pathtools", "perl-path-class"]
