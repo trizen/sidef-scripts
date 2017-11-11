@@ -7,8 +7,8 @@
 define ℯ = Num.e
 define τ = Num.tau
  
-func Γ(t) {
-    t < 20 ? (__FUNC__(t + 1) / t)
+func Γ(t, r=50) {
+    t < r ? (__FUNC__(t + 1) / t)
            : (sqrt(τ*t) * pow(t/ℯ + 1/(12*ℯ*t), t) / t)
 }
  
