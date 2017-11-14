@@ -27,6 +27,6 @@ func bernoulli_seidel(n) {
     D[h-1] / ((1 << (n+1)) - 2) * (4.divides(n) ? -1 : 1)
 }
 
-for i in (0 .. 10) {
-    printf("B(%2d) = %20s / %s\n", 2*i, bernoulli_seidel(2*i).nude)
+for i in (0 .. 20) {
+    printf("B(%2d) = %22s / %s\n", 2*i, bernoulli_seidel(2*i).nude)
 }
