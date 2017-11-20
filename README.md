@@ -120,6 +120,7 @@ A simple collection of Sidef scripts.
     * [Permutations iter](./Math/permutations_iter.sf)
     * [Permutations rec](./Math/permutations_rec.sf)
     * [Problem of apollonius](./Math/problem_of_apollonius.sf)
+    * [Product of prime sigmas of divisors](./Math/product_of_prime_sigmas_of_divisors.sf)
     * [Product of primes approx](./Math/product_of_primes_approx.sf)
     * [Pythagorean means](./Math/pythagorean_means.sf)
     * [Ramanujan sum](./Math/ramanujan_sum.sf)
