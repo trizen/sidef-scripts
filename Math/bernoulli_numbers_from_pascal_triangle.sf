@@ -1,0 +1,23 @@
+#!/usr/bin/ruby
+
+# Computing Bernoulli numbers from Pascal's triangle
+
+# See also:
+#   https://en.wikipedia.org/wiki/Bernoulli_number#Connection_with_Pascal’s_triangle
+
+func pascal_bernoulli_number(n) {
+
+    var matrix = []
+
+    for i in (1..n) {
+        for k in (1..n) {
+            matrix[i-1][k-1] = (k > i+1 ? 0 : binomial(i+1, k-1))
+        }
+    }
+
+    matrix.det / (n+1)!
+}
+
+for n in (0..30) {
+    say "B(#{n}) = #{pascal_bernoulli_number(n).as_rat}"
+}
