@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 02 December 2017
+# https://github.com/trizen
+
+# A new algorithm for computing Bernoulli numbers.
+
+# Inspired from Norman J. Wildberger video lecture:
+#   https://www.youtube.com/watch?v=qmMs6tf8qZ8
+
+# See also:
+#   https://en.wikipedia.org/wiki/Bernoulli_number#Connection_with_Pascal’s_triangle
+
+func bernoulli_numbers(n) {
+
+    var B = [1]
+
+    for i in (1..n) {
+        for k in (0 ..^ i) {
+            B[i] := 0 -= (B[k] / (abs(k - i - 1))!)
+        }
+    }
+
+    B.map_kv { |k,v| v * k! }
+}
+
+var B = bernoulli_numbers(100)
+
+for k,v in (B.kv) {
+    say "B(#{k}) = #{v.as_rat}"
+}

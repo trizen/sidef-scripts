@@ -61,6 +61,7 @@ A simple collection of Sidef scripts.
     * [Akiyama-tanigawa numerators](./Math/akiyama-tanigawa_numerators.sf)
     * [Arithmetic derivative](./Math/arithmetic_derivative.sf)
     * [Bernoulli approx](./Math/bernoulli_approx.sf)
+    * [Bernoulli numbers from factorials](./Math/bernoulli_numbers_from_factorials.sf)
     * [Bernoulli numbers from pascal triangle](./Math/bernoulli_numbers_from_pascal_triangle.sf)
     * [Bernoulli numbers from pascal triangle 2](./Math/bernoulli_numbers_from_pascal_triangle_2.sf)
     * [Bernoulli numbers from pascal triangle 3](./Math/bernoulli_numbers_from_pascal_triangle_3.sf)
