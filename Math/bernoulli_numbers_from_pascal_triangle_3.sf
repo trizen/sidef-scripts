@@ -14,7 +14,7 @@ func pascal_bernoulli_numbers(n) {
 
     for i in (0 .. n) {
         for k in (0 .. n) {
-            A[i][k] = (k > i ? 0 : ((-1)**(i + k) * 1/(abs(k - i - 1))!))
+            A[i][k] = (k > i ? 0 : ((-1)**(i + k) * 1/(i - k + 1)!))
         }
     }
 
