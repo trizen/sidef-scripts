@@ -7,15 +7,15 @@
 
 func pascal_bernoulli_number(n) {
 
-    var matrix = []
+    var A = []
 
     for i in (0 ..^ n) {
         for k in (0 ..^ n) {
-            matrix[i][k] = (k > i+1 ? 0 : binomial(i+2, k))
+            A[i][k] = (k > i+1 ? 0 : binomial(i+2, k))
         }
     }
 
-    matrix.det / (n+1)!
+    A.det / (n+1)!
 }
 
 for n in (0..30) {

@@ -63,6 +63,7 @@ A simple collection of Sidef scripts.
     * [Bernoulli approx](./Math/bernoulli_approx.sf)
     * [Bernoulli numbers from pascal triangle](./Math/bernoulli_numbers_from_pascal_triangle.sf)
     * [Bernoulli numbers from pascal triangle 2](./Math/bernoulli_numbers_from_pascal_triangle_2.sf)
+    * [Bernoulli numbers from pascal triangle 3](./Math/bernoulli_numbers_from_pascal_triangle_3.sf)
     * [Bernoulli numbers from primes](./Math/bernoulli_numbers_from_primes.sf)
     * [Bernoulli numbers from zeta](./Math/bernoulli_numbers_from_zeta.sf)
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)
