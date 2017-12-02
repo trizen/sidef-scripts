@@ -1,0 +1,28 @@
+#!/usr/bin/ruby
+
+# Computing Bernoulli numbers from a derivation of Pascal's triangle
+
+# Formula presented by Norman J. Wildberger in his video lecture:
+#   https://www.youtube.com/watch?v=jx_JR5xD9Ko
+
+# See also:
+#   https://en.wikipedia.org/wiki/Bernoulli_number#Connection_with_Pascal’s_triangle
+
+func pascal_bernoulli_numbers(n) {
+
+    var matrix = []
+
+    for i in (0 .. n) {
+        for k in (0 .. n) {
+            matrix[i][k] = (k > i ? 0 : ((-1)**(i + k) * binomial(i+1, k)))
+        }
+    }
+
+    matrix.inv.map{|r| r[0] }
+}
+
+var B = pascal_bernoulli_numbers(30)
+
+for k,v in (B.kv) {
+    say "B(#{k}) = #{v.as_rat}"
+}
