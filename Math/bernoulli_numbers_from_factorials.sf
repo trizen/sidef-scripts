@@ -16,9 +16,9 @@ func bernoulli_numbers(n) {
 
     var B = [1]
 
-    for i in (1..n) {
+    for i in (1 .. n) {
         for k in (0 ..^ i) {
-            B[i] := 0 -= (B[k] / (abs(k - i - 1))!)
+            B[i] := 0 -= (B[k] / (i - k + 1)!)
         }
     }
 
