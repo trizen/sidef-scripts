@@ -1,0 +1,135 @@
+#!/usr/bin/ruby
+
+# Simple implementation of the LU decomposition.
+
+# See also:
+#   https://en.wikipedia.org/wiki/LU_decomposition
+
+# Code translated from Wikipedia (+ minor tweaks):
+#   https://en.wikipedia.org/wiki/LU_decomposition#C_code_examples
+
+class MatrixLUP (Array matrix) {
+
+    has (N, A, P)
+
+    func LUP_decompose(Array matrix) {
+
+        var A = matrix.map {|r| [r...] }
+        var N = A.len
+        var P = [0..N -> ...]
+
+        for i in (^N) {
+
+            var maxA = 0
+            var imax = i
+
+            for k in (i ..^ N) {
+                var absA = abs(A[k][i] \\ return (N, A, P))
+
+                if (absA > maxA) {
+                    maxA = absA
+                    imax = k
+                }
+            }
+
+            if (imax != i) {
+
+                P[i,imax] = P[imax,i]
+                A[i,imax] = A[imax,i]
+
+                ++P[N]
+            }
+
+            for j in (i+1 ..^ N) {
+
+                if (A[i][i] == 0) {
+                    return (N, A, P)
+                }
+
+                A[j][i] /= A[i][i]
+
+                for k in (i+1 ..^ N) {
+                    A[j][k] -= (A[j][i] * A[i][k])
+                }
+            }
+        }
+
+        return (N, A, P)
+    }
+
+    method init {
+        (N, A, P) = LUP_decompose(matrix)
+    }
+
+    method solve(Array vector) {
+        var x = {|i| vector[P[i]] }.map(^N)
+
+        for i in (1 ..^ N) {
+            for k in (^i) {
+                x[i] -= (A[i][k] * x[k])
+            }
+        }
+
+        for i in (N ^.. 0) {
+            for k in (i+1 ..^ N) {
+                x[i] -= (A[i][k] * x[k])
+            }
+            x[i] /= A[i][i]
+        }
+
+        return x
+    }
+
+    method invert {
+        var I = []
+
+        for j in (^N) {
+            for i in (^N) {
+                I[i][j] = (P[i] == j ? 1 : 0)
+
+                for k in (0 ..^ i) {
+                    I[i][j] -= (A[i][k] * I[k][j])
+                }
+            }
+
+            for i in (N ^.. 0) {
+
+                for k in (i+1 ..^ N) {
+                    I[i][j] -= (A[i][k] * I[k][j])
+                }
+
+                I[i][j] /= (A[i][i] \\ return [[]])
+            }
+        }
+
+        return I
+    }
+
+    method determinant {
+
+        var det = A[0][0] \\ return 1
+
+        for i in (1 ..^ N) {
+            det *= A[i][i]
+        }
+
+        if (P[N] - N -> is_odd) {
+            det *= -1
+        }
+
+        return det
+    }
+}
+
+# Example
+
+var A = MatrixLUP([
+    [2, -1,  5,  1],
+    [3,  2,  2, -6],
+    [1,  3,  3, -1],
+    [5, -2, -3,  3],
+])
+
+say A.determinant                       #=> 684
+say A.solve([-3, -32, -47, 49])         #=> [2, -12, -4, 1]
+say A.invert.map { .dump }.join("\n")

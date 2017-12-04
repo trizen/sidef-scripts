@@ -114,6 +114,7 @@ A simple collection of Sidef scripts.
     * [Limits for pi](./Math/limits_for_pi.sf)
     * [Linear congruential generator](./Math/linear_congruential_generator.sf)
     * [Lu decomposition](./Math/lu_decomposition.sf)
+    * [LUP decomposition](./Math/LUP_decomposition.sf)
     * [Mandelbrot set](./Math/mandelbrot_set.sf)
     * [Mathematical formulas](./Math/mathematical_formulas.sf)
     * [Miller rabin primality test](./Math/miller_rabin_primality_test.sf)
