@@ -85,6 +85,7 @@ A simple collection of Sidef scripts.
     * [Fast fourier transform](./Math/fast_fourier_transform.sf)
     * [Faulhaber's formula](./Math/faulhaber_s_formula.sf)
     * [Faulhaber's triangle](./Math/faulhaber_s_triangle.sf)
+    * [Fermat factorization method](./Math/fermat_factorization_method.sf)
     * [Fibonacci closed solution](./Math/fibonacci_closed_solution.sf)
     * [Fibonacci polynomial numbers](./Math/fibonacci_polynomial_numbers.sf)
     * [Fraction approximation](./Math/fraction_approximation.sf)

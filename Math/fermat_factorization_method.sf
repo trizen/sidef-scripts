@@ -1,0 +1,46 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 22 December 2017
+# https://github.com/trizen
+
+# This is a generalized version of Fermat's factorization method, which works for any input.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Fermat%27s_factorization_method
+
+func fermat_factorization(n) {
+
+    if ((n <= 1) or n.is_prime) {
+        return [n]
+    }
+
+    n <<= 2   # multiply by 4
+
+    var p = n.isqrt
+    var q = (p*p - n)
+
+    while (!q.is_square) {
+        q += ((p++ << 1) + 1)
+    }
+
+    var s = q.isqrt
+
+    var f1 = ((p + s) >> 1)
+    var f2 = ((p - s) >> 1)
+
+    fermat_factorization(f1) +
+    fermat_factorization(f2) -> sort
+}
+
+for n in ([160587846247027, 5040, 65127835124, 6469693230]) {
+    var prime_factors = fermat_factorization(n)
+    say "#{prime_factors.join(' * ')} = #{n}"
+    assert_eq(prime_factors.prod, n)
+}
+
+__END__
+12672269 * 12672383 = 160587846247027
+2 * 2 * 2 * 2 * 3 * 3 * 5 * 7 = 5040
+2 * 2 * 11 * 19 * 6359 * 12251 = 65127835124
+2 * 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 = 6469693230
