@@ -114,6 +114,7 @@ A simple collection of Sidef scripts.
     * [Levenshtein distance rec](./Math/levenshtein_distance_rec.sf)
     * [Limits for pi](./Math/limits_for_pi.sf)
     * [Linear congruential generator](./Math/linear_congruential_generator.sf)
+    * [Long addition](./Math/long_addition.sf)
     * [Lu decomposition](./Math/lu_decomposition.sf)
     * [LUP decomposition](./Math/LUP_decomposition.sf)
     * [Mandelbrot set](./Math/mandelbrot_set.sf)

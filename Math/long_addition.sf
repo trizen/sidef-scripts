@@ -1,0 +1,49 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 22 December 2017
+# https://github.com/trizen
+
+# A simple long addition algorithm to sum two arbitrary large string-numbers in any base.
+
+func long_addition(String a, String b, Number base=10) {
+
+    a = a.flip.chars.map { Num(_, base) }
+    b = b.flip.chars.map { Num(_, base) }
+
+    (a.any { .is_nan } || b.any { .is_nan }) && return nil
+
+    var l = (a.len `max` b.len)
+    var c = l.of(0)
+
+    a += (l - a.len -> of(0))
+    b += (l - b.len -> of(0))
+
+    for i in (0 ..^ l) {
+
+        c[i] += (a[i] + b[i])
+
+        if (c[i] >= base) {
+            c[i+1, i] = c[i].divmod(base)
+        }
+    }
+
+    return c.map { .base(base) }.join.flip
+}
+
+var a = "37107287533902102798797998220837590246510135740250"
+var b = "36546866040552898237115466322123187317060305120"
+
+say long_addition(a, b)
+
+# Test for base 10
+assert_eq(Num(a) + Num(b), Num(long_addition(a, b)))
+
+# Test for base 36
+var alphanum = [('a'..'z')..., (0..9)...].shuffle
+var (c, d) = 2.of { 100.irand(1).of { alphanum.pick }.join.sub(/^0/, '1') }...
+assert_eq(Num(c, 36) + Num(d, 36) -> base(36), long_addition(c, d, 36))
+
+# Test for base 2
+var (e, f) = 2.of { 100.irand(1).of { ['0', '1'].pick }.join.sub(/^0/, '1') }...
+assert_eq(Num(e, 2) + Num(f, 2) -> base(2), long_addition(e, f, 2))
