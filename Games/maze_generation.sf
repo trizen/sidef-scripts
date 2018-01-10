@@ -8,13 +8,14 @@ var(w, h) = (5, 5);
 var avail = (w * h);
 
 # cell is padded by sentinel col and row, so I don't check array bounds
-var cell = (1..h -> map {([true] * w) + [false]} + [[false] * w+1]);
+var cell = (1..h -> map {([true] * w) + [false]} + [[false] * (w+1)]);
 var ver  = (1..h -> map {["|  "] * w });
 var hor  = (0..h -> map {["+--"] * w });
 
 func walk(x, y) {
     cell[y][x] = false;
-    avail-- > 0 || return();  # no more bottles, er, cells
+
+    avail-- > 0 || return();
 
     var d = [[-1, 0], [0, 1], [1, 0], [0, -1]];
     while (d.len) {
@@ -29,11 +30,9 @@ func walk(x, y) {
     }
 }
 
-walk(w.irand, h.irand);   # generate
+walk(irand(1,w), irand(1, h));   # generate
 
 for i in range(0, h) {
     say (hor[i].join('') + '+');
-    if (i < h) {
-        say (ver[i].join('') + '|');
-    }
+    say (ver[i].join('') + '|') if (i < h);
 }
