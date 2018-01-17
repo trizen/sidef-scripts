@@ -1,0 +1,30 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 18 January 2018
+# https://github.com/trizen
+
+# Numerical evaluation of a generalized continued fraction.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Generalized_continued_fraction
+
+func contfrac2num (from, to, num, den) {
+    return 0 if (from > to)
+    num.run(from) / (den.run(from) + __FUNC__(from + 1, to, num, den))
+}
+
+var from = float(1)
+var to   = float(100)
+
+#
+## Example for [n=1..Infinity, n^2 / (2n+1)] = 4/Pi - 1
+#
+
+var num = {|n| n**2  }
+var den = {|n| 2*n + 1 }
+
+say contfrac2num(from, to,      num, den)
+say contfrac2num(from, to+100,  num, den)
+say contfrac2num(from, to+1000, num, den)
+say contfrac2num(from, to+2000, num, den)

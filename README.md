@@ -91,6 +91,7 @@ A simple collection of Sidef scripts.
     * [Fraction approximation](./Math/fraction_approximation.sf)
     * [Gamma function](./Math/gamma_function.sf)
     * [Gauss logarithm approx](./Math/gauss_logarithm_approx.sf)
+    * [Generalized continued fraction](./Math/generalized_continued_fraction.sf)
     * [Generalized fibonacci closed-form](./Math/generalized_fibonacci_closed-form.sf)
     * [Generalized fibonacci closed-form 2](./Math/generalized_fibonacci_closed-form_2.sf)
     * [Harmonic numbers from powers](./Math/harmonic_numbers_from_powers.sf)
