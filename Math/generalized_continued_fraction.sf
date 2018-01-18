@@ -9,9 +9,37 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Generalized_continued_fraction
 
+#
+## Compute the continued fraction numerically
+#
+
 func contfrac2num (from, to, num, den) {
     return 0 if (from > to)
     num.run(from) / (den.run(from) + __FUNC__(from + 1, to, num, den))
+}
+
+#
+## Compute only the numerator of the continued fraction
+#
+
+func cfrac_num(from, to, num, den) is cached {
+
+    return 1 if (to == from-1)
+    return 0 if (to == from)
+
+    den.run(to-1)*__FUNC__(from, to-1, num, den) + num.run(to-1)*__FUNC__(from, to-2, num, den)
+}
+
+#
+## Compute only the denominator of the continued fraction
+#
+
+func cfrac_den(from, to, num, den) is cached {
+
+    return 1 if (to == from)
+    return 0 if (to == from-1)
+
+    den.run(to-1)*__FUNC__(from, to-1, num, den) + num.run(to-1)*__FUNC__(from, to-2, num, den)
 }
 
 var from = float(1)
@@ -28,3 +56,10 @@ say contfrac2num(from, to,      num, den)
 say contfrac2num(from, to+100,  num, den)
 say contfrac2num(from, to+1000, num, den)
 say contfrac2num(from, to+2000, num, den)
+
+var a = cfrac_num(from, 30, num, den)
+var b = cfrac_den(from, 30, num, den)
+
+say "Numerator   = #{a}"
+say "Denominator = #{b}"
+say "Expansion   = #{a/b}"
