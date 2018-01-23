@@ -1,0 +1,52 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 23 January 2018
+# https://github.com/trizen
+
+# Numerical evaluation of a generalized continued fraction, computing
+# the numerator and the denominator separately (iterative algorithm).
+
+#
+## Compute the numerator of the continued fraction
+#
+
+func cfrac_num(from, to, num, den) is cached {
+
+    var (f1, f2) = (1, 0)
+
+    for ((); to > from; ++from) {
+        (f1, f2) = (f2, den.run(from)*f2 + num.run(from)*f1)
+    }
+
+    return f2
+}
+
+#
+## Compute the denominator of the continued fraction
+#
+
+func cfrac_den(from, to, num, den) is cached {
+
+    var (f1, f2) = (0, 1)
+
+    for ((); to > from; ++from) {
+        (f1, f2) = (f2, den.run(from)*f2 + num.run(from)*f1)
+    }
+
+    return f2
+}
+
+#
+## Example for [n=1..Infinity, n^2 / (2n+1)] = 4/Pi - 1
+#
+
+var num = {|n| n**2  }
+var den = {|n| 2*n + 1 }
+
+var a = cfrac_num(1, 30, num, den)
+var b = cfrac_den(1, 30, num, den)
+
+say "Numerator   = #{a}"
+say "Denominator = #{b}"
+say "Expansion   = #{a/b}"
