@@ -1,0 +1,39 @@
+#!/usr/bin/ruby
+
+# The DSC-Factorial algorithm (divide, swing and conquer), by Peter Luschny.
+
+# See also:
+#   https://oeis.org/A000142/a000142.pdf
+
+func Product(s, n, m) {
+    n >  m && return 1
+    n == m && return s[n]
+    var k = ((n + m) >> 1)
+    Product(s, n, k) * Product(s, k + 1, m)
+}
+
+func PrimeSwing(n) {
+    var factors = []
+
+    for prime in (primes(n)) {
+        var (q, p) = (n, 1)
+
+        while (q > 0) {
+            q //= prime
+            p *= prime if q.is_odd
+        }
+
+        factors << p if (p > 1)
+    }
+
+    Product(factors, 0, factors.end)
+}
+
+func Factorial(n) {
+    return 1 if (n < 2)
+    Factorial(n >> 1)**2 * PrimeSwing(n)
+}
+
+for n in (0..30) {
+    say "#{n}! = #{Factorial(n)}"
+}
