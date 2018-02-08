@@ -84,6 +84,7 @@ A simple collection of Sidef scripts.
     * [Factorial approximations](./Math/factorial_approximations.sf)
     * [Factorial dsc algorithm](./Math/factorial_dsc_algorithm.sf)
     * [Farey fraction approximations](./Math/farey_fraction_approximations.sf)
+    * [Farey sequences](./Math/farey_sequences.sf)
     * [Fast fourier transform](./Math/fast_fourier_transform.sf)
     * [Faulhaber's formula](./Math/faulhaber_s_formula.sf)
     * [Faulhaber's triangle](./Math/faulhaber_s_triangle.sf)
