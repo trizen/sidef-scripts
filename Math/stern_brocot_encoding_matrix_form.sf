@@ -1,0 +1,85 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 10 February 2018
+# https://github.com/trizen
+
+# Encode a given fraction into a string of L's and R's,
+# indicating the turning points in the Stern-Brocot tree.
+
+# The decoding function takes a string of L's and R's and
+# constructs the fraction by navigating the Stern-Brocot tree.
+
+# See also:
+#   https://www.youtube.com/watch?v=qPeD87HJ0UA
+#   https://en.wikipedia.org/wiki/Stern%E2%80%93Brocot_tree
+
+func stern_brocot_encode (r) {
+
+    var (m, n) = r.abs.nude
+
+    var e = ''
+
+    loop {
+        var c = (m <=> n)
+
+        if (c == 0) {
+            break
+        }
+        elsif (c < 0) {
+            e += 'L'
+            n -= m
+        }
+        else {
+            e += 'R'
+            m -= n
+        }
+    }
+
+    return e
+}
+
+func stern_brocot_decode (e) {
+    var A = [[1,0],[0,1]]
+    var L = [[1,0],[1,1]]
+    var R = [[1,1],[0,1]]
+
+    e.each { |c|
+        if (c == 'L') {
+            A = (A `mmul` L)
+        }
+        else {
+            A = (A `mmul` R)
+        }
+    }
+
+    (A[0][0] + A[0][1]) / (A[1][0] + A[1][1])
+}
+
+say stern_brocot_decode(stern_brocot_encode(5/7)).as_frac       # 5/7
+say stern_brocot_decode(stern_brocot_encode(43/97)).as_frac     # 43/97
+say stern_brocot_decode(stern_brocot_encode(97/43)).as_frac     # 97/43
+
+say ''
+
+say stern_brocot_encode(3/11)       # LLLRL
+say stern_brocot_encode(19/8)       # RRLLRL
+
+say ''
+
+say stern_brocot_decode('LLLRL').as_frac        # 3/11
+say stern_brocot_decode('RRLLRL').as_frac       # 19/8
+
+say ''
+
+say stern_brocot_decode('LRLRLRLRLRLRLRLRLRLRLRLRLRLRLR')       # 0.6180339887...
+say stern_brocot_decode('RLRLRLRLRLRLRLRLRLRLRLRLRLRLRL')       # 1.6180339887...
+
+# Run a few tests
+for n in (1..10) {
+    var r = (n.fib / n.lucas)
+    assert_eq(stern_brocot_decode(stern_brocot_encode(r)), r)
+
+    r = (n.lucas / n**2)
+    assert_eq(stern_brocot_decode(stern_brocot_encode(r)), r)
+}

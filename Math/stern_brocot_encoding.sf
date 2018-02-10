@@ -6,7 +6,7 @@
 
 # Encode a given fraction into an integer, using the Stern-Brocot number system.
 
-# The decoding function will decode a given integer back into a fraction.
+# The decoding function decodes a given integer back into a fraction.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Stern%E2%80%93Brocot_tree
