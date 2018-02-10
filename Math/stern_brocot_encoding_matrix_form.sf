@@ -14,9 +14,16 @@
 #   https://www.youtube.com/watch?v=qPeD87HJ0UA
 #   https://en.wikipedia.org/wiki/Stern%E2%80%93Brocot_tree
 
-func stern_brocot_encode (r) {
+func stern_brocot_encode (Number r) {
+    stern_brocot_encode([[r.nu, 0], [r.de, 0]])
+}
 
-    var (m, n) = r.abs.nude
+func stern_brocot_encode (Array A) {
+
+    var (m, n) = (
+        abs(A[0][0] + A[0][1]),
+        abs(A[1][0] + A[1][1]),
+    )
 
     var e = ''
 
@@ -39,7 +46,7 @@ func stern_brocot_encode (r) {
     return e
 }
 
-func stern_brocot_decode (e) {
+func stern_brocot_decode (String e) {
     var A = [[1,0],[0,1]]
     var L = [[1,0],[1,1]]
     var R = [[1,1],[0,1]]
@@ -53,12 +60,16 @@ func stern_brocot_decode (e) {
         }
     }
 
+    return A
+}
+
+func matrix2rat (Array A) {
     (A[0][0] + A[0][1]) / (A[1][0] + A[1][1])
 }
 
-say stern_brocot_decode(stern_brocot_encode(5/7)).as_frac       # 5/7
-say stern_brocot_decode(stern_brocot_encode(43/97)).as_frac     # 43/97
-say stern_brocot_decode(stern_brocot_encode(97/43)).as_frac     # 97/43
+say stern_brocot_decode(stern_brocot_encode(5/7))       # [[3, 2], [4, 3]]
+say stern_brocot_decode(stern_brocot_encode(43/97))     # [[4, 39], [9, 88]]
+say stern_brocot_decode(stern_brocot_encode(97/43))     # [[88, 9], [39, 4]]
 
 say ''
 
@@ -67,19 +78,24 @@ say stern_brocot_encode(19/8)       # RRLLRL
 
 say ''
 
-say stern_brocot_decode('LLLRL').as_frac        # 3/11
-say stern_brocot_decode('RRLLRL').as_frac       # 19/8
+say stern_brocot_decode('LLLRL')        # [[2, 1], [7, 4]]
+say stern_brocot_decode('RRLLRL')       # [[12, 7], [5, 3]]
 
 say ''
 
-say stern_brocot_decode('LRLRLRLRLRLRLRLRLRLRLRLRLRLRLR')       # 0.6180339887...
-say stern_brocot_decode('RLRLRLRLRLRLRLRLRLRLRLRLRLRLRL')       # 1.6180339887...
+say stern_brocot_decode('LRLRLRLRLRLRLRLRLRLRLRLRLRLRLR')       # [[514229, 832040], [832040, 1346269]]
+say stern_brocot_decode('RLRLRLRLRLRLRLRLRLRLRLRLRLRLRL')       # [[1346269, 832040], [832040, 514229]]
 
-# Run a few tests
-for n in (1..10) {
-    var r = (n.fib / n.lucas)
-    assert_eq(stern_brocot_decode(stern_brocot_encode(r)), r)
+say ''
 
-    r = (n.lucas / n**2)
-    assert_eq(stern_brocot_decode(stern_brocot_encode(r)), r)
-}
+say stern_brocot_decode('RLLRR')                    # [[3, 7], [2, 5]]
+say stern_brocot_decode('RLLRRLL')                  # [[17, 7], [12, 5]]
+say stern_brocot_decode('RLLRRLLRR')                # [[17, 41], [12, 29]]
+say stern_brocot_decode('RLLRRLLRRLL')              # [[99, 41], [70, 29]]
+say stern_brocot_decode('RLLRRLLRRLLRR')            # [[99, 239], [70, 169]]
+say stern_brocot_decode('RLLRRLLRRLLRRLL')          # [[577, 239], [408, 169]]
+say stern_brocot_decode('RLLRRLLRRLLRRLLRR')        # [[577, 1393], [408, 985]]
+
+say ''
+
+say matrix2rat(stern_brocot_decode('RLLRRLLRRLLRRLLRRLL'))      # 1.414213...
