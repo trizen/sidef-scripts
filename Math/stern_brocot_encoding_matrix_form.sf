@@ -15,25 +15,12 @@
 #   https://en.wikipedia.org/wiki/Stern%E2%80%93Brocot_tree
 
 func stern_brocot_encode (Number r) {
-    stern_brocot_encode([[r.nu, 0], [r.de, 0]])
-}
-
-func stern_brocot_encode (Array A) {
-
-    var (m, n) = (
-        abs(A[0][0] + A[0][1]),
-        abs(A[1][0] + A[1][1]),
-    )
+    var (m, n) = r.abs.nude
 
     var e = ''
 
-    loop {
-        var c = (m <=> n)
-
-        if (c == 0) {
-            break
-        }
-        elsif (c < 0) {
+    while (m != n) {
+        if (m < n) {
             e += 'L'
             n -= m
         }
@@ -47,20 +34,20 @@ func stern_brocot_encode (Array A) {
 }
 
 func stern_brocot_decode (String e) {
-    var A = [[1,0],[0,1]]
-    var L = [[1,0],[1,1]]
-    var R = [[1,1],[0,1]]
+    var (a, b, c, d) = (1, 0, 0, 1)
 
-    e.each { |c|
-        if (c == 'L') {
-            A = (A `mmul` L)
+    e.each { |t|
+        if (t == 'L') {
+            a += b
+            c += d
         }
         else {
-            A = (A `mmul` R)
+            b += a
+            d += c
         }
     }
 
-    return A
+    return [[a,b],[c,d]]
 }
 
 func matrix2rat (Array A) {
