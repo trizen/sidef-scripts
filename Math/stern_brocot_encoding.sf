@@ -45,20 +45,20 @@ func stern_brocot_decode (e) {
         }
     }
 
-    var (l1, l2, l3, l4) = (1, 1, 0, 1)
-    var (r1, r2, r3, r4) = (1, 0, 1, 1)
-    var (d1, d2, d3, d4) = (1, 0, 0, 1)
+    var (a, b, c, d) = (1, 0, 0, 1)
 
     for bit in (bits.reverse) {
         if (bit) {
-            (d1, d2, d3, d4) = (d1*r1 + d2*r3, d1*r2 + d2*r4, d3*r1 + d4*r3, d3*r2 + d4*r4)
+            a += b
+            c += d
         }
         else {
-            (d1, d2, d3, d4) = (d1*l1 + d2*l3, d1*l2 + d2*l4, d3*l1 + d4*l3, d3*l2 + d4*l4)
+            b += a
+            d += c
         }
     }
 
-    (d3 + d4) / (d1 + d2)
+    (c + d) / (a + b)
 }
 
 say stern_brocot_decode(stern_brocot_encode(5/7)).as_frac       # 5/7
