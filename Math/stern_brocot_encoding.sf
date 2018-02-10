@@ -1,0 +1,87 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 10 February 2018
+# https://github.com/trizen
+
+# Encode a given fraction into an integer, using the Stern-Brocot number system.
+
+# The decoding function will decode a given integer back into a fraction.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Stern%E2%80%93Brocot_tree
+
+func stern_brocot_encode (r) {
+
+    var (m, n) = r.abs.nude
+
+    var bin = 1
+
+    loop {
+        var c = (m <=> n)
+
+        if (c == 0) {
+            break
+        }
+        elsif (c < 0) {
+            bin <<= 1
+            n -= m
+        }
+        else {
+            bin <<= 1 |= 1
+            m -= n
+        }
+    }
+
+    return bin
+}
+
+func stern_brocot_decode (e) {
+
+    var bits = gather {
+        loop {
+            take(e&1 ? true : false)
+            (e >>= 1) > 1 || break
+        }
+    }
+
+    var (l1, l2, l3, l4) = (1, 1, 0, 1)
+    var (r1, r2, r3, r4) = (1, 0, 1, 1)
+    var (d1, d2, d3, d4) = (1, 0, 0, 1)
+
+    for bit in (bits.reverse) {
+        if (bit) {
+            (d1, d2, d3, d4) = (d1*r1 + d2*r3, d1*r2 + d2*r4, d3*r1 + d4*r3, d3*r2 + d4*r4)
+        }
+        else {
+            (d1, d2, d3, d4) = (d1*l1 + d2*l3, d1*l2 + d2*l4, d3*l1 + d4*l3, d3*l2 + d4*l4)
+        }
+    }
+
+    (d3 + d4) / (d1 + d2)
+}
+
+say stern_brocot_decode(stern_brocot_encode(5/7)).as_frac       # 5/7
+say stern_brocot_decode(stern_brocot_encode(43/97)).as_frac     # 43/97
+say stern_brocot_decode(stern_brocot_encode(97/43)).as_frac     # 97/43
+
+say "\n=> Encoding:"
+
+for n in (1..10) {
+    say stern_brocot_encode(n / (2*n + 1))      # 5*2^n - 1
+}
+
+say "\n=> Decoding:"
+
+for n in (2..10) {
+    say stern_brocot_decode(n!).as_frac
+}
+
+# Run a few tests
+for n in (2..10) {
+    var r = (n.fib / n.lucas)
+    assert_eq(stern_brocot_decode(stern_brocot_encode(r)), r)
+
+    r = (n.lucas / n**2)
+    assert_eq(stern_brocot_decode(stern_brocot_encode(r)), r)
+}
