@@ -1,20 +1,16 @@
 #!/usr/bin/ruby
 
-# The nth Farey sequence, either ascending or descending.
+# The nth Farey sequence in ascending order.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Farey_sequence
 
-func farey_sequence(n, descending=false) {
+func farey_sequence(n) {
     var (a, b, c, d) = (0, 1, 1, n)
-
-    if (descending) {
-        (a, c) = (1, n-1)
-    }
 
     var seq = [a/b]
 
-    while ((c <= n && !descending) || (a > 0 && descending)) {
+    while (c <= n) {
         var k = (n+b)//d
         (a, b, c, d) = (c, d, k*c - a, k*d - b)
         seq << a/b
