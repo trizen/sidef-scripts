@@ -1,0 +1,40 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 12 February 2018
+# License: GPLv3
+# https://github.com/trizen
+
+# Find the smallest solution in non-negative integers to the Pell equation: x^2 - d*y^2 = ±1, where `d` is known.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pell%27s_equation
+
+func cfrac_denominator (cfrac) {
+
+    var (f1, f2) = (0, 1)
+
+    for n in (cfrac) {
+        (f1, f2) = (f2, n*f2 + f1)
+    }
+
+    return f1
+}
+
+func solve_pell (d, negative = false) {
+    var (k, *period) = d.sqrt_cfrac...
+
+    2.times {
+        var x = cfrac_denominator([k, period...])
+        var p = (4*d * (x*x + (negative ? 1 : -1)))
+        p.is_square && return [x, p.isqrt / (2*d)]
+        period += period
+    }
+
+    return nil
+}
+
+for d in (1..30) {
+    var (x, y) = (solve_pell(d) || next)...
+    printf("x^2 - %2dy^2 = %d    minimum solution: x=%5s and y=%5s\n", d, x**2 - (d * y**2), x, y)
+}
