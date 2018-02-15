@@ -1,0 +1,29 @@
+#!/usr/bin/ruby
+
+# Pollard's rho integer factorization algorithm.
+
+# Algorithm translated from:
+#   https://facthacks.cr.yp.to/rho.html
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm
+
+func rho_factor(n) {
+
+   var c  = 10
+   var a0 = 1
+   var a1 = (a0*a0 + c)
+   var a2 = (a1*a1 + c)
+
+   while (is_coprime(n, a2-a1)) {
+     a1 = ((a1*a1 + c) % n)
+     a2 = ((a2*a2 + c) % n)
+     a2 = ((a2*a2 + c) % n)
+   }
+
+   var g = gcd(n, a2-a1)
+   return [n/g, g]
+}
+
+say rho_factor(5040)                #=> [42, 120]
+say rho_factor(314159265358979323)  #=> [317213509, 990371647]
