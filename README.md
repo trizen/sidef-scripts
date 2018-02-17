@@ -111,6 +111,7 @@ A simple collection of Sidef scripts.
     * [Knapsack problem 0 1](./Math/knapsack_problem_0_1.sf)
     * [Knapsack problem bounded](./Math/knapsack_problem_bounded.sf)
     * [Knapsack problem unbounded](./Math/knapsack_problem_unbounded.sf)
+    * [Kosaraju's algorithm](./Math/kosaraju_s_algorithm.sf)
     * [Krzysztof reformulated zeta function](./Math/krzysztof_reformulated_zeta_function.sf)
     * [Laguerre polynomials](./Math/laguerre_polynomials.sf)
     * [Lanczos approximation](./Math/lanczos_approximation.sf)
