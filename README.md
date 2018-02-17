@@ -134,6 +134,7 @@ A simple collection of Sidef scripts.
     * [Permutations iter](./Math/permutations_iter.sf)
     * [Permutations rec](./Math/permutations_rec.sf)
     * [Pollard p minus 1 factorization](./Math/pollard_p_minus_1_factorization.sf)
+    * [Pollard p minus 1 factorization lcm](./Math/pollard_p_minus_1_factorization_lcm.sf)
     * [Pollard rho factorization](./Math/pollard_rho_factorization.sf)
     * [Problem of apollonius](./Math/problem_of_apollonius.sf)
     * [Product of prime sigmas of divisors](./Math/product_of_prime_sigmas_of_divisors.sf)

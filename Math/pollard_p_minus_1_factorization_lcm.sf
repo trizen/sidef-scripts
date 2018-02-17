@@ -1,0 +1,20 @@
+#!/usr/bin/ruby
+
+# Pollard's p-1 integer factorization method.
+
+# Algorithm translated from:
+#   https://facthacks.cr.yp.to/p1.html
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm
+
+func smooth_exponent(k) {
+    Math.lcm(1..k -> ...)
+}
+
+func pollard_p1(n, k) {
+    var g = gcd(n, powmod(2, smooth_exponent(k), n) - 1)
+    return [n/g, g]
+}
+
+say pollard_p1(38568900844635025971879799293495379321, 2**14)
