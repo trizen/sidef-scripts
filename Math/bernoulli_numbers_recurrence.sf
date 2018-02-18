@@ -1,0 +1,23 @@
+#!/usr/bin/ruby
+
+# A recurrence for computing Bernoulli numbers.
+
+# Formula:
+#  a(0) = 1
+#  a(n) = 1 - Sum_{k=0..n-1} binomial(n, k) * a(k) / (n - k + 1)
+
+# Which gives us the nth-Bernoulli number, B_n, as:
+#   B_n = a(n)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Bernoulli_number#Recursive_definition
+
+func a((0)) { 1 }
+
+func a(n) is cached {
+    1 - sum(0..^n, {|k| binomial(n, k) * a(k) / (n - k + 1) })
+}
+
+for n in (0..60 `by` 2) {
+    printf("B(%2d) = %50s / %s\n", n, a(n).nude)
+}
