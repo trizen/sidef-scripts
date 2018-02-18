@@ -68,6 +68,7 @@ A simple collection of Sidef scripts.
     * [Bernoulli numbers from primes](./Math/bernoulli_numbers_from_primes.sf)
     * [Bernoulli numbers from zeta](./Math/bernoulli_numbers_from_zeta.sf)
     * [Bernoulli numbers new recurrence](./Math/bernoulli_numbers_new_recurrence.sf)
+    * [Bernoulli numbers new recurrence 2](./Math/bernoulli_numbers_new_recurrence_2.sf)
     * [Bernoulli numbers ramanujan congruences](./Math/bernoulli_numbers_ramanujan_congruences.sf)
     * [Bernoulli numbers recurrence](./Math/bernoulli_numbers_recurrence.sf)
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)

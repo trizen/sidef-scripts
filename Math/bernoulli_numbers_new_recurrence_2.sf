@@ -1,0 +1,40 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 18 February 2018
+# https://github.com/trizen
+
+# A new recurrence for computing Bernoulli numbers.
+
+# Recurrences:
+#   g(n, n) = 1
+#   g(n, k) = (n - k + 1)! * g(n, k+1)
+#
+#   f(0, k) = 1
+#   f(n, n) = 0
+#   f(n, k) = (n - k + 1)! * f(n, k+1) + (-1)^(n+k+1) * g(n, k+1) * f(k)/g(k)
+
+# Which gives us the nth-Bernoulli number, B_n, as:
+#   B_n = f(n)/g(n) * n!
+
+# See also:
+#   https://en.wikipedia.org/wiki/Bernoulli_number
+
+func g (n, k=0) is cached {
+
+    return 1 if (k >= n)
+
+    (n - k + 1)! * g(n,k+1)
+}
+
+func f (n, k=0) is cached {
+
+    return 1 if (n == 0)
+    return 0 if (k >= n)
+
+    ((n - k + 1)! * f(n,k+1)) + ((-1)**(n+k+1) * g(n,k+1) * f(k)/g(k))
+}
+
+for n in (0..60 `by` 2) {
+    printf("B(%2d) = %50s / %s\n", n, f(n)/g(n) * n! -> nude)
+}
