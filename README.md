@@ -75,6 +75,7 @@ A simple collection of Sidef scripts.
     * [Binary exponentiation](./Math/binary_exponentiation.sf)
     * [Binary gcd algorithm](./Math/binary_gcd_algorithm.sf)
     * [Cartesian product](./Math/cartesian_product.sf)
+    * [Central trinomial triangle](./Math/central_trinomial_triangle.sf)
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Coin change](./Math/coin_change.sf)
     * [Complex zeta function representations](./Math/complex_zeta_function_representations.sf)

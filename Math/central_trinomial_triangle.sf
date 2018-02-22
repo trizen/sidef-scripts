@@ -1,0 +1,49 @@
+#!/usr/bin/ruby
+
+# See also:
+#   https://oeis.org/A097893
+#   http://mathworld.wolfram.com/CentralTrinomialCoefficient.html
+
+func central_trinomial_triangle(num, callback) {
+    var row = [1]
+    { |n|
+        callback(row)
+        row = [1, {|i| row[i-1] + row[i] + row[i+1] }.map(0 .. n-2)..., 1]
+    } << 1..num
+}
+
+central_trinomial_triangle(12, {|row|
+    row.map { "%4s" % _ }.join(' ').say
+})
+
+say "\n=> Partial sums of the central trinomial coefficients:"
+
+say gather {
+    central_trinomial_triangle(15, {|row| take(row.sum) })
+}
+
+say gather {
+    ^15 -> map { |n|
+        take(0 .. n>>1 -> sum_by {|k|
+            binomial(n + 1, 2*k + 1) * binomial(2*k, k)
+        })
+    }
+}
+
+__END__
+   1
+   1    1
+   1    3    1
+   1    5    5    1
+   1    7   11   11    1
+   1    9   19   29   23    1
+   1   11   29   57   71   53    1
+   1   13   41   97  157  181  125    1
+   1   15   55  151  295  435  463  307    1
+   1   17   71  221  501  881 1193 1205  771    1
+   1   19   89  309  793 1603 2575 3279 3169 1977    1
+   1   21  109  417 1191 2705 4971 7457 9023 8425 5147    1
+
+=> Partial sums of the central trinomial coefficients:
+[1, 2, 5, 12, 31, 82, 223, 616, 1723, 4862, 13815, 39468, 113257, 326198, 942425]
+[1, 2, 5, 12, 31, 82, 223, 616, 1723, 4862, 13815, 39468, 113257, 326198, 942425]
