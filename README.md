@@ -74,6 +74,7 @@ A simple collection of Sidef scripts.
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)
     * [Binary exponentiation](./Math/binary_exponentiation.sf)
     * [Binary gcd algorithm](./Math/binary_gcd_algorithm.sf)
+    * [Blandin-diaz compositional bernoulli numbers](./Math/blandin-diaz_compositional_bernoulli_numbers.sf)
     * [Cartesian product](./Math/cartesian_product.sf)
     * [Cauchy numbers of first type recurrence](./Math/cauchy_numbers_of_first_type_recurrence.sf)
     * [Central trinomial triangle](./Math/central_trinomial_triangle.sf)
