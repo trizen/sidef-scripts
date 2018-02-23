@@ -75,6 +75,7 @@ A simple collection of Sidef scripts.
     * [Binary exponentiation](./Math/binary_exponentiation.sf)
     * [Binary gcd algorithm](./Math/binary_gcd_algorithm.sf)
     * [Cartesian product](./Math/cartesian_product.sf)
+    * [Cauchy numbers of first type recurrence](./Math/cauchy_numbers_of_first_type_recurrence.sf)
     * [Central trinomial triangle](./Math/central_trinomial_triangle.sf)
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Coin change](./Math/coin_change.sf)
