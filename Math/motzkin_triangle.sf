@@ -1,0 +1,60 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 23 February 2018
+# https://github.com/trizen
+
+# Simple generation of the Motzkin triangle.
+
+# See also:
+#   https://oeis.org/A026300   (Motzkin triangle)
+#   https://oeis.org/A005773   (sum of rows)
+#   https://oeis.org/A129703   (sum of rows - 1)
+
+# For n>0, A129703(n)-1 is the sum of the n-th row of Motzkin's triangle.
+
+func motzkin_triangle(num, callback) {
+    var row = []
+    { |n|
+        row = [0, 1, {|i| row[i+2] + row[i] + row[i+1] }.map(0 .. n-3)..., 0]
+        callback(row.grep{ .> 0 })
+    } << 2..(num+1)
+}
+
+motzkin_triangle(12, {|row|
+    row.map { "%4s" % _ }.join(' ').say
+})
+
+say "\n=> Sum of the row of Motzkin's triangle:"
+
+say gather {
+    motzkin_triangle(15, {|row| take(row.sum) })
+}
+
+func motzkin_row_sum(n) {
+    sum(0 .. n, {|k|
+        sum(0 .. floor(k/2), {|t|
+             binomial(n, 2*t + n - k) * (binomial(2*t + n - k, t) - binomial(2*t + n - k, t-1))
+        })
+    })
+}
+
+say 15.of(motzkin_row_sum)
+
+__END__
+   1
+   1    1
+   1    2    2
+   1    3    5    4
+   1    4    9   12    9
+   1    5   14   25   30   21
+   1    6   20   44   69   76   51
+   1    7   27   70  133  189  196  127
+   1    8   35  104  230  392  518  512  323
+   1    9   44  147  369  726 1140 1422 1353  835
+   1   10   54  200  560 1242 2235 3288 3915 3610 2188
+   1   11   65  264  814 2002 4037 6765 9438 10813 9713 5798
+
+=> Sum of the row of Motzkin's triangle:
+[1, 2, 5, 13, 35, 96, 267, 750, 2123, 6046, 17303, 49721, 143365, 414584, 1201917]
+[1, 2, 5, 13, 35, 96, 267, 750, 2123, 6046, 17303, 49721, 143365, 414584, 1201917]

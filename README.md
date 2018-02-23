@@ -135,6 +135,7 @@ A simple collection of Sidef scripts.
     * [Miller rabin primality test](./Math/miller_rabin_primality_test.sf)
     * [Modular exponentiation](./Math/modular_exponentiation.sf)
     * [Modular inverse](./Math/modular_inverse.sf)
+    * [Motzkin triangle](./Math/motzkin_triangle.sf)
     * [N-bit random prime](./Math/n-bit_random_prime.sf)
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
