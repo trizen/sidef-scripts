@@ -105,6 +105,7 @@ A simple collection of Sidef scripts.
     * [Generalized continued fraction parts iter](./Math/generalized_continued_fraction_parts_iter.sf)
     * [Generalized fibonacci closed-form](./Math/generalized_fibonacci_closed-form.sf)
     * [Generalized fibonacci closed-form 2](./Math/generalized_fibonacci_closed-form_2.sf)
+    * [Gregory coefficients](./Math/gregory_coefficients.sf)
     * [Harmonic numbers from powers](./Math/harmonic_numbers_from_powers.sf)
     * [Harmonic numbers from powers simple](./Math/harmonic_numbers_from_powers_simple.sf)
     * [Harmonic prime powers](./Math/harmonic_prime_powers.sf)
