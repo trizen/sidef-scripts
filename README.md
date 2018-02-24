@@ -71,6 +71,7 @@ A simple collection of Sidef scripts.
     * [Bernoulli numbers new recurrence 2](./Math/bernoulli_numbers_new_recurrence_2.sf)
     * [Bernoulli numbers ramanujan congruences](./Math/bernoulli_numbers_ramanujan_congruences.sf)
     * [Bernoulli numbers recurrence](./Math/bernoulli_numbers_recurrence.sf)
+    * [Bernoulli numbers recurrence 2](./Math/bernoulli_numbers_recurrence_2.sf)
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)
     * [Binary exponentiation](./Math/binary_exponentiation.sf)
     * [Binary gcd algorithm](./Math/binary_gcd_algorithm.sf)

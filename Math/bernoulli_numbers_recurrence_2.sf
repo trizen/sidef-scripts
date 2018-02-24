@@ -1,0 +1,28 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 24 February 2018
+# https://github.com/trizen
+
+# A new recurrence for computing Bernoulli numbers.
+
+# Formula:
+#  a(0) = 1
+#  a(n) = 1 - ((Sum_{k=0..n-1} a(k) * binomial(n + 1, k)) / binomial(n+1, n))
+
+# Which gives us the nth-Bernoulli number, B_n, as:
+#   B_n = a(n)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Bernoulli_number
+#   https://arxiv.org/pdf/0708.0809.pdf (Compositional Bernoulli numbers)
+
+func a((0)) { 1 }
+
+func a(n) is cached {
+    1 - (sum(^n, {|k| a(k) * binomial(n+1, k) }) / binomial(n+1, n))
+}
+
+for n in (0..60 `by` 2) {
+    printf("B(%2d) = %50s / %s\n", n, a(n) -> nude)
+}
