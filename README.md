@@ -183,6 +183,7 @@ A simple collection of Sidef scripts.
     * [Unreduced continued fractions](./Math/unreduced_continued_fractions.sf)
     * [Unreduced fractions](./Math/unreduced_fractions.sf)
     * [Vampire numbers](./Math/vampire_numbers.sf)
+    * [Viswanath's constant conjecture](./Math/viswanath_s_constant_conjecture.sf)
     * [Y combinator](./Math/y_combinator.sf)
     * [Zeta 2n](./Math/zeta_2n.sf)
     * [Zeta 3 fast convergence](./Math/zeta_3_fast_convergence.sf)
