@@ -8,7 +8,7 @@
 
 # Formula:
 #  a(0) = 1
-#  a(n) = -(Sum_{k=0..n-1} a(k) * binomial(n + 1, k)^2) / binomial(n + 1, n)^2
+#  a(n) = -(Sum_{k=0..n-1} a(k) * binomial(n + 1, k)^2) / (n+1)^2
 
 # Which gives us the nth Blandin-Diaz compositional Bernoulli number as:
 #   (B^S)_1,n = a(n) / n!
@@ -23,7 +23,7 @@
 func a((0)) { 1 }
 
 func a(n) is cached {
-    -sum(^n, {|k| a(k) * binomial(n+1, k)**2 }) / binomial(n+1, n)**2
+    -sum(^n, {|k| a(k) * binomial(n+1, k)**2 }) / (n+1)**2
 }
 
 for n in (0..30) {
