@@ -4,7 +4,7 @@
 # Date: 24 February 2018
 # https://github.com/trizen
 
-# A new formula for computing Viswanath's constant. (weak conjecture)
+# A new formula for computing Viswanath's constant. (weak conjecture -- incorrect)
 
 # Blandin-Diaz compositional Bernoulli numbers (B^S)_1,n:
 #  a(0) = 1
