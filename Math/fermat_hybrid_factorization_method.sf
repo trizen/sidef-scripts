@@ -1,0 +1,107 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 27 February 2018
+# https://github.com/trizen
+
+# A new factorization algorithm, based on Pollard's p-1 algorithm and Fermat's factorization method.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Dixon%27s_factorization_method
+#   https://en.wikipedia.org/wiki/Fermat%27s_factorization_method
+#   https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm
+#   https://en.wikipedia.org/wiki/Quadratic_sieve
+
+func fermat_hybrid_factorization (n) {
+
+    if ((n <= 1) or n.is_prime) {
+        return [n]
+    }
+
+    if (n.is_even) {
+
+        var v = n.valuation(2)
+        var t = n>>v
+
+        var factors = v.of(2)
+
+        if (t > 1) {
+            factors += __FUNC__(t)
+        }
+
+        return factors
+    }
+
+    var p = n.isqrt
+    var q = (p*p - n)
+
+    var u = 1
+    var v = 1
+
+    var z = 2
+    var k = 2
+
+    while (!q.is_square) {
+
+        # Trizen's factorization method
+        u = powmod(q * u, k, n)
+        v = powmod(p * v, k, n)
+
+        q += ((p++ << 1) + 1)
+
+        var g = gcd(u - v, n)
+
+        if ((g > 1) && (g < n)) {
+            return (
+                __FUNC__(n/g) +
+                __FUNC__(g) -> sort
+            )
+        }
+
+        # Pollard's p-1 algorithm
+        z = powmod(z, k, n)
+
+        k += 16
+
+        var h = gcd(z - 1, n)
+
+        if (h > 1) {
+            if (h == n) {
+                z = k+1
+                next
+            }
+
+            return (
+                __FUNC__(n/h) +
+                __FUNC__(h) -> sort
+            )
+        }
+    }
+
+    # Fermat's method
+    var s = q.isqrt
+
+    var f1 = (p + s)
+    var f2 = (p - s)
+
+    __FUNC__(f1) +
+    __FUNC__(f2) -> sort
+}
+
+var tests = [
+    160587846247027, 5040, 65127835124, 6469693230,
+    12129569695640600539, 2**42 + 1, 2**64 + 1,
+    38568900844635025971879799293495379321,
+]
+
+for n in (tests) {
+    var prime_factors = fermat_hybrid_factorization(n)
+    say "#{prime_factors.join(' * ')} = #{n}"
+    assert_eq(prime_factors.prod, n)
+}
+
+for n in (2..1000) {
+    var factors = fermat_hybrid_factorization(n)
+    assert(factors.all { .is_prime })
+    assert_eq(factors.prod, n)
+}
