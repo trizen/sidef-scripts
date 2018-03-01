@@ -9,11 +9,6 @@
 # Similar to solving the Pell equation:
 #   x^2 - d*y^2 = 1, where `d` is known.
 
-# Some numbers cannot be factorized using the method.
-
-# Under this method, the following numbers are unfactorizable:
-#   2117, 2501, 4223, 5777, 5891, 6319, 6401, 6893, 7339, 7571, 8023, ...
-
 # See also:
 #   https://en.wikipedia.org/wiki/Pell%27s_equation
 
@@ -54,9 +49,7 @@ func pell_factorization (n) {
     var y = x
     var z = 1
 
-    var (f1, f2) = (0, 1)
-
-    (f1, f2) = (f2, x*f2 + f1)
+    var (f1, f2) = (1, x)
 
     do {
 
@@ -72,59 +65,15 @@ func pell_factorization (n) {
             )
         }
 
-        (f1, f2) = (f2, ((x + y) // z)*f2 + f1) #/
+        (f1, f2) = (f2, (((x + y) // z)*f2 + f1) % n) #/
 
     } while (z > 1)
 
-    # TODO: reduce and generalize
-    for t in ([
-        f1*f2 + 1,
-        f1 - f2 + 1,
-        f2*f2 - f1 + 1,
-        f2*f2 - f1 - 1,
-        f2*f2 - 1,
-        f2 + x + 1,
-        f2 + x - 1,
-        f2*f2 - x + 1,
-        f2*f2 + f1,
-        f2*f2 - f1,
-        f1*f1 - f2 - 1,
-        f2 + x*f1 - 1,
-        f2 + x*f1 + 1,
-        f1 - x*f2 - 1,
-        f1 + x*f2 + 1,
-        f2 * (f1 - x) - 1,
-        f2 * (f1 - x) + 1,
-        f2 * (f1 - 2) + 1,
-        f2 * (f1 - 2) - 1,
-        f1 * (f2 - 4) + 1,
-        f1 * (f2 - 4) - 1,
-        f1 * (f2 - 15) + 1,
-        f1 * (f2 - 20) + 1,
-        f1 * (f2 - 64) + 1,
-        f1 * (f2 - 82) - 1,
-        f2*f2 + (x - f1) + 1,
-        f1*f1 - (x - f2) - 1,
-        isqrt(4*n * (f2*f2 + 1)) / (2*n),
-        #isqrt(4*n * (f1*f1 - 1)) / (2*n),
-        #isqrt(4*n * (f1*f1 - 1)) / (2*n) + 1,
-        #isqrt(4*n * (f2*f2 + 1)) / (2*n) + 1,
-        isqrt(4*n * (f1*f1 + 1)) / (2*n) - f2 + 1,
-        isqrt(4*n * (f1*f1 + 1)) / (2*n) + f2 - 1,
-        (isqrt(4*n * (f1*f1 + 1)) / (2*n))**2 + f2 - 1,
-        (isqrt(4*n * (f1*f1 + 1)) / (2*n))**2 + f2**2 - 1,
-        (isqrt(4*n * (f1*f1 + 1)) / (2*n))**2 + f2**2 + 1,
-        (isqrt(4*n * (f1*f1 + 1)) / (2*n))**2 - f2**2 + 1,
-        (isqrt(4*n * (f1*f1 - 1)) / (2*n))**2 + f2**2,
-        (isqrt(4*n * (f1*f1 - 1)) / (2*n)) + f1 + 1,
-        (isqrt(4*n * (f1*f1 - 1)) / (2*n))**2 + (isqrt(4*n * (f2*f2 - 1)) / (2*n))**2 - x,
-        (isqrt(4*n * (f1*f1 - 1)) / (2*n))**2 - (isqrt(4*n * (f2*f2 - 1)) / (2*n))**2 + x - 1,
-        (isqrt(4*n * (f1*f1 - 1)) / (2*n)) - (isqrt(4*n * (f2*f2 - 1)) / (2*n)) + x - 1,
-        (isqrt(4*n * (f1*f1 - 1)) / (2*n)) + (isqrt(4*n * (f2*f2 - 1)) / (2*n)) + 1,
-        (isqrt(4*n * (f1*f1 + 1)) / (2*n)) - (isqrt(4*n * (f2*f2 + 1)) / (2*n)) + x,
-        (isqrt(4*n * (f2*f2 + 1)) / (2*n)) + (isqrt(4*n * (f2*f2 - 1)) / (2*n)) - x + 1,
-        (isqrt(4*n * (f1*f1 + 1)) / (2*n))**2 + (isqrt(4*n * (f2*f2 - 1)) / (2*n))**2 - x + 1,
-    ]) {
+    var z = (f1 * f2)
+
+    for w in (1 .. n) {
+
+        var t = (z - w)
         var g = gcd(t, n)
 
         if ((g > 1) && (g < n)) {
