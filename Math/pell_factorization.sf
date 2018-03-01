@@ -1,0 +1,94 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 01 March 2018
+# https://github.com/trizen
+
+# A new integer factorization method, using continued fractions and square root convergents.
+
+# Similar to solving the Pell equation:
+#   x^2 - d*y^2 = 1, where `d` is known.
+
+# Question: what are the following numbers and how can they be factorized using this approach?
+#   51, 65, 85, 119, 123, 145, 171, 185, 187, 265, 267, 287, 291
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pell%27s_equation
+
+func sqrt_cfrac_denom (n) {
+
+    var x = n.isqrt
+    var y = x
+    var z = 1
+
+    var (f1, f2) = (0, 1)
+
+    (f1, f2) = (f2, x*f2 + f1)
+
+    do {
+        y = (((x + y) // z) * z - y)            #/
+        z = ((n - y*y) // z)                    #/
+        (f1, f2) = (f2, ((x + y) // z)*f2 + f1) #/
+    } while (z > 1)
+
+    return f1
+}
+
+func pell_factorization (n) {
+
+    # Check for primes and negative numbers
+    if ((n <= 1) or n.is_prime) {
+        return [n]
+    }
+
+    # Check for perfect powers
+    if (n.is_power) {
+
+        var root  = n.perfect_root
+        var power = n.perfect_power
+
+        var factors = __FUNC__(root)
+
+        return (factors * power -> sort)
+    }
+
+    # Check for divisibility by 2
+    if (n.is_even) {
+
+        var v = n.valuation(2)
+        var t = n>>v
+
+        var factors = v.of(2)
+
+        if (t > 1) {
+            factors += __FUNC__(t)
+        }
+
+        return factors
+    }
+
+    var x = sqrt_cfrac_denom(n)
+    var g = gcd(x - 1, n)
+
+    if ((g > 1) && (g < n)) {
+        return (
+            __FUNC__(n/g) +
+            __FUNC__(g) -> sort
+        )
+    }
+
+    return [n]
+}
+
+for n in (2..100) {
+    var prime_factors = pell_factorization(n)
+
+    if (!prime_factors.all { .is_prime }) {
+        say "#{n} cannot be fully factorized: #{prime_factors.join(' * ')} = #{n}"
+    }
+    else {
+        say "#{prime_factors.join(' * ')} = #{n}"
+    }
+
+    assert_eq(prime_factors.prod, n)
+}

@@ -145,6 +145,7 @@ A simple collection of Sidef scripts.
     * [Number of 3Xn arrays with row permutations A212856](./Math/number_of_3Xn_arrays_with_row_permutations_A212856.sf)
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
+    * [Pell factorization](./Math/pell_factorization.sf)
     * [Permutations iter](./Math/permutations_iter.sf)
     * [Permutations rec](./Math/permutations_rec.sf)
     * [Pollard p minus 1 factorization](./Math/pollard_p_minus_1_factorization.sf)
