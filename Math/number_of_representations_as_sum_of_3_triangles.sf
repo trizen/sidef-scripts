@@ -1,0 +1,42 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 02 March 2018
+# https://github.com/trizen
+
+# Compute the number of ordered ways of writing `n` as the sum of 3 triangular numbers.
+
+# See also:
+#   http://oeis.org/A008443
+#   https://projecteuler.net/problem=621
+
+func count_sums_of_two_squares (n) {
+
+    var count = 1
+
+    for p,e in (n.factor_exp) {
+
+        var r = p%4
+
+        if (r == 3) {
+            e.is_even || return 0
+        }
+
+        if (r == 1) {
+            count *= (e + 1)
+        }
+    }
+
+    return count
+}
+
+func count_triangular_sums (n) {
+    0..n.ipolygonal_root(3) -> sum_by {|u|
+        var z = (8*(n - (u * (u + 1) / 2)) + 1)
+        count_sums_of_two_squares(z + 1)
+    }
+}
+
+say count_triangular_sums(1000)     #=> 78
+say count_triangular_sums(1234)     #=> 144
+say count_triangular_sums(10**6)    #=> 2106
