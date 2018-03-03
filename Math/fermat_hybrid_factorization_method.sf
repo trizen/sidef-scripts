@@ -1,16 +1,16 @@
 #!/usr/bin/ruby
 
-# Author: Daniel "Trizen" Șuteu
+# Daniel "Trizen" Șuteu
 # Date: 27 February 2018
 # https://github.com/trizen
 
-# A new factorization algorithm, based on Pollard's p-1 algorithm and Fermat's factorization method.
+# A hybrid factorization algorithm, based on Pollard's p-1 and Pollard's rho algorithms and Fermat's factorization method.
 
 # See also:
+#   https://en.wikipedia.org/wiki/Quadratic_sieve
 #   https://en.wikipedia.org/wiki/Dixon%27s_factorization_method
 #   https://en.wikipedia.org/wiki/Fermat%27s_factorization_method
 #   https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm
-#   https://en.wikipedia.org/wiki/Quadratic_sieve
 
 func fermat_hybrid_factorization (n) {
 
@@ -41,15 +41,20 @@ func fermat_hybrid_factorization (n) {
     var z = 2
     var k = 2
 
+    var g = 1
+    var c = q+p
+
+    var a0 = 1
+    var a1 = (a0*a0 + c)
+    var a2 = (a1*a1 + c)
+
     while (!q.is_square) {
 
         # Trizen's factorization method
         u = powmod(q * u, k, n)
         v = powmod(p * v, k, n)
 
-        q += ((p++ << 1) + 1)
-
-        var g = gcd(u - v, n)
+        g = gcd(u - v, n)
 
         if ((g > 1) && (g < n)) {
             return (
@@ -58,22 +63,38 @@ func fermat_hybrid_factorization (n) {
             )
         }
 
+        q += ((p++ << 1) + 1)
+
+        # Pollard's rho algorithm
+        g = gcd(n, a2-a1)
+
+        if ((g > 1) && (g < n)) {
+            return (
+                __FUNC__(n/g) +
+                __FUNC__(g) -> sort
+            )
+        }
+
+        a1 = ((a1*a1 + c) % n)
+        a2 = ((a2*a2 + c) % n)
+        a2 = ((a2*a2 + c) % n)
+
         # Pollard's p-1 algorithm
         z = powmod(z, k, n)
+        g = gcd(z - 1, n)
 
         k += 16
 
-        var h = gcd(z - 1, n)
+        if (g > 1) {
 
-        if (h > 1) {
-            if (h == n) {
+            if (g == n) {
                 z = k+1
                 next
             }
 
             return (
-                __FUNC__(n/h) +
-                __FUNC__(h) -> sort
+                __FUNC__(n/g) +
+                __FUNC__(g) -> sort
             )
         }
     }
@@ -81,11 +102,8 @@ func fermat_hybrid_factorization (n) {
     # Fermat's method
     var s = q.isqrt
 
-    var f1 = (p + s)
-    var f2 = (p - s)
-
-    __FUNC__(f1) +
-    __FUNC__(f2) -> sort
+    __FUNC__(p + s) +
+    __FUNC__(p - s) -> sort
 }
 
 var tests = [
@@ -100,7 +118,7 @@ for n in (tests) {
     assert_eq(prime_factors.prod, n)
 }
 
-for n in (2..1000) {
+for n in (2..10000) {
     var factors = fermat_hybrid_factorization(n)
     assert(factors.all { .is_prime })
     assert_eq(factors.prod, n)
