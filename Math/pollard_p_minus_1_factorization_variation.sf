@@ -1,0 +1,106 @@
+#!/usr/bin/ruby
+
+# A variation of Pollard's p−1 integer factorization algorithm, combined with square root convergents.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm
+
+func pollard_p1_factor (n) {
+
+    return []  if (n <= 1)
+    return [n] if n.is_prime
+
+    if (n.is_even) {
+        var v = n.valuation(2)
+        return (v.of(2) + pollard_p1_factor(n >> v))
+    }
+
+    var g = 1
+    var p = 1
+    var z = 2
+    var t = 2
+    var k = 4
+
+    var w = 1
+    var x = n.isqrt
+    var y = x
+
+    var (f1, f2) = (1, n)
+
+    loop {
+
+        p = p.next_prime
+        z = powmod(z, p << 8, n)
+        g = gcd(z - 1, n)
+
+        if (g > 1) {
+            if (g == n) {
+                z = p
+                next
+            }
+
+            return (
+                __FUNC__(g) +
+                __FUNC__(n/g) -> sort
+            )
+        }
+
+        y = (((x + y)  // w)*w - y)           #/
+        w = ((n - y*y) // w)                  #/
+
+        z = powmod(z, (f1 + f2 - z) << 8, n)
+        g = gcd(z - 1, n)
+
+        (f1, f2) = (f2, (((x + y) // w)*f2 + f1) % n) #/
+
+        if (g > 1) {
+            if (g == n) {
+                z = p
+                next
+            }
+
+            return (
+                __FUNC__(g) +
+                __FUNC__(n/g) -> sort
+            )
+        }
+
+        t = powmod(t, k << 8, n)
+        g = gcd(t - 1, n)
+
+        k += 65536
+
+        if (g > 1) {
+            if (g == n) {
+                t = p
+                next
+            }
+
+            return (
+                __FUNC__(g) +
+                __FUNC__(n/g) -> sort
+            )
+        }
+    }
+}
+
+say pollard_p1_factor(25889 * 46511)
+say pollard_p1_factor(419763345)
+say pollard_p1_factor(5040)
+say pollard_p1_factor(12129569695640600539)
+say pollard_p1_factor(2**42 + 1)
+say pollard_p1_factor(2**62 - 1)
+say pollard_p1_factor(2**64 + 1)
+say pollard_p1_factor(38568900844635025971879799293495379321)
+
+for n in (2 .. 1000) {
+    var factors = pollard_p1_factor(n)
+
+    if (!factors.all { .is_prime }) {
+        die "Compositie factor for #{n}"
+    }
+
+    if (factors.prod != n) {
+        die "Incorrect factors for #{n}"
+    }
+}
