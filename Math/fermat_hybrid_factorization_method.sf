@@ -38,8 +38,9 @@ func fermat_hybrid_factorization (n) {
     var u = 1
     var v = 1
 
+    var h = 1
     var z = 2
-    var k = 2
+    var k = 4
 
     var g = 1
     var c = q+p
@@ -53,6 +54,8 @@ func fermat_hybrid_factorization (n) {
         # Trizen's factorization method
         u = powmod(q * u, k, n)
         v = powmod(p * v, k, n)
+
+        k += 16
 
         g = gcd(u - v, n)
 
@@ -79,16 +82,32 @@ func fermat_hybrid_factorization (n) {
         a2 = ((a2*a2 + c) % n)
         a2 = ((a2*a2 + c) % n)
 
-        # Pollard's p-1 algorithm
-        z = powmod(z, k, n)
+        # Pollard's p-1 algorithm (1)
+        h = h.next_prime
+        z = powmod(z, h << 8, n)
         g = gcd(z - 1, n)
-
-        k += 16
 
         if (g > 1) {
 
             if (g == n) {
-                z = k+1
+                z = h
+                next
+            }
+
+            return (
+                __FUNC__(n/g) +
+                __FUNC__(g) -> sort
+            )
+        }
+
+        # Pollard's p-1 algorithm (2)
+        z = powmod(z, k << 8, n)
+        g = gcd(z - 1, n)
+
+        if (g > 1) {
+
+            if (g == n) {
+                z = h
                 next
             }
 
@@ -118,7 +137,7 @@ for n in (tests) {
     assert_eq(prime_factors.prod, n)
 }
 
-for n in (2..10000) {
+for n in (2..1000) {
     var factors = fermat_hybrid_factorization(n)
     assert(factors.all { .is_prime })
     assert_eq(factors.prod, n)
