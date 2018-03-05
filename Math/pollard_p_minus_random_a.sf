@@ -1,0 +1,79 @@
+#!/usr/bin/ruby
+
+# A variation of Pollard's p-1 integer factorization method.
+
+# Version based on the identity:
+#   n = p*q, with p,q prime
+#   t = a^(p - m) (mod n)
+#   p = gcd(t * (a^(m - 1) (mod n)) - 1, n)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm
+
+func pollard_pmrand(n) {
+
+    # Check for primes and negative numbers
+    return []  if (n <= 1)
+    return [n] if n.is_prime
+
+    # Check for divisibility by 2
+    if (n.is_even) {
+        var v = n.valuation(2)
+        return (v.of(2) + __FUNC__(n >> v))
+    }
+
+    # Check for perfect powers
+    if (n.is_power) {
+
+        var root  = n.perfect_root
+        var power = n.perfect_power
+
+        var factors = __FUNC__(root)
+
+        return (factors * power -> sort)
+    }
+
+    var g = 1
+    var p = 1
+    var t = 1
+    var a = n.random_prime
+
+    loop {
+
+        t = a
+        p = p.next_prime
+        a = powmod(a, p, n)
+        g = gcd(a * powmod(t, n.irand, n) - 1, n)
+
+        if (g > 1) {
+            if (g == n) {
+                p = 1
+                a = n.random_prime
+                next
+            }
+
+            return (
+                __FUNC__(g) +
+                __FUNC__(n/g) -> sort
+            )
+        }
+    }
+}
+
+say pollard_pmrand(25889 * 46511)
+say pollard_pmrand(419763345)
+say pollard_pmrand(5040)
+say pollard_pmrand(12129569695640600539)
+say pollard_pmrand(2**42 + 1)
+say pollard_pmrand(2**62 - 1)
+say pollard_pmrand(2**64 + 1)
+say pollard_pmrand(38568900844635025971879799293495379321)
+
+for n in (2..1000) {
+    var factors = pollard_pmrand(n)
+
+    assert_eq(factors.prod, n)
+    assert(factors.all{.is_prime})
+
+    #say "#{n} = #{factors.join(' * ')}"
+}
