@@ -204,7 +204,8 @@ func sum_of_two_squares_solutions(n) is cached {
              .sort_by {|pair| pair[0]   }
 }
 
-for n in (1 .. 1e4) {
+50.times {
+    var n = 1e10.irand
     var solutions = sum_of_two_squares_solutions(n) || next
     say %Q(#{n} = #{solutions.map {|a| "#{a[0]}^2 + #{a[1]}^2" }.join(' = ') })
 }
