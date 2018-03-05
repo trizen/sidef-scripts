@@ -1,0 +1,114 @@
+#!/usr/bin/ruby
+
+# A simple implementation of the continued fraction factorization method (The Brillhart-Morrison algorithm).
+
+# TODO: optimize it.
+
+# Similar to solving the Pell equation:
+#   x^2 - d*y^2 = 1, where `d` is known.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pell%27s_equation
+
+func cffm (n) {
+
+    # Check for primes and negative numbers
+    return []  if (n <= 1)
+    return [n] if n.is_prime
+
+    # Check for perfect powers
+    if (n.is_power) {
+
+        var root  = n.perfect_root
+        var power = n.perfect_power
+
+        var factors = __FUNC__(root)
+
+        return (factors * power -> sort)
+    }
+
+    # Check for divisibility by 2
+    if (n.is_even) {
+
+        var v = n.valuation(2)
+        var t = n>>v
+
+        var factors = v.of(2)
+
+        if (t > 1) {
+            factors += __FUNC__(t)
+        }
+
+        return factors
+    }
+
+    var resolve_factor = { |x,y|
+
+        var g = gcd(y.isqrt - x, n)
+
+        if ((g > 1) && (g < n)) {
+            return (
+                __FUNC__(g) +
+                __FUNC__(n/g) -> sort
+            )
+        }
+    }
+
+    var x = n.isqrt
+    var y = x
+    var z = 1
+
+    var (e1, e2) = (1, 0)
+    var (f1, f2) = (0, 1)
+
+    var Q = []
+
+    1000.times {
+
+        y = (((x + y)  // z)*z - y)           #/
+        z = ((n - y*y) // z)                  #/
+
+        var t = (x*f2 + e2)
+        var a = (t % n)
+        var b = abs(t*t - n*f2*f2)
+
+        if (b.is_square) {
+            resolve_factor(a, b)
+        }
+
+        Q << [a, b]
+
+        var r = ((x + y) // z) # /
+
+        (f1, f2) = (f2, (r*f2 + f1))
+        (e1, e2) = (e2, (r*e2 + e1))
+    }
+
+    1000.times {
+        var a = Q.pick(irand(2, 10))
+
+        var x = a.prod_by { .[0] }
+        var y = a.prod_by { .[1] }
+
+        powmod(x, 2, n) == y%n || next
+
+        resolve_factor(x, y)
+    }
+
+    return [n]
+}
+
+for k in (2..20) {
+
+    var n = (irand(2, 2**k) * 2.of { random_prime(2**k) }.prod)
+
+    var factors = cffm(n)
+    assert_eq(factors.prod, n)
+
+    if (factors.all { .is_prime }) {
+        say "#{n} = #{factors.join(' * ')}"
+    }
+    else {
+        say "#{n} = #{factors.join(' * ')} (incomplete factorization)"
+    }
+}
