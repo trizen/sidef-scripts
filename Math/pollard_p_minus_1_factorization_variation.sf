@@ -12,7 +12,7 @@ func pollard_p1_factor (n) {
 
     if (n.is_even) {
         var v = n.valuation(2)
-        return (v.of(2) + pollard_p1_factor(n >> v))
+        return (v.of(2) + __FUNC__(n >> v))
     }
 
     var g = 1

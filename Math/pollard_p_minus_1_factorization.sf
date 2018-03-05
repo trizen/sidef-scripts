@@ -42,11 +42,6 @@ say pollard_p1_factor(38568900844635025971879799293495379321)
 for n in (2 .. 1000) {
     var factors = pollard_p1_factor(n)
 
-    if (!factors.all { .is_prime }) {
-        die "Compositie factor for #{n}"
-    }
-
-    if (factors.prod != n) {
-        die "Incorrect factors for #{n}"
-    }
+    assert(factors.all { .is_prime })
+    assert_eq(factors.prod, n)
 }
