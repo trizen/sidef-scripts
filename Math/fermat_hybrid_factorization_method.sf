@@ -35,12 +35,13 @@ func fermat_hybrid_factorization (n) {
     var p = n.isqrt
     var q = (p*p - n)
 
+    var t = 1
     var u = 1
     var v = 1
 
     var h = 1
-    var z = 2
     var k = 4
+    var z = n.random_prime
 
     var g = 1
     var c = q+p
@@ -82,32 +83,17 @@ func fermat_hybrid_factorization (n) {
         a2 = ((a2*a2 + c) % n)
         a2 = ((a2*a2 + c) % n)
 
-        # Pollard's p-1 algorithm (1)
+        # Pollard's p-a algorithm (random variation)
+        t = z
         h = h.next_prime
-        z = powmod(z, h << 8, n)
-        g = gcd(z - 1, n)
+        z = powmod(z, h, n)
+        g = gcd(z * powmod(t, n.irand, n) - 1, n)
 
         if (g > 1) {
 
             if (g == n) {
-                z = h
-                next
-            }
-
-            return (
-                __FUNC__(n/g) +
-                __FUNC__(g) -> sort
-            )
-        }
-
-        # Pollard's p-1 algorithm (2)
-        z = powmod(z, k << 8, n)
-        g = gcd(z - 1, n)
-
-        if (g > 1) {
-
-            if (g == n) {
-                z = h
+                h = 1
+                z = n.random_prime
                 next
             }
 
