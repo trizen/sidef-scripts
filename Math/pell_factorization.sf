@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
-# Daniel "Trizen" Șuteu
-# Date: 01 March 2018
+# Author: Daniel "Trizen" Șuteu
+# Date: 02 March 2018
 # https://github.com/trizen
 
 # A new integer factorization method, using continued fractions and square root convergents.
@@ -9,60 +9,19 @@
 # Similar to solving the Pell equation:
 #   x^2 - d*y^2 = 1, where `d` is known.
 
-# Question: what are the following numbers and how can they be factorized using this approach?
-#     51,   65,   85,  119,  123,  145,  171,  185,  187,  265,  267,  287,  291,  325,  339,  363,  365,  387,  391,
-#    411,  425,  445,  451,  459,  481,  485,  493,  511,  527,  531,  533,  565,  603,  623,  627,  629,  679,  685,
-#    697,  699,  731,  771,  779,  785,  803,  843,  845,  865,  867,  901,  925,  949,  959,  963,  965,  985, 1003,
-#   1025, 1037, 1059, 1073, 1105, 1107, 1127, 1145, 1157, 1165, 1179, 1189, 1203, 1207, 1227, 1241, 1251, 1261, 1285,
-#   1313, 1325, 1343, 1347, 1371, 1385, 1387, 1411, 1417, 1419, 1445, 1465, 1467, 1519, 1525, 1539, 1563, 1565, 1585,
-#   1611, 1625, 1649, 1679, 1683, 1685, 1687, 1691, 1707, 1745, 1765, 1769, 1779, 1781, 1799, 1819, 1825, 1843, 1851,
-#   1853, 1865, 1899, 1921, 1923, 1927, 1937, 1985, 2023, 2047, 2091, 2117, 2123, 2125, 2147, 2165, 2173, 2191, 2211,
-#   2227, 2231, 2249, 2257, 2263, 2283, 2285, 2305, 2363, 2403, 2405, 2425, 2427, 2465, 2471, 2501, 2509, 2545, 2547,
-#   2561, 2563, 2571, 2581, 2599, 2603, 2605, 2619, 2643, 2651, 2665, 2705, 2725, 2739, 2747, 2759, 2763, 2771, 2785,
-#   2787, 2807, 2811, 2813, 2825, 2839, 2859, 2863, 2873, 2885, 2911, 2929, 2931, 2941, 2965, 2977, 2979, 3007, 3027,
-#   3029, 3031, 3051, 3065, 3077, 3085, 3091, 3099, 3133, 3139, 3145, 3147, 3151, 3161, 3179, 3233, 3239, 3247, 3265,
-#   3267, 3277, 3281, 3291, 3293, 3341, 3349, 3365, 3383, 3385, 3403, 3411, 3425, 3431, 3445, 3459, 3479, 3483, 3485,
-#   3545, 3579, 3587, 3589, 3601, 3625, 3647, 3649, 3651, 3653, 3665, 3667, 3699, 3707, 3723, 3725, 3785, 3791, 3809,
-#   3827, 3845, 3859, 3865, 3867, 3869, 3871, 3925, 3961, 3971, 3973, 3977, 3985, 4033, 4039, 4045, 4059, 4083, ...
-
 # See also:
 #   https://en.wikipedia.org/wiki/Pell%27s_equation
-
-func sqrt_cfrac_denom (n) {
-
-    var x = n.isqrt
-    var y = x
-    var z = 1
-
-    var (f1, f2) = (0, 1)
-
-    (f1, f2) = (f2, x*f2 + f1)
-
-    do {
-        y = (((x + y) // z) * z - y)            #/
-        z = ((n - y*y) // z)                    #/
-        (f1, f2) = (f2, ((x + y) // z)*f2 + f1) #/
-    } while (z > 1)
-
-    return f1
-}
 
 func pell_factorization (n) {
 
     # Check for primes and negative numbers
-    if ((n <= 1) or n.is_prime) {
+    if (n <= 1 or n.is_prime) {
         return [n]
     }
 
-    # Check for perfect powers
-    if (n.is_power) {
-
-        var root  = n.perfect_root
-        var power = n.perfect_power
-
-        var factors = __FUNC__(root)
-
-        return (factors * power -> sort)
+    # Check for perfect squares
+    if (n.is_square) {
+        return (__FUNC__(n.isqrt) * 2 -> sort)
     }
 
     # Check for divisibility by 2
@@ -80,28 +39,36 @@ func pell_factorization (n) {
         return factors
     }
 
-    var x = sqrt_cfrac_denom(n)
-    var g = gcd(x - 1, n)
+    var x = n.isqrt
+    var y = x
+    var z = 1
 
-    if ((g > 1) && (g < n)) {
-        return (
-            __FUNC__(n/g) +
-            __FUNC__(g) -> sort
-        )
+    var (f1, f2) = (x, 1)
+
+    loop {
+
+        y = (((x + y)  // z)*z - y)           #/
+        z = ((n - y*y) // z)                  #/
+
+        var g = gcd(f1, n)
+
+        if ((g > 1) && (g < n)) {
+            return (
+                __FUNC__(n/g) +
+                __FUNC__(g) -> sort
+            )
+        }
+
+        (f1, f2) = (f2, (((x + y) // z)*f2 + f1) % n) #/
     }
-
-    return [n]
 }
 
-for n in (2..100) {
-    var prime_factors = pell_factorization(n)
+for k in (2..55) {
+    var n = (2**k - 1)
+    var factors = pell_factorization(n)
 
-    if (!prime_factors.all { .is_prime }) {
-        say "#{n} cannot be fully factorized: #{prime_factors.join(' * ')} = #{n}"
-    }
-    else {
-        say "#{prime_factors.join(' * ')} = #{n}"
-    }
+    assert_eq(factors.prod, n)
+    assert(factors.all { .is_prime })
 
-    assert_eq(prime_factors.prod, n)
+    say "#{n} = #{factors.join(' * ')}"
 }
