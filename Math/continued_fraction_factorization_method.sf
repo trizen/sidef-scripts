@@ -95,7 +95,7 @@ func cffm (n) {
     #       a subset of integers whose product is a square.
 
     1000.times {
-        var a = Q.pick(irand(2, 10))
+        var a = Q.pick(irand(3, 10))
 
         var x = a.prod_by { .[0] }
         var y = a.prod_by { .[1] }

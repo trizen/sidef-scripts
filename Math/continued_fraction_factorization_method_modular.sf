@@ -68,15 +68,15 @@ func cffmm (n) {
         var a = ((x*f2 + e2) % n)
         var b = ((a*a - n*f2*f2) % n)
 
+        if (b.is_square) {
+            resolve_factor(a, b)
+        }
+
         if (S.exists(b)) {
             resolve_factor(a * S{b}, b*b)
         }
         else {
             S{b} = a
-        }
-
-        if (b.is_square) {
-            resolve_factor(a, b)
         }
 
         var r = ((x + y) // z)                #/
