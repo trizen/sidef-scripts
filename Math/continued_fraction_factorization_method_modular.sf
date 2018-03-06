@@ -41,12 +41,25 @@ func cffmm (n) {
         return factors
     }
 
+    var resolve_factor = {|a,b|
+        var g = gcd(b.isqrt - a, n)
+
+        if ((g > 1) && (g < n)) {
+            return (
+                __FUNC__(g) +
+                __FUNC__(n/g) -> sort
+            )
+        }
+    }
+
     var x = n.isqrt
     var y = x
     var z = 1
 
     var (e1, e2) = (1, 0)
     var (f1, f2) = (0, 1)
+
+    var S = Hash()
 
     do {
         y = (((x + y)  // z)*z - y)           #/
@@ -55,15 +68,15 @@ func cffmm (n) {
         var a = ((x*f2 + e2) % n)
         var b = ((a*a - n*f2*f2) % n)
 
-        if (b.is_square) {
-            var g = gcd(b.isqrt - a, n)
+        if (S.exists(b)) {
+            resolve_factor(a * S{b}, b*b)
+        }
+        else {
+            S{b} = a
+        }
 
-            if ((g > 1) && (g < n)) {
-                return (
-                    __FUNC__(g) +
-                    __FUNC__(n/g) -> sort
-                )
-            }
+        if (b.is_square) {
+            resolve_factor(a, b)
         }
 
         var r = ((x + y) // z)                #/

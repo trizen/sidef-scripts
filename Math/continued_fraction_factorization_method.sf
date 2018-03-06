@@ -62,27 +62,37 @@ func cffm (n) {
     var (f1, f2) = (0, 1)
 
     var Q = []
+    var S = Hash()
 
     1000.times {
 
         y = (((x + y)  // z)*z - y)           #/
         z = ((n - y*y) // z)                  #/
 
-        var t = (x*f2 + e2)
-        var a = (t % n)
-        var b = abs(t*t - n*f2*f2)
+        var a = ((x*f2 + e2) % n)
+        var b = ((a*a - n*f2*f2) % n)
 
         if (b.is_square) {
             resolve_factor(a, b)
         }
 
+        if (S.exists(b)) {
+            resolve_factor(a * S{b}, b*b)
+        }
+        else {
+            S{b} = a
+        }
+
         Q << [a, b]
 
-        var r = ((x + y) // z) # /
+        var r = ((x + y) // z)                #/
 
-        (f1, f2) = (f2, (r*f2 + f1))
-        (e1, e2) = (e2, (r*e2 + e1))
+        (f1, f2) = (f2, (r*f2 + f1) % n)
+        (e1, e2) = (e2, (r*e2 + e1) % n)
     }
+
+    # TODO: use linear algebra (Gauss elimination) to find
+    #       a subset of integers whose product is a square.
 
     1000.times {
         var a = Q.pick(irand(2, 10))
@@ -90,7 +100,7 @@ func cffm (n) {
         var x = a.prod_by { .[0] }
         var y = a.prod_by { .[1] }
 
-        powmod(x, 2, n) == y%n || next
+        #powmod(x, 2, n) == y%n || next
 
         resolve_factor(x, y)
     }
