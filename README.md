@@ -88,6 +88,7 @@ A simple collection of Sidef scripts.
     * [Confluent hypergeometric function of the first kind](./Math/confluent_hypergeometric_function_of_the_first_kind.sf)
     * [Continued fraction](./Math/continued_fraction.sf)
     * [Continued fraction factorization method](./Math/continued_fraction_factorization_method.sf)
+    * [Continued fraction factorization method modular](./Math/continued_fraction_factorization_method_modular.sf)
     * [Continued fraction to fraction](./Math/continued_fraction_to_fraction.sf)
     * [Continued fractions convergents](./Math/continued_fractions_convergents.sf)
     * [Digamma function](./Math/digamma_function.sf)
