@@ -18,7 +18,7 @@
 func gauss_elimination(A, n) {
 
     var m = A.end
-    var I = (m+1).of { |i| 1 << i }
+    var I = (m+1).of {|i| 1 << i }
 
     var nrow = 0
 
@@ -99,24 +99,25 @@ func cffmm (n) {
     var x = n.isqrt
     var y = x
     var z = 1
+    var w = 2*x
 
     var (e1, e2) = (1, 0)
     var (f1, f2) = (0, 1)
 
-    var L = 1e2         # maximum number of matrix-rows
-    var B = 1e3         # B-smooth limit
-    var S = Hash()
+    var L = 1e3        # maximum number of matrix-rows
+    var B = 1e2        # B-smooth limit
 
     var Q = []
     var A = []
+    var S = Hash()
 
     var pi_B = B.prime_count
 
     func exponent_signature(factors) {
-        var sig = pi_B.of(0)
+        var sig = 0
 
         for p,e in factors {
-            sig[p.prime_count - 1] = e&1
+            sig.setbit!(p.prime_count-1) if e.is_odd
         }
 
         return sig
@@ -141,9 +142,10 @@ func cffmm (n) {
             resolve_factor(a, b)
         }
 
-        var b_factors = b.factor_exp
+        var c = (b > w ? n-b : b)
+        var b_factors = c.factor_exp
 
-        if ((b > 1) && (b_factors[-1][0] <= B)) {
+        if (b_factors && (b_factors[-1][0] <= B)) {
             A << exponent_signature(b_factors)
             Q << [a, b]
         }
@@ -153,13 +155,9 @@ func cffmm (n) {
         (f1, f2) = (f2, (r*f2 + f1) % n)
         (e1, e2) = (e2, (r*e2 + e1) % n)
 
-    } while ((A.len < L) && (z > 1))
+    } while ((z > 1) && (A.len < L))
 
-    A.transpose!
-    A.map! { Num(.join, 2) }
-    A.pop_while { .is_zero }
-
-    var I = gauss_elimination(A, Q.end)
+    var I = gauss_elimination(A, pi_B-1)
 
     var linear_relations = 0
     var row_index = A.end
@@ -170,14 +168,12 @@ func cffmm (n) {
         linear_relation = A[row_index--]
     }
 
-    for (var j = linear_relations; j > 0; --j) {
+    for solution in (I.last(linear_relations)) {
 
         var solution_X = 1
         var solution_Y = 1
 
-        var solution = I[-j]
-
-        for i in (^Q) {
+        for i in (Q.range) {
 
             if (solution.bit(i)) {
 
@@ -195,6 +191,7 @@ func cffmm (n) {
 }
 
 say cffmm(4882742467)
+say cffmm(25570266803)
 say cffmm(2**62 - 1)
 
 for k in (2..20) {

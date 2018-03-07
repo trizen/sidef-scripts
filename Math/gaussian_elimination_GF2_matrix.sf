@@ -19,7 +19,7 @@ func display_bitMatrix(A, n) {
 func gauss_elimination(A, n) {
 
     var m = A.end
-    var I = (m+1).of { |i| 2**i }
+    var I = (m+1).of {|i| 1 << i }
 
     var nrow = 0
 
