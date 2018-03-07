@@ -1,0 +1,213 @@
+#!/usr/bin/ruby
+
+# A simple implementation of the continued fraction factorization method,
+# combined with modular arithmetic (variation of the Brillhart-Morrison algorithm).
+
+# Similar to solving the Pell equation:
+#   x^2 - d*y^2 = 1, where `d` is known.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pell%27s_equation
+#   https://en.wikipedia.org/wiki/Continued_fraction_factorization
+
+# Parts of code inspired by:
+#    https://github.com/martani/Quadratic-Sieve
+
+# The code is not particularly well optimized (yet)...
+
+func gauss_elimination(A, n) {
+
+    var m = A.end
+    var I = (m+1).of { |i| 1 << i }
+
+    var nrow = 0
+
+    for col in (0..min(m, n)) {
+        var npivot = -1
+
+        for row in (nrow .. m) {
+            if (A[row].bit(col)) {
+                npivot = row
+                nrow++
+                break
+            }
+        }
+
+        if (npivot == -1) {
+            next
+        }
+
+        if (npivot != nrow-1) {
+            A.swap(npivot, nrow-1)
+            I.swap(npivot, nrow-1)
+        }
+
+        for row in (nrow .. m) {
+            if (A[row].bit(col)) {
+                A[row] ^= A[nrow-1]
+                I[row] ^= I[nrow-1]
+            }
+        }
+    }
+
+    return I
+}
+
+func cffmm (n) {
+
+    # Check for primes and negative numbers
+    return []  if (n <= 1)
+    return [n] if n.is_prime
+
+    # Check for perfect powers
+    if (n.is_power) {
+
+        var root  = n.perfect_root
+        var power = n.perfect_power
+
+        var factors = __FUNC__(root)
+
+        return (factors * power -> sort)
+    }
+
+    # Check for divisibility by 2
+    if (n.is_even) {
+
+        var v = n.valuation(2)
+        var t = n>>v
+
+        var factors = v.of(2)
+
+        if (t > 1) {
+            factors += __FUNC__(t)
+        }
+
+        return factors
+    }
+
+    var resolve_factor = {|a,b|
+        var g = gcd(b.isqrt - a, n)
+
+        if ((g > 1) && (g < n)) {
+            return (
+                __FUNC__(g) +
+                __FUNC__(n/g) -> sort
+            )
+        }
+    }
+
+    var x = n.isqrt
+    var y = x
+    var z = 1
+
+    var (e1, e2) = (1, 0)
+    var (f1, f2) = (0, 1)
+
+    var L = 1e2         # maximum number of matrix-rows
+    var B = 1e3         # B-smooth limit
+    var S = Hash()
+
+    var Q = []
+    var A = []
+
+    var pi_B = B.prime_count
+
+    func exponent_signature(factors) {
+        var sig = pi_B.of(0)
+
+        for p,e in factors {
+            sig[p.prime_count - 1] = e&1
+        }
+
+        return sig
+    }
+
+    do {
+        y = (((x + y)  // z)*z - y)           #/
+        z = ((n - y*y) // z)                  #/
+
+        var a = ((x*f2 + e2) % n)
+        var b = ((a*a - n*f2*f2) % n)
+
+        if (S.exists(b)) {
+            resolve_factor(a * S{b}, b*b)
+            S{b} = a
+        }
+        else {
+            S{b} = a
+        }
+
+        if (b.is_square) {
+            resolve_factor(a, b)
+        }
+
+        var b_factors = b.factor_exp
+
+        if ((b > 1) && (b_factors[-1][0] <= B)) {
+            A << exponent_signature(b_factors)
+            Q << [a, b]
+        }
+
+        var r = ((x + y) // z)                #/
+
+        (f1, f2) = (f2, (r*f2 + f1) % n)
+        (e1, e2) = (e2, (r*e2 + e1) % n)
+
+    } while ((A.len < L) && (z > 1))
+
+    A.transpose!
+    A.map! { Num(.join, 2) }
+    A.pop_while { .is_zero }
+
+    var I = gauss_elimination(A, Q.end)
+
+    var linear_relations = 0
+    var row_index = A.end
+    var linear_relation = A[row_index--]
+
+    while (linear_relation == 0) {
+        linear_relations++
+        linear_relation = A[row_index--]
+    }
+
+    for (var j = linear_relations; j > 0; --j) {
+
+        var solution_X = 1
+        var solution_Y = 1
+
+        var solution = I[-j]
+
+        for i in (^Q) {
+
+            if (solution.bit(i)) {
+
+                solution_X *= Q[i][0] %= n      #=
+                solution_Y *= Q[i][1] %= n      #=
+
+                if (solution_Y.is_square) {
+                    resolve_factor(solution_X, solution_Y)
+                }
+            }
+        }
+    }
+
+    return [n]
+}
+
+say cffmm(4882742467)
+say cffmm(2**62 - 1)
+
+for k in (2..20) {
+
+    var n = (irand(2, 2**k) * 2.of { random_prime(2**k) }.prod)
+
+    var factors = cffmm(n)
+    assert_eq(factors.prod, n)
+
+    if (factors.all { .is_prime }) {
+        say "#{n} = #{factors.join(' * ')}"
+    }
+    else {
+        say "#{n} = #{factors.join(' * ')} (incomplete factorization)"
+    }
+}
