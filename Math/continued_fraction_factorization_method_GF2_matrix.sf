@@ -13,8 +13,6 @@
 # Parts of code inspired by:
 #    https://github.com/martani/Quadratic-Sieve
 
-# The code is not particularly well optimized (yet)...
-
 func gauss_elimination(A, n) {
 
     var m = A.end
@@ -157,23 +155,15 @@ func cffmm (n) {
 
     } while ((z > 1) && (A.len < L))
 
-    var I = gauss_elimination(A, pi_B-1)
+    var I  = gauss_elimination(A, pi_B-1)
+    var LR = (A.end - A.rindex_by { !.is_zero })
 
-    var linear_relations = 0
-    var row_index = A.end
-    var linear_relation = A[row_index--]
-
-    while (linear_relation == 0) {
-        linear_relations++
-        linear_relation = A[row_index--]
-    }
-
-    for solution in (I.last(linear_relations)) {
+    for solution in (I.last(LR)) {
 
         var solution_X = 1
         var solution_Y = 1
 
-        for i in (Q.range) {
+        for i in (^Q) {
 
             if (solution.bit(i)) {
 
