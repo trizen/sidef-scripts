@@ -18,12 +18,12 @@ func gauss_elimination(A, n) {
     var m = A.end
     var I = (m+1).of {|i| 1 << i }
 
-    var nrow = 0
+    var nrow = -1
 
-    for col in (0..min(m, n)) {
+    for col in (0 .. min(m, n)) {
         var npivot = -1
 
-        for row in (nrow .. m) {
+        for row in (nrow+1 .. m) {
             if (A[row].bit(col)) {
                 npivot = row
                 nrow++
@@ -31,19 +31,17 @@ func gauss_elimination(A, n) {
             }
         }
 
-        if (npivot == -1) {
-            next
+        next if (npivot < 0)
+
+        if (npivot != nrow) {
+            A.swap(npivot, nrow)
+            I.swap(npivot, nrow)
         }
 
-        if (npivot != nrow-1) {
-            A.swap(npivot, nrow-1)
-            I.swap(npivot, nrow-1)
-        }
-
-        for row in (nrow .. m) {
+        for row in (nrow+1 .. m) {
             if (A[row].bit(col)) {
-                A[row] ^= A[nrow-1]
-                I[row] ^= I[nrow-1]
+                A[row] ^= A[nrow]
+                I[row] ^= I[nrow]
             }
         }
     }
@@ -155,6 +153,10 @@ func cffmm (n) {
 
     } while ((z > 1) && (A.len < L))
 
+    if (A.len < pi_B) {
+        A += (pi_B - A.end + 1 -> of(0))
+    }
+
     var I  = gauss_elimination(A, pi_B-1)
     var LR = (A.end - A.rindex_by { !.is_zero })
 
@@ -180,9 +182,11 @@ func cffmm (n) {
     return [n]
 }
 
+say cffmm(50754640)
 say cffmm(4882742467)
 say cffmm(25570266803)
 say cffmm(2**62 - 1)
+say cffmm(2758006706116313);
 
 for k in (2..20) {
 
