@@ -14,10 +14,10 @@
 
 func polygonal_representations (n) {
 
-    var divisors = n.divisors
+    var divisors = (2*n).divisors
 
     divisors.shift
-    divisors += divisors.grep{ .is_odd }.map{|d| 2*d }
+    divisors.pop
 
     var representations = []
 
@@ -31,7 +31,7 @@ func polygonal_representations (n) {
         }
     }
 
-    return representations.uniq.sort
+    return representations
 }
 
 for k in (1 .. 31) {
@@ -45,6 +45,10 @@ for k in (1 .. 31) {
     # Verify the solutions
     assert(P.all {|a| a[0].polygonal(a[1]) == n })
 }
+
+assert_eq(polygonal_representations(165), [[2, 165], [3, 56], [5, 18], [165, 2]])
+assert_eq(polygonal_representations(55), [[2, 55], [5, 7], [10, 3], [55, 2]])
+assert_eq(polygonal_representations(9994), [[2, 9994], [4, 1667], [9994, 2]])
 
 __END__
 2^1 + 1 = P(3, 2)
