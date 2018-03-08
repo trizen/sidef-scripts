@@ -158,6 +158,7 @@ A simple collection of Sidef scripts.
     * [Pollard p minus 1 factorization variation](./Math/pollard_p_minus_1_factorization_variation.sf)
     * [Pollard p minus random a](./Math/pollard_p_minus_random_a.sf)
     * [Pollard rho factorization](./Math/pollard_rho_factorization.sf)
+    * [Polygonal representations](./Math/polygonal_representations.sf)
     * [Problem of apollonius](./Math/problem_of_apollonius.sf)
     * [Product of prime sigmas of divisors](./Math/product_of_prime_sigmas_of_divisors.sf)
     * [Product of primes approx](./Math/product_of_primes_approx.sf)
