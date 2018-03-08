@@ -4,7 +4,11 @@
 # Date: 27 February 2018
 # https://github.com/trizen
 
-# A hybrid factorization algorithm, based on Pollard's p-1 and Pollard's rho algorithms and Fermat's factorization method.
+# A hybrid factorization algorithm, using:
+#   * Pollard's p-1 algorithm
+#   * Pollard's rho algorithm
+#   * A simple version of the continued-fraction factorization method
+#   * Fermat's factorization method
 
 # See also:
 #   https://en.wikipedia.org/wiki/Quadratic_sieve
@@ -50,9 +54,15 @@ func fermat_hybrid_factorization (n) {
     var a1 = (a0*a0 + c)
     var a2 = (a1*a1 + c)
 
+    var c1 = p
+    var c2 = 1
+
+    var (e1, e2) = (1, 0)
+    var (f1, f2) = (0, 1)
+
     while (!q.is_square) {
 
-        # Trizen's factorization method
+        # Trizen's random factorization method (for small factors)
         u = powmod(q * u, k, n)
         v = powmod(p * v, k, n)
 
@@ -82,6 +92,29 @@ func fermat_hybrid_factorization (n) {
         a1 = ((a1*a1 + c) % n)
         a2 = ((a2*a2 + c) % n)
         a2 = ((a2*a2 + c) % n)
+
+        # Simple version of the continued-fraction factorization method
+        c1 = (((p + c1)   // c2)*c2 - c1)         #/
+        c2 = ((n - c1*c1) // c2)                  #/
+
+        var a = ((p*f2 + e2) % n)
+        var b = ((a*a - n*f2*f2) % n)
+
+        if (b.is_square) {
+            g = gcd(b.isqrt - a, n)
+
+            if ((g > 1) && (g < n)) {
+                return (
+                    __FUNC__(g) +
+                    __FUNC__(n/g) -> sort
+                )
+            }
+        }
+
+        var r = ((p + c1) // c2)                  #/
+
+        (f1, f2) = (f2, (r*f2 + f1) % n)
+        (e1, e2) = (e2, (r*e2 + e1) % n)
 
         # Pollard's p-a algorithm (random variation)
         t = z
