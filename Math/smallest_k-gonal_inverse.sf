@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 08 March 2018
+# https://github.com/trizen
+
+# Given an integer `n`, find the smallest integer k>=3 such that `n` is a k-gonal number.
+
+# Example:
+#  a(12) = 5 since 12 is a pentagonal number, but not a square or triangular.
+
+# See also:
+#   https://oeis.org/A176774
+
+func smallest_k_gonal_inverse (n) {
+
+    var divisors = (2*n).divisors
+
+    divisors.shift
+    divisors.pop
+
+    divisors.reverse.each { |d|
+
+        var t = (d - 1)
+        var k = (2*n / d + 2*d - 4)
+
+        if (t `divides` k) {
+            var z = k/t
+
+            if (z>2 && z<n) {
+                return k/t
+            }
+        }
+    }
+
+    return n
+}
+
+for n in (4000 .. 4030) {
+    say "a(#{n}) = #{smallest_k_gonal_inverse(n)}"
+}
