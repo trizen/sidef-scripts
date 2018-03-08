@@ -66,6 +66,10 @@ func find_square_subsets(Q) {
         }
     }
 
+    if (A.len < max_prime.prime_count) {
+        A += (max_prime.prime_count - A.len -> of(0))
+    }
+
     var I  = gaussian_elimination(A, max_prime.prime_count-1)
     var LR = (A.end - A.rindex_by { !.is_zero })
 
@@ -93,6 +97,8 @@ func find_square_subsets(Q) {
 var Q = [10, 97, 24, 35, 75852, 54, 12, 13, 11,
          33, 37, 48, 57, 58, 63, 68, 377, 15,
          20, 26, 7, 3, 17, 29, 43, 41, 4171, 78]
+
+#Q = [10, 24, 35, 52, 54, 78]
 
 var S = find_square_subsets(Q)
 
