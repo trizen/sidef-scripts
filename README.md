@@ -89,7 +89,6 @@ A simple collection of Sidef scripts.
     * [Continued fraction](./Math/continued_fraction.sf)
     * [Continued fraction factorization method](./Math/continued_fraction_factorization_method.sf)
     * [Continued fraction factorization method GF2 matrix](./Math/continued_fraction_factorization_method_GF2_matrix.sf)
-    * [Continued fraction factorization method modular](./Math/continued_fraction_factorization_method_modular.sf)
     * [Continued fraction to fraction](./Math/continued_fraction_to_fraction.sf)
     * [Continued fractions convergents](./Math/continued_fractions_convergents.sf)
     * [Digamma function](./Math/digamma_function.sf)
