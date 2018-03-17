@@ -1,18 +1,29 @@
 #!/usr/bin/ruby
 
-func invmod(a, n) {
-  var (t, nt, r, nr) = (0, 1, n, a % n)
-  while (nr != 0) {
-    var quot = int((r - (r % nr)) / nr);
-    (nt, t) = (t - quot*nt, nt);
-    (nr, r) = (r - quot*nr, nr);
-  }
-  r > 1 && return()
-  t < 0 && (t += n)
-  t
+# Algorithm for computing the modular inverse: 1/a mod n, with gcd(a, n) = 1.
+
+# Algorithm presented in the book:
+#
+#   Modern Computer Arithmetic
+#           - by Richard P. Brent and Paul Zimmermann
+#
+
+func modular_inverse (a, n) {
+
+    var (u, w) = (1, 0)
+    var (q, r) = (0, 0)
+
+    var c = n
+
+    while (c != 0) {
+        (q, r) = divmod(a, c)
+        (a, c) = (c, r)
+        (u, w) = (w, u - q*w)
+    }
+
+    u += n if (u < 0)
+
+    return u
 }
 
-var n = invmod(42, 2017)
-
-say n
-assert_eq(42.modinv(2017), n)
+say modular_inverse(42, 2017)   #=> 1969

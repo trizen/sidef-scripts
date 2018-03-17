@@ -1,0 +1,28 @@
+#!/usr/bin/ruby
+
+# Algorithm for computing the secant numbers:
+#
+#   1, 1, 5, 61, 1385, 50521, 2702765, 199360981, 19391512145, 2404879675441, 370371188237525, ...
+#
+
+# Algorithm presented in the book:
+#
+#   Modern Computer Arithmetic
+#           - by Richard P. Brent and Paul Zimmermann
+#
+
+func secant_numbers (n) {
+    var S = [1]
+
+    for k in (1 .. n) {
+        S[k] = S[k-1]*k
+    }
+
+    for k in (1 .. n), j in (k+1 .. n) {
+        S[j] = (S[j-1]*(j - k) + S[j]*(j - k + 1))
+    }
+
+    return S
+}
+
+say secant_numbers(10)

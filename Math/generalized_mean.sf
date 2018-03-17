@@ -1,0 +1,13 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 17 March 2018
+# https://github.com/trizen
+
+# Generalized mean (also known as "power mean" or "Holder mean").
+
+func M (a, p) {
+    (a.sum_by {|x| x**p }) / a.len -> root(p)
+}
+
+say M([1,2,3,4,5], 42)     #=> 4.81203459571543614593606406609001665612957550549

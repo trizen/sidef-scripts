@@ -1,0 +1,28 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 17 March 2018
+# https://github.com/trizen
+
+# Arithmetic-harmonic mean (AHM).
+
+func AHM(a, h, p=100) {
+
+    loop {
+        var a1 = ((a + h) / 2)
+        var h1 = (2 / (1/a + 1/h))
+
+        if (
+            (a1.round(-p) == a.round(-p)) &&
+            (h1.round(-p) == h.round(-p))
+        ) {
+            return a
+        }
+
+        (a, h) = (a1,  h1)
+    }
+}
+
+say AHM(1, 2)         #=> sqrt(2)
+say AHM(2, 5)         #=> sqrt(5) / sqrt(1/2)
+say AHM(3, 42)        #=> sqrt(3) / sqrt(1/42)

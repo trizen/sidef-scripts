@@ -1,0 +1,42 @@
+#!/usr/bin/ruby
+
+# Approximation to the solution for x in:
+#  a*x^2 + b*x + c = 0
+
+# Defined only in the following cases:
+#  a > 0
+#  c < 0
+
+func quadratic_formula_approx(x, y, z, r=300) {
+
+    # say abs(((-y + sqrt(y*y - 4*x*z))/ (2*x)))
+
+    var A = x.abs
+    var B = y.abs
+    var C = z.abs
+
+    var B1 = (y > 0 ? -y : 0)
+    var C1 = (z > 0 ? -z : 0)
+
+    func a(n) is cached {
+
+        return 0 if (n == 0)
+        return 1 if (n == 1)
+
+        (B*a(n-1) + A*a(n-2) + B1)/C + C1
+    }
+
+    func b(n) is cached {
+
+        return 1 if (n == 0)
+        return 0 if (n == 1)
+
+        (B*b(n-1) + A*b(n-2) + B1)/C + C1
+    }
+
+    a(r) / b(r)
+}
+
+say quadratic_formula_approx(13, -42, -34)       #=> 3.90117814740055779908605856794532743125765386019
+say quadratic_formula_approx(1, -1, -1)          #=> 1.61803398874989484820458683436563811772030917981
+say quadratic_formula_approx(29, 5, -4)          #=> 0.295057661853378981552427771067600924446979990392

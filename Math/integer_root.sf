@@ -1,0 +1,27 @@
+#!/usr/bin/ruby
+
+# Newton's method for computing the integer k-th root of n.
+
+# Algorithm presented in the book:
+#
+#   Modern Computer Arithmetic
+#           - by Richard P. Brent and Paul Zimmermann
+#
+
+func rootint(n, k) {
+
+    var s = n
+    var u = s
+    var v = k-1
+
+    loop {
+        u = ((v*s + (n // s**v)) // k)
+        break if (u >= s)
+        s = u
+    }
+
+    return s
+}
+
+say rootint(125, 3)                                             #=> 5
+say rootint(9459122604759044655688885823259195320276, 48)       #=> 6

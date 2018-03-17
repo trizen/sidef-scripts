@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+# Newton's method for computing the integer square root of n.
+
+# Algorithm presented in the book:
+#
+#   Modern Computer Arithmetic
+#           - by Richard P. Brent and Paul Zimmermann
+#
+
+func sqrtint(n) {
+
+    var s = n
+    var u = s
+
+    loop {
+        u = ((s + (n // s)) >> 1)
+        break if (u >= s)
+        s = u
+    }
+
+    return s
+}
+
+say sqrtint(144**2)     #=> 144
+say sqrtint(123456)     #=> 351

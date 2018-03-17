@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 17 March 2018
+# https://github.com/trizen
+
+# A new algorithm for computing the square root of a given number at arbitrary precision.
+
+# Based on the arithmetic-harmonic mean (AHM).
+
+func square_root (n, p=50) {
+
+    var a = 1
+
+    loop {
+        var t = (a + n)
+        var u = (t / 2)
+        var v = (2*a*n / t)
+
+        if (
+            (u.round(-p) == a.round(-p)) &&
+            (v.round(-p) == n.round(-p))
+        ) {
+            return a
+        }
+
+        (a, n) = (u,  v)
+    }
+}
+
+say square_root(2)          #=> 1.41421356237309504880168872420969807856967187538
+say square_root(1234.567)   #=> 35.13640562152025248047681253395668334052672496563

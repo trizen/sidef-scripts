@@ -1,0 +1,35 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 17 March 2018
+# https://github.com/trizen
+
+# Arithmetic-geometric-harmonic mean (AGHM) for a list of three values.
+
+# Extension of the arithmetic-geometric mean (AGM).
+
+func A(*a) { a.sum / a.len }
+func G(*a) { a.prod.root(a.len) }
+func H(*a) { a.len / a.map{.inv}.sum }
+
+func AGHM(a, g, h, p=100) {
+    loop {
+        var a1 = A(a, g, h)
+        var g1 = G(a, g, h)
+        var h1 = H(a, g, h)
+
+        if (
+            (a1.round(-p) == a.round(-p)) &&
+            (g1.round(-p) == g.round(-p)) &&
+            (h1.round(-p) == h.round(-p))
+        ) {
+            return a
+        }
+
+        (a, g, h) = (a1, g1, h1)
+    }
+}
+
+say AGHM(1, 2, 3)                     #=> 1.81174228573045668252604274570860756877576751416
+say AGHM(1, 1/2, 1/3)                 #=> 0.551954882256789004514874128479233200903459376603
+say AGHM(5, 1/sqrt(2), 1/sqrt(3))     #=> 1.33688849807307128479412972909072330610099261518
