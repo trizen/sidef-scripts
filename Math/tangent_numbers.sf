@@ -1,0 +1,54 @@
+#!/usr/bin/ruby
+
+# Algorithm for computing the tangent numbers:
+#
+#   1, 2, 16, 272, 7936, 353792, 22368256, 1903757312, 209865342976, 29088885112832, ...
+#
+
+# Algorithm presented in the book:
+#
+#   Modern Computer Arithmetic
+#           - by Richard P. Brent and Paul Zimmermann
+#
+
+func tangent_numbers (n) {
+    var T = [1]
+
+    for k in (1 ..^ n) {
+        T[k] = T[k-1]*k
+    }
+
+    for k in (1 ..^ n), j in (k ..^ n) {
+        T[j] = (T[j-1]*(j - k) + T[j]*(j - k + 2))
+    }
+
+    return T
+}
+
+func tangent_numbers_from_bernoulli (n) {
+
+    var t = (n << 1)
+
+    (-1)**(n-1) * (1 << t) * ((1 << t) - 1) * t.bernoulli / t
+}
+
+func bernoulli_from_tangent_numbers (n) {
+
+    n == 0   && return 1
+    n == 1   && return 1/2
+    n.is_odd && return 0
+
+    var t = (n >> 1)
+    var T = tangent_numbers(t)
+
+    (-1)**(t - 1) * n * T[-1] / ((1 << (n << 1)) - (1 << n))
+}
+
+say tangent_numbers(10)
+say 10.of { tangent_numbers_from_bernoulli(_+1) }
+
+say "\n=> Bernoulli numbers from tangent numbers:"
+
+for n in (1..20) {
+    printf("B(%2d) = %30s / %s\n", 2*n, bernoulli_from_tangent_numbers(2*n).nude)
+}

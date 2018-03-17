@@ -1,0 +1,37 @@
+#!/usr/bin/ruby
+
+# Algorithm for computing the modular inverse of a list of numbers:
+#   0 < x_1, ..., x_k < n
+#
+# Output:
+#   y_1 = 1/x_1 mod n, ..., y_k = 1/x_k mod n
+
+# Algorithm presented in the book:
+#
+#   Modern Computer Arithmetic
+#           - by Richard P. Brent and Paul Zimmermann
+#
+
+func multiple_inversion (Array x, Number n) {
+
+    var k = x.end
+    var z = [x[0]]
+
+    for i in (1 .. k) {
+        z[i] = ((z[i-1] * x[i]) % n)
+    }
+
+    var y = []
+    var q = invmod(z[k], n)
+
+    for i in (k `downto` 1) {
+        y[i] = ((q * z[i-1]) % n)
+        q    = ((q * x[i])   % n)
+    }
+
+    y[0] = q
+
+    return y
+}
+
+say multiple_inversion([33, 42, 99, 103], 2017)    #=> [489, 1969, 163, 235]

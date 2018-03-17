@@ -1,0 +1,35 @@
+#!/usr/bin/ruby
+
+# Algorithm for computing the extended greatest common divisor of two integers.
+
+# Algorithm presented in the book:
+#
+#   Modern Computer Arithmetic
+#           - by Richard P. Brent and Paul Zimmermann
+#
+
+func extended_gcd(a, b) {
+
+    var (u, w) = (1, 0)
+    var (v, x) = (0, 1)
+    var (q, r) = (0, 0)
+
+    while (b != 0) {
+        (q, r) = divmod(a, b)
+        (a, b) = (b, r)
+        (u, w) = (w, u - q*w)
+        (v, x) = (x, v - q*x)
+    }
+
+    return (a, u, v)
+}
+
+var a = 31738434
+var b = 143626392
+
+var (g, u, v) = extended_gcd(a, b)
+
+say "gcd(#{a}, #{b}) = #{g}"            #=> gcd(31738434, 143626392) = 546
+say "#{u}*#{a} + #{v}*#{b} = #{g}"      #=> 55417*31738434 + -12246*143626392 = 546
+
+assert_eq(u*a + v*b, g)

@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 17 March 2018
+# https://github.com/trizen
+
+# Geometric-harmonic mean (GHM).
+
+# If AGM(x,y) is the arithmetic-geometric mean, then GHM(x,y) is equivalent with:
+#
+#   GHM(x,y) = 1/AGM(1/x, 1/y)
+#
+
+func GHM(g, h, p=100) {
+    loop {
+        var g1 = sqrt(g*h)
+        var h1 = (2 / (1/g + 1/h))
+
+        if (
+            (g1.round(-p) == g.round(-p)) &&
+            (h1.round(-p) == h.round(-p))
+        ) {
+            return g
+        }
+
+        (g, h) = (g1, h1)
+    }
+}
+
+say GHM(1, 2)             #=> 1.37288050061835016469763757500780605809453862535
+say GHM(1, 1/2)           #=> 0.686440250309175082348818787503903029047269312674
+say GHM(3, 1/sqrt(2))     #=> 1.28640254813473954856043309974567498549916997311

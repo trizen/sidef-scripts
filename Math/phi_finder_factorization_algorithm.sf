@@ -1,0 +1,48 @@
+#!/usr/bin/ruby
+
+# A new factorization algorithm for semiprimes, by estimating phi(n).
+
+# The algorithm is called "Phi-Finder" and is due to Kyle Kloster (2010), described in his thesis:
+#   Factoring a semiprime n by estimating φ(n)
+
+func phi_factor(n) {
+
+    return []  if (n <= 1)
+    return [n] if n.is_prime
+
+    if (n.is_square) {
+        return 2.of(n.isqrt)
+    }
+
+    var E = (n - 2*n.isqrt + 1)
+    var E0 = powmod(2, -E, n)
+
+    var L = n.ilog2
+    var i = 0
+
+    while (E0 & (E0-1) != 0) {
+        E0 <<= L
+        E0 %= n
+        ++i
+    }
+
+    var t = (0..L -> first_by {|k| powmod(2, k, n) == E0 })
+
+    var phi = abs(i*L - E - t)
+
+    var q = (n - phi + 1)
+    var p = (q + isqrt(q*q - 4*n))>>1
+
+    [n `idiv` p, p]
+}
+
+for k in (10..25) {
+
+    var n = (random_nbit_prime(k) * random_nbit_prime(k))
+    var f = phi_factor(n)
+
+    say "#{n} = #{f.join(' * ')}"
+
+    assert_eq(f.prod, n)
+    assert(f.all{.is_prime})
+}

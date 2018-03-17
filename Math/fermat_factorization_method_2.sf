@@ -1,0 +1,44 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 16 March 2018
+# https://github.com/trizen
+
+# A simple implementation of Fermat's factorization method.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Fermat%27s_factorization_method
+
+func fermat_factorization (n) {
+
+    # Check for primes and negative numbers
+    return []  if (n <= 1)
+    return [n] if n.is_prime
+
+    # Check for divisibility by 2
+    if (n.is_even) {
+        var v = n.valuation(2)
+        return (v.of(2) + __FUNC__(n >> v))
+    }
+
+    var q = 2*n.isqrt
+
+    while (!is_square(q*q - 4*n)) {
+        q += 2
+    }
+
+    # For a semiprime `n`, we have:
+    # say "euler_phi(#{n}) = #{n - q + 1}"
+
+    var p = (q + isqrt(q*q - 4*n))>>1
+
+    __FUNC__(n/p) +
+    __FUNC__(p) -> sort
+}
+
+for n in ([160587846247027, 5040, 65127835124, 6469693230]) {
+    var factors = fermat_factorization(n)
+    say "#{factors.join(' * ')} = #{n}"
+    assert(factors.all { .is_prime })
+    assert_eq(factors.prod, n)
+}
