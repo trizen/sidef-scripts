@@ -6,6 +6,8 @@
 
 # Arithmetic-harmonic mean (AHM).
 
+# AHM is equivalent with the geometric mean: AHM(a, b) = sqrt(a * b)
+
 func AHM(a, h, p=100) {
 
     loop {
@@ -23,6 +25,6 @@ func AHM(a, h, p=100) {
     }
 }
 
-say AHM(1, 2)         #=> sqrt(2)
-say AHM(2, 5)         #=> sqrt(5) / sqrt(1/2)
-say AHM(3, 42)        #=> sqrt(3) / sqrt(1/42)
+say AHM(1, 2)         #=> sqrt(1 * 2)
+say AHM(2, 5)         #=> sqrt(2 * 5)
+say AHM(3, 42)        #=> sqrt(3 * 42)
