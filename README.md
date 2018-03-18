@@ -95,6 +95,7 @@ A simple collection of Sidef scripts.
     * [Continued fraction to fraction](./Math/continued_fraction_to_fraction.sf)
     * [Continued fractions convergents](./Math/continued_fractions_convergents.sf)
     * [Digamma function](./Math/digamma_function.sf)
+    * [Draw grid of squares](./Math/draw_grid_of_squares.sf)
     * [Elementary cellular automaton](./Math/elementary_cellular_automaton.sf)
     * [Extended greatest common divisor](./Math/extended_greatest_common_divisor.sf)
     * [Factorial approximations](./Math/factorial_approximations.sf)
