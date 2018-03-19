@@ -1,0 +1,31 @@
+#!/usr/bin/ruby
+
+# Solve a*x = b (mod n)
+
+func solve_lcg (a, b, n) {
+
+    var d = gcd(a, n)
+
+    # No solution if `d` does not divide `b`
+    return nil if !(d `divides` b)
+
+    a /= d
+    b /= d
+    n /= d
+
+    var t = invmod(a, n)
+    var x = ((t*b) % n)
+
+    return x
+}
+
+func solve_lcg_simple (a, b, n) {
+    (invmod(a, n) * b) % n
+}
+
+var a =  10**5     # coefficient of x
+var b = -19541     # congruent to this
+var n =  19543     # modulo this number
+
+say solve_lcg(a, b, n)              #=> 10785
+say solve_lcg_simple(a, b, n)       #=> 10785
