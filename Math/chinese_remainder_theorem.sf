@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+
+# Simple implementation of the Chinese Remainder Theorem (CRT) for solving x in:
+#
+#   x = a_1 (mod n_1)
+#   x = a_2 (mod n_2)
+#         ...
+#   x = a_k (mod n_k)
+#
+
+func CRT (*congruences) {
+
+    var c = 0
+    var m = congruences.prod_by { _[1] }
+
+    for a,n in (congruences) {
+
+        var t = m/n
+        var u = (t * invmod(t, n))
+
+        c += ((a*u) % m)
+    }
+
+    return (c % m)
+}
+
+# Example for:
+#   x = 2 (mod 3)
+#   x = 3 (mod 5)
+#   x = 2 (mod 7)
+
+say CRT([2, 3], [3, 5], [2, 7])       #=> 23

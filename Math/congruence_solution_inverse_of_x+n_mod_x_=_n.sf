@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+# Solutions to `x` in the following congruence:
+#
+# (x + n^a)^(-1) = n^b (mod x)
+#
+
+# For each solution `x` that satisfy the congruence:
+#  x | (n^(a + b) - 1)
+
+func solve_for(n, a=1, b=1) {
+
+    var solutions = []
+
+    for x in (divisors(n**(a + b) - 1)) {
+        if (invmod(x + n**a, x) == n**b) {
+            solutions << x
+        }
+    }
+
+    return solutions
+}
+
+say solve_for(123456, 1, 1)    #=> [123457, 617285, 3048276787, 15241383935]
+say solve_for(123456, 1, 2)    #=> [15241507393, 76207536965, 53761151291509, 268805756457545, 376328059040563, 1881640295202815]
+say solve_for(123,    3, 2)    #=> [111691, 126031, 223382, 252062, 7687891, 15375782, 230762761, 461525522, 14076528421, 28153056842]

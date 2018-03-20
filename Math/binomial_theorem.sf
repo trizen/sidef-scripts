@@ -1,0 +1,11 @@
+#!/usr/bin/ruby
+
+# Simple implementation of the binomial theorem.
+
+func binomial_sum(a, b, n) {
+    sum(0..n, {|k|
+        binomial(n, k) * a**(n-k) * b**k
+    })
+}
+
+say binomial_sum(3, 5, 10)      #=> 1073741824   (= (3+5)^10)
