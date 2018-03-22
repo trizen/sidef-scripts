@@ -101,6 +101,7 @@ A simple collection of Sidef scripts.
     * [Digamma function](./Math/digamma_function.sf)
     * [Draw grid of squares](./Math/draw_grid_of_squares.sf)
     * [Elementary cellular automaton](./Math/elementary_cellular_automaton.sf)
+    * [Euler's totient theorem expmod](./Math/euler_s_totient_theorem_expmod.sf)
     * [Extended greatest common divisor](./Math/extended_greatest_common_divisor.sf)
     * [Factorial approximations](./Math/factorial_approximations.sf)
     * [Factorial dsc algorithm](./Math/factorial_dsc_algorithm.sf)

@@ -1,0 +1,18 @@
+#!/usr/bin/ruby
+
+# Euler's totient theorem:
+#   a^φ(n) = 1 (mod n)      with gcd(a, n) = 1
+
+# Additionally, given gcd(a, n) = 1, we have:
+#   a^e (mod n) = a^(e mod φ(n)) (mod n)
+
+func expmod_euler (a, e, n) {
+
+    if (a `is_coprime` n) {
+        e %= n.euler_phi
+    }
+
+    powmod(a, e, n)
+}
+
+say expmod_euler(7, 143, 26)    #=> 15   (7^11 mod 26)
