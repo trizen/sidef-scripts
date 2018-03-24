@@ -111,6 +111,7 @@ A simple collection of Sidef scripts.
     * [Faulhaber's formula](./Math/faulhaber_s_formula.sf)
     * [Faulhaber's formula explicit](./Math/faulhaber_s_formula_explicit.sf)
     * [Faulhaber's triangle](./Math/faulhaber_s_triangle.sf)
+    * [Fermat factorization improved](./Math/fermat_factorization_improved.sf)
     * [Fermat factorization method](./Math/fermat_factorization_method.sf)
     * [Fermat factorization method 2](./Math/fermat_factorization_method_2.sf)
     * [Fermat hybrid factorization method](./Math/fermat_hybrid_factorization_method.sf)

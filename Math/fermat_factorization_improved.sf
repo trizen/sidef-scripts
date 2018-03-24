@@ -1,0 +1,91 @@
+#!/usr/bin/ruby
+
+# An improved version of the Fermat's factorization method, combined with the following two identities:
+
+# a = sqrt(a*b - |b-a| * a)
+# b = sqrt(a*b + |b-a| * b)
+
+# Example:
+#   43 = sqrt(43*97 - (97-43) * 43)
+#   97 = sqrt(43*97 + (97-43) * 97)
+
+# When `n+q` or `n-q` is a square, there is a chance that gcd(n, q) is a non-trivial factor of n.
+
+func fermat_factorization_improved (n) {
+
+    # Check for primes and negative numbers
+    return []  if (n <= 1)
+    return [n] if n.is_prime
+
+    # Check for perfect squares
+    if (n.is_square) {
+        return (__FUNC__(n.isqrt) * 2 -> sort)
+    }
+
+    # Check for divisibility by 2
+    if (n.is_even) {
+        var v = n.valuation(2)
+        return (v.of(2) + __FUNC__(n >> v))
+    }
+
+    var (a, b) = n.isqrtrem
+
+    var p = b
+    var q = ((a+1)**2 - n)
+
+    var g = 1
+    var t = 1
+
+    loop {
+
+        # Fermat's factorization method
+        if (q.is_square) {
+            var s = q.isqrt
+            var u = (a + (t+1)/2)
+
+            return (
+                __FUNC__(u + s) +
+                __FUNC__(u - s) -> sort
+            )
+        }
+
+        # n+q is a perfect square
+        g = gcd(n, q)
+
+        if (g > 1) {
+            return (
+                __FUNC__(g) +
+                __FUNC__(n/g) -> sort
+            )
+        }
+
+        # n-p is a perfect square
+        g = gcd(n, p)
+
+        if (g > 1) {
+            return (
+                __FUNC__(g) +
+                __FUNC__(n/g) -> sort
+            )
+        }
+
+        p += (2*a - t)
+        q += (2*a + t+2)
+
+        t += 2
+    }
+}
+
+for n in ([160587846247027, 5040, 65127835124, 6469693230]) {
+    var factors = fermat_factorization_improved(n)
+    say "#{factors.join(' * ')} = #{n}"
+    assert(factors.all { .is_prime })
+    assert_eq(factors.prod, n)
+}
+
+for n in (2..1000) {
+    var factors = fermat_factorization_improved(n)
+    #say "#{factors.join(' * ')} = #{n}"
+    assert(factors.all { .is_prime })
+    assert_eq(factors.prod, n)
+}
