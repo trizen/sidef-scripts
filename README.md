@@ -202,6 +202,7 @@ A simple collection of Sidef scripts.
     * [Solve linear congruence equation](./Math/solve_linear_congruence_equation.sf)
     * [Solve pell equation](./Math/solve_pell_equation.sf)
     * [Sqrt 2 approximation](./Math/sqrt_2_approximation.sf)
+    * [Sqrt convergents](./Math/sqrt_convergents.sf)
     * [Square product subsets](./Math/square_product_subsets.sf)
     * [Square root arithmetic-harmonic mean](./Math/square_root_arithmetic-harmonic_mean.sf)
     * [Square root modulo n](./Math/square_root_modulo_n.sf)
