@@ -12,33 +12,23 @@ func sqrt_convergents (n, callback, count=10) {
     var y = x
     var z = 1
 
-    var k = 0
     var r = 0
 
     var (e1, e2) = (1, 0)
     var (f1, f2) = (0, 1)
 
-    var period_found = false
-    var sqrt_cfrac = []
-
     count.times {
 
-        if (period_found) {
-            r = sqrt_cfrac[k++ % sqrt_cfrac.len]
-        }
-        else {
-            y = (((x + y)  // z)*z - y)           #/
-            z = ((n - y*y) // z)                  #/
-            r = ((x + y)   // z)                  #/
-
-            sqrt_cfrac << r
-            period_found = (z == 1)
-        }
+        y = (((x + y)  // z)*z - y)           #/
+        z = ((n - y*y) // z)                  #/
+        r = ((x + y)   // z)                  #/
 
         callback(e2 + x*f2, f2)
 
         (f1, f2) = (f2, r*f2 + f1)
         (e1, e2) = (e2, r*e2 + e1)
+
+        y = x if (z == 1)
     }
 }
 
