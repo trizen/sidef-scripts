@@ -98,10 +98,10 @@ func fermat_hybrid_factorization (n) {
         c2 = ((n - c1*c1) // c2)                  #/
 
         var a = ((p*f2 + e2) % n)
-        var b = ((a*a - n*f2*f2) % n)
+        var b = (a*a % n)
 
         if (b.is_square) {
-            g = gcd(b.isqrt - a, n)
+            g = gcd(a - b.isqrt, n)
 
             if ((g > 1) && (g < n)) {
                 return (

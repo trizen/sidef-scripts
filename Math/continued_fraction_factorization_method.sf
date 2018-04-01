@@ -41,7 +41,7 @@ func cffm (n) {
     }
 
     var resolve_factor = {|a,b|
-        var g = gcd(b.isqrt - a, n)
+        var g = gcd(a - b.isqrt, n)
 
         if ((g > 1) && (g < n)) {
             return (
@@ -65,7 +65,7 @@ func cffm (n) {
         z = ((n - y*y) // z)                  #/
 
         var a = ((x*f2 + e2) % n)
-        var b = ((a*a - n*f2*f2) % n)
+        var b = (a*a % n)
 
         if (b.is_square) {
             resolve_factor(a, b)
