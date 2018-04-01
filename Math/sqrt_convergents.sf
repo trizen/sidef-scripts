@@ -12,14 +12,14 @@ func sqrt_convergents (n, callback, count=10) {
     var y = x
     var z = 1
 
-    var r = 0
+    var r = x+x
 
     var (e1, e2) = (1, 0)
     var (f1, f2) = (0, 1)
 
     count.times {
 
-        y = (((x + y)  // z)*z - y)           #/
+        y = (r*z - y)
         z = ((n - y*y) // z)                  #/
         r = ((x + y)   // z)                  #/
 
