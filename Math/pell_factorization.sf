@@ -65,7 +65,7 @@ func pell_factorization (n) {
             )
         }
 
-        g = gcd(f2, n)
+        g = gcd(f2 + e2, n)
 
         if ((g > 1) && (g < n)) {
             return (
