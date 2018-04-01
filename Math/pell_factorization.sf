@@ -10,6 +10,7 @@
 #   x^2 - d*y^2 = 1, where `d` is known.
 
 # See also:
+#   https://oeis.org/A003285
 #   https://en.wikipedia.org/wiki/Pell%27s_equation
 
 func pell_factorization (n) {
@@ -43,14 +44,19 @@ func pell_factorization (n) {
     var y = x
     var z = 1
 
-    var (f1, f2) = (x, 1)
+    var r = 1
+    var g = 1
+
+    var (e1, e2) = (1, 0)
+    var (f1, f2) = (0, 1)
 
     loop {
 
         y = (((x + y)  // z)*z - y)           #/
         z = ((n - y*y) // z)                  #/
+        r = ((x + y)   // z)                  #/
 
-        var g = gcd(f1, n)
+        g = gcd(e2 + x*f2, n)
 
         if ((g > 1) && (g < n)) {
             return (
@@ -59,11 +65,30 @@ func pell_factorization (n) {
             )
         }
 
-        (f1, f2) = (f2, (((x + y) // z)*f2 + f1) % n) #/
+        g = gcd(f2, n)
+
+        if ((g > 1) && (g < n)) {
+            return (
+                __FUNC__(n/g) +
+                __FUNC__(g) -> sort
+            )
+        }
+
+        g = gcd(e2, n)
+
+        if ((g > 1) && (g < n)) {
+            return (
+                __FUNC__(n/g) +
+                __FUNC__(g) -> sort
+            )
+        }
+
+        (f1, f2) = (f2, (r*f2 + f1) % n)
+        (e1, e2) = (e2, (r*e2 + e1) % n)
     }
 }
 
-for k in (2..55) {
+for k in (2..50) {
     var n = (2**k - 1)
     var factors = pell_factorization(n)
 
