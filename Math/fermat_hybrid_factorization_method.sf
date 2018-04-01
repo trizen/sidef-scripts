@@ -37,6 +37,7 @@ func fermat_hybrid_factorization (n) {
     }
 
     var p = n.isqrt
+    var x = p
     var q = (p*p - n)
 
     var t = 1
@@ -97,9 +98,9 @@ func fermat_hybrid_factorization (n) {
 
         # Simple version of the continued-fraction factorization method
         c1 = (r*c2 - c1)
-        c2 = ((n - c1*c1) // c2)                  #/
+        c2 = ((n - c1*c1) // c2)        #/
 
-        var a = ((p*f2 + e2) % n)
+        var a = ((x*f2 + e2) % n)
         var b = (a*a % n)
 
         if (b.is_square) {
@@ -113,7 +114,7 @@ func fermat_hybrid_factorization (n) {
             }
         }
 
-        r = ((p + c1) // c2)                      #/
+        r = ((x + c1) // c2)            #/
 
         (f1, f2) = (f2, (r*f2 + f1) % n)
         (e1, e2) = (e2, (r*e2 + e1) % n)
@@ -146,20 +147,9 @@ func fermat_hybrid_factorization (n) {
     __FUNC__(p - s) -> sort
 }
 
-var tests = [
-    160587846247027, 5040, 65127835124, 6469693230,
-    12129569695640600539, 2**42 + 1, 2**64 + 1,
-    38568900844635025971879799293495379321,
-]
-
-for n in (tests) {
+for k in (1..63) {
+    var n = irand(2, 1<<k)
     var prime_factors = fermat_hybrid_factorization(n)
-    say "#{prime_factors.join(' * ')} = #{n}"
+    say "#{n} = #{prime_factors.join(' * ')}"
     assert_eq(prime_factors.prod, n)
-}
-
-for n in (2..1000) {
-    var factors = fermat_hybrid_factorization(n)
-    assert(factors.all { .is_prime })
-    assert_eq(factors.prod, n)
 }
