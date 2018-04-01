@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 # Author: Daniel "Trizen" Șuteu
-# Date: 02 March 2018
+# Date: 01 April 2018
 # https://github.com/trizen
 
 # A new integer factorization method, using continued fractions and square root convergents.
@@ -43,16 +43,31 @@ func pell_factorization (n) {
     var x = n.isqrt
     var y = x
     var z = 1
-    var r = 1
+
+    var r = (x + y)
 
     var (e1, e2) = (1, 0)
     var (f1, f2) = (0, 1)
 
     loop {
 
-        y = (((x + y)  // z)*z - y)           #/
+        y = (r*z - y)
         z = ((n - y*y) // z)                  #/
         r = ((x + y)   // z)                  #/
+
+        var a = ((x*f2 + e2) % n)
+        var b = ((a*a - n*f2*f2) % n)
+
+        if (b.is_square) {
+            var g = gcd(b.isqrt - a, n)
+
+            if ((g > 1) && (g < n)) {
+                return (
+                    __FUNC__(g) +
+                    __FUNC__(n/g) -> sort
+                )
+            }
+        }
 
         for t in ([
             e2,
@@ -77,7 +92,7 @@ func pell_factorization (n) {
 }
 
 for k in (2..50) {
-    var n = (2**k - 1)
+    var n = irand(2, 1<<k)
     var factors = pell_factorization(n)
 
     assert_eq(factors.prod, n)

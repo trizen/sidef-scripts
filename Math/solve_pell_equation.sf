@@ -10,7 +10,7 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Pell%27s_equation
 
-func cfrac_denominator (cfrac) {
+func cfrac_numerator (cfrac) {
 
     var (f1, f2) = (0, 1)
 
@@ -25,7 +25,7 @@ func solve_pell (d, negative = false) {
     var (k, *period) = d.sqrt_cfrac...
 
     2.times {
-        var x = cfrac_denominator([k, period...])
+        var x = cfrac_numerator([k, period...])
         var p = (4*d * (x*x + (negative ? 1 : -1)))
         p.is_square && return [x, p.isqrt / (2*d)]
         period += period
