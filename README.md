@@ -197,6 +197,7 @@ A simple collection of Sidef scripts.
     * [Sierpinski triangle](./Math/sierpinski_triangle.sf)
     * [Sierpinski triangle 90](./Math/sierpinski_triangle_90.sf)
     * [Sierpinski x](./Math/sierpinski_x.sf)
+    * [Siqs factorization](./Math/siqs_factorization.sf)
     * [Smallest k-gonal inverse](./Math/smallest_k-gonal_inverse.sf)
     * [Solovay-strassen primality test](./Math/solovay-strassen_primality_test.sf)
     * [Solve linear congruence equation](./Math/solve_linear_congruence_equation.sf)
