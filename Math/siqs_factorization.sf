@@ -50,6 +50,7 @@ class FactorBasePrime (p, t, lp) {
     has soln1 = nil
     has soln2 = nil
     has ainv  = nil
+    has p_log = p.log
 }
 
 func siqs_factor_base_primes (n, nf) {
@@ -120,7 +121,7 @@ func siqs_find_first_poly (n, m, factor_base) {
     }
 
     var target0 = ((n.log + 2.log)/2 - m.log)
-    var target1 = (target0 - (((factor_base[p_min_i].p + factor_base[p_max_i].p)/2).log / 2))
+    var target1 = (target0 - ((log(factor_base[p_min_i].p + factor_base[p_max_i].p) - 2.log) / 2))
 
     # find q such that the product of factor_base[q_i] is approximately
     # sqrt(2 * n) / m; try a few different sets to find a good one
@@ -140,7 +141,7 @@ func siqs_find_first_poly (n, m, factor_base) {
 
             var fb  = factor_base[p_i]
                 A  *= fb.p
-            log_A  += fb.p.log
+            log_A  += fb.p_log
             Q{p_i}  = fb
         }
 
@@ -164,7 +165,7 @@ func siqs_find_first_poly (n, m, factor_base) {
 
     best_q.each_v { |fb|
         var p = fb.p
-        var r = a/p
+        var r = a//p        #/
 
         var gamma = ((fb.t * r.invmod(p)) % p)
 
@@ -245,7 +246,7 @@ func siqs_trial_divide (n, factor_base) {
             if (fb.p `divides` n) {
 
                 var v = n.valuation(fb.p)
-                n /= fb.p**v
+                n //= fb.p**v     #/
                 divisors_idx << [i, v]
 
                 return divisors_idx if n.is_one
@@ -448,8 +449,8 @@ func siqs_find_more_factors_gcd(numbers) {
                     res{f} = f
                 }
 
-                var t1 = n/f
-                var t2 = m/f
+                var t1 = n//f   #/
+                var t2 = m//f   #/
 
                 res{t1} = t1
                 res{t2} = t2
@@ -464,7 +465,7 @@ func check_factor (n, i, factors) {
 
     while (i `divides` n) {
 
-        n /= i
+        n //= i         #/
         factors << i
 
         if (n.is_prime) {
@@ -793,7 +794,7 @@ func store_factor (rem, f, factors) {
     }
     else {
         say "`-> composite factor: #{f}"
-        *rem /= f
+        *rem //= f          #/
         *rem *= find_small_factors(f, factors)
     }
 }
