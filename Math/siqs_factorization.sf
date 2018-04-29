@@ -19,7 +19,7 @@ STDOUT.autoflush(true)
 define (
       LOOK_FOR_SMALL_FACTORS      = true,
       SMOOTH_TRIAL_DIVISION       = false,
-      POLLARD_PM1_BOUND           = 2_000_000.next_prime,
+      POLLARD_PM1_BOUND           = 1_000_000.next_prime,
       TRIAL_DIVISION_LIMIT        = 1_000_000.next_prime,
       POLLARD_RHO_ITERATIONS      = 50_000,
       POLLARD_RHO_SQRT_ITERATIONS = 25_000,
