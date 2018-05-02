@@ -1,0 +1,49 @@
+#!/usr/bin/ruby
+
+# Given a positive integer `n`, this algorithm finds all the numbers k such that φ(k) = n.
+
+# Based on Dana Jacobsen's code from Math::Prime::Util,
+# which in turn is based on invphi.gp v1.3 by Max Alekseyev.
+
+# See also:
+#   https://projecteuler.net/problem=248
+#   https://en.wikipedia.org/wiki/Euler%27s_totient_function
+#   https://github.com/danaj/Math-Prime-Util/blob/master/examples/inverse_totient.pl
+
+func inverse_euler_phi (n) {
+
+    var r = Hash(
+        1 => [1]
+    )
+
+    n.divisors.each { |d|
+
+        is_prime(d+1) || next
+
+        var t = Hash()
+
+        for k in (1 .. (n.valuation(d+1) + 1)) {
+
+            var u = (d * (d+1)**(k-1))
+            var v = (d+1)**k
+
+            (n/u).divisors.each {|f|
+                if (r.contains(f)) {
+                    t{ f * u } := [] << r{f}.map{ _ * v }...
+                }
+            }
+        }
+
+        t.each { |i,v|
+            r{i} := [] << v...
+        }
+    }
+
+    return [] if !r.contains(n)
+    return r{n}.sort
+}
+
+for n in (1..70) {
+    var phiInv = inverse_euler_phi(n) || next
+    say "φ−¹(#{n}) = [#{phiInv.join(', ')}]";
+}
