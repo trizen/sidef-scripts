@@ -217,6 +217,7 @@ A simple collection of Sidef scripts.
     * [Stern brocot encoding matrix form](./Math/stern_brocot_encoding_matrix_form.sf)
     * [Sum of two squares solutions](./Math/sum_of_two_squares_solutions.sf)
     * [Sum of two squares solutions tonelli-shanks](./Math/sum_of_two_squares_solutions_tonelli-shanks.sf)
+    * [Superfactorial](./Math/superfactorial.sf)
     * [Symbolic math](./Math/symbolic_math.sf)
     * [System of linear equations](./Math/system_of_linear_equations.sf)
     * [Tangent numbers](./Math/tangent_numbers.sf)

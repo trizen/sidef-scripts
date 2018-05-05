@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+# A simple algorithm for computing superfactorial(n), using prime powers.
+
+# See also:
+#   https://oeis.org/A000178
+#   https://oeis.org/A303279
+#   https://en.wikipedia.org/wiki/Factorial#Superfactorial
+
+func superfactorial(n) {
+
+    var table = Hash()
+    var primes = n.primes
+
+    for k in (2..n) {
+        primes.each { |p|
+            table{p} := 0 += ((k - sumdigits(k, p)) / (p-1))
+        }
+    }
+
+    return primes.prod {|p| p ** table{p} }
+}
+
+for n in (1..10) {
+    say superfactorial(n)
+}
