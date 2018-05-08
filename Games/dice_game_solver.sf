@@ -37,10 +37,10 @@ func valid_move (row, col) {
 
 loop {
 
-    var map  = Hash.new;
-    var seen = Hash.new;
-    var dirs = Array.new;
-    var spos = Hash.new;
+    var map  = Hash();
+    var seen = Hash();
+    var dirs = Array();
+    var spos = Hash();
 
     var current_pos = [board.end, 0];
     var current_num = board[current_pos[0]][current_pos[1]];
@@ -51,13 +51,13 @@ loop {
         var dir = (
          map.has_key(current_num)
           ? map{current_num}
-          : (
-            var d = '';
-            do {
-                d = directions[directions.len.rand]
-            } while (map.values.contains(d));
-            d;
-          )
+          : do {
+              var d = '';
+              do {
+                  d = directions[directions.len.rand]
+              } while (map.values.contains(d));
+              d;
+           }
         );
 
         var pos = moves{dir};
@@ -67,7 +67,7 @@ loop {
         valid_move(row, col) || break;
 
         dirs.push(
-                  Hash.new(
+                  Hash(
                         'dir' => dir,
                         'num' => current_num,
                         'pos' => current_pos,
