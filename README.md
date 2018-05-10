@@ -142,6 +142,7 @@ A simple collection of Sidef scripts.
     * [Invmod of coprime factorials](./Math/invmod_of_coprime_factorials.sf)
     * [Is even perfect](./Math/is_even_perfect.sf)
     * [Is even perfect 2](./Math/is_even_perfect_2.sf)
+    * [Is gamma prime](./Math/is_gamma_prime.sf)
     * [Is perfect power](./Math/is_perfect_power.sf)
     * [Julia set](./Math/julia_set.sf)
     * [Karatsuba multiplication](./Math/karatsuba_multiplication.sf)
