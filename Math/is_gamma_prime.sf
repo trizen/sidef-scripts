@@ -3,7 +3,7 @@
 # A non-practical (but interesting) primality testing function, using the gamma function and a closed-form of the Fourier series for the floor function.
 
 # This is equivalent with Wilson's theorem:
-#    (n-1)! = n-1 (mod n)
+#    (p-1)! = p-1 (mod p)
 
 # See also:
 #   https://en.wikipedia.org/wiki/Wilson's_theorem
@@ -15,7 +15,7 @@ const π = Num.pi
 const i = Num.i
 
 func is_gamma_prime_1(n) {
-   (Γ(n) - n*(Γ(n)/n - 1/2 + ((i*(log(1 - exp(2*i*π*Γ(n)/n)) - log(exp(-2*i*π*Γ(n)/n) * (-1 + exp(2*i*π*Γ(n)/n)))) / 2) / π))) / (n-1)
+   (Γ(n) - n*(Γ(n)/n - 1/2 + ((i*(log(1 - exp(2*i*π*Γ(n)/n)) - log(exp(-2*i*π*Γ(n)/n) * (-1 + exp(2*i*π*Γ(n)/n)))) / (2*π))))) / (n-1)
 }
 
 func is_gamma_prime_2(n) {
