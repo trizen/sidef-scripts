@@ -1,0 +1,33 @@
+#!/usr/bin/ruby
+
+# A non-practical (but interesting) implementation of Wilson's primality testing method, using the gamma function and a closed-form of the Fourier series for the floor function.
+
+# Wilson's theorem:
+#    (p-1)! = p-1 (mod p)
+
+# Floor function Fourier closed-form:
+#   floor(x) = (π * (2*x - 1) - i*log(1 - exp(-2*i*π*x)) + i*log(1 - exp(2*i*π*x)))/(2*π)
+
+# Remainder in terms of the floor(x) function:
+#   x mod y  = x - y*floor(x/y)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Wilson's_theorem
+#   https://en.wikipedia.org/wiki/Floor_and_ceiling_functions#Continuity_and_series_expansions
+
+local Number!PREC = *("3000")
+
+const π = Num.pi
+const i = Num.i
+
+func is_wilson_prime_1(n) {
+   (Γ(n) - n*(Γ(n)/n - 1/2 + ((i*(log(1 - exp(2*i*π*Γ(n)/n)) - log(exp(-2*i*π*Γ(n)/n) * (-1 + exp(2*i*π*Γ(n)/n)))) / (2*π))))) / (n-1)
+}
+
+func is_wilson_prime_2(n) {
+    (n*(i*log(1 - exp(-(2*i*π*Γ(n))/n)) - i*log(1 - exp((2*i*π*Γ(n))/n)) + π))/(2*π*(n-1))
+}
+
+# Display the primes bellow 100
+say (1..100 -> grep { is_wilson_prime_1(_) =~= 1 })
+say (1..100 -> grep { is_wilson_prime_2(_) =~= 1 })

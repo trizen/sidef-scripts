@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+
+# A non-practical (but interesting) implementation of Fermat's pseudo-primality testing method, using a closed-form of the Fourier series for the floor function.
+
+# Fermat's little theorem:
+#    a^(p-1) = 1 mod p
+
+# Floor function Fourier closed-form:
+#   floor(x) = (π * (2*x - 1) - i*log(1 - exp(-2*i*π*x)) + i*log(1 - exp(2*i*π*x)))/(2*π)
+
+# Remainder in terms of the floor(x) function:
+#   x mod y  = x - y*floor(x/y)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Fermat's_little_theorem
+#   https://en.wikipedia.org/wiki/Floor_and_ceiling_functions#Continuity_and_series_expansions
+
+local Number!PREC = *("1000")
+
+const π = Num.pi
+const i = Num.i
+
+func is_fermat_prime_1(n) {
+
+    return 0 if (n == 1)
+    return 1 if (n == 2)
+
+    2**(n - 1) - n*(2**(n - 1) / n + (i*(log(1 - exp((i*π * 2**n)/n)) - log(exp(-(i*π * 2**n)/n) * (-1 + exp((i * π * 2**n)/n)))))/(2*π) - 1/2)
+}
+
+func is_fermat_prime_2(n) {
+
+    return 0 if (n == 1)
+    return 1 if (n == 2)
+
+    (n * (i*log(1 - exp(-(i*π * 2**n)/n)) - i*log(1 - exp((i*π * 2**n)/n)) + π))/(2*π)
+}
+
+# Display the primes bellow 100
+say (1..100 -> grep { is_fermat_prime_1(_) =~= 1 })
+say (1..100 -> grep { is_fermat_prime_2(_) =~= 1 })
