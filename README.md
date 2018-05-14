@@ -136,6 +136,7 @@ A simple collection of Sidef scripts.
     * [Haversine formula](./Math/haversine_formula.sf)
     * [Integer root](./Math/integer_root.sf)
     * [Integer square root](./Math/integer_square_root.sf)
+    * [Inverse of bernoulli numbers](./Math/inverse_of_bernoulli_numbers.sf)
     * [Inverse of euler totient](./Math/inverse_of_euler_totient.sf)
     * [Inverse of factorial](./Math/inverse_of_factorial.sf)
     * [Inverse of factorial stirling](./Math/inverse_of_factorial_stirling.sf)
