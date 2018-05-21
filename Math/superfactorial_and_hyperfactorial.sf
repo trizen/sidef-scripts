@@ -1,0 +1,51 @@
+#!/usr/bin/ruby
+
+# A simple algorithm for computing superfactorial(n) and hyperfactorial(n), using prime powers.
+
+# Sequences:
+#   https://oeis.org/A000178  (superfactorials)
+#   https://oeis.org/A002109  (hyperfactorials)
+
+# Extra:
+#   https://oeis.org/A303279  (sum of exponents in prime-power factorization of superfactorials)
+#   https://oeis.org/A303281  (sum of exponents in prime-power factorization of hyperfactorials)
+
+# Wiki:
+#   https://en.wikipedia.org/wiki/Factorial#Superfactorial
+#   https://en.wikipedia.org/wiki/Factorial#Hyperfactorial
+
+# See also:
+#   Products of binomial coefficients and unreduced Farey fractions:
+#       https://arxiv.org/abs/1409.4145
+
+func superfactorial_power(n, p) {
+    sum(1..n, {|k|
+        sum(1..k.ilog(p), {|j| floor(k / p**j) })
+    })
+}
+
+func hyperfactorial_power(n, p) {
+    n*sum(1..n.ilog(p), {|k| floor(n / p**k) }) - superfactorial_power(n-1, p)
+}
+
+func superfactorial(n) {
+    n.primes.prod {|p| p ** superfactorial_power(n, p) }
+}
+
+func hyperfactorial(n) {
+    n.primes.prod {|p| p ** hyperfactorial_power(n, p) }
+}
+
+say "Superfactorial:"
+
+for n in (1..10) {
+    say superfactorial(n)
+}
+
+say "\nHyperfactorial:"
+for n in (1..10) {
+    say hyperfactorial(n)
+}
+
+assert_eq(100.superfactorial, superfactorial(100))
+assert_eq(100.hyperfactorial, hyperfactorial(100))
