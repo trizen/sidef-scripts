@@ -201,6 +201,7 @@ A simple collection of Sidef scripts.
     * [Round half to even](./Math/round_half_to_even.sf)
     * [RSA algorithm](./Math/RSA_algorithm.sf)
     * [Secant numbers](./Math/secant_numbers.sf)
+    * [Sequence succesive differences](./Math/sequence_succesive_differences.sf)
     * [Sierpinski diamond](./Math/sierpinski_diamond.sf)
     * [Sierpinski sidef](./Math/sierpinski_sidef.sf)
     * [Sierpinski triangle](./Math/sierpinski_triangle.sf)
