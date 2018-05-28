@@ -10,12 +10,8 @@ func differences(seq) {
     var deltas = [seq]
 
     seq.end.times {
-        var a = []
-        for i in (^seq.end) {
-            a << (seq[i+1] - seq[i])
-        }
-        seq = a
-        deltas << a
+        seq = seq.map_cons(2, {|a,b| b - a })
+        deltas << seq
     }
 
     return deltas
