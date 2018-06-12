@@ -1,0 +1,45 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 12 June 2018
+# https://github.com/trizen
+
+# Find the positive integer k-th root of a positive integer n, using the binary search algorithm.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Nth_root
+#   https://en.wikipedia.org/wiki/Binary_search_algorithm
+
+func integer_root_binary(n, k) {
+    var L = n.log2/k
+
+    n.bsearch_le {|t|
+        t.log2 <=> L
+    }
+}
+
+func approximate_kth_root(n, k) {
+    var L = idiv(n.ilog2, k)
+
+    n.bsearch_le {|t|
+        t.ilog2 <=> L
+    }
+}
+
+say "=> Exact roots:"
+
+say integer_root_binary(5**3, 3)                   #=> 5
+say integer_root_binary(97**1234, 1234)            #=> 97
+say integer_root_binary(1234**12345, 12345)        #=> 1234
+
+say "\n=> Integer root -- floor(n^(1/k)):"
+
+say integer_root_binary(123, 2)                    #=> 11
+say integer_root_binary(100!, 43)                  #=> 4717
+say integer_root_binary(1234!, 720)                #=> 36019
+
+say "\n=> Root approximations:"
+
+say approximate_kth_root(5**3, 3)                  #=> 6
+say approximate_kth_root(97**1234, 1234)           #=> 77
+say approximate_kth_root(1234**12345, 12345)       #=> 1321
