@@ -11,6 +11,8 @@
 #           - by Richard P. Brent and Paul Zimmermann
 #
 
+# Minor optimization by Daniel "Trizen" Șuteu.
+
 func secant_numbers (n) {
     var S = [1]
 
@@ -19,7 +21,7 @@ func secant_numbers (n) {
     }
 
     for k in (1 .. n), j in (k+1 .. n) {
-        S[j] = (S[j-1]*(j - k) + S[j]*(j - k + 1))
+        S[j] += ((j - k) * (j - k + 2) * S[j-1])
     }
 
     return S
