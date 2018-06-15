@@ -1,0 +1,31 @@
+#!/usr/bin/ruby
+
+# Primality test for primes of the form 2^n + 3.
+
+# First few exponents of such primes, are:
+#   1, 2, 3, 4, 6, 7, 12, 15, 16, 18, 28, 30, 55, 67, 84, 228, 390, 784, 1110, 1704, ...
+
+# The primality test was derived from the Lucas-Lehmer primality test for Mersenne primes.
+
+# See also:
+#   https://oeis.org/A057732
+
+func is_pow2_plus3_prime(n) {
+
+    n % 3 == 2 && return false      # divisible by 7
+
+    var M = (1<<n + 3)
+    var S = (M-5)>>1
+
+    n-1 -> times {
+       S = (powmod(S, 2, M) - 2)
+    }
+
+    S == (M-5)>>1
+}
+
+for n in (1..400) {
+    if (is_pow2_plus3_prime(n)) {
+        say n
+    }
+}
