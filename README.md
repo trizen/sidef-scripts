@@ -99,6 +99,7 @@ A simple collection of Sidef scripts.
     * [Continued fraction factorization method GF2 matrix](./Math/continued_fraction_factorization_method_GF2_matrix.sf)
     * [Continued fraction to fraction](./Math/continued_fraction_to_fraction.sf)
     * [Continued fractions convergents](./Math/continued_fractions_convergents.sf)
+    * [Cousin mersenne primes lucas-lehmer](./Math/cousin_mersenne_primes_lucas-lehmer.sf)
     * [Digamma function](./Math/digamma_function.sf)
     * [Draw grid of squares](./Math/draw_grid_of_squares.sf)
     * [Elementary cellular automaton](./Math/elementary_cellular_automaton.sf)
