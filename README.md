@@ -191,6 +191,7 @@ A simple collection of Sidef scripts.
     * [Pollard rho factorization 2](./Math/pollard_rho_factorization_2.sf)
     * [Polygonal representations](./Math/polygonal_representations.sf)
     * [Power of 2 plus 3 primes lucas-lehmer](./Math/power_of_2_plus_3_primes_lucas-lehmer.sf)
+    * [Power of 2 plus 5 primes lucas-lehmer](./Math/power_of_2_plus_5_primes_lucas-lehmer.sf)
     * [Primality testing fermat fourier](./Math/primality_testing_fermat_fourier.sf)
     * [Primality testing wilson fourier](./Math/primality_testing_wilson_fourier.sf)
     * [Problem of apollonius](./Math/problem_of_apollonius.sf)
