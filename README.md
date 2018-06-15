@@ -164,6 +164,7 @@ A simple collection of Sidef scripts.
     * [Linear congruential generator](./Math/linear_congruential_generator.sf)
     * [Long addition](./Math/long_addition.sf)
     * [Lu decomposition](./Math/lu_decomposition.sf)
+    * [Lucas-lehmer primality test](./Math/lucas-lehmer_primality_test.sf)
     * [LUP decomposition](./Math/LUP_decomposition.sf)
     * [Mandelbrot set](./Math/mandelbrot_set.sf)
     * [Mathematical formulas](./Math/mathematical_formulas.sf)

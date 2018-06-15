@@ -1,0 +1,25 @@
+#!/usr/bin/ruby
+
+# Simple implementation of the Lucas-Lehmer primality test for Mersenne numbers.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Lucas%E2%80%93Lehmer_primality_test
+
+func lucas_lehmer(p) {
+
+    var M = (1<<p - 1)
+    var S = 4
+
+    p-2 -> times {
+        S = (powmod(S, 2, M) - 2)
+    }
+
+    S == 0
+}
+
+for p in (primes(3, 1000)) {
+    if (lucas_lehmer(p)) {
+        assert(is_mersenne_prime(p), p)
+        say "M#{p} is prime"
+    }
+}
