@@ -8,16 +8,16 @@
 
 func fibonacci_number(n) {
 
+    var (f, g)       = (0, 1)
     var (a, b, c, d) = (0, 1, 1, 1)
-    var (e, f, g, h) = (1, 0, 0, 1)
 
     loop {
-        (e, f, g, h) = (e*a + f*c, e*b + f*d, g*a + h*c, g*b + h*d) if n.is_odd
+        (f, g) = (f*a + g*c, f*b + g*d) if n.is_odd
         n >>= 1 || break
         (a, b, c, d) = (a*a + b*c, a*b + b*d, c*a + d*c, c*b + d*d)
     }
 
-    return g
+    return f
 }
 
 say fibonacci_number(100)       #=> 354224848179261915075
