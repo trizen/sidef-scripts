@@ -1,0 +1,24 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 19 June 2018
+# https://github.com/trizen
+
+# A very efficient algorithm for computing the nth-Fibonacci number (mod m).
+
+func fibonacci_number(n, m) {
+
+    var (a, b, c, d) = (0, 1, 1, 1)
+    var (e, f, g, h) = (1, 0, 0, 1)
+
+    loop {
+        (e, f, g, h) = ((e*a + f*c)%m, (e*b + f*d)%m, (g*a + h*c)%m, (g*b + h*d)%m) if n.is_odd
+        n >>= 1 || break
+        (a, b, c, d) = ((a*a + b*c)%m, (a*b + b*d)%m, (c*a + d*c)%m, (c*b + d*d)%m)
+    }
+
+    return g
+}
+
+# Last 20 digits of the 10^100-th Fibonacci number
+say fibonacci_number(10**100, 10**20)       #=> 59183788299560546875
