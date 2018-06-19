@@ -11,9 +11,8 @@ func fibonacci_number(n, m) {
     var (f, g)       = (0, 1)
     var (a, b, c, d) = (0, 1, 1, 1)
 
-    loop {
-        (f, g) = ((f*a + g*c)%m, (f*b + g*d)%m) if n.is_odd
-        n >>= 1 || break
+    for k in (0 .. n.ilog2) {
+        (f, g)       = ((f*a + g*c)%m, (f*b + g*d)%m) if n.getbit(k)
         (a, b, c, d) = ((a*a + b*c)%m, (a*b + b*d)%m, (c*a + d*c)%m, (c*b + d*d)%m)
     }
 
