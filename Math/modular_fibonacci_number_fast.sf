@@ -6,18 +6,18 @@
 
 # A very efficient algorithm for computing the nth-Fibonacci number (mod m).
 
-func fibonacci_number(n, m) {
+func fibmod(n, m) {
 
-    var (f, g)       = (0, 1)
-    var (a, b, c, d) = (0, 1, 1, 1)
+    var (f, g) = (0, 1)
+    var (a, b) = (0, 1)
 
     for k in (0 .. n.ilog2) {
-        (f, g)       = ((f*a + g*c)%m, (f*b + g*d)%m) if n.getbit(k)
-        (a, b, c, d) = ((a*a + b*c)%m, (a*b + b*d)%m, (c*a + d*c)%m, (c*b + d*d)%m)
+        (f, g) = ((f*a + g*b)%m, (f*b + g*(a+b))%m) if n.getbit(k)
+        (a, b) = ((a*a + b*b)%m, (a*b + b*(a+b))%m)
     }
 
     return f
 }
 
 # Last 20 digits of the 10^100-th Fibonacci number
-say fibonacci_number(10**100, 10**20)       #=> 59183788299560546875
+say fibmod(10**100, 10**20)   #=> 59183788299560546875
