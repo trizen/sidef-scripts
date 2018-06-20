@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# The elliptic-curve factorization method (EMC), due to Hendrik Lenstra.
+# The elliptic-curve factorization method (ECM), due to Hendrik Lenstra.
 
 # Algorithm presented in the bellow video:
 #   https://www.youtube.com/watch?v=2JlpeQWtGH8

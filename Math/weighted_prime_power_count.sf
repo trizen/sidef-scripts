@@ -1,0 +1,18 @@
+#!/usr/bin/ruby
+
+# Counts prime powers with weight 1 for primes, 1/2 for their squares, 1/3 for cubes, ...
+
+# See also:
+#   https://en.wikipedia.org/wiki/Arithmetic_function#%CF%80(x),_%CE%A0(x),_%CE%B8(x),_%CF%88(x)_%E2%80%93_prime_count_functions
+
+func weighted_prime_count(n) {
+    n.primes.sum {|p|
+        1..n.ilog(p) -> sum {|k|
+            1/k
+        }
+    }
+}
+
+say weighted_prime_count(100)       #=> 28.53333333333333333333333333333333333333333333333
+say weighted_prime_count(1000)      #=> 176.69563492063492063492063492063492063492063492063
+say weighted_prime_count(10000)     #=> 1247.09799089799089799089799089799089799089799089799
