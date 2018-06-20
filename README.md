@@ -103,6 +103,7 @@ A simple collection of Sidef scripts.
     * [Digamma function](./Math/digamma_function.sf)
     * [Draw grid of squares](./Math/draw_grid_of_squares.sf)
     * [Elementary cellular automaton](./Math/elementary_cellular_automaton.sf)
+    * [Elliptic-curve factorization method](./Math/elliptic-curve_factorization_method.sf)
     * [Euler numbers from factorials](./Math/euler_numbers_from_factorials.sf)
     * [Euler's totient theorem expmod](./Math/euler_s_totient_theorem_expmod.sf)
     * [Extended greatest common divisor](./Math/extended_greatest_common_divisor.sf)
