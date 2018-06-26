@@ -1,0 +1,20 @@
+#!/usr/bin/ruby
+
+# Based on code by @catb0t
+# https://github.com/trizen/sidef/issues/37
+
+# Computing Logarithms Digit-by-Digit:
+#   http://brics.dk/RS/04/17/BRICS-RS-04-17.pdf
+
+func Log10 (x, prec=48) {
+  var k = x.float
+  gather {
+    prec.times {
+      take(var d = k.ilog10)
+      k = (k / 10**d)**10
+    }
+  }
+}
+
+say log10(1234.56)
+say Log10(1234.56).insert(1, '.').join

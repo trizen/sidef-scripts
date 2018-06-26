@@ -165,6 +165,7 @@ A simple collection of Sidef scripts.
     * [Levenshtein distance rec](./Math/levenshtein_distance_rec.sf)
     * [Limits for pi](./Math/limits_for_pi.sf)
     * [Linear congruential generator](./Math/linear_congruential_generator.sf)
+    * [Log10 digit by digit](./Math/log10_digit_by_digit.sf)
     * [Long addition](./Math/long_addition.sf)
     * [Lu decomposition](./Math/lu_decomposition.sf)
     * [Lucas-lehmer primality test](./Math/lucas-lehmer_primality_test.sf)
