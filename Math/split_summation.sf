@@ -1,0 +1,43 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 26 June 2018
+# https://github.com/trizen
+
+# Formula for splitting a sum taken over the product of two functions:
+#
+#   a(n) = Sum_{k=1..n} f(k)*g(k)
+#
+# into:
+#
+#   a(n) = [Sum_{k=1..n} f(k)] * [Sum_{k=1..n} g(k)] - Sum_{k=1..n} g(k)*[[Sum_{j=1..n} f(j)] - f(k)]
+#   a(n) = [Sum_{k=1..n} f(k)] * [Sum_{k=1..n} g(k)] - Sum_{k=1..n} f(k)*[[Sum_{j=1..n} g(j)] - g(k)]
+#
+
+func f(n) {
+    euler_phi(n)
+}
+
+func g(n,k) {
+    floor(n/k) * floor(1 + n/k) / 2
+}
+
+func normal_summation(n) {
+    sum(1..n, {|k|
+        f(k) * g(n,k)
+    })
+}
+
+func split_summation(n) {
+    var S = sum(1..n, {|k| f(k)   })
+    var T = sum(1..n, {|k| g(n,k) })
+
+    var V = sum(1..n, {|k|
+        g(n,k) * (sum(1..n, {|j| f(j) }) - f(k))
+    })
+
+    S*T - V
+}
+
+say 15.of(normal_summation)     #=> [0, 1, 4, 9, 17, 26, 41, 54, 74, 95, 122, 143, 183, 208, 247]
+say 15.of(split_summation)      #=> =//=
