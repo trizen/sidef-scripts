@@ -90,6 +90,7 @@ A simple collection of Sidef scripts.
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Coin change](./Math/coin_change.sf)
     * [Complex zeta function representations](./Math/complex_zeta_function_representations.sf)
+    * [Conditional euler totient function](./Math/conditional_euler_totient_function.sf)
     * [Confluent hypergeometric function of the first kind](./Math/confluent_hypergeometric_function_of_the_first_kind.sf)
     * [Congruence solution inverse of x+n mod x = n](./Math/congruence_solution_inverse_of_x+n_mod_x_=_n.sf)
     * [Congruence solution inverse of x-n mod x = n](./Math/congruence_solution_inverse_of_x-n_mod_x_=_n.sf)

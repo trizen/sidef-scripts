@@ -1,0 +1,39 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 04 July 2018
+# https://github.com/trizen
+
+# Find the number of k = 1..n for which GCD(n,k) satisfies a certain condition (e.g.:
+# GCD(n,k) is a prime number), using the divisors of `n` and the Euler totient function.
+
+# See also:
+#   https://oeis.org/A117494 -- Number of k = 1..n for which GCD(n, k) is a prime
+#   https://oeis.org/A116512 -- Number of k = 1..n for which GCD(n, k) is a power of a prime
+#   https://oeis.org/A206369 -- Number of k = 1..n for which GCD(n, k) is a square
+#   https://oeis.org/A078429 -- Number of k = 1..n for which GCD(n, k) is a cube
+#   https://oeis.org/A063658 -- Number of k = 1..n for which GCD(n, k) is divisible by a square greater than 1
+
+func foo(n, condition) {        # slow
+    1..n -> count {|k|
+        condition(gcd(n,k))
+    }
+}
+
+func bar(n, condition) {        # fast
+    n.divisors.sum {|d|
+        condition(d) ? euler_phi(n/d) : 0
+    }
+}
+
+func condition(d) {
+    d.is_prime
+}
+
+say 25.of {|n| foo(n, condition) }
+say 25.of {|n| bar(n, condition) }
+
+assert_eq(
+    100.of {|n| foo(n, condition) },
+    100.of {|n| bar(n, condition) }
+)
