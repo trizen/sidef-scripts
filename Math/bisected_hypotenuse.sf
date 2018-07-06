@@ -1,0 +1,73 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 06 July 2018
+# https://github.com/trizen
+
+# Given two catheti lengths (A+B and C) of a right triangle and assuming a parallel line,
+# relative to side C, that divides the triangle, find the values of X and Y, satisfying:
+#
+#   1. (X+Y)^2 = (A+B)^2 + C^2
+#   2. X/Y = A/B
+#
+#               C
+#   ----================------- L1
+#        \             |
+#     X   \            |     A
+#          \           |
+#   --------------------------- L2
+#            \         |
+#     Y       \        |     B
+#              \       |
+#               \      |
+#                \     |
+#                 \    |
+#                  \   |
+#                   \  |
+#                    \ |
+#                     \|
+
+# Because the lines L1 and L2 are parallel to each other, we have the identity:
+#   A/B = X/Y
+
+# See also:
+#   https://www.youtube.com/watch?v=ffvojZONF_A
+
+func approximate_solution(A, B, C) {    # approximation in positive integers
+
+    var h = sqrt((A+B)**2 + C**2)
+    var r = (A > B ? (A / B) : (B / A))
+
+    var Y = bsearch_le(0, h, {|n|
+        n / (h-n) <=> r
+    })
+
+    var X = h-Y
+    (X, Y) = (Y, X) if (A > B)
+    return [X,Y]
+}
+
+func exact_solution(A, B, C) {          # exact solution in complex numbers
+
+    var X = (1i * A * sqrt(A**2 + 2*A*B + B**2 + C**2))/sqrt(-((A+B)**2))
+    var Y = (1i * B * sqrt(A**2 + 2*A*B + B**2 + C**2))/sqrt(-((A+B)**2))
+
+    return [X, Y]
+}
+
+func exact_solution_real(A, B, C) {     # exact solution in real numbers
+
+    var X = (A * sqrt((A+B)**2 + C**2))/abs(A+B)
+    var Y = (B * sqrt((A+B)**2 + C**2))/abs(A+B)
+
+    return [X, Y]
+}
+
+say approximate_solution(49, 161-49, 240)    #=> [88, 201]
+say approximate_solution(161-29, 29, 240)    #=> [236, 53]
+>''
+say exact_solution(49, 161-49, 240)          #=> [87.9565217391304347826086956521739130434782608696, 201.04347826086956521739130434782608695652173913]
+say exact_solution(161-29, 29, 240)          #=> [236.944099378881987577639751552795031055900621118, 52.055900621118012422360248447204968944099378882]
+>''
+say exact_solution_real(49, 161-49, 240)     #=> [87.9565217391304347826086956521739130434782608696, 201.04347826086956521739130434782608695652173913]
+say exact_solution_real(161-29, 29, 240)     #=> [236.944099378881987577639751552795031055900621118, 52.055900621118012422360248447204968944099378882]
