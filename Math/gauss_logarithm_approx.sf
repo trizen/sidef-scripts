@@ -12,12 +12,12 @@
 define π = Num.pi
 define log2 = log(2)
 
-func M(a, g, p) {
+func M(a, g, p) {       # p < 0
     loop {
         var a1 = ((a+g)/2)
         var g1 = sqrt(a*g)
 
-        if ((a1.round(-p) == a.round(-p)) && (g1.round(-p) == g.round(-p))) {
+        if (approx_eq(a, a1, p) && approx_eq(g, g1, p)) {
             return a
         }
 
@@ -26,7 +26,7 @@ func M(a, g, p) {
 }
 
 func gauss_log(x, p) {
-    π / 2*M(1, 2**(2-p) / x, p) - p*log2
+    π / 2*M(1, 2**(2-p) / x, -p) - p*log2
 }
 
 say gauss_log(        2, 100)        # 0.69314718055994530941723212145817656807550013436026

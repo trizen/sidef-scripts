@@ -58,6 +58,7 @@ A simple collection of Sidef scripts.
     * [Pythagoras tree](./Image/pythagoras_tree.sf)
     * [Voronoi diagram](./Image/voronoi_diagram.sf)
 * Math
+    * [AGM calculate pi](./Math/AGM_calculate_pi.sf)
     * [Akiyama-tanigawa numerators](./Math/akiyama-tanigawa_numerators.sf)
     * [Arithmetic-geometric-harmonic mean](./Math/arithmetic-geometric-harmonic_mean.sf)
     * [Arithmetic-geometric mean](./Math/arithmetic-geometric_mean.sf)

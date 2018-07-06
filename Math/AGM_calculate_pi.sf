@@ -1,0 +1,34 @@
+#!/usr/bin/ruby
+
+# The AGM method for efficiently computing an arbitrary number of digits of PI.
+
+# See also:
+#   http://rosettacode.org/wiki/Arithmetic-geometric_mean/Calculate_Pi
+#   https://en.wikipedia.org/wiki/Arithmetic%E2%80%93geometric_mean#The_number_%CF%80
+
+func AGM_PI(digits=100) {
+
+    var acc = 8+digits
+    local Number!PREC = *"#{4*digits}"
+
+    var (an, bn, tn, pn) = (1, sqrt(1/2), 1/4, 1)
+
+    while (pn < acc) {
+        var prev_an = an
+        an += bn
+        an /= 2
+        bn *= prev_an
+        bn.sqrt!
+        prev_an -= an
+        tn -= (prev_an * prev_an * pn)
+        pn += pn
+    }
+
+    an += bn
+    an *= an
+    an /= 4*tn
+
+    return String(an)
+}
+
+say AGM_PI(ARGV[0])
