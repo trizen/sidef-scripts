@@ -168,6 +168,8 @@ A simple collection of Sidef scripts.
     * [Levenshtein distance rec](./Math/levenshtein_distance_rec.sf)
     * [Limits for pi](./Math/limits_for_pi.sf)
     * [Linear congruential generator](./Math/linear_congruential_generator.sf)
+    * [Linear diophantine equation](./Math/linear_diophantine_equation.sf)
+    * [Linear diophantine equation invmod search](./Math/linear_diophantine_equation_invmod_search.sf)
     * [Log10 digit by digit](./Math/log10_digit_by_digit.sf)
     * [Long addition](./Math/long_addition.sf)
     * [Lu decomposition](./Math/lu_decomposition.sf)

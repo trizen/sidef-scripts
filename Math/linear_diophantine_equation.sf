@@ -1,0 +1,79 @@
+#!/usr/bin/ruby
+
+# Solve in integers the linear Diophantine equation:
+#
+#   a*x + b*y = n
+#
+# where a,b,n are given.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Diophantine_equation
+#   http://mathworld.wolfram.com/DiophantineEquation.html
+
+func solve(a, b, c) {
+
+    var (x, y, z) = gcdext(a, b)
+
+    x *= c/z
+    y *= c/z
+
+    return (x, y)
+}
+
+var tests = [
+    [79, 23, 1],
+    [97, 43, 1],
+    [43, 97, 1],
+    [55, 28, 1],
+    [42, 22, 2],
+    [79, 23, 10],
+    [43, 97, 12],
+    [97, 43, 12],
+]
+
+for a,b,n in tests {
+    var (x, y) = solve(a, b, n)
+
+    assert(x.is_int)
+    assert(b.is_int)
+
+    assert_eq(a*x + b*y, n)
+    printf("#{a}*x + #{b}*y = %2s  -->  (x, y) = (%2s, %2s)\n", n, x, y)
+}
+
+say "\n>> Extra tests:"
+
+var a = 43*97
+var b = 41*57
+
+for n in ([1, 7, 8, 23, 31, 147, 178, 325, 503, 1834]) {
+    var (x, y) = solve(a, b, n)
+
+    assert(x.is_int)
+    assert(y.is_int)
+
+    assert_eq(a*x + b*y, n)
+    printf("#{a}*x + #{b}*y = %4s  -->  (x, y) = (%5s, %5s)\n", n, x, y)
+}
+
+__END__
+79*x + 23*y =  1  -->  (x, y) = ( 7, -24)
+97*x + 43*y =  1  -->  (x, y) = ( 4, -9)
+43*x + 97*y =  1  -->  (x, y) = (-9,  4)
+55*x + 28*y =  1  -->  (x, y) = (-1,  2)
+42*x + 22*y =  2  -->  (x, y) = (-1,  2)
+79*x + 23*y = 10  -->  (x, y) = (70, -240)
+43*x + 97*y = 12  -->  (x, y) = (-108, 48)
+97*x + 43*y = 12  -->  (x, y) = (48, -108)
+
+>> Extra tests:
+4171*x + 2337*y =    1  -->  (x, y) = ( -302,   539)
+4171*x + 2337*y =    7  -->  (x, y) = (-2114,  3773)
+4171*x + 2337*y =    8  -->  (x, y) = (-2416,  4312)
+4171*x + 2337*y =   23  -->  (x, y) = (-6946, 12397)
+4171*x + 2337*y =   31  -->  (x, y) = (-9362, 16709)
+4171*x + 2337*y =  147  -->  (x, y) = (-44394, 79233)
+4171*x + 2337*y =  178  -->  (x, y) = (-53756, 95942)
+4171*x + 2337*y =  325  -->  (x, y) = (-98150, 175175)
+4171*x + 2337*y =  503  -->  (x, y) = (-151906, 271117)
+4171*x + 2337*y = 1834  -->  (x, y) = (-553868, 988526)
