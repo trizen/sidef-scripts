@@ -251,6 +251,7 @@ A simple collection of Sidef scripts.
     * [Unreduced continued fractions](./Math/unreduced_continued_fractions.sf)
     * [Unreduced fractions](./Math/unreduced_fractions.sf)
     * [Vampire numbers](./Math/vampire_numbers.sf)
+    * [Viète-like formulas](./Math/viète-like_formulas.sf)
     * [Viswanath's constant conjecture](./Math/viswanath_s_constant_conjecture.sf)
     * [Weighted prime power count](./Math/weighted_prime_power_count.sf)
     * [Y combinator](./Math/y_combinator.sf)
