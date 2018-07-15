@@ -1,0 +1,36 @@
+#!/usr/bin/ruby
+
+# Encode a sequence of n numbers into a polynomial of, at most, degree n-1.
+
+# See also:
+#   https://www.youtube.com/watch?v=gur16QsZ0r4
+#   https://en.wikipedia.org/wiki/Polynomial_interpolation
+#   https://en.wikipedia.org/wiki/Vandermonde_matrix
+
+# A sequence of n numbers
+var v = [35, 85, 102, 137, 120]
+
+# Create a new nXn Vandermonde matrix
+var A = v.len.of {|n|
+   v.len.of {|k| n**k }
+}
+
+var S = A.msolve(v)
+var P = S.map_kv {|k,v| "#{v.as_rat} * x^#{k}" }.join(' + ')
+
+say "Solution:  #{S}"
+say "Polynomial: #{P}\n"
+
+for n in (^v.len) {
+    say ("a(#{n}) = ", S.map_kv {|k,v| v * n**k }.sum)
+}
+
+__END__
+Solution:  [35, 455/4, -2339/24, 155/4, -121/24]
+Polynomial: 35 * x^0 + 455/4 * x^1 + -2339/24 * x^2 + 155/4 * x^3 + -121/24 * x^4
+
+a(0) = 35
+a(1) = 85
+a(2) = 102
+a(3) = 137
+a(4) = 120
