@@ -239,6 +239,7 @@ A simple collection of Sidef scripts.
     * [Stern brocot continued fraction](./Math/stern_brocot_continued_fraction.sf)
     * [Stern brocot encoding](./Math/stern_brocot_encoding.sf)
     * [Stern brocot encoding matrix form](./Math/stern_brocot_encoding_matrix_form.sf)
+    * [Stirling factorial correction terms](./Math/stirling_factorial_correction_terms.sf)
     * [Sum of two squares solutions](./Math/sum_of_two_squares_solutions.sf)
     * [Sum of two squares solutions tonelli-shanks](./Math/sum_of_two_squares_solutions_tonelli-shanks.sf)
     * [Superfactorial and hyperfactorial](./Math/superfactorial_and_hyperfactorial.sf)

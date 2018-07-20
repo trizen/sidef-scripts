@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+# Correction terms for Stirling's asymptotic formula for n!
+
+# See also:
+#   https://arxiv.org/pdf/1002.3894.pdf
+#   https://en.wikipedia.org/wiki/Stirling%27s_approximation
+
+func factorial_correction_terms(n, r = n) {
+    1..r -> sum {|k|
+        bernoulli(2*k) / (2*k * (2*k - 1) * n**(2*k - 1))
+    }
+}
+
+func log_factorial_approx(n){
+   n*(log(n) - 1) + log(Num.tau * n)/2 + factorial_correction_terms(n)
+}
+
+say "=> Approximation of log(100!):"
+say lngamma(100 + 1)
+say log_factorial_approx(100)
+
+__END__
+=> Approximation of log(100!):
+363.739375555563490144079993369655638027823921063
+363.739375555563490144079993369655638027823921063
