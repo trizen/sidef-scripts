@@ -217,6 +217,7 @@ A simple collection of Sidef scripts.
     * [RSA algorithm](./Math/RSA_algorithm.sf)
     * [Secant numbers](./Math/secant_numbers.sf)
     * [Semiprime count](./Math/semiprime_count.sf)
+    * [Sequence polynomial closed form](./Math/sequence_polynomial_closed_form.sf)
     * [Sequence succesive differences](./Math/sequence_succesive_differences.sf)
     * [Sierpinski diamond](./Math/sierpinski_diamond.sf)
     * [Sierpinski sidef](./Math/sierpinski_sidef.sf)

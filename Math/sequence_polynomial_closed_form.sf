@@ -1,0 +1,40 @@
+#!/usr/bin/ruby
+
+# Find a closed-form polynomial to a given sequence of numbers.
+
+# See also:
+#   https://www.youtube.com/watch?v=gur16QsZ0r4
+#   https://en.wikipedia.org/wiki/Polynomial_interpolation
+#   https://en.wikipedia.org/wiki/Vandermonde_matrix
+
+func find_poly_degree(a) {
+    var c = 0
+
+    loop {
+        ++c
+        a = a.map_cons(2, {|n,k| n - k })
+        return 0 if a.is_empty
+        return c if a.all { .is_zero }
+    }
+}
+
+# An arbitrary sequence of numbers
+var v = (ARGV.map{ Num(_ - /,/) } || [0, 1, 17, 98, 354, 979, 2275, 4676])
+
+# Check if this sequence has a closed-form in polynomials
+var c = find_poly_degree(v) || die "Can't find a closed-form for this sequence..."
+
+# Create a new cXc Vandermonde matrix
+var A = c.of {|n|
+   c.of {|k| n**k }
+}
+
+var S = A.msolve(v)
+var P = S.map_kv {|k,v| v.is_zero ? () : "#{v.as_rat} * n^#{k}" }.join(' + ')
+
+say "Coefficients : #{S}"
+say "Polynomial   : #{P}"
+
+__END__
+Coefficients : [0, -1/30, 0, 1/3, 1/2, 1/5]
+Polynomial   : -1/30 * n^1 + 1/3 * n^3 + 1/2 * n^4 + 1/5 * n^5
