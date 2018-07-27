@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+
+# Let a(p) be the largest left-truncatable prime that ends in "p" (without truncating "p").
+
+# The largest value of a(p) for 2 < p < 10 is:
+#   a(7) = 357686312646216567629137
+
+# The first three terms such that a(p) > a(7) are:
+#   a(4111)  = 689787684933263366794111
+#   a(13367) = 833757579699383379513367
+#   a(28517) = 5391333548376627357228517
+
+# See also:
+#   https://www.youtube.com/watch?v=azL5ehbw_24
+#   https://en.wikipedia.org/wiki/Truncatable_prime
+
+func left_truncatable_primes(p) {
+
+    var seq = [p]
+
+    for n in (1..9) {
+        var t = Number("#{n}#{p}")
+        if (t.is_prime) {
+            seq << left_truncatable_primes(t)...
+        }
+    }
+
+    return seq
+}
+
+say left_truncatable_primes(3).max      #=> 36484957213536676883
+say left_truncatable_primes(7).max      #=> 357686312646216567629137

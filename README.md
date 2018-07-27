@@ -163,6 +163,7 @@ A simple collection of Sidef scripts.
     * [Laguerre polynomials](./Math/laguerre_polynomials.sf)
     * [Lanczos approximation](./Math/lanczos_approximation.sf)
     * [Largest factorial less than 10^(10^n)](./Math/largest_factorial_less_than_10^(10^n).sf)
+    * [Left truncatable primes](./Math/left_truncatable_primes.sf)
     * [Legendre factorial](./Math/legendre_factorial.sf)
     * [Levenshtein distance iter](./Math/levenshtein_distance_iter.sf)
     * [Levenshtein distance rec](./Math/levenshtein_distance_rec.sf)
