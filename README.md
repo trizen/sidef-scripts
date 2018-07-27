@@ -11,6 +11,7 @@ A simple collection of Sidef scripts.
     * [Md5](./Digest/md5.sf)
 * Encoding
     * [Arithmetic coding](./Encoding/arithmetic_coding.sf)
+    * [Burrows wheeler transform](./Encoding/burrows_wheeler_transform.sf)
     * [Caesar cipher](./Encoding/caesar_cipher.sf)
     * [Huffman coding](./Encoding/huffman_coding.sf)
     * [Lzw compression](./Encoding/lzw_compression.sf)
