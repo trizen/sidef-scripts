@@ -19,8 +19,6 @@
 # See also:
 #   https://oeis.org/A001481
 
-require('ntheory')
-
 func sum_of_two_squares_solutions(n) is cached {
 
     n == 0 && return [[0, 0]]
@@ -59,7 +57,7 @@ func sum_of_two_squares_solutions(n) is cached {
         gather {
             for p,e in (prime_powers) {
                 var pp = p**e
-                var r = %S<ntheory>.sqrtmod("#{pp - 1}", "#{pp}")
+                var r = sqrtmod(-1, pp)
                 take([[r, pp], [pp - r, pp]])
             }
         }.cartesian { |*a|

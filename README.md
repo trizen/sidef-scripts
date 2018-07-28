@@ -128,6 +128,7 @@ A simple collection of Sidef scripts.
     * [Fibonacci number fast](./Math/fibonacci_number_fast.sf)
     * [Fibonacci polynomial numbers](./Math/fibonacci_polynomial_numbers.sf)
     * [Fraction approximation](./Math/fraction_approximation.sf)
+    * [Function inverse binary search](./Math/function_inverse_binary_search.sf)
     * [Gamma function](./Math/gamma_function.sf)
     * [Gauss logarithm approx](./Math/gauss_logarithm_approx.sf)
     * [Gaussian elimination GF2 matrix](./Math/gaussian_elimination_GF2_matrix.sf)

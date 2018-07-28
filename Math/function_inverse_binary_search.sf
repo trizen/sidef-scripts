@@ -1,0 +1,44 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 28 July 2018
+# https://github.com/trizen
+
+# Compute the inverse of any function, using the binary search algorithm and the property:
+#   a/b < (a+c)/(b+d) < c/d
+
+# See also:
+#   https://en.wikipedia.org/wiki/Farey_sequence
+#   https://en.wikipedia.org/wiki/Stern%E2%80%93Brocot_tree
+
+func binary_inverse (n, f, min=0, max=n, prec=192) {
+
+    local Number!PREC = *"#{prec}"
+
+    (min, max) = (max, min) if (min > max)
+
+    var (ln, ld) = min.nude
+    var (rn, rd) = max.nude
+
+    loop {
+        var m = ((ln+rn)/(ld+rd))
+        var c = approx_cmp(f(m), n)
+
+        if (c < 0) {
+            (ln, ld) = m.nude
+        }
+        elsif (c > 0) {
+            (rn, rd) = m.nude
+        }
+        else {
+            return m
+        }
+    }
+}
+
+say binary_inverse(  2, {|x| x.exp })     # solution to x for: exp(x) =   2
+say binary_inverse( 43, {|x| x**2  })     # solution to x for:    x^2 =  43
+say binary_inverse(-43, {|x| x**3  })     # solution to x for:    x^3 = -43
+
+# Find the value of x such that Li(x) = 100
+say binary_inverse(100, {|x| Li(x) }, min: 1, max: 1e6)    #=> 488.87190985280753190605086392033334827378018556407
