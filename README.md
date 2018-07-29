@@ -192,6 +192,7 @@ A simple collection of Sidef scripts.
     * [Motzkin triangle](./Math/motzkin_triangle.sf)
     * [Multiple modular inversion](./Math/multiple_modular_inversion.sf)
     * [N-bit random prime](./Math/n-bit_random_prime.sf)
+    * [Nth molecular number](./Math/nth_molecular_number.sf)
     * [Number of 3Xn arrays with row permutations A212856](./Math/number_of_3Xn_arrays_with_row_permutations_A212856.sf)
     * [Number of representations as sum of 3 triangles](./Math/number_of_representations_as_sum_of_3_triangles.sf)
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
