@@ -166,6 +166,7 @@ A simple collection of Sidef scripts.
     * [Kosaraju's algorithm](./Math/kosaraju_s_algorithm.sf)
     * [Krzysztof reformulated zeta function](./Math/krzysztof_reformulated_zeta_function.sf)
     * [Laguerre polynomials](./Math/laguerre_polynomials.sf)
+    * [LambertW function](./Math/LambertW_function.sf)
     * [Lanczos approximation](./Math/lanczos_approximation.sf)
     * [Largest factorial less than 10^(10^n)](./Math/largest_factorial_less_than_10^(10^n).sf)
     * [Left truncatable primes](./Math/left_truncatable_primes.sf)
