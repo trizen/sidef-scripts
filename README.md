@@ -177,6 +177,7 @@ A simple collection of Sidef scripts.
     * [Linear congruential generator](./Math/linear_congruential_generator.sf)
     * [Linear diophantine equation](./Math/linear_diophantine_equation.sf)
     * [Linear diophantine equation invmod search](./Math/linear_diophantine_equation_invmod_search.sf)
+    * [Linked list addition](./Math/linked_list_addition.sf)
     * [Log10 digit by digit](./Math/log10_digit_by_digit.sf)
     * [Long addition](./Math/long_addition.sf)
     * [Lu decomposition](./Math/lu_decomposition.sf)

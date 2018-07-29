@@ -1,0 +1,71 @@
+#!/usr/bin/ruby
+
+# Add two numbers store in two linked lists, each node holding a base-10 digit.
+
+# Example:
+#   (3 -> 2 -> 6) + (9 -> 6 -> 7) = (2 -> 9 -> 3 -> 1)
+
+# Represents:
+#   623 + 769 = 1392
+
+class ListNode(value, right=nil) {
+
+}
+
+func number_to_linked_list(n) {
+    var digits = n.digits               # in reverse order
+
+    var r = ListNode(digits.shift)
+    var h = r
+
+    digits.each {|d|
+        r = (r.right = ListNode(d))
+    }
+
+    return h
+}
+
+func linked_list_addition(l1, l2) {
+
+    var c = ListNode(0)
+    var z = ListNode(0)
+    var r = c
+
+    loop {
+        c.value += (l1.value + l2.value)
+
+        if (c.value >= 10) {
+            c.right = ListNode(c.value // 10)        #/
+            c.value %= 10                            #=
+        }
+        elsif (l1.right || l2.right) {
+            c.right = ListNode(0)
+        }
+
+        l1.right!
+        l2.right!
+
+        l1 || l2 || break
+
+        l1 ||= z
+        l2 ||= z
+
+        c.right!
+    }
+
+    return r
+}
+
+var a = number_to_linked_list(623)
+var b = number_to_linked_list(769)
+
+say a.dump
+say b.dump
+
+var c = linked_list_addition(a, b)
+say c.dump
+
+__END__
+ListNode(right: ListNode(right: ListNode(right: nil, value: 6), value: 2), value: 3)
+ListNode(right: ListNode(right: ListNode(right: nil, value: 7), value: 6), value: 9)
+ListNode(right: ListNode(right: ListNode(right: ListNode(right: nil, value: 1), value: 3), value: 9), value: 2)
