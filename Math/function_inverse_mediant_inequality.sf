@@ -4,7 +4,7 @@
 # Date: 28 July 2018
 # https://github.com/trizen
 
-# Compute the inverse of any function by narrowing the search using mediant inequality:
+# Compute the inverse of any function by narrowing the search using the mediant inequality:
 #   a/b < (a+c)/(b+d) < c/d
 
 # This algorithm, on average, takes more steps to converge than the binary search algorithm.
