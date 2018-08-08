@@ -1,0 +1,52 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 08 August 2018
+# https://github.com/trizen
+
+# Efficient algorithm for computing the Pisano period: period of Fibonacci
+# numbers mod `n`, assuming that the factorization of `n` can be computed.
+
+# See also:
+#   https://oeis.org/A001175
+#   https://oeis.org/A053031
+#   https://en.wikipedia.org/wiki/Pisano_period
+#   https://en.wikipedia.org/wiki/Wall%E2%80%93Sun%E2%80%93Sun_prime
+
+func prime_power_divisor(p, k=1) {
+
+    k == 0 && return 1
+    p == 5 && return (5 * p**(k-1))
+
+    var e = (p%5 ~~ [2, 3] ? 1 : -1)
+    divisors(p+e).first_by {|d| fibmod(d, p) == 0 } * p**(k-1)
+}
+
+func pisano_period(n) {
+
+    return 0 if (n <= 0)
+    return 1 if (n == 1)
+
+    var d = Math.lcm(n.factor_exp.map {|p| prime_power_divisor(p[0], p[1]) }...)
+
+    # Conjecture:
+    #   we only need to multiply `d` by a power of two,
+    #   at most 2^2, in order to find the Pisano period mod n.
+
+    3.times {|k|
+        var t = d<<k
+
+        if ((fibmod(t, n) == 0) && (fibmod(t+1, n) == 1)) {
+            return t
+        }
+    }
+
+    die "Conjecture disproved for n=#{n}"
+}
+
+say pisano_period(10!)          #=> 86400
+say pisano_period(30!)          #=> 204996473853050880000000
+say pisano_period(2**128 + 1)   #=> 28356863910078205764000346543980814080
+
+say {|n| pisano_period(n+1) }.map(1..20)  #=> [1, 3, 8, 6, 20, 24, 16, 12, 24, 60, 10, 24, 28, 48, 40, 24, 36, 24, 18, 60]
+say {|n| pisano_period(n!)  }.map(1..20)  #=> [1, 3, 24, 24, 120, 120, 240, 960, 8640, 86400, 86400, 1036800, 7257600, 14515200, 217728000, 3483648000, 3483648000, 62705664000, 62705664000, 1254113280000]
