@@ -202,6 +202,7 @@ A simple collection of Sidef scripts.
     * [Permutations iter](./Math/permutations_iter.sf)
     * [Permutations rec](./Math/permutations_rec.sf)
     * [Phi finder factorization algorithm](./Math/phi_finder_factorization_algorithm.sf)
+    * [Pisano periods](./Math/pisano_periods.sf)
     * [Pollard p minus 1 factorization](./Math/pollard_p_minus_1_factorization.sf)
     * [Pollard p minus 1 factorization lcm](./Math/pollard_p_minus_1_factorization_lcm.sf)
     * [Pollard p minus 1 factorization variation](./Math/pollard_p_minus_1_factorization_variation.sf)

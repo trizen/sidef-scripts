@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+# Compute the Pisano periods (or Pisano numbers): period of Fibonacci numbers mod n.
+
+# See also:
+#   https://oeis.org/A001175
+#   https://en.wikipedia.org/wiki/Pisano_period
+
+func pisano_period_prime_power(n) is cached {
+
+    var (a, b) = (0, 1)
+
+    for k in (1..Inf) {
+        (a, b) = (b, (a+b) % n)
+
+        if ([a,b] == [0,1]) {
+            return k
+        }
+    }
+}
+
+func pisano_period(n) {
+    Math.lcm(n.factor_exp.map {|p| pisano_period_prime_power(p[0]**p[1]) }...)
+}
+
+say 20.of {|n| pisano_period(n+1) }
