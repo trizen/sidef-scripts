@@ -1,0 +1,44 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 08 August 2018
+# https://github.com/trizen
+
+# Given a positive integer n, find the least positive
+# integer k such that Fibonacci(k) is divisible by n.
+
+# The relation a(p^e) = p^(e-1)*a(p) is called Wall's conjecture.
+
+# See also:
+#   https://oeis.org/A001177
+#   https://oeis.org/A214528
+#   https://en.wikipedia.org/wiki/Wall%E2%80%93Sun%E2%80%93Sun_prime
+
+func prime_power_divisor(p, k=1) {
+
+    k == 0 && return 1
+    p == 5 && return (5 * p**(k-1))
+
+    if ((k > 2) && (p == 2)) {
+        k -= 1
+    }
+
+    var e = (p%5 ~~ [2, 3] ? 1 : -1)
+    divisors(p+e).grep{|d| fibmod(d, p) == 0 }.min * p**(k-1)
+}
+
+func fibonacci_divisor(n) {
+    Math.lcm(n.factor_exp.map {|p| prime_power_divisor(p[0], p[1]) }...)
+}
+
+for n in (1..20) {
+    var k = fibonacci_divisor(n)
+    say "#{'%2s'%n} | fibonacci(#{k})"
+    assert_eq(fibmod(k, n), 0)
+}
+
+# Also defined for arbitrary large integers
+say fibonacci_divisor(2**128 + 1)       #=> 14178431955039102882000173271990407040
+say fibonacci_divisor(100!)             #=> 101196556448757859956601151242120079123575236461312321736932151110214578018514388862546697139519488000000000000000000000000
+
+say 20.of {|n| fibonacci_divisor(n!) }  #=> [1, 1, 3, 12, 12, 60, 60, 120, 480, 4320, 43200, 43200, 518400, 3628800, 7257600, 108864000, 1741824000, 1741824000, 31352832000, 31352832000]
