@@ -33,7 +33,7 @@ func frobenius_fermat_primality_test(n) {
 
 # Test some Carmichael numbers
 var carmichael = [252601, 278545, 294409, 314821, 334153, 340561, 399001, 410041, 449065, 488881, 512461]
-say carmichael.grep {|n| frobenius_fermat_primality_test(n) }   #=> [252601, 399001, 512461]
+say carmichael.grep {|n| frobenius_fermat_primality_test(n) }                #=> [252601, 399001, 512461]
 
-# The primes bellow 100
-say {|n| frobenius_fermat_primality_test(n) }.grep(1..100)      #=> [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+# Filter the primes in a given range
+say {|n| frobenius_fermat_primality_test(n) }.grep(15912519589..15912519859) #=> [15912519629, 15912519643, 15912519661, 15912519769, 15912519829, 15912519839, 15912519851, 15912519853]
