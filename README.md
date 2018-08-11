@@ -130,6 +130,7 @@ A simple collection of Sidef scripts.
     * [Fibonacci number fast](./Math/fibonacci_number_fast.sf)
     * [Fibonacci polynomial numbers](./Math/fibonacci_polynomial_numbers.sf)
     * [Fraction approximation](./Math/fraction_approximation.sf)
+    * [Frobenius fermat primality test](./Math/frobenius_fermat_primality_test.sf)
     * [Function inverse binary search](./Math/function_inverse_binary_search.sf)
     * [Function inverse mediant inequality](./Math/function_inverse_mediant_inequality.sf)
     * [Gamma function](./Math/gamma_function.sf)

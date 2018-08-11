@@ -1,0 +1,39 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# License: GPLv3
+# Date: 11 August 2018
+# https://github.com/trizen
+
+# A simple primality test using the Frobenius test with respect to Fibonacci polynomial x^2-x-1, and a base-2 Fermat test.
+
+# Smallest counter-examples are:
+#   219781, 252601, 399001, 512461, 722261, 741751, 852841, 1024651, 1193221, 1533601, 1690501, 1735841, 1857241, 1909001, 2100901
+
+# See also:
+#   https://oeis.org/A212424
+#   https://en.wikipedia.org/wiki/Fermat_primality_test
+#   https://en.wikipedia.org/wiki/Frobenius_pseudoprime
+
+func frobenius_fermat_primality_test(n) {
+
+    return false if (n <= 1)
+    return true  if (n == 2)
+    return true  if (n == 5)
+
+    powmod(2, n-1, n) == 1 || return false
+
+    var l = legendre(n, 5)
+
+    fibmod(n - l, n) == 0 || return false
+    fibmod(n + l, n) == 1 || return false
+
+    return true
+}
+
+# Test some Carmichael numbers
+var carmichael = [252601, 278545, 294409, 314821, 334153, 340561, 399001, 410041, 449065, 488881, 512461]
+say carmichael.grep {|n| frobenius_fermat_primality_test(n) }   #=> [252601, 399001, 512461]
+
+# The primes bellow 100
+say {|n| frobenius_fermat_primality_test(n) }.grep(1..100)      #=> [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
