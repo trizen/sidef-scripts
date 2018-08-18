@@ -101,8 +101,8 @@ func cffmm (n) {
     var (e1, e2) = (1, 0)
     var (f1, f2) = (0, 1)
 
-    var B = 2*int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
-    var L = B.prime_count+int(log(n))                         # maximum number of matrix-rows
+    var B = int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
+    var L = B.prime_count+1                                 # maximum number of matrix-rows
 
     var Q = []
     var A = []
