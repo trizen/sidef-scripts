@@ -1,0 +1,27 @@
+#!/usr/bin/ruby
+
+# Perfect squares in Catalan's triangle, in column 2.
+
+# Equivalent with finding integers n, such that:
+#   binomial(n+2, 2) - binomial(n+2, 1) = k^2
+
+# Also equivalent with:
+#   (n + 1)*(n + 2)/2 - 2 - n = k^2
+
+# See also:
+#   https://oeis.org/A317027
+
+# This provides upper bounds in A317027:
+#   A317027(17) <= 26039560591564569275625
+#   A317027(18) <= 884578527018516731261184
+#   A317027(19) <= 30049630358038004293604649
+#   A317027(20) <= 1020802853646273629251296900
+
+func a(m) {
+    (3*(3 - sqrt(8))**m + 3*(3 + sqrt(8))**m - 2)/4
+}
+
+for m in (1..20) {
+    var n = a(m)
+    say ("C(#{n}, 2) = ", (n + 1)*(n + 2)/2 - 2 - n)
+}

@@ -200,6 +200,7 @@ A simple collection of Sidef scripts.
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
     * [Pell factorization](./Math/pell_factorization.sf)
+    * [Perfect squares in catalan's triangle](./Math/perfect_squares_in_catalan_s_triangle.sf)
     * [Permutations iter](./Math/permutations_iter.sf)
     * [Permutations rec](./Math/permutations_rec.sf)
     * [Phi finder factorization algorithm](./Math/phi_finder_factorization_algorithm.sf)
