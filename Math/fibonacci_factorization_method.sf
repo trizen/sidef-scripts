@@ -1,0 +1,52 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 09 September 2018
+# https://github.com/trizen
+
+# A new integer factorization method, using the Fibonacci numbers.
+
+# It uses the smallest divisor `d` of `p - legendre(p, 5)`, such that `Fibonacci(d) = 0 (mod p)`.
+
+# By selecting a small bound B, we compute `k = lcm(1..B)`, hoping that `k` is a
+# multiple of `d`, then `gcd(Fibonacci(k) (mod n), n)` in a non-trivial factor of `n`.
+
+# This method is similar in flavor with Pollard's p-1 and Williams's p+1 methods.
+
+func fibonacci_factorization(n, B=10000) {
+
+    var k = consecutive_lcm(B)      # lcm(1..B)
+    var F = fibmod(k, n)            # Fibonacci(k) (mod n)
+
+    return gcd(F, n)
+}
+
+say fibonacci_factorization(257221 * 470783, 700)       #=> 470783
+say fibonacci_factorization(2**64 + 1, 137089)          #=> 274177
+
+for k in (1..50) {
+
+    var n = (random_prime(2**k) * random_prime(2**k))
+    var p = fibonacci_factorization(n, 2 * n.ilog2**2)
+
+    if (p.is_prime) {
+        say "#{n} = #{p} * #{n/p}"
+    }
+}
+
+__END__
+3214709 = 1613 * 1993
+167569819 = 19001 * 8819
+2851899013 = 49807 * 57259
+27732054173 = 153607 * 180539
+3709275441913 = 1991999 * 1862087
+16170839753069 = 1629653 * 9922873
+423422405914009 = 10333903 * 40974103
+122720571221359159 = 384088241 * 319511399
+69782959258128563 = 271895191 * 256653893
+35012441184542164741 = 6294003887 * 5562824843
+524934717838728509869 = 18711680699 * 28053851831
+113042322296238658633 = 3370274783 * 33540980951
+28555019079287984329261 = 386638476841 * 73854571621
+544812320889004864776853 = 333732865481 * 1632480277613
+5070894233593682106381371 = 1927323093737 * 2631055607683
