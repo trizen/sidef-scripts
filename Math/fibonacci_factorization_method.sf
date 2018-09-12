@@ -11,7 +11,7 @@
 # By selecting a small bound B, we compute `k = lcm(1..B)`, hoping that `k` is a
 # multiple of `d`, then `gcd(Fibonacci(k) (mod n), n)` in a non-trivial factor of `n`.
 
-# This method is similar in flavor with Pollard's p-1 and Williams's p+1 methods.
+# This method is similar in flavor to Pollard's p-1 and Williams's p+1 methods.
 
 func fibonacci_factorization(n, B=10000) {
 
@@ -21,8 +21,8 @@ func fibonacci_factorization(n, B=10000) {
     return gcd(F, n)
 }
 
-say fibonacci_factorization(257221 * 470783, 700)       #=> 470783
-say fibonacci_factorization(2**64 + 1, 137089)          #=> 274177
+say fibonacci_factorization(257221 * 470783,              700);     #=> 470783           (p+1 is  700-smooth)
+say fibonacci_factorization(333732865481 * 1632480277613, 3000);    #=> 333732865481     (p-1 is 3000-smooth)
 
 for k in (1..50) {
 
