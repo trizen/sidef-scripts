@@ -19,8 +19,9 @@ STDOUT.autoflush(true)
 define (
       LOOK_FOR_SMALL_FACTORS      = true,
       SMOOTH_TRIAL_DIVISION       = false,
-      POLLARD_PM1_BOUND           = 1_000_000.next_prime,
-      TRIAL_DIVISION_LIMIT        = 1_000_000.next_prime,
+      FIBONACCI_BOUND             = 300_000,
+      POLLARD_PM1_BOUND           = 1_000_000,
+      TRIAL_DIVISION_LIMIT        = 1_000_000,
       POLLARD_RHO_ITERATIONS      = 50_000,
       POLLARD_RHO_SQRT_ITERATIONS = 25_000,
       FERMAT_ITERATIONS           = 500,
@@ -699,6 +700,32 @@ func trial_division_small_primes (n) {
     return (factors, rem)
 }
 
+func fibonacci_factorization (n, upper_bound) {
+
+    var bound = (5 * n.ilog2**2)
+    bound = upper_bound if (bound > upper_bound)
+
+    loop {
+        return nil if (bound <= 1)
+
+        var B = consecutive_lcm(bound)
+        var F = fibmod(B, n)
+
+        var g = gcd(F, n)
+
+        if (g == n) {
+            bound >>= 1
+            next
+        }
+
+        if (g > 1) {
+            return g
+        }
+
+        return nil
+    }
+}
+
 func pollard_pm1_find_factor (n, bound) {
 
     var (t, p, g) = (n.random_prime, 2)
@@ -721,7 +748,7 @@ func pollard_pm1_find_factor (n, bound) {
 func pollard_rho2_find_factor (n, max_iter) {
 
     var x = 2
-    var y = 2
+    var y = 3
 
     max_iter.times {
 
@@ -844,16 +871,24 @@ find_small_factors = func (rem, factors) {
             next
         }
 
-        say "=> Pollard p-1..."
-        var f = pollard_pm1_find_factor(rem, POLLARD_PM1_BOUND);
+        say "=> Fibonacci p±1..."
+        var f = fibonacci_factorization(rem, FIBONACCI_BOUND)
 
-        if (defined(f) && (f > 1) && (f < rem)) {
+        if (defined(f) && (f < rem)) {
             store_factor(\rem, f, factors)
             next
         }
 
         say "=> Pollard rho2...";
         var f = pollard_rho2_find_factor(rem, POLLARD_RHO_ITERATIONS)
+
+        if (defined(f) && (f > 1) && (f < rem)) {
+            store_factor(\rem, f, factors)
+            next
+        }
+
+        say "=> Pollard p-1..."
+        var f = pollard_pm1_find_factor(rem, POLLARD_PM1_BOUND);
 
         if (defined(f) && (f > 1) && (f < rem)) {
             store_factor(\rem, f, factors)

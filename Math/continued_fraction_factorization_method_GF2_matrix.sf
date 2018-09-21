@@ -119,8 +119,8 @@ func cffmm (n) {
 
     do {
         y = (r*z - y)
-        z = ((n - y*y) // z)         #/
-        r = ((x + y)   // z)         #/
+        z = ((n - y*y) // z)        #/
+        r = round((x + y) / z)
 
         var a = ((x*f2 + e2) % n)
         var b = (a*a % n)
@@ -140,7 +140,7 @@ func cffmm (n) {
         (f1, f2) = (f2, (r*f2 + f1) % n)
         (e1, e2) = (e2, (r*e2 + e1) % n)
 
-    } while ((z > 1) && (A.len <= L))
+    } while ((z != 1) && (A.len <= L))
 
     if (A.len < L) {
         A += (L - A.end + 1 -> of(0))
