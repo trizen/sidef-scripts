@@ -1,25 +1,35 @@
 #!/usr/bin/ruby
 
-# Daniel "Trizen" Șuteu
-# Date: 19 June 2018
-# https://github.com/trizen
+# An efficient algorithm for computing Fibonacci(n) (mod m) for arbitary large integers.
 
-# An efficient algorithm for computing the nth-Fibonacci number (mod m).
+# Algorithm from:
+#   https://metacpan.org/source/KRYDE/Math-NumSeq-72/lib/Math/NumSeq/Fibonacci.pm
 
 # See also:
 #   https://en.wikipedia.org/wiki/Fibonacci_number
 
 func fibmod(n, m) {
 
-    var (f, g) = (0, 1)
-    var (a, b) = (0, 1)
+    var (f, g, a) = (0, 1, -2)
 
-    for k in (0 .. n.ilog2) {
-        (f, g) = ((f*a + g*b)%m, (f*b + g*(a+b))%m) if n.getbit(k)
-        (a, b) = ((a*a + b*b)%m, (a*b + b*(a+b))%m)
+    for k in (n.ilog2 ^.. 0) {
+
+        g = (g*g)%m
+        f = (f*f)%m
+
+        var t = (g<<2 - f + a)
+
+        f += g
+
+        if (n.getbit(k)) {
+            (f, g, a) = (t-f, t, -2)
+        }
+        else {
+            (g, a) = (t-f, 2)
+        }
     }
 
-    return f
+    return (g % m)
 }
 
 func fibonacci_factorization(n, B=10000) {

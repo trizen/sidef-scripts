@@ -194,6 +194,7 @@ A simple collection of Sidef scripts.
     * [Mathematical formulas](./Math/mathematical_formulas.sf)
     * [Miller rabin primality test](./Math/miller_rabin_primality_test.sf)
     * [Modular exponentiation](./Math/modular_exponentiation.sf)
+    * [Modular fibonacci number cassini](./Math/modular_fibonacci_number_cassini.sf)
     * [Modular fibonacci number fast](./Math/modular_fibonacci_number_fast.sf)
     * [Modular inverse](./Math/modular_inverse.sf)
     * [Motzkin triangle](./Math/motzkin_triangle.sf)
