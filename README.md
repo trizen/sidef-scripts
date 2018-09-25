@@ -132,6 +132,7 @@ A simple collection of Sidef scripts.
     * [Fibonacci number divisible by n](./Math/fibonacci_number_divisible_by_n.sf)
     * [Fibonacci number fast](./Math/fibonacci_number_fast.sf)
     * [Fibonacci polynomial numbers](./Math/fibonacci_polynomial_numbers.sf)
+    * [Fibonacci pseudoprimes from twin primes](./Math/fibonacci_pseudoprimes_from_twin_primes.sf)
     * [Fibonacci pseudoprimes generation](./Math/fibonacci_pseudoprimes_generation.sf)
     * [Fibonacci strong pseudoprimes generation](./Math/fibonacci_strong_pseudoprimes_generation.sf)
     * [Fraction approximation](./Math/fraction_approximation.sf)

@@ -1,0 +1,59 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 25 September 2018
+# https://github.com/trizen
+
+# New method for generating Fibonacci pseudoprimes, using twin
+# primes, `p` and `p+2`, such that `p` is congruent to 2 mod 5.
+
+# Then `n = p * (p+2)` is a Fibonacci pseudoprime, which has the Legendre symbol `(n/5) = -1`.
+
+# Meaning that `Fibonacci(n+1)` is divisible by `n`.
+
+# See also:
+#   https://oeis.org/A081264
+
+# Blog post:
+#   https://trizenx.blogspot.com/2018/08/investigating-fibonacci-numbers-modulo-m.html
+
+func fibonacci_pseudoprime(r) {
+
+    for (var p = r.random_prime; true ; p.next_prime!) {
+        if ((p%5 == 2) && is_prime(p+2)) {
+
+            var q = p+2
+            var n = p*q
+
+            assert(fibmod(n+1, n) == 0, "#{n} is a Fibonacci pseudoprime")
+
+            return n
+        }
+    }
+}
+
+for k in (1..20) {
+    say fibonacci_pseudoprime(10**k)
+}
+
+__END__
+323
+11663
+685583
+46621583
+6105547043
+433329925283
+11987438194943
+7897153159301183
+237761169627329603
+73605505484780549603
+571805150127095969603
+349885058917236330902543
+84072580400168408258086463
+7563284296882185341241796643
+59464397158533235506324948803
+9037748124761016960091148447843
+7930239355318379515713220941486143
+95634643477245710026142579336818703
+65923836668452066780957296118497424163
+5014955816736641611376222180873426125823
