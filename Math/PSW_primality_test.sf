@@ -1,0 +1,46 @@
+#!/usr/bin/ruby
+
+# The PSW primality test, named after Carl Pomerance, John Selfridge, and Samuel Wagstaff.
+
+# No counter-examples are known to this test.
+
+# Algorithm: given an odd integer n, that is not a perfect power:
+#   1. Perform a base-2 Fermat test.
+#   2. Find the first P>0 such that kronecker(n, P^2 + 4) = -1.
+#   3. If the Lucas U function: U(P, -1, n+1) = 0 (mod n), then n is probably prime.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Lucas_pseudoprime
+#   https://en.wikipedia.org/wiki/Baillie%E2%80%93PSW_primality_test
+
+func PSW_primality_test(n) {
+
+    return false if (n <= 1)
+    return true  if (n == 2)
+    return false if n.is_power
+
+    2.powmod(n-1, n) == 1 || return false
+
+    var P = (1..Inf -> first_by {|k|
+        n.kronecker(k*k + 4) == -1
+    })
+
+    lucasUmod(P, -1, n+1, n) == 0
+}
+
+var count = 0
+
+for n in (1 .. 1e4) {
+
+    if (PSW_primality_test(n)) {
+        if (!n.is_prime) {
+            say "Counter-example: #{n}"
+        }
+        ++count
+    }
+    elsif (n.is_prime) {
+        say "Missed a prime: #{n}"
+    }
+}
+
+say count   #=> 1229

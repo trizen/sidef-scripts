@@ -231,6 +231,7 @@ A simple collection of Sidef scripts.
     * [Problem of apollonius](./Math/problem_of_apollonius.sf)
     * [Product of prime sigmas of divisors](./Math/product_of_prime_sigmas_of_divisors.sf)
     * [Product of primes approx](./Math/product_of_primes_approx.sf)
+    * [PSW primality test](./Math/PSW_primality_test.sf)
     * [Pythagorean means](./Math/pythagorean_means.sf)
     * [Quadratic formula solution approx](./Math/quadratic_formula_solution_approx.sf)
     * [Ramanujan sum](./Math/ramanujan_sum.sf)
