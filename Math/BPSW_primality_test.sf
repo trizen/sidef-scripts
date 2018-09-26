@@ -1,0 +1,95 @@
+#!/usr/bin/ruby
+
+# The Baillie-PSW primality test, named after Robert Baillie, Carl Pomerance, John Selfridge, and Samuel Wagstaff.
+
+# No counter-examples are known to this test.
+
+# Algorithm: given an odd integer n, that is not a perfect power:
+#   1. Perform a base-2 Fermat test.
+#   2. Find the first D in the sequence 5, −7, 9, −11, 13, −15, ... for which the Jacobi symbol (D/n) is −1.
+#      Set P = 1 and Q = (1 − D) / 4.
+#   3. Perform a strong Lucas probable prime test on n using parameters D, P, and Q.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Lucas_pseudoprime
+#   https://en.wikipedia.org/wiki/Baillie%E2%80%93PSW_primality_test
+
+func BPSW_primality_test(n) {
+
+    return false if (n <= 1)
+    return true  if (n == 2)
+    return false if n.is_power
+
+    2.powmod(n-1, n) == 1 || return false
+
+    var Q
+    for k in (2 .. Inf) {
+        var D = ((-1)**k * (2*k + 1))
+
+        if (D.kronecker(n) == -1) {
+            Q = (1 - D)/4
+            break
+        }
+    }
+
+    var d = (n + 1)
+    var s = d.valuation(2)
+
+    var(U1 = 1)
+    var(V1 = 2, V2 = 1)
+    var(Q1 = 1, Q2 = 1)
+
+    for bit in (d.as_bin.first(-s - 1).chars) {
+
+        Q1 = (Q1 * Q2)%n
+
+        if (bit) {
+            Q2 = (Q1 * Q)%n
+            U1 = (U1 * V2)%n
+            V1 = (V2*V1 - Q1)%n
+            V2 = (V2*V2 - 2*Q2)%n
+        }
+        else {
+            Q2 = Q1
+            U1 = (U1*V1 - Q1)%n
+            V2 = (V2*V1 - Q1)%n
+            V1 = (V1*V1 - 2*Q2)%n
+        }
+    }
+
+    Q1 = (Q1 * Q2)%n
+    Q2 = (Q1 * Q)%n
+    U1 = (U1*V1 - Q1)%n
+    V1 = (V2*V1 - Q1)%n
+    Q1 = (Q1 * Q2)%n
+
+    return true if U1.is_congruent(0, n)
+    return true if V1.is_congruent(0, n)
+
+    s.times {
+        U1 = (U1 * V1)%n
+        V1 = (V1*V1 - 2*Q1)%n
+        Q1 = (Q1 * Q1)%n
+
+        return true if V1.is_congruent(0, n)
+    }
+
+    return false
+}
+
+var count = 0
+
+for n in (1 .. 1e4) {
+
+    if (BPSW_primality_test(n)) {
+        if (!n.is_prime) {
+            say "Counter-example: #{n}"
+        }
+        ++count
+    }
+    elsif (n.is_prime) {
+        say "Missed a prime: #{n}"
+    }
+}
+
+say count   #=> 1229
