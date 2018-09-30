@@ -1,0 +1,103 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 30 September 2018
+# https://github.com/trizen
+
+# A new integer factorization method, using the Lucas U and V sequences.
+
+# Inspired by the BPSW primality test.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Lucas_sequence
+#   https://en.wikipedia.org/wiki/Lucas_pseudoprime
+#   https://en.wikipedia.org/wiki/Baillie%E2%80%93PSW_primality_test
+
+func lucas_factorization(n, B) {
+
+    return n if (n <= 3)
+
+    if (n.is_power) {
+        return n.perfect_root
+    }
+
+    var Q
+    for k in (2 .. Inf) {
+        var D = ((-1)**k * (2*k + 1))
+
+        if (D.kronecker(n) == -1) {
+            Q = (1 - D)/4
+            break
+        }
+    }
+
+    var check_factor = {|a|
+        var g = gcd(a, n)
+
+        if ((g > 1) && (g < n)) {
+            return g
+        }
+    }
+
+    var d = B.consecutive_lcm
+    var s = d.valuation(2)
+
+    var(U1 = 1)
+    var(V1 = 2, V2 = 1)
+    var(Q1 = 1, Q2 = 1)
+
+    for bit in (d.as_bin.first(-s - 1).chars) {
+
+        Q1 = (Q1 * Q2)%n
+
+        if (bit) {
+            Q2 = (Q1 * Q)%n
+            U1 = (U1 * V2)%n
+            V1 = (V2*V1 - Q1)%n
+            V2 = (V2*V2 - 2*Q2)%n
+        }
+        else {
+            Q2 = Q1
+            U1 = (U1*V1 - Q1)%n
+            V2 = (V2*V1 - Q1)%n
+            V1 = (V1*V1 - 2*Q2)%n
+        }
+    }
+
+    Q1 = (Q1 * Q2)%n
+    Q2 = (Q1 * Q)%n
+    U1 = (U1*V1 - Q1)%n
+    V1 = (V2*V1 - Q1)%n
+    Q1 = (Q1 * Q2)%n
+
+    check_factor(U1)
+    check_factor(V1-2)
+
+    s.times {
+
+        U1 = (U1 * V1)%n
+        V1 = (V1*V1 - 2*Q1)%n
+        Q1 = (Q1 * Q1)%n
+
+        check_factor(U1)
+        check_factor(V1-2)
+    }
+
+    return 1
+}
+
+say lucas_factorization(257221 * 470783,                700);    #=> 470783           (p+1 is  700-smooth)
+say lucas_factorization(333732865481 * 1632480277613,  3000);    #=> 333732865481     (p-1 is 3000-smooth)
+say lucas_factorization(1124075136413 * 3556516507813, 4000);    #=> 1124075136413    (p+1 is 4000-smooth)
+say lucas_factorization(6555457852399 * 7864885571993,  700);    #=> 6555457852399    (p-1 is  700-smooth)
+say lucas_factorization(7553377229 * 588103349,         800);    #=> 7553377229       (p+1 is  800-smooth)
+
+for k in (2..40) {
+
+    var n = 2.of { random_nbit_prime(k) }.prod
+    var p = lucas_factorization(n, 2 * n.ilog2**2)
+
+    if (p.is_prime) {
+        say "#{n} = #{p} * #{n/p}"
+    }
+}

@@ -191,6 +191,7 @@ A simple collection of Sidef scripts.
     * [Long addition](./Math/long_addition.sf)
     * [Lu decomposition](./Math/lu_decomposition.sf)
     * [Lucas-lehmer primality test](./Math/lucas-lehmer_primality_test.sf)
+    * [Lucas factorization method](./Math/lucas_factorization_method.sf)
     * [Lucas sequences U V](./Math/lucas_sequences_U_V.sf)
     * [LUP decomposition](./Math/LUP_decomposition.sf)
     * [Mandelbrot set](./Math/mandelbrot_set.sf)
