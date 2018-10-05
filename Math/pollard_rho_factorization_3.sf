@@ -1,0 +1,33 @@
+#!/usr/bin/ruby
+
+# Pollard's rho integer factorization algorithm.
+
+# This version uses the polynomial:
+#   f(x) = x^(n^2 - 1) + n + 1
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm
+
+func rho_factor(n) {
+
+    var c = (n + 1)
+    var t = (n*n - 1)
+
+    var x = c
+    var y = powmod(x, t, n)+c
+
+   do {
+        x = powmod(x, t, n)+c
+        y = powmod(y, t, n)+c
+        y = powmod(y, t, n)+c
+   } while (n `is_coprime` x-y)
+
+   var g = gcd(x-y, n)
+
+   return [g, n/g]
+}
+
+say rho_factor(314159265358979323)         #=> [317213509, 990371647]
+say rho_factor(7167393334524676153)        #=> [1518057367, 4721424559]
+say rho_factor(2559469924891866771047)     #=> [266349879973, 9609427739]
+say rho_factor(63469917720180180377579)    #=> [503267186237, 126115748167]

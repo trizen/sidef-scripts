@@ -19,7 +19,7 @@ func prime_power_divisor(p, k=1) {
     p == 5 && return (5 * p**(k-1))
 
     var e = (p%5 ~~ [2, 3] ? 1 : -1)
-    divisors(p+e).first_by {|d| fibmod(d, p) == 0 } * p**(k-1)
+    (p+e).divisors.first_by {|d| fibmod(d, p) == 0 } * p**(k-1)
 }
 
 func pisano_period(n) {
@@ -27,7 +27,7 @@ func pisano_period(n) {
     return 0 if (n <= 0)
     return 1 if (n == 1)
 
-    var d = Math.lcm(n.factor_exp.map {|p| prime_power_divisor(p[0], p[1]) }...)
+    var d = n.factor_exp.lcm {|p| prime_power_divisor(p[0], p[1]) }
 
     # Conjecture:
     #   we only need to multiply `d` by a power of two,

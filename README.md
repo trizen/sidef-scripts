@@ -223,6 +223,7 @@ A simple collection of Sidef scripts.
     * [Pollard p minus random a](./Math/pollard_p_minus_random_a.sf)
     * [Pollard rho factorization](./Math/pollard_rho_factorization.sf)
     * [Pollard rho factorization 2](./Math/pollard_rho_factorization_2.sf)
+    * [Pollard rho factorization 3](./Math/pollard_rho_factorization_3.sf)
     * [Polygonal representations](./Math/polygonal_representations.sf)
     * [Polynomial interpolation](./Math/polynomial_interpolation.sf)
     * [Power of 2 plus 3 primes lucas-lehmer](./Math/power_of_2_plus_3_primes_lucas-lehmer.sf)
