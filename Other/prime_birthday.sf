@@ -1,0 +1,82 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 11 October 2018
+# https://github.com/trizen
+
+# Find the most "prime" birthday:
+#
+#   Y / M / D
+#
+# where all the following expressions are prime numbers:
+#
+#   D
+#   D - M
+#
+#   D + M
+#   D + Y
+#
+#   Y * M - D
+#   Y + M + 1
+#
+#   Y*D + M + 1
+#   Y*D - M - 1
+#
+#   Y + M*D - 1
+#   Y - M*D + 1
+#
+#   Y*M*D - 1
+#   Y*M*D + 1
+#
+#   Y*D - 1
+#   Y*M + 1
+#   M*D - 1
+#   M*D + 1
+#
+#   Y + M + D
+#   Y - M - D
+#   Y + M - D
+#   Y - M + D
+
+# Only one such birthday eixsts between the years 1 and 10000, and that is:
+#   Y = 1980
+#   M = 12
+#   D = 19
+
+#  Jake Gyllenhaal, famous American actor and producer, was born on this date.
+
+for y in (1900..2018), m in (1..12), d in (1..31) {
+
+    d.is_prime || next
+
+    d - m -> is_prime || next
+    d + m -> is_prime || next
+    d + y -> is_prime || next
+
+    y * m - d -> is_prime || next
+    y + m + 1 -> is_prime || next
+
+    y*d + m + 1 -> is_prime || next
+    y*d - m - 1 -> is_prime || next
+
+    y + m*d - 1 -> is_prime || next
+    y - m*d + 1 -> is_prime || next
+
+    y * m * d - 1 -> is_prime || next
+    y * m * d + 1 -> is_prime || next
+
+    y * d - 1 -> is_prime || next
+    y * m + 1 -> is_prime || next
+    m * d - 1 -> is_prime || next
+    m * d + 1 -> is_prime || next
+
+    y + m + d -> is_prime || next
+    y - m - d -> is_prime || next
+    y + m - d -> is_prime || next
+    y - m + d -> is_prime || next
+
+    say "#{y} #{m} #{d}"
+}
+
+__END__
+1980 12 19

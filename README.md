@@ -289,6 +289,8 @@ A simple collection of Sidef scripts.
     * [Zeta 2n](./Math/zeta_2n.sf)
     * [Zeta 3 fast convergence](./Math/zeta_3_fast_convergence.sf)
     * [Zeta derivative at trivial zeros](./Math/zeta_derivative_at_trivial_zeros.sf)
+* Other
+    * [Prime birthday](./Other/prime_birthday.sf)
 * PL
     * [Brainf compiler](./PL/brainf_compiler.sf)
     * [Sidef interpreter](./PL/sidef_interpreter.sf)
