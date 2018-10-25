@@ -2,6 +2,7 @@
 
 # Daniel "Trizen" Șuteu
 # Date: 15 September 2018
+# Edit: 25 October 2018
 # https://github.com/trizen
 
 # Variation of the continued-fraction factorization method, but using the mediant inequality to approximate sqrt(n).
@@ -90,7 +91,6 @@ func farey_factorization (n) {
     }
 
     var x = n.isqrt
-    var w = 24*x         # maximum value to be checked for B-smoothnes
 
     var a1 = x
     var a2 = 1
@@ -98,8 +98,13 @@ func farey_factorization (n) {
     var b1 = x+1
     var b2 = 1
 
-    var B = int(sqrt(5) * exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
-    var L = B.prime_count+1                                           # maximum number of matrix-rows
+    var B = 3*int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
+
+    var factor_base  = B.primes.grep {|p| (p <= 2) || (kronecker(n, p) == 1) }
+    var factor_prod  = factor_base.prod
+    var factor_index = Hash(factor_base ~Z ^factor_base -> flat...)
+
+    var L = factor_base.len+1
 
     var Q = []
     var A = []
@@ -108,7 +113,7 @@ func farey_factorization (n) {
         var sig = 0
 
         for p,e in factors {
-            sig.setbit!(p.prime_count-1) if e.is_odd
+            sig.setbit!(factor_index{p}) if e.is_odd
         }
 
         return sig
@@ -138,13 +143,11 @@ func farey_factorization (n) {
             resolve_factor(t, v) if v.is_square
         }
 
-        # Make sure `v` is relatively small
-        if (v <= w) {
+        if (v.is_smooth_over_prod(factor_prod)) {
 
-            # Factorize `v` to see if it is B-smooth
             var v_factors = v.factor_exp
 
-            if (v_factors && (v_factors[-1][0] <= B)) {
+            if (v_factors) {
                 A << exponent_signature(v_factors)
                 Q << [t, v]
             }
@@ -160,29 +163,17 @@ func farey_factorization (n) {
 
     for solution in (I.last(LR)) {
 
-        var solution_A = 1
-        var solution_B = 1
-        var solution_X = 1
-        var solution_Y = 1
+        var X = 1
+        var Y = 1
 
         for i in (^Q) {
 
             if (solution.bit(i)) {
 
-                solution_A *= Q[i][0] %= n      #=
-                solution_B *= Q[i][0]
+                X *= Q[i][0] %= n      #=
+                Y *= Q[i][1]
 
-                solution_X *= Q[i][1] %= n      #=
-                solution_Y *= Q[i][1]
-
-                for X,Y in [
-                    [solution_A, solution_X],
-                    [solution_A, solution_Y],
-                    [solution_B, solution_X],
-                    [solution_B, solution_Y]
-                ] {
-                    resolve_factor(X, Y)
-                }
+                resolve_factor(X, Y)
             }
         }
     }
@@ -190,9 +181,9 @@ func farey_factorization (n) {
     return [n]
 }
 
-for k in (2..60) {
+var composites = (ARGV ? ARGV.map{.to_i} : {|k| irand(2, 1<<k) }.map(2..60) )
 
-    var n = irand(2, 1<<k)
+for n in (composites) {
 
     var factors = farey_factorization(n)
     assert_eq(factors.prod, n)
