@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 25 October 2018
+# https://github.com/trizen
+
+# A new algorithm for testing N for B-smoothness, given the product of a subset of primes <= B.
+
+# Returns a true value when N is the product of a subsest of prime factors of B.
+
+# This algorithm can be useful in some modern integer factorization algorithms,
+# such as the Quadratic Sieve and the Continued Fraction Factorization method.
+
+func is_smooth(n, k) {
+
+    var g = gcd(n, k)
+
+    while (g > 1) {                   # while gcd(n, k) > 1
+        n.remdiv!(g)                  # remove any divisibily by g
+        return true if (n == 1)       # smooth if n == 1
+        g = gcd(n, k)                 # take the gcd again and repeat
+    }
+
+    return false
+}
+
+# Example for finding 19-smooth numbers
+var k = 19.primorial      # product of primes <= 19
+
+for n in (1..1000) {
+    say (n, ' = ', n.factor) if is_smooth(n, k)
+}
