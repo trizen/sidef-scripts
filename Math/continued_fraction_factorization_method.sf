@@ -49,6 +49,22 @@ func gauss_elimination(A, n) {
     return I
 }
 
+func check_factor (n, g, factors) {
+
+    while (g `divides` n) {
+
+        n /= g;
+        factors << g
+
+        if (is_prime(n)) {
+            factors << n
+            return 1
+        }
+    }
+
+    return n
+}
+
 func cffmm (n) {
 
     # Check for primes and negative numbers
@@ -101,11 +117,11 @@ func cffmm (n) {
     var (e1, e2) = (1, 0)
     var (f1, f2) = (0, 1)
 
-    var B = int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
+    var B = 2*int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
 
-    var factor_base = B.primes.grep {|p| kronecker(p, n) == 1 }
-    var factor_prod = factor_base.prod
-    var factor_lkup = Hash(factor_base ~Z ^factor_base -> flat...)
+    var factor_base  = B.primes.grep {|p| (p <= 97) || (kronecker(n, p) == 1) }
+    var factor_prod  = factor_base.prod
+    var factor_index = Hash(factor_base ~Z ^factor_base -> flat...)
 
     var L = factor_base.len+1
 
@@ -116,7 +132,7 @@ func cffmm (n) {
         var sig = 0
 
         for p,e in factors {
-            sig.setbit!(factor_lkup{p}) if e.is_odd
+            sig.setbit!(factor_index{p}) if e.is_odd
         }
 
         return sig
@@ -156,12 +172,17 @@ func cffmm (n) {
     var I  = gauss_elimination(A, L-1)
     var LR = (A.end - A.rindex_by { !.is_zero })
 
+    var rem     = n
+    var factors = []
+
     for solution in (I.last(LR)) {
 
         var solution_A = 1
         var solution_B = 1
         var solution_X = 1
         var solution_Y = 1
+
+        var done = false
 
         for i in (^Q) {
 
@@ -179,13 +200,42 @@ func cffmm (n) {
                     [solution_B, solution_X],
                     [solution_B, solution_Y]
                 ] {
-                    resolve_factor(X, Y)
+                   var g = gcd(X - Y.isqrt, rem)
+
+                    if ((g > 1) && (g < rem)) {
+                        rem = check_factor(rem, g, factors)
+                        if (rem == 1) { done = true; break }
+                    }
                 }
             }
+
+            break if done
+        }
+
+        break if done
+    }
+
+    var final_factors = []
+
+    for f in (factors) {
+        if (f.is_prime) {
+            final_factors << f
+        }
+        else {
+            final_factors << __FUNC__(f)...
         }
     }
 
-    return [n]
+    if (rem != 1) {
+        if (rem != n) {
+            final_factors << __FUNC__(rem)...
+        }
+        else {
+            final_factors << rem
+        }
+    }
+
+    final_factors.sort
 }
 
 var composites = (ARGV ? ARGV.map{.to_i} : {|k| irand(2, 1<<k) }.map(2..60) )
