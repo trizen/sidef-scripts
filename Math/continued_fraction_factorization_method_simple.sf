@@ -1,0 +1,104 @@
+#!/usr/bin/ruby
+
+# A simple version of the continued fraction factorization method, combined with modular arithmetic.
+
+# Similar to solving the Pell equation:
+#   x^2 - d*y^2 = 1, where `d` is known.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pell%27s_equation
+
+func cffm (n) {
+
+    # Check for primes and negative numbers
+    return []  if (n <= 1)
+    return [n] if n.is_prime
+
+    # Check for perfect powers
+    if (n.is_power) {
+
+        var root  = n.perfect_root
+        var power = n.perfect_power
+
+        var factors = __FUNC__(root)
+
+        return (factors * power -> sort)
+    }
+
+    # Check for divisibility by 2
+    if (n.is_even) {
+
+        var v = n.valuation(2)
+        var t = n>>v
+
+        var factors = v.of(2)
+
+        if (t > 1) {
+            factors += __FUNC__(t)
+        }
+
+        return factors
+    }
+
+    var resolve_factor = {|a,b|
+        var g = gcd(a - b.isqrt, n)
+
+        if ((g > 1) && (g < n)) {
+            return (
+                __FUNC__(g) +
+                __FUNC__(n/g) -> sort
+            )
+        }
+    }
+
+    var x = n.isqrt
+    var y = x
+    var z = 1
+    var r = x+x
+
+    var (e1, e2) = (1, 0)
+    var (f1, f2) = (0, 1)
+
+    var S = Hash()
+
+    do {
+        y = (r*z - y)
+        z = ((n - y*y) // z)        #/
+        r = round((x + y) / z)
+
+        var a = ((x*f2 + e2) % n)
+        var b = (a*a % n)
+
+        if (b.is_square) {
+            resolve_factor(a, b)
+        }
+
+        if (S.exists(b)) {
+            resolve_factor(a * S{b}, b*b)
+        }
+        else {
+            S{b} = a
+        }
+
+        (f1, f2) = (f2, (r*f2 + f1) % n)
+        (e1, e2) = (e2, (r*e2 + e1) % n)
+
+    } while (z != 1)
+
+    return [n]
+}
+
+var composites = (ARGV ? ARGV.map{.to_i} : {|k| 2.of { random_prime(1<<k) }.prod }.map(2..60) )
+
+for n in (composites) {
+
+    var factors = cffm(n)
+    assert_eq(factors.prod, n)
+
+    if (factors.all { .is_prime }) {
+        say "#{n} = #{factors.join(' * ')}"
+    }
+    else {
+        say "#{n} = #{factors.join(' * ')} (incomplete factorization)"
+    }
+}

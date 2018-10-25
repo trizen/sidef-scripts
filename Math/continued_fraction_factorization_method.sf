@@ -1,14 +1,55 @@
 #!/usr/bin/ruby
 
-# A simple version of the continued fraction factorization method, combined with modular arithmetic.
+# A simple implementation of the continued fraction factorization method,
+# combined with modular arithmetic (variation of the Brillhart-Morrison algorithm).
 
 # Similar to solving the Pell equation:
 #   x^2 - d*y^2 = 1, where `d` is known.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Pell%27s_equation
+#   https://en.wikipedia.org/wiki/Continued_fraction_factorization
 
-func cffm (n) {
+# Parts of code inspired by:
+#    https://github.com/martani/Quadratic-Sieve
+
+func gauss_elimination(A, n) {
+
+    var m = A.end
+    var I = (m+1).of {|i| 1 << i }
+
+    var nrow = -1
+
+    for col in (0 .. min(m, n)) {
+        var npivot = -1
+
+        for row in (nrow+1 .. m) {
+            if (A[row].bit(col)) {
+                npivot = row
+                nrow++
+                break
+            }
+        }
+
+        next if (npivot < 0)
+
+        if (npivot != nrow) {
+            A.swap(npivot, nrow)
+            I.swap(npivot, nrow)
+        }
+
+        for row in (nrow+1 .. m) {
+            if (A[row].bit(col)) {
+                A[row] ^= A[nrow]
+                I[row] ^= I[nrow]
+            }
+        }
+    }
+
+    return I
+}
+
+func cffmm (n) {
 
     # Check for primes and negative numbers
     return []  if (n <= 1)
@@ -54,12 +95,32 @@ func cffm (n) {
     var x = n.isqrt
     var y = x
     var z = 1
-    var r = x+x
+    var w = x+x
+    var r = w
 
     var (e1, e2) = (1, 0)
     var (f1, f2) = (0, 1)
 
-    var S = Hash()
+    var B = int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
+
+    var factor_base = B.primes.grep {|p| kronecker(p, n) == 1 }
+    var factor_prod = factor_base.prod
+    var factor_lkup = Hash(factor_base ~Z ^factor_base -> flat...)
+
+    var L = factor_base.len+1
+
+    var Q = []
+    var A = []
+
+    func exponent_signature(factors) {
+        var sig = 0
+
+        for p,e in factors {
+            sig.setbit!(factor_lkup{p}) if e.is_odd
+        }
+
+        return sig
+    }
 
     do {
         y = (r*z - y)
@@ -68,31 +129,70 @@ func cffm (n) {
 
         var a = ((x*f2 + e2) % n)
         var b = (a*a % n)
+        var c = (b > w ? n-b : b)
 
-        if (b.is_square) {
-            resolve_factor(a, b)
+        if (c.is_square) {
+            resolve_factor(a, c)
         }
 
-        if (S.exists(b)) {
-            resolve_factor(a * S{b}, b*b)
-        }
-        else {
-            S{b} = a
+        if (c.is_smooth_over_prod(factor_prod)) {
+            var c_factors = c.factor_exp
+
+            if (c_factors) {
+                A << exponent_signature(c_factors)
+                Q << [a, c]
+            }
         }
 
         (f1, f2) = (f2, (r*f2 + f1) % n)
         (e1, e2) = (e2, (r*e2 + e1) % n)
 
-    } while (z != 1)
+    } while ((z != 1) && (A.len <= L))
+
+    if (A.len < L) {
+        A += (L - A.end + 1 -> of(0))
+    }
+
+    var I  = gauss_elimination(A, L-1)
+    var LR = (A.end - A.rindex_by { !.is_zero })
+
+    for solution in (I.last(LR)) {
+
+        var solution_A = 1
+        var solution_B = 1
+        var solution_X = 1
+        var solution_Y = 1
+
+        for i in (^Q) {
+
+            if (solution.bit(i)) {
+
+                solution_A *= Q[i][0] %= n      #=
+                solution_B *= Q[i][0]
+
+                solution_X *= Q[i][1] %= n      #=
+                solution_Y *= Q[i][1]
+
+                for X,Y in [
+                    [solution_A, solution_X],
+                    [solution_A, solution_Y],
+                    [solution_B, solution_X],
+                    [solution_B, solution_Y]
+                ] {
+                    resolve_factor(X, Y)
+                }
+            }
+        }
+    }
 
     return [n]
 }
 
-for k in (2..25) {
+var composites = (ARGV ? ARGV.map{.to_i} : {|k| irand(2, 1<<k) }.map(2..60) )
 
-    var n = 2.of { random_prime(2**k) }.prod
+for n in (composites) {
 
-    var factors = cffm(n)
+    var factors = cffmm(n)
     assert_eq(factors.prod, n)
 
     if (factors.all { .is_prime }) {

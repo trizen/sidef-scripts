@@ -104,7 +104,7 @@ A simple collection of Sidef scripts.
     * [Constant e to n decimal places](./Math/constant_e_to_n_decimal_places.sf)
     * [Continued fraction](./Math/continued_fraction.sf)
     * [Continued fraction factorization method](./Math/continued_fraction_factorization_method.sf)
-    * [Continued fraction factorization method GF2 matrix](./Math/continued_fraction_factorization_method_GF2_matrix.sf)
+    * [Continued fraction factorization method simple](./Math/continued_fraction_factorization_method_simple.sf)
     * [Continued fraction to fraction](./Math/continued_fraction_to_fraction.sf)
     * [Continued fractions convergents](./Math/continued_fractions_convergents.sf)
     * [Cousin mersenne primes lucas-lehmer](./Math/cousin_mersenne_primes_lucas-lehmer.sf)
