@@ -117,7 +117,7 @@ func cffmm (n) {
     var (e1, e2) = (1, 0)
     var (f1, f2) = (0, 1)
 
-    var B = 2*int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
+    var B = int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
 
     var factor_base  = B.primes.grep {|p| (p <= 97) || (kronecker(n, p) == 1) }
     var factor_prod  = factor_base.prod
