@@ -18,7 +18,6 @@ STDOUT.autoflush(true)
 # Some tuning parameters
 define (
       LOOK_FOR_SMALL_FACTORS      = true,
-      SMOOTH_TRIAL_DIVISION       = false,
       FIBONACCI_BOUND             = 300_000,
       POLLARD_PM1_BOUND           = 1_000_000,
       TRIAL_DIVISION_LIMIT        = 1_000_000,
@@ -59,7 +58,7 @@ func siqs_factor_base_primes (n, nf) {
 
     for p in (small_primes) {
 
-        var t  = n.sqrtmod(p) -> is_nan && next
+        var t  = n.sqrtmod(p) || next
         var lp = p.log2.round.int
 
         factor_base << FactorBasePrime(p, t, lp)
@@ -232,52 +231,25 @@ func siqs_sieve (factor_base, m) {
     return sieve_array
 }
 
-func siqs_trial_divide (n, factor_base) {
+func siqs_trial_divide (n, factor_base_info) {
 
     # Determine whether the given number a can be fully factorized into
     # primes from the factors base. If so, return the indices of the
-    # factors from the factor base. If not, return undef.
+    # factors from the factor base. If not, return `nil`.
 
-    if (SMOOTH_TRIAL_DIVISION) {
+    if (n.is_smooth_over_prod(factor_base_info{:prod})) {
 
-        var divisors_idx = []
+        var factor_index = factor_base_info{:index}
 
-        factor_base.each_kv { |i,fb|
-
-            if (fb.p `divides` n) {
-
-                var v = n.valuation(fb.p)
-                n //= fb.p**v     #/
-                divisors_idx << [i, v]
-
-                return divisors_idx if n.is_one
-            }
+        return n.factor_exp.map {|p|
+            [factor_index{p[0]}, p[1]]
         }
-
-        return nil
-    }
-
-    var factors = n.factor_exp || return nil
-
-    if (factors[-1][0] <= factor_base[-1].p) {
-
-        var divisors_idx = []
-
-        factor_base.each_kv {|i,fb|
-            if (fb.p == factors[0][0]) {
-                var p = factors.shift
-                divisors_idx << [i, p[1]]
-                factors || break
-            }
-        }
-
-        return divisors_idx
     }
 
     return nil
 }
 
-func siqs_trial_division (n, sieve_array, factor_base, smooth_relations, g, h, m, req_relations) {
+func siqs_trial_division (n, sieve_array, factor_base_info, smooth_relations, g, h, m, req_relations) {
 
     # Perform the trial division step of the Self-Initializing Quadratic Sieve.
 
@@ -290,7 +262,7 @@ func siqs_trial_division (n, sieve_array, factor_base, smooth_relations, g, h, m
         var x = (i - m)
         var gx = g.eval(x).abs
 
-        var divisors_idx = siqs_trial_divide(gx, factor_base) \\ next
+        var divisors_idx = siqs_trial_divide(gx, factor_base_info) \\ next
 
         var u = h.eval(x)
         var v = gx
@@ -403,7 +375,7 @@ func siqs_solve_matrix_opt (M, n, m) {
     return perf_squares
 }
 
-func siqs_calc_sqrts (square_indices, smooth_relations) {
+func siqs_calc_sqrts (n, square_indices, smooth_relations) {
 
     # Given on of the solutions returned by siqs_solve_matrix_opt and
     # the corresponding smooth relations, calculate the pair [a, b], such
@@ -413,7 +385,7 @@ func siqs_calc_sqrts (square_indices, smooth_relations) {
     var r2 = 1
 
     square_indices.each { |i|
-        r1 *= smooth_relations[i][0]
+        r1 *= smooth_relations[i][0] %= n
         r2 *= smooth_relations[i][1]
     }
 
@@ -427,7 +399,7 @@ func siqs_factor_from_square (n, square_indices, smooth_relations) {
     # a, b are calculated from the solution such that a*a = b*b (mod n).
     # Return f, a factor of n (possibly a trivial one).
 
-    var (sqrt1, sqrt2) = siqs_calc_sqrts(square_indices, smooth_relations)
+    var (sqrt1, sqrt2) = siqs_calc_sqrts(n, square_indices, smooth_relations)
 
     return gcd(sqrt1 - sqrt2, n)
 }
@@ -606,6 +578,17 @@ func siqs_factorize (n, nf) {
 
     var factors = []
     var factor_base = siqs_factor_base_primes(n, nf)
+    var factor_prod = factor_base.prod_by { .p }
+
+    var factor_index = Hash(
+        factor_base.map { .p } ~Z ^factor_base -> flat...
+    )
+
+    var factor_base_info = Hash(
+        base  => factor_base,
+        prod  => factor_prod,
+        index => factor_index,
+    )
 
     var smooth_relations         = []
     var required_relations_ratio = 1
@@ -640,7 +623,7 @@ func siqs_factorize (n, nf) {
             var sieve_array = siqs_sieve(factor_base, m)
 
             enough_relations = siqs_trial_division(
-                n, sieve_array, factor_base, smooth_relations,
+                n, sieve_array, factor_base_info, smooth_relations,
                 g, h, m, required_relations
             )
 

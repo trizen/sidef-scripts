@@ -13,7 +13,7 @@ func is_smooth(n, k) {
     var g = gcd(n, k)
 
     while (g > 1) {                   # while gcd(n, k) > 1
-        n.remdiv!(g)                  # remove any divisibily by g
+        n.remdiv!(g)                  # remove any divisibility by g
         return true if (n == 1)       # smooth if n == 1
         g = gcd(n, k)                 # take the gcd again and repeat
     }
