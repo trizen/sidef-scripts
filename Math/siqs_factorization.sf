@@ -165,7 +165,7 @@ func siqs_find_first_poly (n, m, factor_base) {
 
     best_q.each_v { |fb|
         var p = fb.p
-        var r = a//p        #/
+        var r = a/p
 
         var gamma = ((fb.t * r.invmod(p)) % p)
 

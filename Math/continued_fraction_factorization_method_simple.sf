@@ -88,7 +88,7 @@ func cffm (n) {
     return [n]
 }
 
-var composites = (ARGV ? ARGV.map{.to_i} : {|k| 2.of { random_prime(1<<k) }.prod }.map(2..60) )
+var composites = (ARGV ? ARGV.map{.to_i} : {|k| 2.of { random_prime(1<<k) }.prod }.map(2..25) )
 
 for n in (composites) {
 
