@@ -149,6 +149,7 @@ A simple collection of Sidef scripts.
     * [Generalized fibonacci closed-form 2](./Math/generalized_fibonacci_closed-form_2.sf)
     * [Generalized fibonacci closed-form 3](./Math/generalized_fibonacci_closed-form_3.sf)
     * [Generalized mean](./Math/generalized_mean.sf)
+    * [Generalized partial sums of sigma function](./Math/generalized_partial_sums_of_sigma_function.sf)
     * [Geometric-harmonic mean](./Math/geometric-harmonic_mean.sf)
     * [Gregory coefficients](./Math/gregory_coefficients.sf)
     * [Harmonic numbers from powers](./Math/harmonic_numbers_from_powers.sf)

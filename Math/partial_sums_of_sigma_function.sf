@@ -4,15 +4,18 @@
 # Date: 07 November 2018
 # https://github.com/trizen
 
-# A new beautiful formula for computing the partial-sums of the `sigma_k(n)`
-# function, for any positive integer `k`, without computing the sigma function.
+# A new formula for computing the partial-sums of:
+#
+#   `sigma_j(k)`, for `1 <= k <= n`
+#
+# with fixed positive integer `j`, without using the sigma function.
 
 # Formulas:
-#   a(n) = Sum_{j=1..n} sigma_k(j)
-#        = Sum_{j=1..n} Sum_{d|j} d^k
-#        = Sum_{j=1..n} Sum_{b=1..floor(n/j)} b^k
-#        = Sum_{j=1..n} (Bernoulli(k+1, 1+floor(n/k)) - Bernoulli(k+1, 0))/(k+1)
-#        = floor((n+1)/2) + Sum_{j=1..floor(n/2)} (Bernoulli(k+1, 1+floor(n/k)) - Bernoulli(k+1, 0))/(k+1)
+#   a(n) = Sum_{k=1..n} sigma_j(k)
+#        = Sum_{k=1..n} Sum_{d|k} d^j
+#        = Sum_{k=1..n} Sum_{b=1..floor(n/k)} b^j
+#        = Sum_{k=1..n} (Bernoulli(j+1, 1+floor(n/k)) - Bernoulli(j+1, 0))/(j+1)
+#        = floor((n+1)/2) + Sum_{j=1..floor(n/2)} (Bernoulli(j+1, 1+floor(n/k)) - Bernoulli(j+1, 0))/(j+1)
 #
 # where Bernoulli(n,x) are the Bernoulli polynomials.
 
@@ -21,22 +24,22 @@
 #   https://en.wikipedia.org/wiki/Faulhaber's_formula
 #   https://en.wikipedia.org/wiki/Bernoulli_polynomials
 
-func sigma_partial_sum(n, k) {
-    sum(1..n, { .sigma(k) })
+func sigma_partial_sum(n, j) {
+    sum(1..n, {|k| k.sigma(j) })
 }
 
-func faulhaber_sigma_partial_sum(n, k) {
-     floor((n+1)/2) + sum(1..floor(n/2), {|j|
-         faulhaber_sum(floor(n / j), k)
+func faulhaber_sigma_partial_sum(n, j) {
+    floor((n+1)/2) + sum(1..floor(n/2), {|k|
+        faulhaber_sum(floor(n / k), j)
     })
 }
 
-func bernoulli_sigma_partial_sum(n, k) {
+func bernoulli_sigma_partial_sum(n, j) {
 
-    var t = bernoulli(k+1)
+    var t = bernoulli(j+1)
 
-     floor((n+1)/2) + sum(1..floor(n/2), {|j|
-        (bernoulli(k+1, 1+floor(n / j)) - t) / (k+1)
+     floor((n+1)/2) + sum(1..floor(n/2), {|k|
+        (bernoulli(j+1, 1+floor(n / k)) - t) / (j+1)
     })
 }
 
@@ -44,17 +47,17 @@ func bernoulli_sigma_partial_sum(n, k) {
 ## Run some tests
 #
 
-for k in (1..10) {
+for j in (1..10) {
 
     var n = 1000.irand
-    var a = sigma_partial_sum(n, k)
-    var b = bernoulli_sigma_partial_sum(n, k)
-    var c = faulhaber_sigma_partial_sum(n, k)
+    var a = sigma_partial_sum(n, j)
+    var b = bernoulli_sigma_partial_sum(n, j)
+    var c = faulhaber_sigma_partial_sum(n, j)
 
     assert_eq(a, b)
     assert_eq(a, c)
 
-    say "Sum_{k=1..#{n}} sigma_#{k}(k) = #{b}"
+    say "Sum_{k=1..#{n}} sigma_#{j}(k) = #{b}"
 }
 
 __END__
