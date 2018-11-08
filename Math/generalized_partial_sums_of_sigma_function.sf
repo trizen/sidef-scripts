@@ -23,6 +23,7 @@
 #   https://en.wikipedia.org/wiki/Divisor_function
 #   https://en.wikipedia.org/wiki/Faulhaber's_formula
 #   https://en.wikipedia.org/wiki/Bernoulli_polynomials
+#   https://trizenx.blogspot.com/2018/08/interesting-formulas-and-exercises-in.html
 
 func sigma_partial_sum(n, m, j) {
     sum(1..n, {|k| k**m * k.sigma(j) })

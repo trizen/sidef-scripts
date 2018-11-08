@@ -1,0 +1,68 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 08 Novermber 2018
+# https://github.com/trizen
+
+# A new generalized algorithm with O(sqrt(n)) complexity for computing the partial-sums of the `sigma_j(k)` function:
+#
+#   Sum_{k=1..n} sigma_j(k)
+#
+# for any j >= 0.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Divisor_function
+#   https://en.wikipedia.org/wiki/Faulhaber%27s_formula
+#   https://en.wikipedia.org/wiki/Bernoulli_polynomials
+#   https://trizenx.blogspot.com/2018/08/interesting-formulas-and-exercises-in.html
+
+func fast_sigma_partial_sum(n, m) {       # O(sqrt(n)) complexity
+
+    var x = n.isqrt
+    var total = 0
+
+    var r = floor((n - x*x) / x)
+
+    for k in (2 .. x) {
+        total += ((k-1) * (faulhaber_sum(floor(n/(k-1)), m) - faulhaber_sum(floor(n/k), m)))
+    }
+
+    for k in (1 .. x+r) {
+        total += (k**m * floor(n/k))
+    }
+
+    return total
+}
+
+func sigma_partial_sum(n, m) {      # just for testing
+    sum(1..n, {|k| k.sigma(m) })
+}
+
+say fast_sigma_partial_sum(64, 1)       #=> 3403
+say fast_sigma_partial_sum(1234, 1)     #=> 1252881
+say fast_sigma_partial_sum(10**8, 1)    #=> 8224670422194237
+
+for m in (0..10) {
+
+    var n = 1000.irand
+
+    var t1 = sigma_partial_sum(n, m)
+    var t2 = fast_sigma_partial_sum(n, m)
+
+    assert_eq(t1, t2)
+
+    say "Sum_{k=1..#{n}} sigma_#{m}(k) = #{t2}"
+}
+
+__END__
+Sum_{k=1..636} sigma_0(k) = 4207
+Sum_{k=1..792} sigma_1(k) = 516685
+Sum_{k=1..931} sigma_2(k) = 323806973
+Sum_{k=1..169} sigma_3(k) = 223193496
+Sum_{k=1..488} sigma_4(k) = 5769713450709
+Sum_{k=1..273} sigma_5(k) = 70956696365063
+Sum_{k=1..145} sigma_6(k) = 198809981088528
+Sum_{k=1..683} sigma_7(k) = 5978226604112758227128
+Sum_{k=1..526} sigma_8(k) = 346112075042681515591218
+Sum_{k=1..182} sigma_9(k) = 4102255527573432874448
+Sum_{k=1..828} sigma_10(k) = 11482542651434233742306411936154
