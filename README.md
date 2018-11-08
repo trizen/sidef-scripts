@@ -211,6 +211,7 @@ A simple collection of Sidef scripts.
     * [Number of representations as sum of 3 triangles](./Math/number_of_representations_as_sum_of_3_triangles.sf)
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
+    * [Partial sums of sigma function](./Math/partial_sums_of_sigma_function.sf)
     * [Pell factorization](./Math/pell_factorization.sf)
     * [Perfect squares in catalan's triangle](./Math/perfect_squares_in_catalan_s_triangle.sf)
     * [Permutations iter](./Math/permutations_iter.sf)
