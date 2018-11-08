@@ -19,6 +19,11 @@
 #
 # where Bernoulli(n,x) are the Bernoulli polynomials.
 
+# Alternative formulas:
+#   a(n) = Sum_{k=1..n} sigma_j(k)
+#        = Sum_{k=1..n} k^j * floor(n/k)
+#        = (Bernoulli(j+1, n+1) - Bernoulli(j+1, 1+floor(n/2)))/(j+1) + Sum_{k=1..floor(n/2)} k^j * floor(n/k)
+
 # See also:
 #   https://en.wikipedia.org/wiki/Divisor_function
 #   https://en.wikipedia.org/wiki/Faulhaber's_formula
@@ -43,6 +48,18 @@ func bernoulli_sigma_partial_sum(n, j) {
     })
 }
 
+func faulhaber_alternative_sigma_partial_sum(n, j) {
+    faulhaber_sum(n, j) - faulhaber_sum(floor(n/2), j) + sum(1..floor(n/2), {|k|
+        k**j * floor(n/k)
+    })
+}
+
+func bernoulli_alternative_sigma_partial_sum(n, j) {
+    (bernoulli(j+1, n+1) - bernoulli(j+1, 1+floor(n/2))) / (j+1) + sum(1..floor(n/2), {|k|
+        k**j * floor(n/k)
+    })
+}
+
 #
 ## Run some tests
 #
@@ -53,9 +70,13 @@ for j in (1..10) {
     var a = sigma_partial_sum(n, j)
     var b = bernoulli_sigma_partial_sum(n, j)
     var c = faulhaber_sigma_partial_sum(n, j)
+    var d = faulhaber_alternative_sigma_partial_sum(n, j)
+    var e = bernoulli_alternative_sigma_partial_sum(n, j)
 
     assert_eq(a, b)
     assert_eq(a, c)
+    assert_eq(a, d)
+    assert_eq(a, e)
 
     say "Sum_{k=1..#{n}} sigma_#{j}(k) = #{b}"
 }
