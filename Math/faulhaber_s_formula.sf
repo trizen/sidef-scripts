@@ -10,7 +10,7 @@
 
 # The Faulhaber's formula
 # See: https://en.wikipedia.org/wiki/Faulhaber%27s_formula
-func faulhaber_formula (p, n) {
+func faulhaber_formula (n, p) {
     sum(0..p, {|k|
         binomial(p + 1, k) * bernoulli(k) * n**(p + 1 - k)
     }) / (p+1)
@@ -24,18 +24,16 @@ func bernoulli_polynomials (n, x) {
     })
 }
 
-func faulhaber_formula_2 (p, n) {
-    (bernoulli_polynomials(p + 1, n) - bernoulli_polynomials(p + 1, 1)) / (p + 1) + 1
+func faulhaber_formula_2 (n, p) {
+    (bernoulli_polynomials(p + 1, n) - bernoulli(p + 1)) / (p + 1)
 }
 
-# Test for 1^p + 2^p + 3^p + ... + 10^p
+for p in (0..20) {
 
-var p = 10.irand(2)
+    var n = 100.irand
+    var r = faulhaber_formula(n, p)
 
-for n in (0..20) {
-    var r = faulhaber_formula(p, n)
-
-    assert_eq(r, faulhaber_formula_2(p, n))
+    assert_eq(r, faulhaber_formula_2(n, p))
     assert_eq(r, n.faulhaber_sum(p))            # built-in
 
     printf("faulhaber_#{p}(%2d) = %s\n", n, r)
