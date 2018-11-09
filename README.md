@@ -214,6 +214,7 @@ A simple collection of Sidef scripts.
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
     * [Partial sums of sigma function](./Math/partial_sums_of_sigma_function.sf)
     * [Partial sums of sigma function fast](./Math/partial_sums_of_sigma_function_fast.sf)
+    * [Partial sums of sigma function times k](./Math/partial_sums_of_sigma_function_times_k.sf)
     * [Pell factorization](./Math/pell_factorization.sf)
     * [Perfect squares in catalan's triangle](./Math/perfect_squares_in_catalan_s_triangle.sf)
     * [Permutations iter](./Math/permutations_iter.sf)
