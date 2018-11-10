@@ -1,0 +1,94 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 10 Novermber 2018
+# https://github.com/trizen
+
+# A new generalized algorithm with O(sqrt(n)) complexity for computing the partial-sums of `k^m * sigma_j(k)`, for `1 <= k <= n`:
+#
+#   Sum_{k=1..n} k^m * sigma_j(k)
+#
+# for any fixed m >= 0 and j >= 0.
+
+# Formula:
+#   Sum_{k=1..n} k^m * sigma_j(k) =   Sum_{k=1..floor(sqrt(n))} F(m, k) * (F(m+j, floor(n/k)) - F(m+j, floor(n/(k+1))))
+#                                   + Sum_{k=1..floor(n/(floor(sqrt(n))+1))} k^(m+j) * F(m, floor(n/k))
+#
+# where F(n,x) is Faulhaber's formula for `Sum_{k=1..x} k^n`, defined in terms of Bernoulli polynomials as:
+#
+#   F(n, x) = (Bernoulli(n+1, x+1) - Bernoulli(n+1, 0)) / (n+1)
+#
+# and Bernoulli(n,x) are the Bernoulli polynomials.
+
+# Example: `a(n) = Sum_{k=1..n} k^2 * sigma(k)`
+#   a(10^1)  = 4948
+#   a(10^2)  = 42206495
+#   a(10^3)  = 412181273976
+#   a(10^4)  = 4113599787351824
+#   a(10^5)  = 41124390000844973548
+#   a(10^6)  = 411234935063990235195050
+#   a(10^7)  = 4112336345692801578349555781
+#   a(10^8)  = 41123352884070223300364205949432
+#   a(10^9)  = 411233517733637365707365200123054947
+#   a(10^10) = 4112335168452793891288471658633554668746
+
+# Asymptotic formulas:
+#   a(10^k) ~ Pi^2/24 * 10^(4*k)
+#   a(10^k) ~ zeta(2)/4 * 10^(4*k)
+
+# Extra:
+#   zeta(3)/5 * 10^(5*k) ~ Sum_{k=1..10^n} k^2 * sigma_2(k)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Divisor_function
+#   https://en.wikipedia.org/wiki/Faulhaber%27s_formula
+#   https://en.wikipedia.org/wiki/Bernoulli_polynomials
+#   https://trizenx.blogspot.com/2018/08/interesting-formulas-and-exercises-in.html
+
+func fast_sigma_partial_sum(n, m, j) {      # O(sqrt(n)) complexity
+
+    var total = 0
+
+    var s = n.isqrt
+    var u = floor(n / (s + 1))
+
+    for k in (1 .. s) {
+        total += (faulhaber_sum(k, m) * (faulhaber_sum(floor(n/k), m+j) - faulhaber_sum(floor(n/(k+1)), m+j)))
+    }
+
+    for k in (1 .. u) {
+        total += (k**(m+j) * faulhaber_sum(floor(n/k), m))
+    }
+
+    return total
+}
+
+func sigma_partial_sum(n, m, j) {           # just for testing
+    sum(1..n, {|k| k**m * k.sigma(j) })
+}
+
+for m in (0..10) {
+
+    var j = 10.irand
+    var n = 1000.irand
+
+    var t1 = sigma_partial_sum(n, m, j)
+    var t2 = fast_sigma_partial_sum(n, m, j)
+
+    assert_eq(t1, t2)
+
+    say "Sum_{k=1..#{n}} k^#{m} * σ_#{j}(k) = #{t2}"
+}
+
+__END__
+Sum_{k=1..287} k^0 * σ_0(k) = 1668
+Sum_{k=1..313} k^1 * σ_0(k) = 314735
+Sum_{k=1..937} k^2 * σ_1(k) = 317590484417
+Sum_{k=1..118} k^3 * σ_2(k) = 555145815555
+Sum_{k=1..864} k^4 * σ_9(k) = 9311353333331062226975636424340404096655
+Sum_{k=1..665} k^5 * σ_0(k) = 108405488260808685
+Sum_{k=1..223} k^6 * σ_8(k) = 11583460726000037999159192716695171
+Sum_{k=1..207} k^7 * σ_2(k) = 17737739640846775618667
+Sum_{k=1..441} k^8 * σ_10(k) = 9442961495785617738462953526256816073931562524503
+Sum_{k=1..946} k^9 * σ_10(k) = 16656797386770509233351415418444749963801156597772635567683
+Sum_{k=1..93} k^10 * σ_4(k) = 25155283344820203289248310767
