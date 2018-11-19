@@ -2,7 +2,7 @@
 
 # The elliptic-curve factorization method (ECM), due to Hendrik Lenstra.
 
-# Algorithm presented in the bellow video:
+# Algorithm presented in the YouTube video:
 #   https://www.youtube.com/watch?v=2JlpeQWtGH8
 
 # See also:
@@ -16,14 +16,15 @@ func ecm(N, arange=100, plimit=10000) {
     var primes = plimit.primes
 
     for a in range(-arange, arange) {
+
         var x = 0
         var y = 1
 
         primes.each {|B|
-            var k = B**plimit.ilog(B)
+            var t = B**plimit.ilog(B)
 
             var (xn, yn)
-            var (sx, sy, t) = (x, y, k)
+            var (sx, sy) = (x, y)
 
             var first = true
 
@@ -35,44 +36,45 @@ func ecm(N, arange=100, plimit=10000) {
                         first = false
                     }
                     else {
-                        var d = gcd(sx-xn, N)
+                        var u = invmod(sx-xn, N)
 
-                        if (d > 1) {
+                        if (!u) {
+                            var d = gcd(sx-xn, N)
                             break if (d == N)
                             return d
                         }
 
-                        var u     = invmod(sx-xn, N)
-                        var L     = (u*(sy-yn) % N)
-                        var x_sum = ((L*L - xn - sx) % N)
+                        var L  = (u*(sy-yn) % N)
+                        var xs = ((L*L - xn - sx) % N)
 
-                        yn = ((L*(xn - x_sum) - yn) % N)
-                        xn = x_sum
+                        yn = ((L*(xn - xs) - yn) % N)
+                        xn = xs
                     }
                 }
 
-                var d = gcd(2*sy, N)
+                var u = invmod(2*sy, N)
 
-                if (d > 1) {
+                if (!u) {
+                    var d = gcd(2*sy, N)
                     break if (d == N)
                     return d
                 }
 
-                var u  = invmod(2*sy, N)
                 var L  = (u*(3*sx*sx + a) % N)
                 var x2 = ((L*L - 2*sx) % N)
 
                 sy = ((L*(sx - x2) - sy) % N)
                 sx = x2
 
+                sy || return N
                 t >>= 1
             }
             (x, y) = (xn, yn)
         }
     }
 
-    return nil
+    return N
 }
 
 say ecm(14304849576137459)
-#say ecm(2**128 + 1)         # takes ~13 seconds
+#say ecm(2**128 + 1)         # takes ~11 seconds
