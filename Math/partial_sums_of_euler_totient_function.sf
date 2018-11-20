@@ -1,0 +1,86 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 20 Novermber 2018
+# https://github.com/trizen
+
+# A new algorithm for computing the partial-sums of `ϕ(k)`, for `1 <= k <= n`:
+#
+#   Sum_{k=1..n} phi(k)
+#
+# where phi(k) is the Euler totient function.
+
+# Based on the formula:
+#   Sum_{k=1..n} phi(k) = (1/2)*Sum_{k=1..n} moebius(k) * floor(n/k) * floor(1+n/k)
+
+# Example:
+#   a(10^1) = 32
+#   a(10^2) = 3044
+#   a(10^3) = 304192
+#   a(10^4) = 30397486
+#   a(10^5) = 3039650754
+#   a(10^6) = 303963552392
+#   a(10^7) = 30396356427242
+#   a(10^8) = 3039635516365908
+#   a(10^9) = 303963551173008414
+
+# This algorithm can be improved.
+
+# See also:
+#   https://oeis.org/A002088
+#   https://oeis.org/A064018
+#   https://en.wikipedia.org/wiki/Mertens_function
+#   https://en.wikipedia.org/wiki/M%C3%B6bius_function
+#   https://en.wikipedia.org/wiki/Euler%27s_totient_function
+#   https://trizenx.blogspot.com/2018/08/interesting-formulas-and-exercises-in.html
+
+func euler_totient_partial_sum (n) {
+
+    var total = 0
+
+    var s = n.isqrt
+    var u = floor(n / (s + 1))
+
+    for k in (1..s) {
+        total += (mertens(floor(n/(k+1)) + 1, floor(n/k)) * k * (k+1))
+    }
+
+    for k in (1..u) {
+        if (var m = k.moebius) {
+            var t = floor(n / k)
+            total += (m * t * (t + 1))
+        }
+    }
+
+    return (total / 2)
+}
+
+func euler_totient_partial_sum_test (n) {    # just for testing
+    1..n -> sum { .euler_phi }
+}
+
+
+for m in (0 .. 10) {
+
+    var n = 10000.irand
+
+    var t1 = euler_totient_partial_sum(n)
+    var t2 = euler_totient_partial_sum_test(n)
+
+    assert_eq(t1, t2)
+
+    say "Sum_{k=1..#{n}} phi(k) = #{t1}"
+}
+
+__END__
+Sum_{k=1..6000} phi(k) = 10943164
+Sum_{k=1..9647} phi(k) = 28292296
+Sum_{k=1..1767} phi(k) = 949684
+Sum_{k=1..4643} phi(k) = 6554816
+Sum_{k=1..5814} phi(k) = 10276132
+Sum_{k=1..3120} phi(k) = 2959328
+Sum_{k=1..1998} phi(k) = 1213790
+Sum_{k=1..1269} phi(k) = 489854
+Sum_{k=1..1298} phi(k) = 512500
+Sum_{k=1..6555} phi(k) = 13062444
+Sum_{k=1..1101} phi(k) = 368850
