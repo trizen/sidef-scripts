@@ -1,0 +1,88 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 21 November 2018
+# https://github.com/trizen
+
+# A new algorithm for computing the partial-sums of the Jordan totient function `J_m(k)`, for `1 <= k <= n`:
+#
+#   Sum_{k=1..n} J_m(k)
+#
+# for any fixed integer m >= 0.
+
+# Based on the formula:
+#   Sum_{k=1..n} J_m(k) = Sum_{k=1..n} moebius(k) * F(m, floor(n/k))
+#
+# where F(n,x) is Faulhaber's formula for `Sum_{k=1..x} k^n`, defined in terms of Bernoulli polynomials as:
+#   F(n, x) = (Bernoulli(n+1, x+1) - Bernoulli(n+1, 0)) / (n+1)
+
+# Example for a(n) = Sum_{k=1..n} J_2(k):
+#  a(10^1) = 312
+#  a(10^2) = 280608
+#  a(10^3) = 277652904
+#  a(10^4) = 277335915120
+#  a(10^5) = 277305865353048
+#  a(10^6) = 277302780859485648
+#  a(10^7) = 277302491422450102032
+#  a(10^8) = 277302460845902192282712
+#  a(10^9) = 277302457878113251222146576
+
+# Asymptotic formula:
+#   n^3 / (3*zeta(3)) ~ Sum_{k=1..n} J_2(k)
+
+# In general, for m>=1:
+#   n^(m+1) / ((m+1) * zeta(m+1)) ~ Sum_{k=1..n} J_m(k)
+
+# See also:
+#   https://oeis.org/A321879
+#   https://en.wikipedia.org/wiki/Mertens_function
+#   https://en.wikipedia.org/wiki/M%C3%B6bius_function
+#   https://en.wikipedia.org/wiki/Jordan%27s_totient_function
+#   https://trizenx.blogspot.com/2018/08/interesting-formulas-and-exercises-in.html
+
+func jordan_totient_partial_sum (n, m) {
+
+    var total = 0
+
+    var s = n.isqrt
+    var u = int(n/(s+1))
+
+    for k in (1..s) {
+        total += (mertens(int(n/(k+1))+1, int(n/k)) * faulhaber_sum(k, m))
+    }
+
+    moebius(0, u).each_kv { |k,v|
+        total += (v * faulhaber_sum(int(n/k), m)) if v
+    }
+
+    return total
+}
+
+func jordan_totient_partial_sum_test (n, m) {    # just for testing
+    1..n -> sum {|k| jordan_totient(m, k) }
+}
+
+for m in (0 .. 10) {
+
+    var n = 10000.irand
+
+    var t1 = jordan_totient_partial_sum(n, m)
+    var t2 = jordan_totient_partial_sum_test(n, m)
+
+    assert_eq(t1, t2)
+
+    say "Sum_{k=1..#{n}} J_#{m}(k) = #{t1}"
+}
+
+__END__
+Sum_{k=1..1970} J_0(k) = 1
+Sum_{k=1..4807} J_1(k) = 7025920
+Sum_{k=1..7884} J_2(k) = 135913559688
+Sum_{k=1..7682} J_3(k) = 804616377756508
+Sum_{k=1..8242} J_4(k) = 7337902692248665200
+Sum_{k=1..8522} J_5(k) = 62774227223853599101840
+Sum_{k=1..1838} J_6(k) = 10058436011292984094248
+Sum_{k=1..4235} J_7(k) = 12893831794819045373033950546
+Sum_{k=1..7851} J_8(k) = 12573618726179583880817452889027520
+Sum_{k=1..8716} J_9(k) = 252923600785652984962297725675542659970
+Sum_{k=1..2325} J_10(k) = 977400706925586857534627653563936624

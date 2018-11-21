@@ -213,6 +213,7 @@ A simple collection of Sidef scripts.
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
     * [Partial sums of euler totient function](./Math/partial_sums_of_euler_totient_function.sf)
+    * [Partial sums of jordan totient function](./Math/partial_sums_of_jordan_totient_function.sf)
     * [Partial sums of sigma function](./Math/partial_sums_of_sigma_function.sf)
     * [Partial sums of sigma function fast](./Math/partial_sums_of_sigma_function_fast.sf)
     * [Partial sums of sigma function times k](./Math/partial_sums_of_sigma_function_times_k.sf)
