@@ -1,0 +1,84 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 22 November 2018
+# https://github.com/trizen
+
+# A new algorithm for computing the partial-sums of the Dedekind psi function `ψ_m(k)`, for `1 <= k <= n`:
+#
+#   Sum_{k=1..n} ψ_m(k)
+#
+# for any fixed integer m >= 1.
+
+# Based on the formula:
+#   Sum_{k=1..n} ψ_m(k) = Sum_{k=1..n} moebius(k)^2 * F(m, floor(n/k))
+#
+# where F(n,x) is Faulhaber's formula for `Sum_{k=1..x} k^n`, defined in terms of Bernoulli polynomials as:
+#   F(n, x) = (Bernoulli(n+1, x+1) - Bernoulli(n+1, 1)) / (n+1)
+
+# Example for a(n) = Sum_{k=1..n} ψ_1(k):
+#   a(10^1)  = 82
+#   a(10^2)  = 7664
+#   a(10^3)  = 760410
+#   a(10^4)  = 75997684
+#   a(10^5)  = 7599142240
+#   a(10^6)  = 759909706088
+#   a(10^7)  = 75990894331726
+#   a(10^8)  = 7599088838422768
+#   a(10^9)  = 759908877771696226
+#   a(10^10) = 75990887739024147984
+
+# For m=1, we have the following asymptotic formula:
+#   Sum_{k=1..n} ψ_1(k) ~ n^2 * 15/(2*Pi^2)
+
+# See also:
+#   https://oeis.org/A173290
+#   https://en.wikipedia.org/wiki/M%C3%B6bius_function
+#   https://en.wikipedia.org/wiki/Dedekind_psi_function
+#   https://trizenx.blogspot.com/2018/08/interesting-formulas-and-exercises-in.html
+
+func dedekind_psi_partial_sum (n, m) {      # O(sqrt(n)) complexity
+
+    var total = 0
+
+    var s = n.isqrt
+    var u = int(n/(s+1))
+
+    for k in (1..s) {
+        total += (squarefree_count(int(n/(k+1))+1, int(n/k)) * faulhaber_sum(k, m))
+    }
+
+    moebius(0, u).each_kv { |k,v|
+        total += faulhaber_sum(int(n/k), m) if v
+    }
+
+    return total
+}
+
+func dedekind_psi_partial_sum_test (n, m) {    # just for testing
+    1..n -> sum {|k| dedekind_psi(k, m) }
+}
+
+for m in (1 .. 10) {
+
+    var n = 10000.irand
+
+    var t1 = dedekind_psi_partial_sum(n, m)
+    var t2 = dedekind_psi_partial_sum_test(n, m)
+
+    assert_eq(t1, t2)
+
+    say "Sum_{k=1..#{n}} ψ_#{m}(k) = #{t1}"
+}
+
+__END__
+Sum_{k=1..5610} ψ_1(k) = 23921724
+Sum_{k=1..3113} ψ_2(k) = 11886135776
+Sum_{k=1..4272} ψ_3(k) = 89799830964566
+Sum_{k=1..6745} ψ_4(k) = 2893429315558869830
+Sum_{k=1..2280} ψ_5(k) = 23845156758330910372
+Sum_{k=1..2323} ψ_6(k) = 52659880077035786164974
+Sum_{k=1..6653} ψ_7(k) = 482026282500791896401352268376
+Sum_{k=1..2181} ψ_8(k) = 124572511268378648816065164466
+Sum_{k=1..4889} ψ_9(k) = 781763334189112777759588243628861812
+Sum_{k=1..6937} ψ_10(k) = 162950061871144644410073945024961903841562
