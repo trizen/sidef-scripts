@@ -59,7 +59,7 @@ func jordan_totient_partial_sum (n, m) {
 }
 
 func jordan_totient_partial_sum_test (n, m) {    # just for testing
-    1..n -> sum {|k| jordan_totient(m, k) }
+    1..n -> sum {|k| jordan_totient(k, m) }
 }
 
 for m in (0 .. 10) {
