@@ -215,6 +215,7 @@ A simple collection of Sidef scripts.
     * [Partial sums of dedekind psi function](./Math/partial_sums_of_dedekind_psi_function.sf)
     * [Partial sums of euler totient function](./Math/partial_sums_of_euler_totient_function.sf)
     * [Partial sums of jordan totient function](./Math/partial_sums_of_jordan_totient_function.sf)
+    * [Partial sums of prime omega function](./Math/partial_sums_of_prime_omega_function.sf)
     * [Partial sums of sigma function](./Math/partial_sums_of_sigma_function.sf)
     * [Partial sums of sigma function fast](./Math/partial_sums_of_sigma_function_fast.sf)
     * [Partial sums of sigma function times k](./Math/partial_sums_of_sigma_function_times_k.sf)

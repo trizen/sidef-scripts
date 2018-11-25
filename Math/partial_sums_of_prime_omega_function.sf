@@ -1,0 +1,123 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 25 November 2018
+# https://github.com/trizen
+
+# A new algorithm for computing the partial-sums of the prime omega function `ω(k)`, for `1 <= k <= n`:
+#   a(n) = Sum_{k=1..n} ω(k)
+
+# Based on the formula:
+#   Sum_{k=1..n} ω(k) = Sum_{p prime <= n} floor(n/p)
+
+# Generalization:
+#  a(n, m) = Sum_{p prime <= n} F_m(floor(n/p))
+#
+# where F_m(x) is Faulhaber's formula for `Sum_{k=1..x} k^m`
+
+# Example for `m=0`:
+#    a(10^1)  = 11
+#    a(10^2)  = 171
+#    a(10^3)  = 2126
+#    a(10^4)  = 24300
+#    a(10^5)  = 266400
+#    a(10^6)  = 2853708
+#    a(10^7)  = 30130317
+#    a(10^8)  = 315037281
+#    a(10^9)  = 3271067968
+#    a(10^10) = 33787242719
+#    a(10^11) = 347589015681
+#    a(10^12) = 3564432632541
+
+# Example for `m=1`:
+#    a(10^1)  = 25
+#    a(10^2)  = 2298
+#    a(10^3)  = 226342
+#    a(10^4)  = 22616110
+#    a(10^5)  = 2261266482
+#    a(10^6)  = 226124236118
+#    a(10^7)  = 22612374197143
+#    a(10^8)  = 2261237139656553
+#    a(10^9)  = 226123710243814636
+#    a(10^10) = 22612371006991736766
+#    a(10^11) = 2261237100241987653515
+#    a(10^12) = 226123710021083492369813
+#    a(10^13) = 22612371002056432695022703
+
+# Example for `m=2`:
+#    a(10^1)  = 75
+#    a(10^2)  = 59962
+#    a(10^3)  = 58403906
+#    a(10^4)  = 58270913442
+#    a(10^5)  = 58255785988898
+#    a(10^6)  = 58254390385024132
+#    a(10^7)  = 58254229074894448703
+#    a(10^8)  = 58254214780225801032503
+#    a(10^9)  = 58254213248247357411667320
+#    a(10^10) = 58254213116747777047390609694
+#    a(10^11) = 58254213101385832019517484266265
+#    a(10^12) = 58254213099991292350208499967189227
+#    a(10^13) = 58254213099830361065330294973944269431
+
+# Open problem:
+#   Find a general asymptotic formula for any `m>=1`.
+
+# See also:
+#   https://oeis.org/A013939
+#   https://oeis.org/A064182
+#   https://en.wikipedia.org/wiki/Prime_omega_function
+#   https://en.wikipedia.org/wiki/Prime-counting_function
+#   https://trizenx.blogspot.com/2018/08/interesting-formulas-and-exercises-in.html
+
+func prime_omega_partial_sum (n, m=0) {     # O(sqrt(n)) complexity
+
+    var total = 0
+
+    var s = n.isqrt
+    var u = floor(n/(s+1))
+
+    for k in (1..s) {
+        total += (faulhaber_sum(k, m) * prime_count(floor(n/(k+1))+1, floor(n/k)))
+    }
+
+    for p in (primes(u)) {
+        total += faulhaber_sum(floor(n/p), m)
+    }
+
+    return total
+}
+
+func prime_omega_partial_sum_test (n, m=0) {    # just for testing
+    var total = 0
+
+    for p in (primes(n)) {
+        total += faulhaber_sum(floor(n/p), m)
+    }
+
+    return total
+}
+
+for m in (0 .. 10) {
+
+    var n = 10000.irand
+
+    var t1 = prime_omega_partial_sum(n, m)
+    var t2 = prime_omega_partial_sum_test(n, m)
+
+    assert_eq(t1, t2)
+
+    say "Sum_{k=1..#{n}} omega_#{m}(k) = #{t1}"
+}
+
+__END__
+Sum_{k=1..2526} omega_0(k) = 5708
+Sum_{k=1..5691} omega_1(k) = 7324853
+Sum_{k=1..1867} omega_2(k) = 379161614
+Sum_{k=1..3539} omega_3(k) = 3018968330718
+Sum_{k=1..3152} omega_4(k) = 2227743127912110
+Sum_{k=1..3789} omega_5(k) = 8419989859247261517
+Sum_{k=1..8477} omega_6(k) = 3722366146862937902377096
+Sum_{k=1..5670} omega_7(k) = 543094671659948787399171188
+Sum_{k=1..3126} omega_8(k) = 6366824727060827116574504619
+Sum_{k=1..5202} omega_9(k) = 1444635343895056823620338084965462
+Sum_{k=1..7271} omega_10(k) = 134840274708837491442524789498005113305
