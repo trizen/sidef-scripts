@@ -1,0 +1,34 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 25 November 2018
+# https://github.com/trizen
+
+# Generalization of the prime omega function `ω_m(n)`, for `m>=0`:
+#   ω_m(n) = n^m * Sum_{p|n} 1/p^m
+
+# Where the standard prime omega function `ω(n)` is equivalent with `ω_0(n)`.
+
+# See also:
+#   https://oeis.org/A069359
+#   https://oeis.org/A322068
+#   https://en.wikipedia.org/wiki/Prime_omega_function
+
+func omega(n, m) {
+    n**m * n.factor_exp.sum {|p| 1 / p[0]**m }
+}
+
+say 25.of { omega(_, 0) }
+say 25.of { omega(_, 1) }
+say 25.of { omega(_, 2) }
+say 25.of { omega(_, 3) }
+say 25.of { omega(_, 4) }
+say 25.of { omega(_, 5) }
+
+__END__
+[0, 0, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 2, 2, 1, 1, 2, 1, 2, 2, 2, 1, 2]
+[0, 0, 1, 1, 2, 1, 5, 1, 4, 3, 7, 1, 10, 1, 9, 8, 8, 1, 15, 1, 14, 10, 13, 1, 20]
+[0, 0, 1, 1, 4, 1, 13, 1, 16, 9, 29, 1, 52, 1, 53, 34, 64, 1, 117, 1, 116, 58, 125, 1, 208]
+[0, 0, 1, 1, 8, 1, 35, 1, 64, 27, 133, 1, 280, 1, 351, 152, 512, 1, 945, 1, 1064, 370, 1339, 1, 2240]
+[0, 0, 1, 1, 16, 1, 97, 1, 256, 81, 641, 1, 1552, 1, 2417, 706, 4096, 1, 7857, 1, 10256, 2482, 14657, 1, 24832]
+[0, 0, 1, 1, 32, 1, 275, 1, 1024, 243, 3157, 1, 8800, 1, 16839, 3368, 32768, 1, 66825, 1, 101024, 17050, 161083, 1, 281600]

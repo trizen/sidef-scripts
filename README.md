@@ -240,6 +240,7 @@ A simple collection of Sidef scripts.
     * [Power of 2 plus 5 primes lucas-lehmer](./Math/power_of_2_plus_5_primes_lucas-lehmer.sf)
     * [Primality testing fermat fourier](./Math/primality_testing_fermat_fourier.sf)
     * [Primality testing wilson fourier](./Math/primality_testing_wilson_fourier.sf)
+    * [Prime omega function generalized](./Math/prime_omega_function_generalized.sf)
     * [Problem of apollonius](./Math/problem_of_apollonius.sf)
     * [Product of prime sigmas of divisors](./Math/product_of_prime_sigmas_of_divisors.sf)
     * [Product of primes approx](./Math/product_of_primes_approx.sf)
