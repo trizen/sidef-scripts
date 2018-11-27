@@ -242,6 +242,7 @@ A simple collection of Sidef scripts.
     * [Primality testing wilson fourier](./Math/primality_testing_wilson_fourier.sf)
     * [Prime big omega function generalized](./Math/prime_big_omega_function_generalized.sf)
     * [Prime omega function generalized](./Math/prime_omega_function_generalized.sf)
+    * [Prime power counting function](./Math/prime_power_counting_function.sf)
     * [Problem of apollonius](./Math/problem_of_apollonius.sf)
     * [Product of prime sigmas of divisors](./Math/product_of_prime_sigmas_of_divisors.sf)
     * [Product of primes approx](./Math/product_of_primes_approx.sf)
