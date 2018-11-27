@@ -79,6 +79,7 @@ A simple collection of Sidef scripts.
     * [Bernoulli numbers recurrence](./Math/bernoulli_numbers_recurrence.sf)
     * [Bernoulli numbers recurrence 2](./Math/bernoulli_numbers_recurrence_2.sf)
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)
+    * [Bigomega of factorial](./Math/bigomega_of_factorial.sf)
     * [Binary exponentiation](./Math/binary_exponentiation.sf)
     * [Binary gcd algorithm](./Math/binary_gcd_algorithm.sf)
     * [Binomial theorem](./Math/binomial_theorem.sf)
