@@ -55,9 +55,6 @@
 #    A_1(10^13) = 22612371002056432695022703
 #    A_1(10^14) = 2261237100205367824451036203
 
-# Asymptotic formula:
-#   A_1(n) ~ n*(n+1)/2 * 0.4522474200410654985065...                  (see: https://oeis.org/A085548)
-
 # Example for `m=2`:
 #    A_2(10^1)  = 75
 #    A_2(10^2)  = 59962
@@ -73,14 +70,15 @@
 #    A_2(10^12) = 58254213099991292350208499967189227
 #    A_2(10^13) = 58254213099830361065330294973944269431
 
-# Asymptotic formula:
-#   A_2(n) ~ n*(n-1)*(2*n - 1)/6 * 0.1747626392994435364231...        (see: https://oeis.org/A085541)
+# Asymptotic formulas:
+#   A_1(n) ~ 0.4522474200410654985065... * n*(n+1)/2                   (see: https://oeis.org/A085548)
+#   A_2(n) ~ 0.1747626392994435364231... * n*(n-1)*(2*n - 1)/6         (see: https://oeis.org/A085541)
 
 # For `m >= 1`, `A_m(n)` can be described asymptotically in terms of the prime zeta function:
 #   A_m(n) ~ F_m(n) * P(m+1)
 #
 # where P(s) is defined as:
-#   P(s) = Sum_{p prime} 1/p^s
+#   P(s) = Sum_{p prime >= 2} 1/p^s
 
 func prime_omega_partial_sum (n, m=0) {     # O(sqrt(n)) complexity
 

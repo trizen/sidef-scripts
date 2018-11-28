@@ -34,7 +34,7 @@ func prime_power_count(n) {
     })
 }
 
-func prime_bigomega_partial_sum(n) {
+func prime_bigomega_partial_sum(n, m) {
 
     var s = n.isqrt
     var u = floor(n/(s+1))
@@ -42,16 +42,47 @@ func prime_bigomega_partial_sum(n) {
     var total = 0
 
     for k in (1..s) {
-        total += k*(prime_power_count(floor(n/k)) - prime_power_count(floor(n/(k+1))))
+        total += faulhaber_sum(k, m)*(prime_power_count(floor(n/k)) - prime_power_count(floor(n/(k+1))))
     }
 
     for k in (1..u) {
-        total += floor(n/k) if k.is_prime_power
+        total += faulhaber_sum(floor(n/k), m) if k.is_prime_power
     }
 
     return total
 }
 
-for n in (1..6) {
-    say "a(10^#{n}) = #{prime_bigomega_partial_sum(10**n)}"
+func prime_bigomega_partial_sum_test (n, m) {    # just for testing
+    var total = 0
+
+    for k in (1..n) {
+        total += faulhaber_sum(floor(n/k), m) if k.is_prime_power
+    }
+
+    return total
 }
+
+for m in (0 .. 10) {
+
+    var n = 10000.irand
+
+    var t1 = prime_bigomega_partial_sum(n, m)
+    var t2 = prime_bigomega_partial_sum_test(n, m)
+
+    assert_eq(t1, t2)
+
+    say "Sum_{k=1..#{n}} bigomega_#{m}(k) = #{t1}"
+}
+
+__END__
+Sum_{k=1..6682} bigomega_0(k) = 21048
+Sum_{k=1..3447} bigomega_1(k) = 3277974
+Sum_{k=1..9287} bigomega_2(k) = 51825111802
+Sum_{k=1..9418} bigomega_3(k) = 159996950760258
+Sum_{k=1..7808} bigomega_4(k) = 213588687883972941
+Sum_{k=1..1349} bigomega_5(k) = 17394189051711781
+Sum_{k=1..6124} bigomega_6(k) = 385556244990136505278441
+Sum_{k=1..8317} bigomega_7(k) = 11667206972644664046687556070
+Sum_{k=1..5282} bigomega_8(k) = 715286720988907445715200810310
+Sum_{k=1..7094} bigomega_9(k) = 32146805184233019106400204605763207
+Sum_{k=1..1863} bigomega_10(k) = 42157952745357988027790444565086
