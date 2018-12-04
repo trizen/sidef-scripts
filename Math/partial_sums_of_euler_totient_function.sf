@@ -59,7 +59,6 @@ func euler_totient_partial_sum_test (n) {    # just for testing
     1..n -> sum { .euler_phi }
 }
 
-
 for m in (0 .. 10) {
 
     var n = 10000.irand

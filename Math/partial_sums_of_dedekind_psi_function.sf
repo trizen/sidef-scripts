@@ -64,7 +64,7 @@ func dedekind_psi_partial_sum_test (n, m) {    # just for testing
     1..n -> sum {|k| dedekind_psi(k, m) }
 }
 
-for m in (1 .. 10) {
+for m in (0 .. 10) {
 
     var n = 10000.irand
 
