@@ -1,0 +1,21 @@
+#!/usr/bin/ruby
+
+# Binomial transform of a given function.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Binomial_transform
+
+func binomial_transform(f, n) {
+    sum(0..n, {|k|
+        binomial(n, k) * f(k)
+    })
+}
+
+func inverse_binomial_transform(f, n) {
+    sum(0..n, {|k|
+        (-1)**(n-k) * binomial(n, k) * f(k)
+    })
+}
+
+say 10.of { binomial_transform({ _! }, _) }             #=> [1, 2, 5, 16, 65, 326, 1957, 13700, 109601, 986410]
+say 10.of { inverse_binomial_transform({ _! }, _) }     #=> [1, 0, 1, 2, 9, 44, 265, 1854, 14833, 133496]

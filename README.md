@@ -82,6 +82,7 @@ A simple collection of Sidef scripts.
     * [Binary exponentiation](./Math/binary_exponentiation.sf)
     * [Binary gcd algorithm](./Math/binary_gcd_algorithm.sf)
     * [Binomial theorem](./Math/binomial_theorem.sf)
+    * [Binomial transform](./Math/binomial_transform.sf)
     * [Bisected hypotenuse](./Math/bisected_hypotenuse.sf)
     * [Blandin-diaz compositional bernoulli numbers B S 1](./Math/blandin-diaz_compositional_bernoulli_numbers_B_S_1.sf)
     * [Blandin-diaz compositional bernoulli numbers B S 1 2](./Math/blandin-diaz_compositional_bernoulli_numbers_B_S_1_2.sf)
