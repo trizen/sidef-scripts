@@ -1,0 +1,21 @@
+#!/usr/bin/ruby
+
+# Generate the generalized Hamming numbers bellow a certain limit, given a set of primes.
+
+func hamming_numbers (limit, primes) {
+
+    var h = [1]
+    primes.each {|p|
+        h.each {|n|
+            if (n*p <= limit) {
+                h << n*p
+            }
+        }
+    }
+
+    return h
+}
+
+# Example: 5-smooth numbers bellow 100
+var h = hamming_numbers(100, [2, 3, 5])
+say h.sort

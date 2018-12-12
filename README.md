@@ -154,6 +154,7 @@ A simple collection of Sidef scripts.
     * [Generalized partial sums of sigma function](./Math/generalized_partial_sums_of_sigma_function.sf)
     * [Geometric-harmonic mean](./Math/geometric-harmonic_mean.sf)
     * [Gregory coefficients](./Math/gregory_coefficients.sf)
+    * [Hamming numbers](./Math/hamming_numbers.sf)
     * [Harmonic numbers from powers](./Math/harmonic_numbers_from_powers.sf)
     * [Harmonic numbers from powers simple](./Math/harmonic_numbers_from_powers_simple.sf)
     * [Harmonic prime powers](./Math/harmonic_prime_powers.sf)
