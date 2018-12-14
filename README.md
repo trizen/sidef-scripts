@@ -259,6 +259,7 @@ A simple collection of Sidef scripts.
     * [Recursive gcd prime generator](./Math/recursive_gcd_prime_generator.sf)
     * [Recursive summation of fractions](./Math/recursive_summation_of_fractions.sf)
     * [Reformulation of the arctangent function](./Math/reformulation_of_the_arctangent_function.sf)
+    * [Repunits from repunits](./Math/repunits_from_repunits.sf)
     * [Right truncatable primes](./Math/right_truncatable_primes.sf)
     * [Round half to even](./Math/round_half_to_even.sf)
     * [RSA algorithm](./Math/RSA_algorithm.sf)
