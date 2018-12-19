@@ -1,0 +1,61 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 19 December 2018
+# https://github.com/trizen
+
+# Algorithm for computing the modular multiplicative inverse of complex numbers:
+#   1/a mod n, with |gcd(a, n)| = 1.
+
+# Solution to `x` for:
+#   a*x = 1 (mod n)
+
+func complex_gcd(a, b) {
+
+    var (x, y) = (a, b)
+
+    while (b != 0) {
+
+        (a, b) = (b, a % b)
+        (x, y) = (y, x % y)
+        (x, y) = (y, x % y)
+
+        if (a==x && y==b) {
+            return nil        # cycle detected
+        }
+    }
+
+    return a.abs
+}
+
+func complex_modular_inverse (a, n) {
+
+    complex_gcd(a, n) == 1 || return NaN
+
+    func inverse(a, n, i) {
+
+        var (u, w) = (i, 0)
+        var (q, r) = (0, 0)
+
+        var c = n
+
+        while (c != 0) {
+            (q, r) = (floor(a/c), a%c)
+            (a, c) = (c, r)
+            (u, w) = (w, u - q*w)
+        }
+
+        return u
+    }
+
+    [1, -1, 1i, -1i].map {|i| inverse(a, n, i) }.first_by {|t| (t * a) % n == 1 }
+}
+
+say complex_modular_inverse(42, 2017)          #=> -48
+say complex_modular_inverse(3+4i, 2017)        #=> 1291+968i
+say complex_modular_inverse(91+23i, 2017)      #=> 590+405i
+say complex_modular_inverse(43+99i, 1234567)   #=> -215016-567265i
+
+# Non-existent inverses
+say complex_modular_inverse(43+99i, 2017)      #=> NaN
+say complex_modular_inverse(43+99i, 1234)      #=> NaN

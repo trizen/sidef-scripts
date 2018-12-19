@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# Algorithm for computing the modular inverse: 1/a mod n, with gcd(a, n) = 1.
+# Algorithm for computing the modular multiplicative inverse: 1/a mod n, with gcd(a, n) = 1.
 
 # Algorithm presented in the book:
 #
