@@ -119,6 +119,7 @@ A simple collection of Sidef scripts.
     * [Extended greatest common divisor](./Math/extended_greatest_common_divisor.sf)
     * [Factorial approximations](./Math/factorial_approximations.sf)
     * [Factorial dsc algorithm](./Math/factorial_dsc_algorithm.sf)
+    * [Factorial expansion](./Math/factorial_expansion.sf)
     * [Farey factorization method](./Math/farey_factorization_method.sf)
     * [Farey fraction approximations](./Math/farey_fraction_approximations.sf)
     * [Farey sequences](./Math/farey_sequences.sf)
