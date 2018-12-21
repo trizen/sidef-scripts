@@ -149,6 +149,7 @@ A simple collection of Sidef scripts.
     * [Gaussian elimination GF2 matrix](./Math/gaussian_elimination_GF2_matrix.sf)
     * [Generalized continued fraction](./Math/generalized_continued_fraction.sf)
     * [Generalized continued fraction parts iter](./Math/generalized_continued_fraction_parts_iter.sf)
+    * [Generalized expansion](./Math/generalized_expansion.sf)
     * [Generalized fibonacci closed-form](./Math/generalized_fibonacci_closed-form.sf)
     * [Generalized fibonacci closed-form 2](./Math/generalized_fibonacci_closed-form_2.sf)
     * [Generalized fibonacci closed-form 3](./Math/generalized_fibonacci_closed-form_3.sf)

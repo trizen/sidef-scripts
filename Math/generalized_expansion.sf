@@ -1,0 +1,45 @@
+#!/usr/bin/ruby
+
+# Generalized expansion of a given real constant, given a function t(k).
+
+# Such that:
+#   x = Sum_{k>=0} f(k) / t(k)
+
+# See also:
+#   https://oeis.org/A067882
+#   https://oeis.org/A096622
+
+local Num!PREC = 300
+
+func f(n, x, t, r={.floor}) {
+    return r(x) if (n == 0)
+    r(x * t(n)) - (t(n)/t(n-1) * r(t(n-1) * x))
+}
+
+var t = { .superfactorial }
+
+var x = Num.e
+var a = 15.of { f(_, x, t) }
+var b = 15.of { f(_, x, t, {.round}) }
+
+say "const: #{x}"
+
+say ("floor: ", a.len.range.sum { |k|
+    a[k] / t(k)
+})
+
+say ("round: ", b.len.range.sum { |k|
+    b[k] / t(k)
+})
+
+say ''
+say "floor: #{a}"
+say "round: #{b}"
+
+__END__
+const: 2.71828182845904523536028747135266249775724709369995957496696762772407663035
+floor: 2.71828182845904523536028747135266249775724709369995957496696762771492315184
+round: 2.71828182845904523536028747135266249775724709369995957496696762772939204445
+
+floor: [2, 0, 1, 2, 14, 103, 590, 1985, 12783, 261726, 3567625, 4152491, 421616733, 2483567501, 21279242709]
+round: [3, 0, -1, 3, -9, -16, -130, 1985, 12784, -101153, -61175, 4152492, -57384867, 2483567501, 21279242710]
