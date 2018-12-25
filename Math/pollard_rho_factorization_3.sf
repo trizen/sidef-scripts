@@ -3,14 +3,14 @@
 # Pollard's rho integer factorization algorithm.
 
 # This version uses the polynomial:
-#   f(x) = x^(n^2 - 1) + n + 1
+#   f(x) = x^(n^2 - 1) + 1
 
 # See also:
 #   https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm
 
 func rho_factor(n) {
 
-    var c = (n + 1)
+    var c = 1
     var t = (n*n - 1)
 
     var x = c

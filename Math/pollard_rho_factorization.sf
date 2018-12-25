@@ -25,5 +25,5 @@ func rho_factor(n) {
    return [n/g, g]
 }
 
-say rho_factor(5040)                #=> [42, 120]
+say rho_factor(503*863)             #=> [503, 863]
 say rho_factor(314159265358979323)  #=> [317213509, 990371647]

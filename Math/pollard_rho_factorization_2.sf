@@ -7,18 +7,24 @@
 
 func rho_factor(n) {
 
-    var x = 2
-    var y = 2
+    func f(x) {      # can be any polynomial
+        powmod(x, 2, n) + 1
+    }
 
-   do {
-        x = (((x*x - 1) % n))
-        y = (((y*y - 1)**2 - 1) % n)
-   } while (n `is_coprime` x-y)
+    var a0 = 1
+    var a1 = f(a0)
+    var a2 = f(a1)
 
-   var g = gcd(x-y, n)
+    while (n `is_coprime` a2-a1) {
+        a1 = f(a1)
+        a2 = f(f(a2))
+    }
 
-   return [g, n/g]
+    var g = gcd(n, a2-a1)
+    return [n/g, g]
 }
 
-say rho_factor(5040)                #=> [5, 1008]
-say rho_factor(314159265358979323)  #=> [317213509, 990371647]
+say rho_factor(503*863)                   #=> [503, 863]
+say rho_factor(33670570905491953)         #=> [930901771, 36169843]
+say rho_factor(314159265358979323)        #=> [317213509, 990371647]
+say rho_factor(242363923520394591022973)  #=> [308054141267, 786757556719]
