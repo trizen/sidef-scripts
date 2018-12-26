@@ -1,0 +1,60 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 26 December 2018
+# https://github.com/trizen
+
+# Sublinear formula for computing partial sums.
+
+# Let:
+#   R(n) = Sum_{k=1..n} f(k)
+#   S(n) = Sum_{k=1..n} g(k)
+
+# Sum_{k=1..n} Sum_{d|k} f(d) * g(k/d) = Sum_{k=1..n} f(k) * S(floor(n/k))
+#                                      = Sum_{k=1..n} g(k) * R(floor(n/k))
+
+# This partial can be computed in sub-linear time if R(n) and S(n) can be computed efficiently:
+
+# Sum_{k=1..n} f(k) * S(floor(n/k)) = Sum_{k=1..floor(sqrt(n))} (R(floor(n/k)) - R(floor(n/(k+1)))) * S(k)
+#                                   + Sum_{k=1..floor(n/(1+floor(sqrt(n))))} f(k) * S(floor(n/k))
+
+# See also:
+#   https://trizenx.blogspot.com/2018/11/partial-sums-of-arithmetical-functions.html
+
+func g(n) { euler_phi(n) }
+func f(n) { n }
+
+func S(f, n) {
+    sum(1..n, {|k|
+        f(k)
+    })
+}
+
+func partial_sum(n) {
+
+    var s = n.isqrt
+    var u = floor(n/(1+s))
+
+    var total = 0
+
+    for k in (1..s) {
+        total += (S(f, floor(n/k)) - S(f, floor(n/(k+1))))*S(g, k)
+    }
+
+    for k in (1..u) {
+        total += (f(k) * S(g, floor(n/k)))
+    }
+
+    return total
+}
+
+func partial_sum_test(n) {
+    sum(1..n, {|k|
+        k.divisors.sum {|d|
+            f(d) * g(k/d)
+        }
+    })
+}
+
+say 20.of(partial_sum)
+say 20.of(partial_sum_test)
