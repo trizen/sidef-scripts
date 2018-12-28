@@ -15,23 +15,6 @@
 
 STDOUT.autoflush(true)
 
-# Some tuning parameters
-define (
-      LOOK_FOR_SMALL_FACTORS      = true,
-      FIBONACCI_BOUND             = 300_000,
-      POLLARD_PM1_BOUND           = 1_000_000,
-      TRIAL_DIVISION_LIMIT        = 1_000_000,
-      POLLARD_RHO_ITERATIONS      = 50_000,
-      POLLARD_RHO_SQRT_ITERATIONS = 25_000,
-      FERMAT_ITERATIONS           = 500,
-      SIQS_TRIAL_DIVISION_EPS     = 25,
-      SIQS_MIN_PRIME_POLYNOMIAL   = 400,
-      SIQS_MAX_PRIME_POLYNOMIAL   = 4000,
-)
-
-# Global list of small primes
-var small_primes = TRIAL_DIVISION_LIMIT.primes
-
 class Polynomial (coeff, a=nil, b=nil) {
 
     method eval (x) {
@@ -53,636 +36,6 @@ class FactorBasePrime (p, t, lp) {
     has p_log = p.log
 }
 
-func siqs_factor_base_primes (n, nf) {
-    var factor_base = []
-
-    for p in (small_primes) {
-
-        var t  = n.sqrtmod(p) || next
-        var lp = p.log2.round.int
-
-        factor_base << FactorBasePrime(p, t, lp)
-
-        break if (factor_base.len >= nf)
-    }
-
-    return factor_base
-}
-
-func siqs_create_poly (a, b, n, factor_base, first) {
-
-    var b_orig = b
-
-    if (2*b > a) {
-        b = (a - b)
-    }
-
-    var g = Polynomial([a*a, 2*a*b, b*b - n], a, b_orig)
-    var h = Polynomial([a, b])
-
-    for fb in (factor_base) {
-
-        next if (fb.p `divides` a)
-
-        fb.ainv  = a.invmod(fb.p) if first
-        fb.soln1 = ((fb.ainv * ( fb.t - b)) % fb.p)
-        fb.soln2 = ((fb.ainv * (-fb.t - b)) % fb.p)
-    }
-
-    return (g, h)
-}
-
-func siqs_find_first_poly (n, m, factor_base) {
-    var p_min_i = nil
-    var p_max_i = nil
-
-    factor_base.each_kv { |i,fb|
-        if (!defined(p_min_i) && (fb.p >= SIQS_MIN_PRIME_POLYNOMIAL)) {
-            p_min_i = i
-        }
-
-        if (!defined(p_max_i) && (fb.p > SIQS_MAX_PRIME_POLYNOMIAL)) {
-            p_max_i = i-1
-            break
-        }
-    }
-
-    # The following may happen if the factor base is small
-    if (!defined(p_max_i)) {
-        p_max_i = factor_base.end
-    }
-
-    if (!defined(p_min_i)) {
-        p_min_i = 5
-    }
-
-    if ((p_max_i - p_min_i) < 20) {
-        p_min_i = (p_min_i `min` 5)
-    }
-
-    var target0 = ((n.log + 2.log)/2 - m.log)
-    var target1 = (target0 - ((log(factor_base[p_min_i].p + factor_base[p_max_i].p) - 2.log) / 2))
-
-    # find q such that the product of factor_base[q_i] is approximately
-    # sqrt(2 * n) / m; try a few different sets to find a good one
-    var (best_q, best_a, best_ratio)
-
-    30.times {
-        var A     = 1
-        var log_A = 0
-
-        var Q = Hash()
-        while (log_A < target1) {
-
-            var p_i = 0
-            while ((p_i == 0) || Q.exists(p_i)) {
-                p_i = p_min_i.irand(p_max_i)       # inclusive on both sides
-            }
-
-            var fb  = factor_base[p_i]
-                A  *= fb.p
-            log_A  += fb.p_log
-            Q{p_i}  = fb
-        }
-
-        var ratio = exp(log_A - target0)
-
-        # ratio too small seems to be not good
-        if (!defined(best_ratio)                          ||
-            ((     ratio >= 0.9) && (ratio < best_ratio)) ||
-            ((best_ratio <  0.9) && (ratio > best_ratio))
-        ) {
-            best_q     = Q
-            best_a     = A
-            best_ratio = ratio
-        }
-    }
-
-    var a = best_a
-    var b = 0
-
-    var arr = []
-
-    best_q.each_v { |fb|
-        var p = fb.p
-        var r = a/p
-
-        var gamma = ((fb.t * r.invmod(p)) % p)
-
-        if (gamma > (p >> 1)) {
-            gamma = (p - gamma)
-        }
-
-        var t = r*gamma
-
-        b += t
-        arr << t
-    }
-
-    var (g, h) = siqs_create_poly(a, b, n, factor_base, true)
-
-    return (g, h, arr)
-}
-
-func siqs_find_next_poly (n, factor_base, i, g, arr) {
-
-    # Compute the (i+1)-th polynomials for the Self-Initializing
-    # Quadratic Sieve, given that g is the i-th polynomial.
-
-    var v = i.valuation(2)
-    var z = ((((i >> (v+1)) & 1) == 0) ? -1 : 1)
-
-    var a = g.a
-    var b = ((g.b + 2*z*arr[v]) % a)
-
-    return siqs_create_poly(a, b, n, factor_base, false)
-}
-
-func siqs_sieve (factor_base, m) {
-
-    # Perform the sieving step of the SIQS. Return the sieve array.
-
-    var sieve_array = (2*m + 1 -> of(0))
-
-    factor_base.each {|fb|
-
-        fb.p > 100 || next
-        fb.soln1 \\ next
-
-        var p   = fb.p
-        var lp  = fb.lp
-        var end = 2*m
-
-        var i_start_1 = -((m + fb.soln1) // p)      #/
-        var a_start_1 =  (fb.soln1 + i_start_1*p)
-
-        for i in (RangeNum(a_start_1 + m, end, p)) {
-            sieve_array[i] += lp
-        }
-
-        var i_start_2 = -((m + fb.soln2) // p)      #/
-        var a_start_2 =  (fb.soln2 + i_start_2*p)
-
-        for i in (RangeNum(a_start_2 + m, end, p)) {
-            sieve_array[i] += lp
-        }
-    }
-
-    return sieve_array
-}
-
-func siqs_trial_divide (n, factor_base_info) {
-
-    # Determine whether the given number a can be fully factorized into
-    # primes from the factors base. If so, return the indices of the
-    # factors from the factor base. If not, return `nil`.
-
-    if (n.is_smooth_over_prod(factor_base_info{:prod})) {
-
-        var factor_index = factor_base_info{:index}
-
-        return n.factor_exp.map {|p|
-            [factor_index{p[0]}, p[1]]
-        }
-    }
-
-    return nil
-}
-
-func siqs_trial_division (n, sieve_array, factor_base_info, smooth_relations, g, h, m, req_relations) {
-
-    # Perform the trial division step of the Self-Initializing Quadratic Sieve.
-
-    var limit = ((m.log + n.log/2)/2.log - SIQS_TRIAL_DIVISION_EPS)
-
-    sieve_array.each_kv { |i,s|
-
-        next if (s < limit)
-
-        var x = (i - m)
-        var gx = g.eval(x).abs
-
-        var divisors_idx = siqs_trial_divide(gx, factor_base_info) \\ next
-
-        var u = h.eval(x)
-        var v = gx
-
-        smooth_relations << [u, v, divisors_idx]
-
-        if (smooth_relations.len >= req_relations) {
-            return true
-        }
-    }
-
-    return false
-}
-
-func siqs_build_matrix (factor_base, smooth_relations) {
-
-    # Build the matrix for the linear algebra step of the Quadratic Sieve.
-
-    var fb = factor_base.len
-    var matrix = []
-
-    smooth_relations.each {|sr|
-        var row = fb.of(0)
-        for u,v in (sr[2]) {
-            row[u] = v&1
-        }
-        matrix << row
-    }
-
-    return matrix
-}
-
-func siqs_build_matrix_opt(M) {
-
-    # Convert the given matrix M of 0s and 1s into a list of numbers m
-    # that correspond to the columns of the matrix.
-    # The j-th number encodes the j-th column of matrix M in binary:
-    # The i-th bit of m[i] is equal to M[i][j].
-
-    var m           = M[0].len
-    var cols_binary = m.of('')
-
-    M.each {|mi|
-        mi.each_kv { |j, mij|
-            cols_binary[j] += mij
-        }
-    }
-
-    return (cols_binary.map {|s| Number(s.flip, 2) }, M.len, m)
-}
-
-func find_pivot_column_opt (M, j) {
-
-    # For a matrix produced by siqs_build_matrix_opt, return the row of
-    # the first non-zero entry in column j, or None if no such row exists.
-
-    var v = M[j]
-
-    if (v == 0) {
-        return nil
-    }
-
-    return v.valuation(2)
-}
-
-func siqs_solve_matrix_opt (M, n, m) {
-
-    # Perform the linear algebra step of the SIQS. Perform fast
-    # Gaussian elimination to determine pairs of perfect squares mod n.
-    # Use the optimizations described in [1].
-
-    # [1] Koç, Çetin K., and Sarath N. Arachchige. 'A Fast Algorithm for
-    #    Gaussian Elimination over GF (2) and its Implementation on the
-    #    GAPP.' Journal of Parallel and Distributed Computing 13.1
-    #    (1991): 118-122.
-
-    var row_is_marked = n.of(false)
-    var pivots        = m.of(-1)
-
-    for j in (m.range) {
-
-        var i            = find_pivot_column_opt(M, j) \\ next
-        pivots[j]        = i
-        row_is_marked[i] = true
-
-        for k in (m.range) {
-            if ((k != j) && M[k].bit(i)) {
-                M[k] ^= M[j]
-            }
-        }
-    }
-
-    var perf_squares = []
-
-    for i in (n.range) {
-
-        next if row_is_marked[i]
-
-        var perfect_sq_indices = [i]
-
-        for j in (m.range) {
-            if (M[j].bit(i)) {
-                perfect_sq_indices << pivots[j]
-            }
-        }
-
-        perf_squares << perfect_sq_indices
-    }
-
-    return perf_squares
-}
-
-func siqs_calc_sqrts (n, square_indices, smooth_relations) {
-
-    # Given on of the solutions returned by siqs_solve_matrix_opt and
-    # the corresponding smooth relations, calculate the pair [a, b], such
-    # that a^2 = b^2 (mod n).
-
-    var r1 = 1
-    var r2 = 1
-
-    square_indices.each { |i|
-        r1 *= smooth_relations[i][0] %= n
-        r2 *= smooth_relations[i][1]
-    }
-
-    return (r1, r2.isqrt)
-}
-
-func siqs_factor_from_square (n, square_indices, smooth_relations) {
-
-    # Given one of the solutions returned by siqs_solve_matrix_opt,
-    # return the factor f determined by f = gcd(a - b, n), where
-    # a, b are calculated from the solution such that a*a = b*b (mod n).
-    # Return f, a factor of n (possibly a trivial one).
-
-    var (sqrt1, sqrt2) = siqs_calc_sqrts(n, square_indices, smooth_relations)
-
-    return gcd(sqrt1 - sqrt2, n)
-}
-
-func siqs_find_more_factors_gcd(numbers) {
-    var res = Hash()
-
-    numbers.each_kv { |i,n|
-        res{n} = n
-
-        for k in (i+1 .. numbers.end) {
-
-            var m = numbers[k]
-            var f = gcd(n, m)
-
-            if ((f != 1) && (f != n) && (f != m)) {
-
-                if (!res.exists(f)) {
-                    say "SIQS: GCD found non-trivial factor: #{f}"
-                    res{f} = f
-                }
-
-                var t1 = n//f   #/
-                var t2 = m//f   #/
-
-                res{t1} = t1
-                res{t2} = t2
-            }
-        }
-    }
-
-    return res.values
-}
-
-func check_factor (n, i, factors) {
-
-    while (i `divides` n) {
-
-        n //= i         #/
-        factors << i
-
-        if (n.is_prime) {
-            factors << n
-            return 1
-        }
-    }
-
-    return n
-}
-
-
-func check_perfect_power (n) {
-
-    # Check whether n is a perfect and return its perfect root.
-    # Returns undef otherwise.
-
-    if (n.is_power) {
-
-        var power = n.perfect_power
-        var root  = n.perfect_root
-
-        say "#{n} is #{root}^#{power}"
-
-        return root
-    }
-
-    return nil
-}
-
-func siqs_find_factors (n, perfect_squares, smooth_relations) {
-
-    # Perform the last step of the Self-Initializing Quadratic Field.
-    # Given the solutions returned by siqs_solve_matrix_opt, attempt to
-    # identify a number of (not necessarily prime) factors of n, and
-    # return them.
-
-    var factors = []
-    var rem = n
-
-    var non_prime_factors = Hash()
-    var prime_factors = Hash()
-
-    perfect_squares.each {|square_indices|
-        var fact = siqs_factor_from_square(n, square_indices, smooth_relations)
-
-        next if (fact <= 1)
-        next if (fact > rem)
-
-        if (fact.is_prime) {
-
-            if (!prime_factors.exists(fact)) {
-                say "SIQS: Prime factor found: #{fact}"
-                prime_factors{fact} = fact
-            }
-
-            rem = check_factor(rem, fact, factors)
-
-            break if rem.is_one
-
-            if (rem.is_prime) {
-                factors << rem
-                rem = 1
-                break
-            }
-
-            if (defined(var root = check_perfect_power(rem))) {
-                say "SIQS: Perfect power detected with root: #{root}"
-                factors << root
-                rem = 1
-                break
-            }
-        }
-        else {
-            if (!non_prime_factors.exists(fact)) {
-                say "SIQS: Composite factor found: #{fact}"
-                non_prime_factors{fact} = fact
-            }
-        }
-    }
-
-    if ((rem != 1) && non_prime_factors) {
-        non_prime_factors{rem} = rem
-
-        var primes     = []
-        var composites = []
-
-        siqs_find_more_factors_gcd(non_prime_factors.values).each {|fact|
-            if (fact.is_prime) {
-                primes << fact
-            }
-            elsif (fact > 1) {
-                composites << fact
-            }
-        }
-
-        for fact in (primes + composites) {
-
-            if ((fact != rem) && (fact `divides` rem)) {
-                say "SIQS: Using non-trivial factor from GCD: #{fact}"
-                rem = check_factor(rem, fact, factors)
-            }
-
-            break if rem.is_one
-            break if rem.is_prime
-        }
-    }
-
-    if (rem != 1) {
-        factors << rem
-    }
-
-    return factors
-}
-
-func siqs_choose_range (n) {
-
-    # Choose m for sieving in [-m, m].
-
-    exp(sqrt(n.log * n.log.log) / 2) -> round.int
-}
-
-func siqs_choose_nf (n) {
-
-    # Choose parameters nf (sieve of factor base)
-
-    exp(sqrt(n.log * n.log.log))**(2.sqrt / 4) -> round.int
-}
-
-func siqs_factorize (n, nf) {
-
-    # Use the Self-Initializing Quadratic Sieve algorithm to identify
-    # one or more non-trivial factors of the given number n. Return the
-    # factors as a list.
-
-    var m = siqs_choose_range(n)
-
-    var factors = []
-    var factor_base = siqs_factor_base_primes(n, nf)
-    var factor_prod = factor_base.prod_by { .p }
-
-    var factor_index = Hash(
-        factor_base.map { .p } ~Z ^factor_base -> flat...
-    )
-
-    var factor_base_info = Hash(
-        base  => factor_base,
-        prod  => factor_prod,
-        index => factor_index,
-    )
-
-    var smooth_relations         = []
-    var required_relations_ratio = 1
-
-    var success  = false
-    var prev_cnt = 0
-    var i_poly   = 0
-
-    var (g, h, arr)
-
-    while (!success) {
-
-        say "*** Step 1/2: Finding smooth relations ***"
-        say "SIQS sieving range: [-#{m}, #{m}]"
-
-        var required_relations = ((factor_base.len + 1) * required_relations_ratio).round.int
-        say "Target: #{required_relations} relations."
-        var enough_relations = false
-
-        while (!enough_relations) {
-            if (i_poly == 0) {
-                (g, h, arr) = siqs_find_first_poly(n, m, factor_base);
-            }
-            else {
-                (g, h) = siqs_find_next_poly(n, factor_base, i_poly, g, arr);
-            }
-
-            if (++i_poly >= (1 << arr.end)) {
-                i_poly = 0
-            }
-
-            var sieve_array = siqs_sieve(factor_base, m)
-
-            enough_relations = siqs_trial_division(
-                n, sieve_array, factor_base_info, smooth_relations,
-                g, h, m, required_relations
-            )
-
-            if ((smooth_relations.len >= required_relations) ||
-                (smooth_relations.len > prev_cnt)
-            ) {
-                printf("Progress: %d/%d relations.\r", smooth_relations.len, required_relations)
-                prev_cnt = smooth_relations.len
-            }
-        }
-
-        say "\n\n*** Step 2/2: Linear Algebra ***"
-        say "Building matrix for linear algebra step..."
-
-        var M = siqs_build_matrix(factor_base, smooth_relations)
-        var (M_opt, M_n, M_m) = siqs_build_matrix_opt(M)
-
-        say "Finding perfect squares using Gaussian elimination...";
-        var perfect_squares = siqs_solve_matrix_opt(M_opt, M_n, M_m)
-
-        say "Finding factors from perfect squares...\n";
-        factors = siqs_find_factors(n, perfect_squares, smooth_relations)
-
-        if (factors.len >= 2) {
-            success = true
-        }
-        else {
-            say "Failed to find a solution. Finding more relations..."
-            required_relations_ratio += 0.05
-        }
-    }
-
-    return factors
-}
-
-func trial_division_small_primes (n) {
-
-    # Perform trial division on the given number n using all primes up
-    # to upper_bound. Initialize the global variable small_primes with a
-    # list of all primes <= upper_bound. Return (factors, rem), where
-    # factors is the list of identified prime factors of n, and rem is the
-    # remaining factor. If rem = 1, the function terminates early, without
-    # fully initializing small_primes.
-
-    say "[*] Trial division..."
-
-    var factors = []
-    var rem     = n
-
-    small_primes.each {|p|
-        if (p `divides` rem) {
-            rem = check_factor(rem, p, factors)
-            break if rem.is_one
-        }
-    }
-
-    return (factors, rem)
-}
-
 func fibonacci_factorization (n, upper_bound) {
 
     var bound = (5 * n.ilog2**2)
@@ -691,8 +44,8 @@ func fibonacci_factorization (n, upper_bound) {
     loop {
         return nil if (bound <= 1)
 
-        var B = consecutive_lcm(bound)
-        var F = fibmod(B, n)
+        var B = bound.consecutive_lcm
+        var F = B.fibmod(n)
 
         var g = gcd(F, n)
 
@@ -794,211 +147,875 @@ func fermat_find_factor (n, max_iter) {
     return nil
 }
 
-func find_small_factors() {}
+# Some tuning parameters
+class SIQS (
+      LOOK_FOR_SMALL_FACTORS      = true,
+      FIBONACCI_BOUND             = 300_000,
+      POLLARD_PM1_BOUND           = 1_000_000,
+      TRIAL_DIVISION_LIMIT        = 1_000_000,
+      POLLARD_RHO_ITERATIONS      = 50_000,
+      POLLARD_RHO_SQRT_ITERATIONS = 25_000,
+      FERMAT_ITERATIONS           = 500,
+      SIQS_TRIAL_DIVISION_EPS     = 25,
+      SIQS_MIN_PRIME_POLYNOMIAL   = 400,
+      SIQS_MAX_PRIME_POLYNOMIAL   = 4000,
+) {
 
-func store_factor (rem, f, factors) {
+    # List of small primes
+    has small_primes = TRIAL_DIVISION_LIMIT.primes
 
-    if (f.is_prime) {
-        say "`-> prime factor: #{f}"
-        *rem = check_factor(*rem, f, factors)
+    method factor_base_primes (n, nf) {
+        var factor_base = []
+
+        for p in (small_primes) {
+
+            var t  = n.sqrtmod(p) || next
+            var lp = p.log2.round.int
+
+            factor_base << FactorBasePrime(p, t, lp)
+
+            break if (factor_base.len >= nf)
+        }
+
+        return factor_base
     }
-    else {
-        say "`-> composite factor: #{f}"
-        *rem //= f          #/
-        *rem *= find_small_factors(f, factors)
+
+    method create_poly (a, b, n, factor_base, first) {
+
+        var b_orig = b
+
+        if (2*b > a) {
+            b = (a - b)
+        }
+
+        var g = Polynomial([a*a, 2*a*b, b*b - n], a, b_orig)
+        var h = Polynomial([a, b])
+
+        for fb in (factor_base) {
+
+            next if (fb.p `divides` a)
+
+            fb.ainv  = a.invmod(fb.p) if first
+            fb.soln1 = ((fb.ainv * ( fb.t - b)) % fb.p)
+            fb.soln2 = ((fb.ainv * (-fb.t - b)) % fb.p)
+        }
+
+        return (g, h)
     }
-}
 
-find_small_factors = func (rem, factors) {
+    method find_first_poly (n, m, factor_base) {
+        var p_min_i = nil
+        var p_max_i = nil
 
-    # Perform up to max_iter iterations of Brent's variant of the
-    # Pollard rho factorization algorithm to attempt to find small
-    # prime factors. Restart the algorithm each time a factor was found.
-    # Add all identified prime factors to factors, and return 1 if all
-    # prime factors were found, or otherwise the remaining factor.
+        factor_base.each_kv { |i,fb|
+            if (!defined(p_min_i) && (fb.p >= SIQS_MIN_PRIME_POLYNOMIAL)) {
+                p_min_i = i
+            }
 
-    loop {
+            if (!defined(p_max_i) && (fb.p > SIQS_MAX_PRIME_POLYNOMIAL)) {
+                p_max_i = i-1
+                break
+            }
+        }
 
-        break if (rem <= 1)
+        # The following may happen if the factor base is small
+        if (!defined(p_max_i)) {
+            p_max_i = factor_base.end
+        }
 
-        if (rem.is_prime) {
+        if (!defined(p_min_i)) {
+            p_min_i = 5
+        }
+
+        if ((p_max_i - p_min_i) < 20) {
+            p_min_i = (p_min_i `min` 5)
+        }
+
+        var target0 = ((n.log + 2.log)/2 - m.log)
+        var target1 = (target0 - ((log(factor_base[p_min_i].p + factor_base[p_max_i].p) - 2.log) / 2))
+
+        # find q such that the product of factor_base[q_i] is approximately
+        # sqrt(2 * n) / m; try a few different sets to find a good one
+        var (best_q, best_a, best_ratio)
+
+        30.times {
+            var A     = 1
+            var log_A = 0
+
+            var Q = Hash()
+            while (log_A < target1) {
+
+                var p_i = 0
+                while ((p_i == 0) || Q.exists(p_i)) {
+                    p_i = p_min_i.irand(p_max_i)       # inclusive on both sides
+                }
+
+                var fb  = factor_base[p_i]
+                    A  *= fb.p
+                log_A  += fb.p_log
+                Q{p_i}  = fb
+            }
+
+            var ratio = exp(log_A - target0)
+
+            # ratio too small seems to be not good
+            if (!defined(best_ratio)                          ||
+                ((     ratio >= 0.9) && (ratio < best_ratio)) ||
+                ((best_ratio <  0.9) && (ratio > best_ratio))
+            ) {
+                best_q     = Q
+                best_a     = A
+                best_ratio = ratio
+            }
+        }
+
+        var a = best_a
+        var b = 0
+
+        var arr = []
+
+        best_q.each_v { |fb|
+            var p = fb.p
+            var r = a/p
+
+            var gamma = ((fb.t * r.invmod(p)) % p)
+
+            if (gamma > (p >> 1)) {
+                gamma = (p - gamma)
+            }
+
+            var t = r*gamma
+
+            b += t
+            arr << t
+        }
+
+        var (g, h) = self.create_poly(a, b, n, factor_base, true)
+
+        return (g, h, arr)
+    }
+
+    method find_next_poly (n, factor_base, i, g, arr) {
+
+        # Compute the (i+1)-th polynomials for the Self-Initializing
+        # Quadratic Sieve, given that g is the i-th polynomial.
+
+        var v = i.valuation(2)
+        var z = ((((i >> (v+1)) & 1) == 0) ? -1 : 1)
+
+        var a = g.a
+        var b = ((g.b + 2*z*arr[v]) % a)
+
+        return self.create_poly(a, b, n, factor_base, false)
+    }
+
+    method siqs_sieve (factor_base, m) {
+
+        # Perform the sieving step of the SIQS. Return the sieve array.
+
+        var sieve_array = (2*m + 1 -> of(0))
+
+        factor_base.each {|fb|
+
+            fb.p > 100 || next
+            fb.soln1 \\ next
+
+            var p   = fb.p
+            var lp  = fb.lp
+            var end = 2*m
+
+            var i_start_1 = -((m + fb.soln1) // p)      #/
+            var a_start_1 =  (fb.soln1 + i_start_1*p)
+
+            for i in (RangeNum(a_start_1 + m, end, p)) {
+                sieve_array[i] += lp
+            }
+
+            var i_start_2 = -((m + fb.soln2) // p)      #/
+            var a_start_2 =  (fb.soln2 + i_start_2*p)
+
+            for i in (RangeNum(a_start_2 + m, end, p)) {
+                sieve_array[i] += lp
+            }
+        }
+
+        return sieve_array
+    }
+
+    method siqs_trial_divide (n, factor_base_info) {
+
+        # Determine whether the given number a can be fully factorized into
+        # primes from the factors base. If so, return the indices of the
+        # factors from the factor base. If not, return `nil`.
+
+        if (n.is_smooth_over_prod(factor_base_info{:prod})) {
+
+            var factor_index = factor_base_info{:index}
+
+            return n.factor_exp.map {|p|
+                [factor_index{p[0]}, p[1]]
+            }
+        }
+
+        return nil
+    }
+
+    method siqs_trial_division (n, sieve_array, factor_base_info, smooth_relations, g, h, m, req_relations) {
+
+        # Perform the trial division step of the Self-Initializing Quadratic Sieve.
+
+        var limit = ((m.log + n.log/2)/2.log - SIQS_TRIAL_DIVISION_EPS)
+
+        sieve_array.each_kv { |i,s|
+
+            next if (s < limit)
+
+            var x = (i - m)
+            var gx = g.eval(x).abs
+
+            var divisors_idx = self.siqs_trial_divide(gx, factor_base_info) \\ next
+
+            var u = h.eval(x)
+            var v = gx
+
+            smooth_relations << [u, v, divisors_idx]
+
+            if (smooth_relations.len >= req_relations) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    method build_matrix (factor_base, smooth_relations) {
+
+        # Build the matrix for the linear algebra step of the Quadratic Sieve.
+
+        var fb = factor_base.len
+        var matrix = []
+
+        smooth_relations.each {|sr|
+            var row = fb.of(0)
+            for u,v in (sr[2]) {
+                row[u] = v&1
+            }
+            matrix << row
+        }
+
+        return matrix
+    }
+
+    method build_matrix_opt(M) {
+
+        # Convert the given matrix M of 0s and 1s into a list of numbers m
+        # that correspond to the columns of the matrix.
+        # The j-th number encodes the j-th column of matrix M in binary:
+        # The i-th bit of m[i] is equal to M[i][j].
+
+        var m           = M[0].len
+        var cols_binary = m.of('')
+
+        M.each {|mi|
+            mi.each_kv { |j, mij|
+                cols_binary[j] += mij
+            }
+        }
+
+        return (cols_binary.map {|s| Number(s.flip, 2) }, M.len, m)
+    }
+
+    method find_pivot_column_opt (M, j) {
+
+        # For a matrix produced by `build_matrix_opt`, return the row of
+        # the first non-zero entry in column j, or None if no such row exists.
+
+        var v = M[j]
+
+        if (v == 0) {
+            return nil
+        }
+
+        return v.valuation(2)
+    }
+
+    method solve_matrix_opt (M, n, m) {
+
+        # Perform the linear algebra step of the SIQS. Perform fast
+        # Gaussian elimination to determine pairs of perfect squares mod n.
+        # Use the optimizations described in [1].
+
+        # [1] Koç, Çetin K., and Sarath N. Arachchige. 'A Fast Algorithm for
+        #    Gaussian Elimination over GF (2) and its Implementation on the
+        #    GAPP.' Journal of Parallel and Distributed Computing 13.1
+        #    (1991): 118-122.
+
+        var row_is_marked = n.of(false)
+        var pivots        = m.of(-1)
+
+        for j in (m.range) {
+
+            var i            = self.find_pivot_column_opt(M, j) \\ next
+            pivots[j]        = i
+            row_is_marked[i] = true
+
+            for k in (m.range) {
+                if ((k != j) && M[k].bit(i)) {
+                    M[k] ^= M[j]
+                }
+            }
+        }
+
+        var perf_squares = []
+
+        for i in (n.range) {
+
+            next if row_is_marked[i]
+
+            var perfect_sq_indices = [i]
+
+            for j in (m.range) {
+                if (M[j].bit(i)) {
+                    perfect_sq_indices << pivots[j]
+                }
+            }
+
+            perf_squares << perfect_sq_indices
+        }
+
+        return perf_squares
+    }
+
+    method calc_sqrts (n, square_indices, smooth_relations) {
+
+        # Given on of the solutions returned by `solve_matrix_opt` and
+        # the corresponding smooth relations, calculate the pair [a, b], such
+        # that a^2 = b^2 (mod n).
+
+        var r1 = 1
+        var r2 = 1
+
+        square_indices.each { |i|
+            r1 *= smooth_relations[i][0] %= n
+            r2 *= smooth_relations[i][1]
+        }
+
+        return (r1, r2.isqrt)
+    }
+
+    method factor_from_square (n, square_indices, smooth_relations) {
+
+        # Given one of the solutions returned by `solve_matrix_opt`,
+        # return the factor f determined by f = gcd(a - b, n), where
+        # a, b are calculated from the solution such that a*a = b*b (mod n).
+        # Return f, a factor of n (possibly a trivial one).
+
+        var (sqrt1, sqrt2) = self.calc_sqrts(n, square_indices, smooth_relations)
+
+        return gcd(sqrt1 - sqrt2, n)
+    }
+
+    method siqs_find_more_factors_gcd(numbers) {
+        var res = Hash()
+
+        numbers.each_kv { |i,n|
+            res{n} = n
+
+            for k in (i+1 .. numbers.end) {
+
+                var m = numbers[k]
+                var f = gcd(n, m)
+
+                if ((f != 1) && (f != n) && (f != m)) {
+
+                    if (!res.exists(f)) {
+                        say "SIQS: GCD found non-trivial factor: #{f}"
+                        res{f} = f
+                    }
+
+                    var t1 = n//f   #/
+                    var t2 = m//f   #/
+
+                    res{t1} = t1
+                    res{t2} = t2
+                }
+            }
+        }
+
+        return res.values
+    }
+
+    method siqs_find_factors (n, perfect_squares, smooth_relations) {
+
+        # Perform the last step of the Self-Initializing Quadratic Field.
+        # Given the solutions returned by `solve_matrix_opt`, attempt to
+        # identify a number of (not necessarily prime) factors of n, and
+        # return them.
+
+        var factors = []
+        var rem = n
+
+        var non_prime_factors = Hash()
+        var prime_factors = Hash()
+
+        perfect_squares.each {|square_indices|
+            var fact = self.factor_from_square(n, square_indices, smooth_relations)
+
+            next if (fact <= 1)
+            next if (fact > rem)
+
+            if (fact.is_prime) {
+
+                if (!prime_factors.exists(fact)) {
+                    say "SIQS: Prime factor found: #{fact}"
+                    prime_factors{fact} = fact
+                }
+
+                rem = self.check_factor(rem, fact, factors)
+
+                break if rem.is_one
+
+                if (rem.is_prime) {
+                    factors << rem
+                    rem = 1
+                    break
+                }
+
+                if (defined(var root = self.check_perfect_power(rem))) {
+                    say "SIQS: Perfect power detected with root: #{root}"
+                    factors << root
+                    rem = 1
+                    break
+                }
+            }
+            else {
+                if (!non_prime_factors.exists(fact)) {
+                    say "SIQS: Composite factor found: #{fact}"
+                    non_prime_factors{fact} = fact
+                }
+            }
+        }
+
+        if ((rem != 1) && non_prime_factors) {
+            non_prime_factors{rem} = rem
+
+            var primes     = []
+            var composites = []
+
+            self.siqs_find_more_factors_gcd(non_prime_factors.values).each {|fact|
+                if (fact.is_prime) {
+                    primes << fact
+                }
+                elsif (fact > 1) {
+                    composites << fact
+                }
+            }
+
+            for fact in (primes + composites) {
+
+                if ((fact != rem) && (fact `divides` rem)) {
+                    say "SIQS: Using non-trivial factor from GCD: #{fact}"
+                    rem = self.check_factor(rem, fact, factors)
+                }
+
+                break if rem.is_one
+                break if rem.is_prime
+            }
+        }
+
+        if (rem != 1) {
             factors << rem
-            rem = 1
-            break
         }
 
-        var digits = rem.len
-        say "\n[*] Factoring #{rem} (#{digits} digits)...\n"
-
-        say "=> Perfect power check..."
-        var f = check_perfect_power(rem)
-
-        if (defined(f)) {
-            store_factor(\rem, f, factors)
-            next
-        }
-
-        say "=> Fermat's method..."
-        var f = fermat_find_factor(rem, FERMAT_ITERATIONS)
-
-        if (defined(f) && (f > 1) && (f < rem)) {
-            store_factor(\rem, f, factors)
-            next
-        }
-
-        say "=> Pollard rho-sqrt..."
-        var f = pollard_rho_sqrt_find_factor(rem, POLLARD_RHO_SQRT_ITERATIONS)
-
-        if (defined(f) && (f > 1) && (f < rem)) {
-            store_factor(\rem, f, factors)
-            next
-        }
-
-        say "=> Fibonacci p±1..."
-        var f = fibonacci_factorization(rem, FIBONACCI_BOUND)
-
-        if (defined(f) && (f < rem)) {
-            store_factor(\rem, f, factors)
-            next
-        }
-
-        say "=> Pollard rho2...";
-        var f = pollard_rho2_find_factor(rem, POLLARD_RHO_ITERATIONS)
-
-        if (defined(f) && (f > 1) && (f < rem)) {
-            store_factor(\rem, f, factors)
-            next
-        }
-
-        say "=> Pollard p-1..."
-        var f = pollard_pm1_find_factor(rem, POLLARD_PM1_BOUND);
-
-        if (defined(f) && (f > 1) && (f < rem)) {
-            store_factor(\rem, f, factors)
-            next
-        }
-
-        break
+        return factors
     }
 
-    return rem
-}
+    method siqs_choose_range (n) {
 
-func find_all_prime_factors {}
+        # Choose m for sieving in [-m, m].
 
-func find_prime_factors(n) {
-
-    # Return one or more prime factors of the given number n. Assume
-    # that n is not a prime and does not have very small factors, and that
-    # the global small_primes has already been initialized. Do not return
-    # duplicate factors.
-
-    var factors = Hash()
-
-    if (defined(var root = check_perfect_power(n))) {
-        factors{root} = root
-    }
-    else {
-        var digits = n.len
-
-        say "\n[*] Using SIQS to factorize #{n} (#{digits} digits)...\n"
-
-        var nf = siqs_choose_nf(n)
-        var sf = siqs_factorize(n, nf)
-
-        factors{sf...} = sf...
+        exp(sqrt(n.log * n.log.log) / 2) -> round.int
     }
 
-    var prime_factors = []
+    method siqs_choose_nf (n) {
 
-    factors.each_v { |f|
-        prime_factors += find_all_prime_factors(f)
+        # Choose parameters nf (sieve of factor base)
+
+        exp(sqrt(n.log * n.log.log))**(2.sqrt / 4) -> round.int
     }
 
-    return prime_factors
-}
+    method siqs_factorize (n, nf) {
 
-find_all_prime_factors = func (n) {
+        # Use the Self-Initializing Quadratic Sieve algorithm to identify
+        # one or more non-trivial factors of the given number n. Return the
+        # factors as a list.
 
-    # Return all prime factors of the given number n. Assume that n
-    # does not have very small factors and that the global small_primes
-    # has already been initialized.
+        var m = self.siqs_choose_range(n)
 
-    var rem = n
-    var factors = []
+        var factors = []
+        var factor_base = self.factor_base_primes(n, nf)
+        var factor_prod = factor_base.prod_by { .p }
 
-    while (rem > 1) {
+        var factor_index = Hash(
+            factor_base.map { .p } ~Z ^factor_base -> flat...
+        )
 
-        if (rem.is_prime) {
-            factors << rem
-            break
+        var factor_base_info = Hash(
+            base  => factor_base,
+            prod  => factor_prod,
+            index => factor_index,
+        )
+
+        var smooth_relations         = []
+        var required_relations_ratio = 1
+
+        var success  = false
+        var prev_cnt = 0
+        var i_poly   = 0
+
+        var (g, h, arr)
+
+        while (!success) {
+
+            say "*** Step 1/2: Finding smooth relations ***"
+            say "SIQS sieving range: [-#{m}, #{m}]"
+
+            var required_relations = ((factor_base.len + 1) * required_relations_ratio).round.int
+            say "Target: #{required_relations} relations."
+            var enough_relations = false
+
+            while (!enough_relations) {
+                if (i_poly == 0) {
+                    (g, h, arr) = self.find_first_poly(n, m, factor_base);
+                }
+                else {
+                    (g, h) = self.find_next_poly(n, factor_base, i_poly, g, arr);
+                }
+
+                if (++i_poly >= (1 << arr.end)) {
+                    i_poly = 0
+                }
+
+                var sieve_array = self.siqs_sieve(factor_base, m)
+
+                enough_relations = self.siqs_trial_division(
+                    n, sieve_array, factor_base_info, smooth_relations,
+                    g, h, m, required_relations
+                )
+
+                if ((smooth_relations.len >= required_relations) ||
+                    (smooth_relations.len > prev_cnt)
+                ) {
+                    printf("Progress: %d/%d relations.\r", smooth_relations.len, required_relations)
+                    prev_cnt = smooth_relations.len
+                }
+            }
+
+            say "\n\n*** Step 2/2: Linear Algebra ***"
+            say "Building matrix for linear algebra step..."
+
+            var M = self.build_matrix(factor_base, smooth_relations)
+            var (M_opt, M_n, M_m) = self.build_matrix_opt(M)
+
+            say "Finding perfect squares using Gaussian elimination...";
+            var perfect_squares = self.solve_matrix_opt(M_opt, M_n, M_m)
+
+            say "Finding factors from perfect squares...\n";
+            factors = self.siqs_find_factors(n, perfect_squares, smooth_relations)
+
+            if (factors.len >= 2) {
+                success = true
+            }
+            else {
+                say "Failed to find a solution. Finding more relations..."
+                required_relations_ratio += 0.05
+            }
         }
 
-        find_prime_factors(rem).each {|f|
+        return factors
+    }
 
-            #$rem != $f     or die 'error';
-            #$rem % $f == 0 or die 'error';
-            #is_prime($f)   or die 'error';
+    method trial_division_small_primes (n) {
 
-            rem = check_factor(rem, f, factors);
+        # Perform trial division on the given number n using all primes up
+        # to upper_bound. Initialize the global variable small_primes with a
+        # list of all primes <= upper_bound. Return (factors, rem), where
+        # factors is the list of identified prime factors of n, and rem is the
+        # remaining factor. If rem = 1, the function terminates early, without
+        # fully initializing small_primes.
 
-            break if rem.is_one
+        say "[*] Trial division..."
+
+        var factors = []
+        var rem     = n
+
+        small_primes.each {|p|
+            if (p `divides` rem) {
+                rem = self.check_factor(rem, p, factors)
+                break if rem.is_one
+            }
         }
+
+        return (factors, rem)
     }
 
-    return factors
-}
+    method check_perfect_power (n) {
 
-func factorize(n) {
+        # Check whether n is a perfect and return its perfect root.
+        # Returns undef otherwise.
 
-    # Factorize the given integer n >= 1 into its prime factors.
+        if (n.is_power) {
 
-    if (n < 1) {
-        die "Number needs to be an integer >= 1"
+            var power = n.perfect_power
+            var root  = n.perfect_root
+
+            say "`-> #{n} is #{root}^#{power}"
+
+            return root
+        }
+
+        return nil
     }
 
-    printf("[*] Factoring %s (%d digits)...\n", n, n.len)
+    method check_factor (Number n, Number i, Array factors) {
 
-    return []  if n.is_one
-    return [n] if n.is_prime
+        while (i `divides` n) {
 
-    var (factors, rem) = trial_division_small_primes(n)
+            n //= i         #/
+            factors << i
 
-    if (factors) {
-        say "[*] Prime factors found so far: #{factors.join(', ')}"
+            if (n.is_prime) {
+                factors << n
+                return 1
+            }
+        }
+
+        return n
     }
-    else {
-        say "[*] No small factors found..."
-    }
 
-    if (rem != 1) {
+    method store_factor (Ref rem, Number f, Array factors) {
 
-        if (LOOK_FOR_SMALL_FACTORS) {
-            say "[*] Trying to find more small factors..."
-            rem = find_small_factors(rem, factors)
+        if (f.is_prime) {
+            say "`-> prime factor: #{f}"
+            *rem = self.check_factor(*rem, f, factors)
         }
         else {
-            say "[*] Skipping the search for more small factors..."
-        }
+            say "`-> composite factor: #{f}"
+            *rem //= f          #/
 
-        if ($rem > 1) {
-            factors += find_all_prime_factors(rem)
+            # Try to find a small factor of f
+            var f_factor = self.find_small_factors(f, factors)
+
+            if (f_factor < f) {
+                *rem *= f_factor
+            }
+            else {
+
+                # Use SIQS to factorize f
+                var F = self.find_prime_factors(f)
+
+                #foreach my $p (@factors) {
+                F.each {|p|
+                    *rem = self.check_factor(rem, p, factors)
+                    break if (*rem == 1)
+                }
+            }
         }
     }
 
-    factors.sort!
-    assert_eq(factors.prod, n)
+    method find_small_factors (rem, factors) {
 
-    factors.each {|p|
-        assert(p.is_prime, "non-prime detected: #{p}")
+        # Perform up to max_iter iterations of Brent's variant of the
+        # Pollard rho factorization algorithm to attempt to find small
+        # prime factors. Restart the algorithm each time a factor was found.
+        # Add all identified prime factors to factors, and return 1 if all
+        # prime factors were found, or otherwise the remaining factor.
+
+        loop {
+
+            break if (rem <= 1)
+
+            if (rem.is_prime) {
+                factors << rem
+                rem = 1
+                break
+            }
+
+            var digits = rem.len
+            say "\n[*] Factoring #{rem} (#{digits} digits)...\n"
+
+            say "=> Perfect power check..."
+            var f = self.check_perfect_power(rem)
+
+            if (defined(f)) {
+                var pow = rem.perfect_power
+                var r = self.factorize(f)
+                factors << (r*pow)...
+                return 1
+            }
+
+            say "=> Fermat's method..."
+            var f = fermat_find_factor(rem, FERMAT_ITERATIONS)
+
+            if (defined(f) && (f > 1) && (f < rem)) {
+                self.store_factor(\rem, f, factors)
+                next
+            }
+
+            say "=> Pollard rho-sqrt..."
+            var f = pollard_rho_sqrt_find_factor(rem, POLLARD_RHO_SQRT_ITERATIONS)
+
+            if (defined(f) && (f > 1) && (f < rem)) {
+                self.store_factor(\rem, f, factors)
+                next
+            }
+
+            say "=> Fibonacci p±1..."
+            var f = fibonacci_factorization(rem, FIBONACCI_BOUND)
+
+            if (defined(f) && (f < rem)) {
+                self.store_factor(\rem, f, factors)
+                next
+            }
+
+            say "=> Pollard rho2...";
+            var f = pollard_rho2_find_factor(rem, POLLARD_RHO_ITERATIONS)
+
+            if (defined(f) && (f > 1) && (f < rem)) {
+                self.store_factor(\rem, f, factors)
+                next
+            }
+
+            say "=> Pollard p-1..."
+            var f = pollard_pm1_find_factor(rem, POLLARD_PM1_BOUND);
+
+            if (defined(f) && (f > 1) && (f < rem)) {
+                self.store_factor(\rem, f, factors)
+                next
+            }
+
+            break
+        }
+
+        return rem
     }
 
-    return factors
+    method find_prime_factors(n) {
+
+        # Return one or more prime factors of the given number n. Assume
+        # that n is not a prime and does not have very small factors, and that
+        # the global small_primes has already been initialized. Do not return
+        # duplicate factors.
+
+        var factors = Hash()
+
+        if (defined(var root = self.check_perfect_power(n))) {
+            factors{root} = root
+        }
+        else {
+            var digits = n.len
+
+            say "\n[*] Using SIQS to factorize #{n} (#{digits} digits)...\n"
+
+            var nf = self.siqs_choose_nf(n)
+            var sf = self.siqs_factorize(n, nf)
+
+            factors{sf...} = sf...
+        }
+
+        var prime_factors = []
+
+        factors.each_v { |f|
+            prime_factors += self.find_all_prime_factors(f)
+        }
+
+        return prime_factors
+    }
+
+    method find_all_prime_factors (n) {
+
+        # Return all prime factors of the given number n. Assume that n
+        # does not have very small factors and that the global small_primes
+        # has already been initialized.
+
+        var rem = n
+        var factors = []
+
+        while (rem > 1) {
+
+            if (rem.is_prime) {
+                factors << rem
+                break
+            }
+
+            self.find_prime_factors(rem).each {|f|
+
+                #$rem != $f     or die 'error';
+                #$rem % $f == 0 or die 'error';
+                #is_prime($f)   or die 'error';
+
+                rem = self.check_factor(rem, f, factors);
+
+                break if rem.is_one
+            }
+        }
+
+        return factors
+    }
+
+    method factorize (n) {
+
+        # Factorize the given integer n >= 1 into its prime factors.
+
+        if (n < 1) {
+            die "Number needs to be an integer >= 1"
+        }
+
+        printf("[*] Factoring %s (%d digits)...\n", n, n.len)
+
+        return []  if n.is_one
+        return [n] if n.is_prime
+
+        var (factors, rem) = self.trial_division_small_primes(n)
+
+        if (factors) {
+            say "[*] Prime factors found so far: #{factors.join(', ')}"
+        }
+        else {
+            say "[*] No small factors found..."
+        }
+
+        if (rem != 1) {
+
+            if (LOOK_FOR_SMALL_FACTORS) {
+                say "[*] Trying to find more small factors..."
+                rem = self.find_small_factors(rem, factors)
+            }
+            else {
+                say "[*] Skipping the search for more small factors..."
+            }
+
+            if ($rem > 1) {
+                factors += self.find_all_prime_factors(rem)
+            }
+        }
+
+        factors.sort!
+        assert_eq(factors.prod, n)
+
+        factors.each {|p|
+            assert(p.is_prime, "non-prime detected: #{p}")
+        }
+
+        return factors
+    }
+
 }
 
 if (ARGV) {
     var n = Number(ARGV[0])
-    say "\nPrime factors: #{factorize(n)}"
+    var siqs = SIQS()
+    say "\nPrime factors: #{siqs.factorize(n)}"
 }
 else {
     say "usage: #{__MAIN__} <N>"
