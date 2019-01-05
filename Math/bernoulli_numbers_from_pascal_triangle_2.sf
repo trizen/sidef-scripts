@@ -18,7 +18,7 @@ func pascal_bernoulli_numbers(n) {
         }
     }
 
-    A.inv -> map {|r| r[0] }
+    A.inv.column(0)
 }
 
 var B = pascal_bernoulli_numbers(30)

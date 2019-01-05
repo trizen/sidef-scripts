@@ -1,0 +1,27 @@
+#!/usr/bin/ruby
+
+# The generalized Bailey–Borwein–Plouffe formula (BBP formula)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Bailey%E2%80%93Borwein%E2%80%93Plouffe_formula
+
+func BBP(s, b, A, m=A.len, r=200) {
+    sum(0..r, {|k|
+        sum(1..m, {|j|
+            A[j-1] / (m*k + j)**s
+        }) / b**k
+    })
+}
+
+say BBP(1,  2, [1])                          # 1.38629436111989061883446424291635313615100026872 = log(4)
+say BBP(1, 16, [4, 0])                       # 4.08660499012792546564411277042929547902488637157 = log(390625/6561)
+say BBP(1, 16, [4, 0, 0, -2, -1, -1, 0, 0])  # 3.14159265358979323846264338327950288419716939938 = Pi
+
+# The BBP() function can also be used to efficiently compute atan(1/x)
+
+func plouffe_atan(x) {
+    BBP(1, x**4, [1, 0, -(x**-2), 0]) / x
+}
+
+say plouffe_atan(2)                          # 0.463647609000806116214256231461214402028537054286 = atan(1/2)
+say plouffe_atan(3+4i)                       # 0.122489331563432077086041240605637905457072049191-0.158997191679999174364761036007018781573305474235i

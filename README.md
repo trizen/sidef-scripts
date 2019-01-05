@@ -66,6 +66,7 @@ A simple collection of Sidef scripts.
     * [Arithmetic-geometric mean](./Math/arithmetic-geometric_mean.sf)
     * [Arithmetic-harmonic mean](./Math/arithmetic-harmonic_mean.sf)
     * [Arithmetic derivative](./Math/arithmetic_derivative.sf)
+    * [BBP-type formulae](./Math/BBP-type_formulae.sf)
     * [Bernoulli approx](./Math/bernoulli_approx.sf)
     * [Bernoulli numbers from factorials](./Math/bernoulli_numbers_from_factorials.sf)
     * [Bernoulli numbers from pascal triangle](./Math/bernoulli_numbers_from_pascal_triangle.sf)
