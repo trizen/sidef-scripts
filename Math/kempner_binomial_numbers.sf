@@ -1,0 +1,37 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 08 January 2019
+# https://github.com/trizen
+
+# a(n) = smallest positive integer k such that n divides binomial(n+k, k).
+
+# Sequence inspired by the Kempner numbers:
+#   https://oeis.org/A002034
+#   https://en.wikipedia.org/wiki/Kempner_function
+
+# Prime powe identity:
+#   a(p^k) = p^k * (p^k - 1), for p^k a prime power.
+
+# Lower bound formula for a(n). Let:
+#   f(n, p^k) = p^k * (p^k - n/p^k)
+
+# if n = p1^e1 * p2^e2 * ... * pu^eu,
+# then a(n) >= max( f(n,p1^e1), f(n,p2^e2), ..., f(n,pu^eu) ).
+
+func f(n) {
+    (^Inf -> first_by {|k| n `divides` binomial(n+k, k) })
+}
+
+func g(n) {   # g(n) <= f(n)
+    n.factor_map{ |p,k|
+        p**k * (p**k - n/(p**k))
+    }.max
+}
+
+say 30.of { f(_+2) }
+say 30.of { g(_+2) }
+
+__END__
+f(n) = [2, 6, 12, 20, 3, 42, 56, 72, 15, 110, 6, 156, 35, 12, 240, 272, 63, 342, 12, 33, 99, 506, 40, 600, 143, 702, 21, 812, 24, 930]
+g(n) = [2, 6, 12, 20, 3, 42, 56, 72, 15, 110, 4, 156, 35, 10, 240, 272, 63, 342,  5, 28, 99, 506, 40, 600, 143, 702, 21, 812, -5, 930]

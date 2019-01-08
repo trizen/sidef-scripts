@@ -178,6 +178,7 @@ A simple collection of Sidef scripts.
     * [Is smooth number](./Math/is_smooth_number.sf)
     * [Julia set](./Math/julia_set.sf)
     * [Karatsuba multiplication](./Math/karatsuba_multiplication.sf)
+    * [Kempner binomial numbers](./Math/kempner_binomial_numbers.sf)
     * [Knapsack problem 0 1](./Math/knapsack_problem_0_1.sf)
     * [Knapsack problem bounded](./Math/knapsack_problem_bounded.sf)
     * [Knapsack problem unbounded](./Math/knapsack_problem_unbounded.sf)
