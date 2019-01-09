@@ -159,6 +159,7 @@ A simple collection of Sidef scripts.
     * [Geometric-harmonic mean](./Math/geometric-harmonic_mean.sf)
     * [Gregory coefficients](./Math/gregory_coefficients.sf)
     * [Hamming numbers](./Math/hamming_numbers.sf)
+    * [Harmonic numbers closed form](./Math/harmonic_numbers_closed_form.sf)
     * [Harmonic numbers from powers](./Math/harmonic_numbers_from_powers.sf)
     * [Harmonic numbers from powers simple](./Math/harmonic_numbers_from_powers_simple.sf)
     * [Harmonic prime powers](./Math/harmonic_prime_powers.sf)

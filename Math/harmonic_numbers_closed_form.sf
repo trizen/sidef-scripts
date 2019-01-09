@@ -1,0 +1,21 @@
+#!/usr/bin/ruby
+
+# A remarkable closed-form to the n-th Harmonic number:
+#   H_n = ((binomial(n + (n+1)!, n) - 1) / (n+1)!) - (n+1)*floor(((binomial(n + (n+1)!, n) - 1) / (n+1)!) / (n+1))
+
+# Can it be computed efficiently?
+
+# See also:
+#   https://en.wikipedia.org/wiki/Harmonic_number
+#   https://math.stackexchange.com/questions/52572/do-harmonic-numbers-have-a-closed-form-expression
+
+# Formula posted by nczksv on math.stackexchange.com (5th April 2018):
+#   https://math.stackexchange.com/a/2723193
+
+func H(n) {
+    with ((binomial(n + (n+1)!, n) - 1) / (n+1)!) {|g|
+        g - (n+1)*floor(g / (n+1))
+    }
+}
+
+say 10.of(H)    #=> [0, 1, 3/2, 11/6, 25/12, 137/60, 49/20, 363/140, 761/280, 7129/2520]
