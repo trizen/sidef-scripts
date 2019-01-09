@@ -176,6 +176,7 @@ A simple collection of Sidef scripts.
     * [Is even perfect](./Math/is_even_perfect.sf)
     * [Is even perfect 2](./Math/is_even_perfect_2.sf)
     * [Is perfect power](./Math/is_perfect_power.sf)
+    * [Is prob squarefree](./Math/is_prob_squarefree.sf)
     * [Is smooth number](./Math/is_smooth_number.sf)
     * [Julia set](./Math/julia_set.sf)
     * [Karatsuba multiplication](./Math/karatsuba_multiplication.sf)
