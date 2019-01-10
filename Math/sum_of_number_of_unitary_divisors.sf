@@ -4,16 +4,13 @@
 # Date: 10 January 2019
 # https://github.com/trizen
 
-# Two fast algorithms for computing sum of number of unitary divisors from 1 to n.
-#
+# Two fast algorithms for computing the sum of number of unitary divisors from 1 to n.
 #   a(n) = Sum_{k=1..n} usigma_0(k)
-#
-# for any fixed integer m >= 1.
 
 # Based on the formula:
 #   Sum_{k=1..n} ψ_m(k) = Sum_{k=1..n} moebius(k)^2 * F(m, floor(n/k))
 #
-# where F(n,x) is Faulhaber's formula for `Sum_{k=1..x} k^n`, defined in terms of Bernoulli polynomials as:
+# where ψ_m(k) is Dedekind's psi function and F(n,x) is Faulhaber's formula for `Sum_{k=1..x} k^n`, defined in terms of Bernoulli polynomials as:
 #   F(n, x) = (Bernoulli(n+1, x+1) - Bernoulli(n+1, 1)) / (n+1)
 
 # See also:
