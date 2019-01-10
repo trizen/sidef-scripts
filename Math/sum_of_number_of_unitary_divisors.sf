@@ -1,0 +1,88 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 10 January 2019
+# https://github.com/trizen
+
+# Two fast algorithms for computing sum of number of unitary divisors from 1 to n.
+#
+#   a(n) = Sum_{k=1..n} usigma_0(k)
+#
+# for any fixed integer m >= 1.
+
+# Based on the formula:
+#   Sum_{k=1..n} ψ_m(k) = Sum_{k=1..n} moebius(k)^2 * F(m, floor(n/k))
+#
+# where F(n,x) is Faulhaber's formula for `Sum_{k=1..x} k^n`, defined in terms of Bernoulli polynomials as:
+#   F(n, x) = (Bernoulli(n+1, x+1) - Bernoulli(n+1, 1)) / (n+1)
+
+# See also:
+#   https://oeis.org/A034444    -- Partial sums of A034444: sum of number of unitary divisors from 1 to n.
+#   https://oeis.org/A180361    -- Sum of number of unitary divisors (A034444) from 1 to 10^n
+#   https://oeis.org/A268732    -- Sum of the numbers of divisors of gcd(x,y) with x*y <= n.
+
+# Asymptotic formula:
+#   a(n) ~ n*log(n)/zeta(2) + O(n)
+
+func unitary_divisors_partial_sum_1 (n) {      # O(sqrt(n)) complexity
+
+    var total = 0
+
+    var s = n.isqrt
+    var u = int(n/(s+1))
+
+    var prev = squarefree_count(n)
+
+    for k in (1..s) {
+        var curr = squarefree_count(int(n/(k+1)))
+        total += (prev - curr)*k
+        prev = curr
+    }
+
+    moebius(0, u).each_kv { |k,v|
+        total += int(n/k) if v
+    }
+
+    return total
+}
+
+func unitary_divisors_partial_sum_2 (n) {      # based on formula by Jerome Raulin (https://oeis.org/A064608)
+
+    var total = 0
+
+    moebius(0, n.isqrt).each_kv { |k,v|
+
+        if (v) {
+            var t = 2*sum(1..isqrt(n/(k*k)), {|j|
+                int(n / (j*k*k))
+            })
+
+            total += v*(t - isqrt(n/(k*k))**2)
+        }
+    }
+
+    return total
+}
+
+say 20.of(unitary_divisors_partial_sum_1)
+say 20.of(unitary_divisors_partial_sum_2)
+
+for n in (0..7) {
+    say ("a(10^#{n}) = ", unitary_divisors_partial_sum_1(10**n))
+}
+
+__END__
+[0, 1, 3, 5, 7, 9, 13, 15, 17, 19, 23, 25, 29, 31, 35, 39, 41, 43, 47, 49]
+[0, 1, 3, 5, 7, 9, 13, 15, 17, 19, 23, 25, 29, 31, 35, 39, 41, 43, 47, 49]
+
+a(10^0) = 1
+a(10^1) = 23
+a(10^2) = 359
+a(10^3) = 4987
+a(10^4) = 63869
+a(10^5) = 778581
+a(10^6) = 9185685
+a(10^7) = 105854997
+a(10^8) = 1198530315
+a(10^9) = 13385107495
+a(10^10) = 147849112851
