@@ -21,7 +21,7 @@
 # where γ is the Euler-Mascheroni constant and "A" is the Glaisher-Kinkelin constant.
 
 # Alternative asymptotic formula:
-#   a(n) ~ (n/zeta(2) * (log(n) + 2*γ - 1 + c) / (36 / π^4)) + O(sqrt(n)*log(n))
+#   a(n) ~ (n*zeta(2) * (log(n) + 2*γ - 1 + c)) + O(sqrt(n)*log(n))
 #
 #  where γ is the Euler-Mascheroni and c = 2*Zeta'(2)/Zeta(2) = -1.1399219861890656127997287200...
 
@@ -31,7 +31,16 @@ func asymptotic_formula(n) {
     const c = -1.13992198618906561279972872003946000480696456161386195911639472087583455473348121357
 
     # Asymptotic formula based on Merten's theorem (1874) (see: https://oeis.org/A064608)
-    (n/zeta(2) * (log(n) + 2*Num.Y - 1 + c) / (36 / Num.pi**4))
+    (n*zeta(2) * (log(n) + 2*Num.Y - 1 + c))
+}
+
+func asymptotic_formula2(n) {
+
+    # The Glaisher-Kinkelin constant
+    const A = 1.28242712910062263687534256886979172776768892732500119206374002174040630885882646112973649195820237439420646120399
+
+    # Asymptotic formula in terms of the Glaisher-Kinkelin constant
+    zeta(2) * n * (2 * (-12 * log(A) + Num.Y + log(Num.tau)) + log(n) + 2*Num.Y - 1)
 }
 
 func sum_of_number_of_divisors_of_gcd (n) {
@@ -52,13 +61,15 @@ func sum_of_number_of_divisors_of_gcd (n) {
 
 say 20.of(sum_of_number_of_divisors_of_gcd)
 
-for k in (0..6) {
+for k in (1..6) {
 
     var n = 10**k
     var t = sum_of_number_of_divisors_of_gcd(n)
     var u = asymptotic_formula(n)
 
     printf("a(10^%s) = %10s ~ %-15s -> %s\n", k, t, u.round(-2), t/u)
+
+    assert((t - u) < (sqrt(n) * log(n))) if (n > 100)
 }
 
 __END__
