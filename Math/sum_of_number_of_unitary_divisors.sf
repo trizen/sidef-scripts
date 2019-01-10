@@ -8,10 +8,7 @@
 #   a(n) = Sum_{k=1..n} usigma_0(k)
 
 # Based on the formula:
-#   Sum_{k=1..n} ψ_m(k) = Sum_{k=1..n} moebius(k)^2 * F(m, floor(n/k))
-#
-# where ψ_m(k) is Dedekind's psi function and F(n,x) is Faulhaber's formula for `Sum_{k=1..x} k^n`, defined in terms of Bernoulli polynomials as:
-#   F(n, x) = (Bernoulli(n+1, x+1) - Bernoulli(n+1, 1)) / (n+1)
+#   a(n) = Sum_{k=1..n} moebius(k)^2 * floor(n/k)
 
 # See also:
 #   https://oeis.org/A034444    -- Partial sums of A034444: sum of number of unitary divisors from 1 to n.
@@ -20,6 +17,20 @@
 
 # Asymptotic formula:
 #   a(n) ~ n*log(n)/zeta(2) + O(n)
+
+# Better asymptotic formula:
+#   a(n) ~ (n/zeta(2))*(log(n) + 2*γ - 1 - c) + O(sqrt(n) * log(n))
+#
+# where γ is the Euler-Mascheroni constant and c = 2*zeta'(2)/zeta(2) = -1.1399219861890656127997287200...
+
+func asymptotic_formula(n) {
+
+    # c = 2*Zeta'(2)/Zeta(2) = (12 * Zeta'(2))/π^2 = 2 (-12 log(A) + γ + log(2) + log(π))
+    const c = -1.13992198618906561279972872003946000480696456161386195911639472087583455473348121357
+
+    # Asymptotic formula based on Merten's theorem (1874) (see: https://oeis.org/A064608)
+    (n/zeta(2)) * (log(n) + 2*Num.Y - 1 - c)
+}
 
 func unitary_divisors_partial_sum_1 (n) {      # O(sqrt(n)) complexity
 
@@ -64,22 +75,27 @@ func unitary_divisors_partial_sum_2 (n) {      # based on formula by Jerome Raul
 say 20.of(unitary_divisors_partial_sum_1)
 say 20.of(unitary_divisors_partial_sum_2)
 
-for n in (0..7) {
-    say ("a(10^#{n}) = ", unitary_divisors_partial_sum_1(10**n))
+for k in (0..7) {
+
+    var n = 10**k
+    var t = unitary_divisors_partial_sum_1(n)
+    var u = asymptotic_formula(n)
+
+    printf("a(10^%s) = %10s ~ %-15s -> %s\n", k, t, u.round(-2), t/u)
 }
 
 __END__
 [0, 1, 3, 5, 7, 9, 13, 15, 17, 19, 23, 25, 29, 31, 35, 39, 41, 43, 47, 49]
 [0, 1, 3, 5, 7, 9, 13, 15, 17, 19, 23, 25, 29, 31, 35, 39, 41, 43, 47, 49]
 
-a(10^0) = 1
-a(10^1) = 23
-a(10^2) = 359
-a(10^3) = 4987
-a(10^4) = 63869
-a(10^5) = 778581
-a(10^6) = 9185685
-a(10^7) = 105854997
-a(10^8) = 1198530315
-a(10^9) = 13385107495
-a(10^10) = 147849112851
+a(10^0)  =            1 ~ 0.79            -> 1.27085398285349342897812915198984638968899591751
+a(10^1)  =           23 ~ 21.87           -> 1.05182461403816051734935994402113331145060974294
+a(10^2)  =          359 ~ 358.65          -> 1.00098140095602073835866744824992972185806123685
+a(10^3)  =         4987 ~ 4986.28         -> 1.00014357239778054254970740667091143421188177813
+a(10^4)  =        63869 ~ 63860.88        -> 1.00012715302552355451250212258735392366329621935
+a(10^5)  =       778581 ~ 778589.19       -> 0.999989484576929013867264739526374966823956960403
+a(10^6)  =      9185685 ~ 9185695.75      -> 0.99999882923368455522780513812504287278271814501
+a(10^7)  =    105854997 ~ 105854996.37    -> 1.00000000598372061072117962943109677794267023891
+a(10^8)  =   1198530315 ~ 1198530351.90   -> 0.999999969211002320383540850995519903094748492418
+a(10^9)  =  13385107495 ~ 13385107401.37  -> 1.00000000699496540213133746406895764726726792391
+a(10^10) = 147849112851 ~ 147849112837.28 -> 1.00000000009281141854332921757852421030396550125
