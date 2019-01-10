@@ -10,7 +10,7 @@
 #   https://oeis.org/A002034
 #   https://en.wikipedia.org/wiki/Kempner_function
 
-# Prime powe identity:
+# Identity for prime powers:
 #   a(p^k) = p^k * (p^k - 1), for p^k a prime power.
 
 # Lower bound formula for a(n). Let:

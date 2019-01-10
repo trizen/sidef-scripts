@@ -15,6 +15,7 @@ A simple collection of Sidef scripts.
     * [Caesar cipher](./Encoding/caesar_cipher.sf)
     * [Huffman coding](./Encoding/huffman_coding.sf)
     * [Lzw compression](./Encoding/lzw_compression.sf)
+    * [Lzw file compression](./Encoding/lzw_file_compression.sf)
     * [Run length encoding](./Encoding/run_length_encoding.sf)
 * Encryption
     * [One-time pad](./Encryption/one-time_pad.sf)
