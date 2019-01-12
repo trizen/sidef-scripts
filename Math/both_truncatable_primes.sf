@@ -6,6 +6,10 @@
 
 # Two-sided primes: deleting any number of digits at left or at right, but not both, leaves a prime.
 
+# Optimization:
+#   there far fewer right-truncatable primes than are left-truncatable primes, therefore we generate
+#   only the right-truncatable primes and check which of those are also left-truncatable primes.
+
 # OIES sequence:
 #   https://oeis.org/A020994
 
@@ -13,25 +17,20 @@
 #   https://www.youtube.com/watch?v=azL5ehbw_24
 #   https://en.wikipedia.org/wiki/Truncatable_prime
 
-func left_truncatable_primes(p) {
+func is_left_truncatable_prime(n) {
 
-    var seq = [p]
-
-    for n in (1..9) {
-        var t = Number("#{n}#{p}")
-        if (t.is_prime) {
-            seq << left_truncatable_primes(t)...
-        }
+    for (n = Str(n); n.len > 0; n.substr!(1)) {
+        is_prime(Num(n, 10)) || return false
     }
 
-    return seq
+    return true
 }
 
 func right_truncatable_primes(p) {
 
     var seq = [p]
 
-    for n in ([1, 3, 7, 9]) {
+    for n in (1..9) {
         var t = Number("#{p}#{n}")
         if (t.is_prime) {
             seq << right_truncatable_primes(t)...
@@ -42,7 +41,7 @@ func right_truncatable_primes(p) {
 }
 
 func both_truncatable_primes() {     # finite sequence
-    9.primes.map(right_truncatable_primes).flat & 9.primes.map(left_truncatable_primes).flat
+    9.primes.map(right_truncatable_primes).flat.grep(is_left_truncatable_prime).sort
 }
 
 say both_truncatable_primes()   #=> [2, 3, 5, 7, 23, 37, 53, 73, 313, 317, 373, 797, 3137, 3797, 739397]
