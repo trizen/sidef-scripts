@@ -1,53 +1,48 @@
 #!/usr/bin/ruby
 
-# Generate both-truncatable primes of the form "abXcd", such that the following terms are all prime numbers:
-#   abXcd
-#   abXc
-#   bXcd
-#   bXc
-#   bX
-#   Xc
+# Daniel "Trizen" Șuteu
+# Date: 12 January 2018
+# https://github.com/trizen
 
-# Definition:
-# 1. Removing a digit from either side, the number remains prime.
-# 2. Removing both digits, the number is still prime.
-# 3. Continuing this process, we end up with X.
+# Two-sided primes: deleting any number of digits at left or at right, but not both, leaves a prime.
 
-# Full sequence for prime numbers X bellow 10:
-#   2, 3, 5, 7, 131, 137, 173, 179, 373, 379, 431, 479, 673, 971, 21319, 33739, 54799, 63793, 66733, 76733, 91373, 91733, 94793, 2913739, 3667333, 9637937, 696379373, 896379373
+# OIES sequence:
+#   https://oeis.org/A020994
 
 # See also:
 #   https://www.youtube.com/watch?v=azL5ehbw_24
 #   https://en.wikipedia.org/wiki/Truncatable_prime
 
-func both_truncatable_primes(p) {
+func left_truncatable_primes(p) {
 
     var seq = [p]
 
     for n in (1..9) {
-
-        # New left-truncatable prime
-        Number("#{n}#{p}").is_prime || next
-
-        for m in ([1, 3, 7, 9]) {
-
-            # New right-truncatable prime
-            Number("#{p}#{m}").is_prime || next
-
-            # New left and right truncatable prime
-            var t = Number("#{n}#{p}#{m}")
-
-            if (t.is_prime) {
-                seq << both_truncatable_primes(t)...
-            }
+        var t = Number("#{n}#{p}")
+        if (t.is_prime) {
+            seq << left_truncatable_primes(t)...
         }
     }
 
     return seq
 }
 
-var seq = []
-10.primes.each {|p|
-    seq << both_truncatable_primes(p)...
+func right_truncatable_primes(p) {
+
+    var seq = [p]
+
+    for n in ([1, 3, 7, 9]) {
+        var t = Number("#{p}#{n}")
+        if (t.is_prime) {
+            seq << right_truncatable_primes(t)...
+        }
+    }
+
+    return seq
 }
-say seq.sort
+
+func both_truncatable_primes() {     # finite sequence
+    9.primes.map(right_truncatable_primes).flat & 9.primes.map(left_truncatable_primes).flat
+}
+
+say both_truncatable_primes()   #=> [2, 3, 5, 7, 23, 37, 53, 73, 313, 317, 373, 797, 3137, 3797, 739397]

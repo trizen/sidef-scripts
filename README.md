@@ -191,6 +191,7 @@ A simple collection of Sidef scripts.
     * [LambertW function](./Math/LambertW_function.sf)
     * [Lanczos approximation](./Math/lanczos_approximation.sf)
     * [Largest factorial less than 10^(10^n)](./Math/largest_factorial_less_than_10^(10^n).sf)
+    * [Left-right truncatable primes](./Math/left-right_truncatable_primes.sf)
     * [Left truncatable primes](./Math/left_truncatable_primes.sf)
     * [Legendre factorial](./Math/legendre_factorial.sf)
     * [Levenshtein distance iter](./Math/levenshtein_distance_iter.sf)
