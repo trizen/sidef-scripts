@@ -11,16 +11,22 @@
 #   https://oeis.org/A005132
 
 func recamán_sequence_first(n) {
+
     var a = [0]
+    var s = Hash()
 
     for k in (1 ..^ n) {
-        var t = a[k-1]-k
 
-        if ((t > 0) && !a.contains(t)) {
-            a[k] = t
+        var t1 = a[k-1]-k
+        var t2 = a[k-1]+k
+
+        if ((t1 > 0) && !s.has(t1)) {
+            a[k] = t1
+            s{t1} = true
         }
         else {
-            a[k] = a[k-1]+k
+            a[k] = t2
+            s{t2} = true
         }
     }
 
