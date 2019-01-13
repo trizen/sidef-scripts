@@ -90,7 +90,7 @@ A simple collection of Sidef scripts.
     * [Blandin-diaz compositional bernoulli numbers B S 1 2](./Math/blandin-diaz_compositional_bernoulli_numbers_B_S_1_2.sf)
     * [Blandin-diaz compositional bernoulli numbers B Z 1](./Math/blandin-diaz_compositional_bernoulli_numbers_B_Z_1.sf)
     * [Blandin-diaz compositional bernoulli numbers B Z 1 2](./Math/blandin-diaz_compositional_bernoulli_numbers_B_Z_1_2.sf)
-    * [Both truncatable primes](./Math/both_truncatable_primes.sf)
+    * [Both truncatable primes in base](./Math/both_truncatable_primes_in_base.sf)
     * [BPSW primality test](./Math/BPSW_primality_test.sf)
     * [Cartesian product](./Math/cartesian_product.sf)
     * [Cauchy numbers of first type recurrence](./Math/cauchy_numbers_of_first_type_recurrence.sf)

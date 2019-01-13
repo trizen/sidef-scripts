@@ -1,0 +1,97 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 13 January 2018
+# https://github.com/trizen
+
+# Both-trucatable primes in a given base.
+
+# Optimization:
+#   there are fewer right-truncatable primes than are left-truncatable primes, therefore we generate
+#   only the right-truncatable primes and check which ones of those are also left-truncatable primes.
+
+# Maximum value for each base is given in the following OEIS sequence:
+#   https://oeis.org/A323137
+
+# See also:
+#   https://www.youtube.com/watch?v=azL5ehbw_24
+#   https://en.wikipedia.org/wiki/Truncatable_prime
+
+# Related sequences:
+#  https://oeis.org/A076586 - Total number of right truncatable primes in base n.
+#  https://oeis.org/A076623 - Total number of left truncatable primes (without zeros) in base n.
+#  https://oeis.org/A323390 - Total number of primes that are both left-truncatable and right-truncatable in base n.
+#  https://oeis.org/A323396 - Irregular array read by rows, where T(n, k) is the k-th prime that is both left-truncatable and right-truncatable in base n.
+
+func digits2num(arr, base) {
+    var size = arr.len
+    arr.map_kv {|k,v| base**(size - k - 1) * v  }.sum
+}
+
+func is_left_truncatable_prime(n, base) {
+
+    for (() ; n.len > 0; n = n.slice(1)) {
+        is_prime(digits2num(n, base)) || return false
+    }
+
+    return true
+}
+
+func right_truncatable_primes(p, base) {
+
+    var seq = [p]
+
+    for n in (1 ..^ base) {
+        var t = [p..., n]
+        if (is_prime(digits2num(t, base))) {
+            seq << right_truncatable_primes(t, base)...
+        }
+    }
+
+    return seq
+}
+
+func both_truncatable_primes(base) {     # finite sequence for each base
+
+    var digits = @(1..^base)
+    var prime_digits = digits.grep{.is_prime}
+
+    prime_digits.map  {|p| right_truncatable_primes([p], base)... }\
+                .grep {|t| is_left_truncatable_prime(t, base) }\
+                .map  {|t| digits2num(t, base) }\
+                .sort
+}
+
+for base in (3..11) {
+    var a = both_truncatable_primes(base)
+    say "There are #{'%3d' % a.len} both-truncatable primes in base #{'%2d' % base} where largest is #{a[-1]}"
+}
+
+__END__
+There are   2 both-truncatable primes in base  3 where largest is 23
+There are   3 both-truncatable primes in base  4 where largest is 11
+There are   5 both-truncatable primes in base  5 where largest is 67
+There are   9 both-truncatable primes in base  6 where largest is 839
+There are   7 both-truncatable primes in base  7 where largest is 37
+There are  22 both-truncatable primes in base  8 where largest is 1867
+There are   8 both-truncatable primes in base  9 where largest is 173
+There are  15 both-truncatable primes in base 10 where largest is 739397
+There are   6 both-truncatable primes in base 11 where largest is 79
+There are  35 both-truncatable primes in base 12 where largest is 105691
+There are  11 both-truncatable primes in base 13 where largest is 379
+There are  37 both-truncatable primes in base 14 where largest is 37573
+There are  17 both-truncatable primes in base 15 where largest is 647
+There are  22 both-truncatable primes in base 16 where largest is 3389
+There are  12 both-truncatable primes in base 17 where largest is 631
+There are  69 both-truncatable primes in base 18 where largest is 202715129
+There are  12 both-truncatable primes in base 19 where largest is 211
+There are  68 both-truncatable primes in base 20 where largest is 155863
+There are  18 both-truncatable primes in base 21 where largest is 1283
+There are  44 both-truncatable primes in base 22 where largest is 787817
+There are  13 both-truncatable primes in base 23 where largest is 439
+There are 145 both-truncatable primes in base 24 where largest is 109893629
+There are  16 both-truncatable primes in base 25 where largest is 577
+There are  47 both-truncatable primes in base 26 where largest is 4195880189
+There are  20 both-truncatable primes in base 27 where largest is 1811
+There are  77 both-truncatable primes in base 28 where largest is 14474071
+There are  13 both-truncatable primes in base 29 where largest is 379
