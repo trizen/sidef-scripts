@@ -24,13 +24,12 @@
 #  https://oeis.org/A323396 - Irregular array read by rows, where T(n, k) is the k-th prime that is both left-truncatable and right-truncatable in base n.
 
 func digits2num(arr, base) {
-    var size = arr.len
-    arr.map_kv {|k,v| base**(size - k - 1) * v  }.sum
+    arr.map_kv {|k,v| base**k * v  }.sum
 }
 
 func is_left_truncatable_prime(n, base) {
 
-    for (() ; n.len > 0; n = n.slice(1)) {
+    for (() ; n.len > 0; n = n.slice(0, -2)) {
         is_prime(digits2num(n, base)) || return false
     }
 
@@ -42,7 +41,7 @@ func right_truncatable_primes(p, base) {
     var seq = [p]
 
     for n in (1 ..^ base) {
-        var t = [p..., n]
+        var t = [n, p...]
         if (is_prime(digits2num(t, base))) {
             seq << right_truncatable_primes(t, base)...
         }
