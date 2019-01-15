@@ -1,0 +1,42 @@
+#!/usr/bin/ruby
+
+# Formula for computing the sum of divisors of the product of binomials.
+
+# Using the identities:
+#   Product_{k=0..n} binomial(n, k) = Product_{k=1..n} k^(2*k - n - 1)
+#                                   = hyperfactorial(n)/superfactorial(n)
+
+# and the fact that the sigma function is multiplicative with:
+#   sigma_m(p^k) = (p^(m*(k+1)) - 1)/(p^m - 1)
+
+# See also:
+#   https://oeis.org/A001142
+#   https://oeis.org/A323444
+
+func superfactorial_power(n, p) {
+    sum(1..n, {|k|
+        sum(1..k.ilog(p), {|j| floor(k / p**j) })
+    })
+}
+
+func hyperfactorial_power(n, p) {
+    n*sum(1..n.ilog(p), {|k| floor(n / p**k) }) - superfactorial_power(n-1, p)
+}
+
+func sigma_of_binomial_product(n, m=1) {
+    n.primes.prod {|p|
+        var k = (hyperfactorial_power(n, p) - superfactorial_power(n, p))
+        (p**(m*(k+1)) - 1)/(p**m - 1)
+    }
+}
+
+say sigma_of_binomial_product(10)      #=> 141699428035793200
+say sigma_of_binomial_product(10, 2)   #=> 1675051201226374788235139281367100
+
+say 20.of { |n|
+    n.primes.sum { hyperfactorial_power(n, _) - superfactorial_power(n, _) }
+}
+
+say 20.of { |n|
+    sum(0..n, {|k| bigomega(binomial(n, k)) })
+}

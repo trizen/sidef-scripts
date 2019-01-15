@@ -284,6 +284,7 @@ A simple collection of Sidef scripts.
     * [Sierpinski triangle](./Math/sierpinski_triangle.sf)
     * [Sierpinski triangle 90](./Math/sierpinski_triangle_90.sf)
     * [Sierpinski x](./Math/sierpinski_x.sf)
+    * [Sigma of product of binomials](./Math/sigma_of_product_of_binomials.sf)
     * [Siqs factorization](./Math/siqs_factorization.sf)
     * [Smallest k-gonal inverse](./Math/smallest_k-gonal_inverse.sf)
     * [Solovay-strassen primality test](./Math/solovay-strassen_primality_test.sf)
