@@ -1,0 +1,51 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 15 January 2019
+# https://github.com/trizen
+
+# Efficient program for computing the sum of exponents in prime-power factorization of n!.
+
+#~ a(10^1)  = 15
+#~ a(10^2)  = 239
+#~ a(10^3)  = 2877
+#~ a(10^4)  = 31985
+#~ a(10^5)  = 343614
+#~ a(10^6)  = 3626619
+#~ a(10^7)  = 37861249
+#~ a(10^8)  = 392351272
+#~ a(10^9)  = 4044220058
+#~ a(10^10) = 41518796555
+
+# See also:
+#   https://oeis.org/A022559
+#   https://oeis.org/A071811
+
+func sum_of_exponents_of_factorial (n) {
+
+    return 0 if (n <= 1)
+
+    var s = n.isqrt
+    var u = floor(n/(s+1))
+
+    var total = 0
+    var prev  = prime_power_count(n)
+
+    for k in (1 .. s) {
+        var curr = prime_power_count(floor(n/(k+1)))
+        total += k*(prev - curr)
+        prev = curr
+    }
+
+    for k in (1..u) {
+        if (k.is_prime_power) {
+            total += floor(n/k)
+        }
+    }
+
+    return total
+}
+
+for k in (1..7) {
+    say ("a(10^#{k}) = ", sum_of_exponents_of_factorial(10**k))
+}

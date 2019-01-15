@@ -303,6 +303,8 @@ A simple collection of Sidef scripts.
     * [Stirling factorial correction terms](./Math/stirling_factorial_correction_terms.sf)
     * [Sum of number of divisors of gcd(x,y)](./Math/sum_of_number_of_divisors_of_gcd(x,y).sf)
     * [Sum of number of unitary divisors](./Math/sum_of_number_of_unitary_divisors.sf)
+    * [Sum of prime-power exponents of factorial](./Math/sum_of_prime-power_exponents_of_factorial.sf)
+    * [Sum of prime-power exponents of product of binomials](./Math/sum_of_prime-power_exponents_of_product_of_binomials.sf)
     * [Sum of two squares solutions](./Math/sum_of_two_squares_solutions.sf)
     * [Sum of two squares solutions tonelli-shanks](./Math/sum_of_two_squares_solutions_tonelli-shanks.sf)
     * [Superfactorial and hyperfactorial](./Math/superfactorial_and_hyperfactorial.sf)
