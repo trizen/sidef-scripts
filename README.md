@@ -113,6 +113,7 @@ A simple collection of Sidef scripts.
     * [Continued fractions convergents](./Math/continued_fractions_convergents.sf)
     * [Cousin mersenne primes lucas-lehmer](./Math/cousin_mersenne_primes_lucas-lehmer.sf)
     * [Digamma function](./Math/digamma_function.sf)
+    * [Divisors of factorial in range iterator](./Math/divisors_of_factorial_in_range_iterator.sf)
     * [Draw grid of squares](./Math/draw_grid_of_squares.sf)
     * [Elementary cellular automaton](./Math/elementary_cellular_automaton.sf)
     * [Elliptic-curve factorization method](./Math/elliptic-curve_factorization_method.sf)
