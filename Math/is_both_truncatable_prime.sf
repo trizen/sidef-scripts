@@ -1,0 +1,68 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 16 January 2018
+# https://github.com/trizen
+
+# Check if a given number is left-truncatable and right-truncatable in a given base.
+
+# Maximum value for each base is given in the following OEIS sequence:
+#   https://oeis.org/A323137
+
+# See also:
+#   https://www.youtube.com/watch?v=azL5ehbw_24
+#   https://en.wikipedia.org/wiki/Truncatable_prime
+
+# Left-truncatable primes in base 10:
+#   https://oeis.org/A024785
+
+# Right-truncatable primes in base 10:
+#   https://oeis.org/A024770
+
+# Other related sequences:
+#  https://oeis.org/A076586 - Total number of right truncatable primes in base n.
+#  https://oeis.org/A076623 - Total number of left truncatable primes (without zeros) in base n.
+#  https://oeis.org/A323390 - Total number of primes that are both left-truncatable and right-truncatable in base n.
+#  https://oeis.org/A323396 - Irregular array read by rows, where T(n, k) is the k-th prime that is both left-truncatable and right-truncatable in base n.
+
+func digits2num(arr, base) {
+    arr.map_kv {|k,v| base**k * v  }.sum
+}
+
+func is_left_truncatable_prime(n, base) {
+
+    var digits = n.digits(base)
+
+    while (digits) {
+        digits[-1] || return false
+        is_prime(digits2num(digits, base)) || return false
+        digits.first!(-1)
+    }
+
+    return true
+}
+
+func is_right_truncatable_prime(n, base) {
+
+    var digits = n.digits(base)
+
+    while (digits) {
+        is_prime(digits2num(digits, base)) || return false
+        digits.last!(-1)
+    }
+
+    return true
+}
+
+func is_both_truncatable(n, base) {
+    is_left_truncatable_prime(n, base) &&
+    is_right_truncatable_prime(n, base)
+}
+
+say is_both_truncatable(21335388527, 30)            #=> true
+say is_both_truncatable(1591175082967, 64)          #=> true
+say is_both_truncatable(1272571820725769, 42)       #=> true
+say is_both_truncatable(200416308070405393, 60)     #=> true
+
+say (1..Inf -> lazy.grep {is_left_truncatable_prime(_, 10)}.first(20))   #=> [2, 3, 5, 7, 13, 17, 23, 37, 43, 47, 53, 67, 73, 83, 97, 113, 137, 167, 173, 197]
+say (1..Inf -> lazy.grep {is_right_truncatable_prime(_, 10)}.first(20))  #=> [2, 3, 5, 7, 23, 29, 31, 37, 53, 59, 71, 73, 79, 233, 239, 293, 311, 313, 317, 373]
