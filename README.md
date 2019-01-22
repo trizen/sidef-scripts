@@ -219,6 +219,7 @@ A simple collection of Sidef scripts.
     * [Modular fibonacci number fast](./Math/modular_fibonacci_number_fast.sf)
     * [Modular lucas sequences U V](./Math/modular_lucas_sequences_U_V.sf)
     * [Modular multiplicative inverse](./Math/modular_multiplicative_inverse.sf)
+    * [Moebius transform](./Math/moebius_transform.sf)
     * [Motzkin triangle](./Math/motzkin_triangle.sf)
     * [Multiple modular multiplicative inversions](./Math/multiple_modular_multiplicative_inversions.sf)
     * [N-bit random prime](./Math/n-bit_random_prime.sf)
