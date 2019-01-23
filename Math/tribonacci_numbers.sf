@@ -1,0 +1,34 @@
+#!/usr/bin/ruby
+
+# Fast formula for computing the Tribonacci numbers (by Charles R Greathouse IV, Apr 18 2016).
+
+# See also:
+#   https://oeis.org/A000073 -- Tribonacci numbers: a(n) = a(n-1) + a(n-2) + a(n-3) with a(0)=a(1)=0, a(2)=1.
+#   https://en.wikipedia.org/wiki/Generalizations_of_Fibonacci_numbers
+
+var A = Matrix(
+    [0, 1, 0],
+    [0, 0, 1],
+    [1, 1, 1],
+)
+
+func modular_tribonacci(n, m) {
+    (A.powmod(n, m))[0][2]
+}
+
+func tribonacci(n) {
+    (A**n)[0][2]
+}
+
+say "=> First 25 Tribonacci numbers:"
+say 25.of { tribonacci(_) }
+
+say "\n=> Last n digits of the 10^n Tribonacci number:"
+say 15.of { modular_tribonacci(10**_, 10**_) }
+
+__END__
+=> First 25 Tribonacci numbers:
+[0, 0, 1, 1, 2, 4, 7, 13, 24, 44, 81, 149, 274, 504, 927, 1705, 3136, 5768, 10609, 19513, 35890, 66012, 121415, 223317, 410744]
+
+=> Last n digits of the 10^n Tribonacci number:
+[0, 1, 58, 384, 1984, 62976, 865536, 2429440, 86712832, 941792256, 7011067904, 74007492608, 507897393152, 4887501430784, 75677563125760]

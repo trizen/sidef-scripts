@@ -322,6 +322,7 @@ A simple collection of Sidef scripts.
     * [Tonelli shanks algorithm](./Math/tonelli_shanks_algorithm.sf)
     * [Towers of hanoi](./Math/towers_of_hanoi.sf)
     * [Tribonacci closed form](./Math/tribonacci_closed_form.sf)
+    * [Tribonacci numbers](./Math/tribonacci_numbers.sf)
     * [Trizen primality test](./Math/trizen_primality_test.sf)
     * [Unreduced continued fractions](./Math/unreduced_continued_fractions.sf)
     * [Unreduced fractions](./Math/unreduced_fractions.sf)
