@@ -1,0 +1,57 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 23 January 2019
+# https://github.com/trizen
+
+# Find the Pisano period of k-th order Fibonacci numbers modulo m (also called k-step Fibonacci numbers).
+
+# OEIS sequences:
+#   https://oeis.org/A001175    -- Pisano periods (or Pisano numbers): period of Fibonacci numbers mod n.
+#   https://oeis.org/A046738    -- Period of Fibonacci 3-step sequence A000073 mod n.
+#   https://oeis.org/A106303    -- Period of the Fibonacci 5-step sequence A001591 mod n.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pisano_period
+#   https://en.wikipedia.org/wiki/Generalizations_of_Fibonacci_numbers#Fibonacci_numbers_of_higher_order
+
+func fibonacci_kth_order_period(m, k) {
+
+    return 0 if (m == 0)
+    return 1 if (m == 1)
+
+    if (!m.is_prime) {
+        return m.factor_map {|p,e|
+            __FUNC__(p, k) * p**(e-1)       # Wall's conjecture
+        }.lcm
+    }
+
+    var nth    = k+1
+    var count  = 1
+
+    var arr    = k.of { fibonacci(_, k)%m }
+    var target = arr.clone
+
+    do {
+
+        arr << fibonacci(nth, k)%m
+        arr.shift
+        ++count
+        ++nth
+
+    } while (arr != target)
+
+    return count
+}
+
+for k in (2..4) {
+    var n = 10
+    say ("Period of the Fibonacci #{k}-step numbers mod m=1..#{n}: ", n.of { fibonacci_kth_order_period(_+1, k) })
+}
+
+__END__
+Period of the Fibonacci 2-step numbers mod m=1..10: [1, 3, 8, 6, 20, 24, 16, 12, 24, 60]
+Period of the Fibonacci 3-step numbers mod m=1..10: [1, 4, 13, 8, 31, 52, 48, 16, 39, 124]
+Period of the Fibonacci 4-step numbers mod m=1..10: [1, 5, 26, 10, 312, 130, 342, 20, 78, 1560]
+Period of the Fibonacci 5-step numbers mod m=1..10: [1, 6, 104, 12, 781, 312, 2801, 24, 312, 4686]
+Period of the Fibonacci 6-step numbers mod m=1..10: [1, 7, 728, 14, 208, 728, 342, 28, 2184, 1456]

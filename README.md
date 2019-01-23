@@ -137,6 +137,8 @@ A simple collection of Sidef scripts.
     * [Fermat hybrid factorization method](./Math/fermat_hybrid_factorization_method.sf)
     * [Fibonacci closed solution](./Math/fibonacci_closed_solution.sf)
     * [Fibonacci factorization method](./Math/fibonacci_factorization_method.sf)
+    * [Fibonacci k-th order](./Math/fibonacci_k-th_order.sf)
+    * [Fibonacci k-th order period](./Math/fibonacci_k-th_order_period.sf)
     * [Fibonacci number divisible by n](./Math/fibonacci_number_divisible_by_n.sf)
     * [Fibonacci number fast](./Math/fibonacci_number_fast.sf)
     * [Fibonacci polynomial numbers](./Math/fibonacci_polynomial_numbers.sf)
