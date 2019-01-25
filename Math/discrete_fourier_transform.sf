@@ -1,0 +1,49 @@
+#!/usr/bin/ruby
+
+# Simple implementation of the Discrete Fourier transform.
+
+# See also:
+#   https://www.youtube.com/watch?v=MY4luNgGfms
+#   https://en.wikipedia.org/wiki/Discrete_Fourier_transform
+
+func discrete_fourier_transform (N, k, x={ _ }) {
+    var t = (-Num.tau.i * k / N)
+
+    sum(^N, {|n|
+        x(n) * exp(t * n)
+    })
+}
+
+func discrete_fourier_transform_2 (N, k, x={ _ }) {
+
+    var t = (Num.tau * k / N)
+
+    var a = sum(^N, {|n|
+        x(n) * cos(t * n)
+    })
+
+    var b = sum(^N, {|n|
+        x(n) * sin(t * n)
+    })
+
+    return (a, -b)
+}
+
+func dft (wave) {
+    wave.map_kv {|k|
+        discrete_fourier_transform(wave.len, k, { wave[_] })
+    }
+}
+
+var cycles = 3
+var sequence = 0..15
+
+var wave  = sequence.map {|n| sin(n * Num.tau / sequence.len * cycles) }
+var trans = dft(wave)
+
+say "wave: #{wave.map  {|w| '%6s' % w.round(-40).as_dec(3) }.join(' ')}"
+say "dft : #{trans.map {|w| '%6s' % w.round(-40).as_dec(3) }.join(' ')}"
+
+__END__
+wave:      0  0.924  0.707 -0.383     -1 -0.383  0.707  0.924      0 -0.924 -0.707  0.383      1  0.383 -0.707 -0.924
+dft :      0      0      0    -8i      0      0      0      0      0      0      0      0      0     8i      0      0
