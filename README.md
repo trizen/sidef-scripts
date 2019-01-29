@@ -170,6 +170,7 @@ A simple collection of Sidef scripts.
     * [Harmonic numbers closed form](./Math/harmonic_numbers_closed_form.sf)
     * [Harmonic numbers from powers](./Math/harmonic_numbers_from_powers.sf)
     * [Harmonic numbers from powers simple](./Math/harmonic_numbers_from_powers_simple.sf)
+    * [Harmonic numbers of k-th order](./Math/harmonic_numbers_of_k-th_order.sf)
     * [Harmonic prime powers](./Math/harmonic_prime_powers.sf)
     * [Haversine formula](./Math/haversine_formula.sf)
     * [Integer root](./Math/integer_root.sf)
