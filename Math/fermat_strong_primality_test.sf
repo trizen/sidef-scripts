@@ -1,0 +1,42 @@
+#!/usr/bin/ruby
+
+# Strong Fermat primality test (Miller–Rabin primality test).
+
+# See also:
+#   https://oeis.org/A001262 -- Strong pseudoprimes to base 2.
+#   https://oeis.org/A020229 -- Strong pseudoprimes to base 3.
+#   https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
+
+func is_strong_fermat_pseudoprime(n, base=2) {
+
+    return false if (n <= 1)
+    return true  if (n == 2)
+    return false if n.is_even
+
+    var d = n-1
+    var v = d.valuation(2)
+    var q = d>>v
+
+    var x = powmod(base, q, n)
+
+    if (x ~~ [1, n-1]) {
+        return true
+    }
+
+    (v-1).times {
+        x = powmod(x, 2, n)
+
+        if (x == n-1) {
+            return true
+        }
+    }
+
+    return false
+}
+
+say ("Primes bellow 100: ", 1..100 -> grep(is_strong_fermat_pseudoprime))
+say ("First 5 strong pseudoprimes to base 2: ", (^Inf -> lazy.grep { !.is_prime && is_strong_fermat_pseudoprime(_, 2) }.first(5)))
+
+__END__
+Primes bellow 100: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+First 5 strong pseudoprimes to base 2: [2047, 3277, 4033, 4681, 8321]

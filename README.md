@@ -137,6 +137,7 @@ A simple collection of Sidef scripts.
     * [Fermat factorization method](./Math/fermat_factorization_method.sf)
     * [Fermat factorization method 2](./Math/fermat_factorization_method_2.sf)
     * [Fermat hybrid factorization method](./Math/fermat_hybrid_factorization_method.sf)
+    * [Fermat strong primality test](./Math/fermat_strong_primality_test.sf)
     * [Fibonacci closed solution](./Math/fibonacci_closed_solution.sf)
     * [Fibonacci factorization method](./Math/fibonacci_factorization_method.sf)
     * [Fibonacci k-th order](./Math/fibonacci_k-th_order.sf)
