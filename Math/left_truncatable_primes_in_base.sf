@@ -1,0 +1,51 @@
+#!/usr/bin/ruby
+
+# Generate left-truncatable primes in a given base.
+
+# See also:
+
+#   https://www.youtube.com/watch?v=azL5ehbw_24
+#   https://en.wikipedia.org/wiki/Truncatable_prime
+
+func digits2num(digits, base) {
+    digits.map_kv {|k,v| base**k * v  }.sum
+}
+
+func generate_from_suffix(p, base) {
+
+    var seq = [p]
+
+    for n in (1 ..^ base) {
+        var t = [p..., n]
+        if (is_prime(digits2num(t, base))) {
+            seq << __FUNC__(t, base)...
+        }
+    }
+
+    return seq
+}
+
+func left_truncatable_primes(base) {     # finite sequence for each base
+
+    var prime_digits = (base-1 -> primes)   # prime digits < base
+
+    prime_digits.map  {|p| generate_from_suffix([p], base)... }\
+                .map  {|t| digits2num(t, base) }\
+                .sort
+}
+
+for n in (3..15) {
+    var rtp = left_truncatable_primes(n)
+    say ("There are #{'%4d' % rtp.len} left-truncatable primes in base #{'%2d' % n}, where largest is #{rtp.max}")
+}
+
+__END__
+There are    3 left-truncatable primes in base  3, where largest is 23
+There are   16 left-truncatable primes in base  4, where largest is 4091
+There are   15 left-truncatable primes in base  5, where largest is 7817
+There are  454 left-truncatable primes in base  6, where largest is 4836525320399
+There are   22 left-truncatable primes in base  7, where largest is 817337
+There are  446 left-truncatable primes in base  8, where largest is 14005650767869
+There are  108 left-truncatable primes in base  9, where largest is 1676456897
+There are 4260 left-truncatable primes in base 10, where largest is 357686312646216567629137
+There are   75 left-truncatable primes in base 11, where largest is 2276005673
