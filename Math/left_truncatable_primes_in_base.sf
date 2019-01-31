@@ -3,9 +3,11 @@
 # Generate left-truncatable primes in a given base.
 
 # See also:
-
+#   https://oeis.org/A103443 -- Largest left-truncatable prime in base n (given in decimal).
+#   https://oeis.org/A076623 -- Total number of left truncatable primes (without zeros) in base n.
 #   https://www.youtube.com/watch?v=azL5ehbw_24
 #   https://en.wikipedia.org/wiki/Truncatable_prime
+#   https://rosettacode.org/wiki/Find_largest_left_truncatable_prime_in_a_given_base
 
 func digits2num(digits, base) {
     digits.map_kv {|k,v| base**k * v  }.sum
