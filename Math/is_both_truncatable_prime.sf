@@ -64,5 +64,5 @@ say is_both_truncatable(1591175082967, 64)          #=> true
 say is_both_truncatable(1272571820725769, 42)       #=> true
 say is_both_truncatable(200416308070405393, 60)     #=> true
 
-say (1..Inf -> lazy.grep {is_left_truncatable_prime(_, 10)}.first(20))   #=> [2, 3, 5, 7, 13, 17, 23, 37, 43, 47, 53, 67, 73, 83, 97, 113, 137, 167, 173, 197]
-say (1..Inf -> lazy.grep {is_right_truncatable_prime(_, 10)}.first(20))  #=> [2, 3, 5, 7, 23, 29, 31, 37, 53, 59, 71, 73, 79, 233, 239, 293, 311, 313, 317, 373]
+say { is_left_truncatable_prime(_, 10) }.first(20)   #=> [2, 3, 5, 7, 13, 17, 23, 37, 43, 47, 53, 67, 73, 83, 97, 113, 137, 167, 173, 197]
+say { is_right_truncatable_prime(_, 10) }.first(20)  #=> [2, 3, 5, 7, 23, 29, 31, 37, 53, 59, 71, 73, 79, 233, 239, 293, 311, 313, 317, 373]
