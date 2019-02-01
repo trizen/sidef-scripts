@@ -265,6 +265,7 @@ A simple collection of Sidef scripts.
     * [Polynomial regression](./Math/polynomial_regression.sf)
     * [Power of 2 plus 3 primes lucas-lehmer](./Math/power_of_2_plus_3_primes_lucas-lehmer.sf)
     * [Power of 2 plus 5 primes lucas-lehmer](./Math/power_of_2_plus_5_primes_lucas-lehmer.sf)
+    * [Primality precheck](./Math/primality_precheck.sf)
     * [Primality testing fermat fourier](./Math/primality_testing_fermat_fourier.sf)
     * [Primality testing wilson fourier](./Math/primality_testing_wilson_fourier.sf)
     * [Prime big omega function generalized](./Math/prime_big_omega_function_generalized.sf)

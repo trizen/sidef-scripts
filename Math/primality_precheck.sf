@@ -1,0 +1,33 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 01 February 2019
+# https://github.com/trizen
+
+# A very fast primality precheck.
+# This test is passed by the numbers without middles divisors.
+
+# See also:
+#   https://oeis.org/A112045 -- Positions of primes among nonsquares.
+#   https://oeis.org/A319801 -- Odd numbers without middle divisors.
+
+func primality_precheck(n) {
+
+    return false if (n <= 1)
+    return true  if (n == 2)
+    return false if n.is_even
+
+    var v = (n - n.isqrt)
+    var u = powmod(v, 2, n)
+
+    if (u.is_square) {
+        if (gcd(u.isqrt - v, n) == 1) {
+            return true
+        }
+    }
+
+    return false
+}
+
+say { primality_precheck(_) }.grep(1..100)                      # [2, 3, 5, 7, 11, 13, 17, 19, 21, 23, 27, 29, 31, 33, 37, 41, 43, 47, 51, 53, 55, 57, 59, 61, 65, 67, 69, 71, 73, 75, 77, 79, 83, 85, 89, 91, 95, 97]
+say { primality_precheck(_) }.grep(1..100).grep{!.is_prime}     # [21, 27, 33, 51, 55, 57, 65, 69, 75, 77, 85, 91, 95]
