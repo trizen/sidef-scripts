@@ -1,0 +1,61 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 01 February 2019
+# https://github.com/trizen
+
+# A simple algorithm for finding all the non-negative integer solutions to the equation:
+#
+#   x^2 - y^2 = n
+#
+# where `n` is known (along with its prime factorization).
+
+# Blog post:
+#   https://trizenx.blogspot.com/2017/10/representing-integers-as-difference-of.html
+
+func difference_of_two_squares_solutions(n) {
+
+    n.divisors.map {|d|
+
+        break if (d > n.isqrt)
+
+        var a = d
+        var b = n/d
+
+        (a+b).is_even || next
+
+        var x = (a + b)/2
+        var y = (b - a)/2
+
+        [x, y]
+    }.flip
+}
+
+for n in (1..30) {
+    var a = difference_of_two_squares_solutions(n) || next
+    say (n, ' = ', a.map { .map{ "#{_}^2"}.join(' - ') }.join(' = '))
+}
+
+__END__
+1 = 1^2 - 0^2
+3 = 2^2 - 1^2
+4 = 2^2 - 0^2
+5 = 3^2 - 2^2
+7 = 4^2 - 3^2
+8 = 3^2 - 1^2
+9 = 3^2 - 0^2 = 5^2 - 4^2
+11 = 6^2 - 5^2
+12 = 4^2 - 2^2
+13 = 7^2 - 6^2
+15 = 4^2 - 1^2 = 8^2 - 7^2
+16 = 4^2 - 0^2 = 5^2 - 3^2
+17 = 9^2 - 8^2
+19 = 10^2 - 9^2
+20 = 6^2 - 4^2
+21 = 5^2 - 2^2 = 11^2 - 10^2
+23 = 12^2 - 11^2
+24 = 5^2 - 1^2 = 7^2 - 5^2
+25 = 5^2 - 0^2 = 13^2 - 12^2
+27 = 6^2 - 3^2 = 14^2 - 13^2
+28 = 8^2 - 6^2
+29 = 15^2 - 14^2

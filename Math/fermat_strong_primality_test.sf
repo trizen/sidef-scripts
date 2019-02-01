@@ -34,8 +34,8 @@ func is_strong_fermat_pseudoprime(n, base=2) {
     return false
 }
 
-say ("Primes bellow 100: ", 1..100 -> grep(is_strong_fermat_pseudoprime))
-say ("First 5 strong pseudoprimes to base 2: ", (^Inf -> lazy.grep { !.is_prime && is_strong_fermat_pseudoprime(_, 2) }.first(5)))
+say ("Primes bellow 100: ", is_strong_fermat_pseudoprime.grep(1..100))
+say ("First 5 strong pseudoprimes to base 2: ", { !.is_prime && is_strong_fermat_pseudoprime(_, 2) }.first(5))
 
 __END__
 Primes bellow 100: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]

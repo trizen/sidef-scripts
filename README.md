@@ -112,6 +112,7 @@ A simple collection of Sidef scripts.
     * [Continued fraction to fraction](./Math/continued_fraction_to_fraction.sf)
     * [Continued fractions convergents](./Math/continued_fractions_convergents.sf)
     * [Cousin mersenne primes lucas-lehmer](./Math/cousin_mersenne_primes_lucas-lehmer.sf)
+    * [Difference of two squares solutions](./Math/difference_of_two_squares_solutions.sf)
     * [Digamma function](./Math/digamma_function.sf)
     * [Discrete fourier transform](./Math/discrete_fourier_transform.sf)
     * [Divisors of factorial in range iterator](./Math/divisors_of_factorial_in_range_iterator.sf)
