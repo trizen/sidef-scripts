@@ -5,7 +5,7 @@
 # https://github.com/trizen
 
 # A very fast primality precheck.
-# This test is passed by the numbers without middles divisors.
+# This test is passed by the numbers without middle divisors (which includes all the odd primes).
 
 # See also:
 #   https://oeis.org/A112045 -- Positions of primes among nonsquares.
