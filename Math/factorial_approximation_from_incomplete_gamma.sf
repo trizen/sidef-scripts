@@ -1,0 +1,72 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 02 February 2019
+# https://github.com/trizen
+
+# A new asymptotic formula for approximating n-factorial.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Incomplete_gamma_function
+
+const π = Num.pi
+const e = Num.e
+
+func incomplete_gamma(s, x) {
+
+    if (s == 1) {
+        return exp(-x)
+    }
+
+    ((s-1) * __FUNC__(s-1, x)) + (x**(s-1) * exp(-x))
+}
+
+func incomplete_e (n) {
+    e * incomplete_gamma(n+1, 1) / gamma(n+1)
+}
+
+func incomplete_e_asymptotic (n) {
+    (-sqrt(1/n)/sqrt(2*π) - (11 * (1/n)**(3/2))/(12*sqrt(2*π))) * exp((1 - log(n))*n)
+}
+
+# Identitity for gamma(n+1) = n!
+func approximate_factorial(n) {
+
+    var a = (e - incomplete_e(n))
+    var b = incomplete_e(n-1)
+
+    1 / (e - (a+b))
+}
+
+# Concept only.
+func approximate_factorial_asymptotic_1(n) {
+
+    var a = (e - incomplete_e_asymptotic(n+1))
+    var b = incomplete_e_asymptotic(n)
+
+    1 / (e - (a + b))
+}
+
+# Useful asymptotic formula for n! (derived from #1).
+func approximate_factorial_asymptotic_2(n) {
+    (12*sqrt(2*π)) / (exp(n) * (n**(-n - 3/2) * (12*n + 11) - (e * (n + 1)**(-n - 5/2) * (12*n + 23))))
+}
+
+func stirling_approximation(n) {
+    sqrt(2*π*n) * (n/e)**n
+}
+
+var n = 20
+
+say n!
+say approximate_factorial(n)
+say approximate_factorial_asymptotic_1(n)
+say approximate_factorial_asymptotic_2(n)
+say stirling_approximation(n)
+
+__END__
+2432902008176640000
+2432902008176639999.99999999999999999999602206663
+2432161531140992146.88707737628241644390204360443
+2432161531140992146.88707737628241644390561053696
+2422786846761133393.68390753895936154169781399601

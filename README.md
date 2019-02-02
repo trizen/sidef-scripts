@@ -124,6 +124,7 @@ A simple collection of Sidef scripts.
     * [Euler numbers from factorials](./Math/euler_numbers_from_factorials.sf)
     * [Euler's totient theorem expmod](./Math/euler_s_totient_theorem_expmod.sf)
     * [Extended greatest common divisor](./Math/extended_greatest_common_divisor.sf)
+    * [Factorial approximation from incomplete gamma](./Math/factorial_approximation_from_incomplete_gamma.sf)
     * [Factorial approximations](./Math/factorial_approximations.sf)
     * [Factorial dsc algorithm](./Math/factorial_dsc_algorithm.sf)
     * [Factorial expansion](./Math/factorial_expansion.sf)
