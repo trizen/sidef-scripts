@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# Generate the first n-th cuban primes: primes which are the difference of two consecutive cubes.
+# Generate the first `n` cuban primes: primes which are the difference of two consecutive cubes.
 
 # See also:
 #   https://oeis.org/A002407
