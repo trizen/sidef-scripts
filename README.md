@@ -112,6 +112,7 @@ A simple collection of Sidef scripts.
     * [Continued fraction to fraction](./Math/continued_fraction_to_fraction.sf)
     * [Continued fractions convergents](./Math/continued_fractions_convergents.sf)
     * [Continued fractions for nth roots](./Math/continued_fractions_for_nth_roots.sf)
+    * [Convergents to cube root of 2](./Math/convergents_to_cube_root_of_2.sf)
     * [Cousin mersenne primes lucas-lehmer](./Math/cousin_mersenne_primes_lucas-lehmer.sf)
     * [Cuban primes](./Math/cuban_primes.sf)
     * [Difference of two squares solutions](./Math/difference_of_two_squares_solutions.sf)
