@@ -308,7 +308,6 @@ A simple collection of Sidef scripts.
     * [Solovay-strassen primality test](./Math/solovay-strassen_primality_test.sf)
     * [Solve linear congruence equation](./Math/solve_linear_congruence_equation.sf)
     * [Solve pell equation](./Math/solve_pell_equation.sf)
-    * [Solve pell equation simple](./Math/solve_pell_equation_simple.sf)
     * [Split summation](./Math/split_summation.sf)
     * [Sqrt 2 approximation](./Math/sqrt_2_approximation.sf)
     * [Sqrt convergents](./Math/sqrt_convergents.sf)
