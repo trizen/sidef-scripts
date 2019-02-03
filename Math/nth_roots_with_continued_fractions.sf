@@ -1,0 +1,30 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 03 February 2019
+# https://github.com/trizen
+
+# Approximate n-th roots, using continued fractions.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Generalized_continued_fraction#Roots_of_positive_numbers
+
+func cfrac_nth_root (z, m, n, y, r, k=1) {
+
+    return 0 if (r <= 0)
+
+    (k² * n² - m²) * y² / ((2*k + 1)*n*(2*z - y) - __FUNC__(z, m, n, y, r - 1, k+1))
+}
+
+func nth_root(z, n, r = 100) {
+    var (x, y) = z.irootrem(n)
+
+    var m = 1
+    var t = cfrac_nth_root(z, m, n, y, r)
+
+    x**m + ((2 * x * m * y) / (n*(2*z - y) - m*y - t))
+}
+
+say nth_root(1234, 2)       #=> 35.12833614050059160587031162535630676454048547878
+say nth_root(12345, 3)      #=> 23.11161874980726868087197332958829017451713700262
+say nth_root(123456, 5)     #=> 10.43043546409766483375317008568663847055013893731
