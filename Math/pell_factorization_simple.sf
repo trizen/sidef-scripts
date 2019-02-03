@@ -1,0 +1,65 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 03 February 2019
+# https://github.com/trizen
+
+# A simple integer factorization method, using square root convergents.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pell%27s_equation
+
+func pell_factorization(n) {
+
+    var x = n.isqrt
+    var y = x
+    var z = 1
+    var r = 2*x
+    var w = 2*x
+
+    return x if n.is_square
+
+    var (f1, f2) = (1, x)
+
+    loop {
+
+        y = (r*z - y)
+        z = ((n - y*y) / z)
+        r = round((x + y) / z)
+
+        (f1, f2) = (f2, (r*f2 + f1) % n)
+
+        var u = f1%n
+        var v = (u*u)%n
+
+        if (v > w) {
+            v = (n - v)
+        }
+
+        if (v.is_square) {
+            var g = gcd(u - v.isqrt, n)
+            if (g.is_between(2, n-1)) {
+                return g
+            }
+        }
+
+        return n if (z == 1)
+    }
+}
+
+for n in (1..10) {
+    var n = 2.of { 15.random_nbit_prime }.prod
+    say ("PellFactor(#{n}) = ", pell_factorization(n))
+}
+
+__END__
+PellFactor(710181718559) = 783259
+PellFactor(601895275799) = 844757
+PellFactor(702178804001) = 954269
+PellFactor(685012691669) = 988861
+PellFactor(627646131001) = 687019
+PellFactor(616399591183) = 817889
+PellFactor(919492672157) = 997511
+PellFactor(472787769719) = 641929
+PellFactor(669324919663) = 756319
+PellFactor(888796269331) = 898819

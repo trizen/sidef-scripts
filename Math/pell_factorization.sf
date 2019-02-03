@@ -52,7 +52,7 @@ func pell_factorization (n) {
     loop {
 
         y = (r*z - y)
-        z = round((n - y*y) / z)
+        z = ((n - y*y) / z)
         r = round((x + y)   / z)
 
         var a = ((x*f2 + e2) % n)

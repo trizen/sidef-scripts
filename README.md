@@ -250,6 +250,7 @@ A simple collection of Sidef scripts.
     * [Partial sums of sigma function times k^m](./Math/partial_sums_of_sigma_function_times_k^m.sf)
     * [Partial sums sublinear formula](./Math/partial_sums_sublinear_formula.sf)
     * [Pell factorization](./Math/pell_factorization.sf)
+    * [Pell factorization simple](./Math/pell_factorization_simple.sf)
     * [Perfect squares in catalan's triangle](./Math/perfect_squares_in_catalan_s_triangle.sf)
     * [Permutations iter](./Math/permutations_iter.sf)
     * [Permutations rec](./Math/permutations_rec.sf)
