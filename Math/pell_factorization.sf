@@ -31,9 +31,9 @@ func pell_factorization(n) {
         z = ((n - y*y) / z)
         r = round((x + y) / z)
 
-        (f1, f2) = (f2, (r*f2 + f1) % n)
+        (f1, f2) = (f2, (r*f2 + f1)%n)
 
-        var u = f1%n
+        var u = f1
         var v = (u*u)%n
 
         if (v > w) {
