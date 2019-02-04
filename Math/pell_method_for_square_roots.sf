@@ -1,0 +1,51 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 04 February 2019
+# https://github.com/trizen
+
+# Approximate square roots, using Pell's method.
+
+# See also:
+#   https://rosettacode.org/wiki/Pell%27s_equation
+#   https://en.wikipedia.org/wiki/Pell%27s_equation
+#   https://en.wikipedia.org/wiki/Methods_of_computing_square_roots
+
+func pell_square_root(n, eps=1e-22) {
+
+    var x = n.isqrt
+    var y = x
+    var z = 1
+    var r = 2*x
+
+    var (e1, e2) = (1, 0)
+    var (f1, f2) = (0, 1)
+
+    loop {
+
+        y = (r*z - y)
+        z = ((n - y*y) / z)
+        r = round((x + y) / z)      # floor() also works
+
+        (e1, e2) = (e2, r*e2 + e1)
+        (f1, f2) = (f2, r*f2 + f1)
+
+        var A = (e2 + x*f2)
+        var B = f2
+
+        if (abs((A/B)**2 - n) <= eps) {
+            return A/B
+        }
+    }
+}
+
+for n in [61, 109, 181, 277] {
+    var s = pell_square_root(n)
+    say "sqrt(#{'%3d' % n}) =~ #{s.as_rat} =~ #{s}"
+}
+
+__END__
+sqrt( 61) =~ 5380205503727/688864726095 =~ 7.81024967590665439412972327539046655850673601909
+sqrt(109) =~ 5886776254306/563850903159 =~ 10.4403065089105501797577550769986386680615397574
+sqrt(181) =~ 2900300962727/215577672795 =~ 13.45362404707371031716308866094140080774035985437
+sqrt(277) =~ 4157003026204/249770104837 =~ 16.64331697709323806892821623002200061329832127014

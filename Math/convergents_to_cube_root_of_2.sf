@@ -2,7 +2,10 @@
 
 # Compute the convergents to cube root of 2.
 
-# Algorithm due to Robert Israel, Oct 08 2017.
+# Formula due to Enrico Bombieri and Alfred J. van der Poorten:
+#   https://web.williams.edu/Mathematics/sjmiller/public_html/book/papers/vdp/BombieriPoorten_CFofAlgNumbs.pdf
+
+# Algorithm adapted after Robert Israel, Oct 08 2017.
 
 # See also:
 #   https://oeis.org/A002352 -- Numerators of convergents to cube root of 2.

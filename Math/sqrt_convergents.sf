@@ -20,15 +20,13 @@ func sqrt_convergents (n, callback, count=10) {
     count.times {
 
         y = (r*z - y)
-        z = ((n - y*y) // z)                  #/
-        r = ((x + y)   // z)                  #/
+        z = ((n - y*y) / z)
+        r = ((x + y)  // z)                  #/
 
         callback(e2 + x*f2, f2)
 
         (f1, f2) = (f2, r*f2 + f1)
         (e1, e2) = (e2, r*e2 + e1)
-
-        y = x if (z == 1)
     }
 }
 
