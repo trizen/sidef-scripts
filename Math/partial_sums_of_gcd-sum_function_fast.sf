@@ -40,29 +40,16 @@
 func partial_sums_of_gcd_sum_function(n) {
     var s = n.isqrt
 
-    var lookup_size = (2 * n.iroot(3)**2)     # O(n^(2/3))
+    var euler_sum_lookup = [0]
 
-    var mertens_lookup   = [0,1]
-    var euler_sum_lookup = [0,1]
-
+    var lookup_size      = (2 + 2*n.iroot(3)**2)
     var euler_phi_lookup = [0]
-    var moebius_lookup   = ::moebius(0, lookup_size)
 
-    for i in (1 .. lookup_size) {
-        mertens_lookup[i]   = (mertens_lookup[i-1]   + moebius_lookup[i])
-        euler_sum_lookup[i] = (euler_sum_lookup[i-1] + (euler_phi_lookup[i] = i.euler_phi))
+    for k in (1 .. lookup_size) {
+        euler_sum_lookup[k] = (euler_sum_lookup[k-1] + (euler_phi_lookup[k] = k.euler_phi))
     }
 
-    var mertens_cache = Hash()
-
-    func moebius_partial_sum (n) {
-
-        if (n <= lookup_size) {
-            return mertens_lookup[n]
-        }
-
-        mertens_cache{n} := n.mertens
-    }
+    var seen = Hash()
 
     func euler_phi_partial_sum(n) {
 
@@ -70,16 +57,22 @@ func partial_sums_of_gcd_sum_function(n) {
             return euler_sum_lookup[n]
         }
 
-        var s = n.isqrt
+        if (seen.has(n)) {
+            return seen{n}
+        }
 
-        var A = sum(1..s, {|k|
-            var t = floor(n/k)
-            (k * moebius_partial_sum(t)) + (moebius_lookup[k] * t.faulhaber(1))
+        var s = n.isqrt
+        var T = n.faulhaber(1)
+
+        var A = sum(2..s, {|k|
+            __FUNC__(floor(n/k))
         })
 
-        var C = (moebius_partial_sum(s) * faulhaber(s, 1))
+        var B = sum(1 .. floor(n/s)-1, {|k|
+            (floor(n/k) - floor(n/(k+1))) * __FUNC__(k)
+        })
 
-        return (A - C)
+        seen{n} = (T - A - B)
     }
 
     var A = sum(1..s, {|k|
@@ -87,25 +80,13 @@ func partial_sums_of_gcd_sum_function(n) {
         (k * euler_phi_partial_sum(t)) + (euler_phi_lookup[k] * t.faulhaber(1))
     })
 
-    var C = (euler_phi_partial_sum(s) * faulhaber(s, 1))
+    var T = s.faulhaber(1)
+    var C = euler_phi_partial_sum(s)
 
-    return (A - C)
+    return (A - T*C)
 }
 
-func g(n) { n }
-func h(n) { euler_phi(n) }
-
-func test_sum(n, g, h) {
-    sum(1..n, {|k|
-        k.divisors.sum {|d|
-            g(d) * h(k/d)
-        }
-    })
-}
-
-say 20.of { test_sum(_, g, h) }
 say 20.of { partial_sums_of_gcd_sum_function(_) }
 
 __END__
-[0, 1, 4, 9, 17, 26, 41, 54, 74, 95, 122, 143, 183, 208, 247, 292, 340, 373, 436, 473]
 [0, 1, 4, 9, 17, 26, 41, 54, 74, 95, 122, 143, 183, 208, 247, 292, 340, 373, 436, 473]
