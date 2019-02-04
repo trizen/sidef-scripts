@@ -244,6 +244,7 @@ A simple collection of Sidef scripts.
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
     * [Partial sums of dedekind psi function](./Math/partial_sums_of_dedekind_psi_function.sf)
     * [Partial sums of euler totient function](./Math/partial_sums_of_euler_totient_function.sf)
+    * [Partial sums of gcd-sum function](./Math/partial_sums_of_gcd-sum_function.sf)
     * [Partial sums of jordan totient function](./Math/partial_sums_of_jordan_totient_function.sf)
     * [Partial sums of prime bigomega function](./Math/partial_sums_of_prime_bigomega_function.sf)
     * [Partial sums of prime omega function](./Math/partial_sums_of_prime_omega_function.sf)
