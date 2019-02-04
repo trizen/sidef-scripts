@@ -22,11 +22,7 @@ func dirichlet_hyperbola_method(n, g = { _ }, h = { _ }) {
         })
     })
 
-    var C = sum(1..s, {|a|
-        g(a) * sum(1..s, {|b|
-            h(b)
-        })
-    })
+    var C = (sum(1..s, {|a| g(a) }) * sum(1..s, {|b| h(b) }))
 
     A + B - C
 }
