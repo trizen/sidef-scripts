@@ -1,0 +1,74 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 04 February 2019
+# https://github.com/trizen
+
+# A sublinear algorithm for computing the Mertens function (partial sums of the Möbius function).
+
+# Defined as:
+#
+#   M(n) = Sum_{k=1..n} μ(k)
+#
+# where μ(k) is the Möbius function.
+
+# Example:
+#   M(10^1) = -1
+#   M(10^2) = 1
+#   M(10^3) = 2
+#   M(10^4) = -23
+#   M(10^5) = -48
+#   M(10^6) = 212
+#   M(10^7) = 1037
+#   M(10^8) = 1928
+#   M(10^9) = -222
+
+# OEIS sequences:
+#   https://oeis.org/A008683 -- Möbius (or Moebius) function mu(n).
+#   https://oeis.org/A084237 -- M(10^n), where M(n) is Mertens's function.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Mertens_function
+#   https://en.wikipedia.org/wiki/M%C3%B6bius_function
+
+func mertens_function(n) {
+
+    var lookup_size = (2 * n.iroot(3)**2)
+
+    var moebius_lookup = ::moebius(0, lookup_size)
+    var mertens_lookup = [0]
+
+    for k in (1..lookup_size) {
+        mertens_lookup[k] = (mertens_lookup[k-1] + moebius_lookup[k])
+    }
+
+    var cache = Hash()
+
+    func (n) {
+
+        if (n <= lookup_size) {
+            return mertens_lookup[n]
+        }
+
+        if (cache.has(n)) {
+            return cache{n}
+        }
+
+        var s = n.isqrt
+        var M = 1
+
+        for k in (2 .. floor(n/(s+1))) {
+            M -= __FUNC__(floor(n/k))
+        }
+
+        for k in (1..s) {
+            M -= (mertens_lookup[k] * (floor(n/k) - floor(n/(k+1))))
+        }
+
+        cache{n} = M
+    }(n)
+}
+
+for n in (1 .. 6) {    # takes ~1.3 seconds
+    say ("M(10^#{n}) = ", mertens_function(10**n))
+}

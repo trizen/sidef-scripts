@@ -227,6 +227,7 @@ A simple collection of Sidef scripts.
     * [LUP decomposition](./Math/LUP_decomposition.sf)
     * [Mandelbrot set](./Math/mandelbrot_set.sf)
     * [Mathematical formulas](./Math/mathematical_formulas.sf)
+    * [Mertens function](./Math/mertens_function.sf)
     * [Miller rabin primality test](./Math/miller_rabin_primality_test.sf)
     * [Modular exponentiation](./Math/modular_exponentiation.sf)
     * [Modular fibonacci number cassini](./Math/modular_fibonacci_number_cassini.sf)
