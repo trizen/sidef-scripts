@@ -1,0 +1,50 @@
+#!/usr/bin/ruby
+
+# Simple implementation of Dirichlet's hyperbola method.
+
+# This is one of the most beautiful formulas in mathmematics!
+
+# See also:
+#   https://en.wikipedia.org/wiki/Dirichlet_hyperbola_method
+
+func dirichlet_hyperbola_method(n, g = { _ }, h = { _ }) {
+    var s = n.isqrt
+
+    var A = sum(1..s, {|a|
+        g(a) * sum(1..floor(n/a), {|b|
+            h(b)
+        })
+    })
+
+    var B = sum(1..s, {|b|
+        h(b) * sum(1..floor(n/b), {|a|
+            g(a)
+        })
+    })
+
+    var C = sum(1..s, {|a|
+        g(a) * sum(1..s, {|b|
+            h(b)
+        })
+    })
+
+    A + B - C
+}
+
+func test_sum(n, g, h) {
+    sum(1..n, {|k|
+        k.divisors.sum {|d|
+            g(d) * h(k/d)
+        }
+    })
+}
+
+func g(n) { n }
+func h(n) { moebius(n) }
+
+say 20.of { test_sum(_, g, h) }
+say 20.of { dirichlet_hyperbola_method(_, g, h) }
+
+__END__
+[0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120]
+[0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120]

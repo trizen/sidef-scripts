@@ -117,6 +117,7 @@ A simple collection of Sidef scripts.
     * [Cuban primes](./Math/cuban_primes.sf)
     * [Difference of two squares solutions](./Math/difference_of_two_squares_solutions.sf)
     * [Digamma function](./Math/digamma_function.sf)
+    * [Dirichlet hyperbola method](./Math/dirichlet_hyperbola_method.sf)
     * [Discrete fourier transform](./Math/discrete_fourier_transform.sf)
     * [Divisors of factorial in range iterator](./Math/divisors_of_factorial_in_range_iterator.sf)
     * [Draw grid of squares](./Math/draw_grid_of_squares.sf)
