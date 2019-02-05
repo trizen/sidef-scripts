@@ -1,0 +1,77 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 05 February 2019
+# https://github.com/trizen
+
+# A very nice sub-linear recursive formula for computing partial sums of a function f(k),
+# if we have a fast formula to compute partial sums of its inverse Möbius transform.
+
+# For example, in computing partial sums of the Euler totient function, we have the inverse Möbius transform:
+#   Sum_{d|n} phi(d) = n
+
+# So the closed-form to partial sums to its inverse Möbius transform would be:
+#   Sum_{k=1..n} k = n * (n+1) / 2
+
+# This allows us to compute partial sums of the Euler totient function in sub-linear time.
+
+# See also:
+#   https://oeis.org/A002088 -- Sum of totient function: a(n) = Sum_{k=1..n} phi(k).
+
+func inverse_moebius_transform_1(n, f) {
+    sum(1..n, {|k|
+        sum(1..floor(n/k), {|j|
+            f(j)
+        })
+    })
+}
+
+func inverse_moebius_transform_2(n, f) {
+    sum(1..n, {|k|
+        k.divisors.sum{|d|
+            f(d)
+        }
+    })
+}
+
+func partial_sum_of_f_recurrence(n, f) {
+
+    # In practice, we precompute the partial sums of f(k) up to k = 2 * k^(2/3)
+    if (n <= 1) {
+        return sum(1..n, {|k| f(k) })
+    }
+
+    var s = n.isqrt
+    var A = inverse_moebius_transform_2(n, f)       # replace with closed-form (if possible)
+
+    for k in (2 .. floor(n/(s+1))) {
+        A -= __FUNC__(floor(n/k), f)
+    }
+
+    for k in (1 .. s) {
+        A -= __FUNC__(k,f)*(floor(n/k) - floor(n/(k+1)))
+    }
+
+    return A
+}
+
+func partial_sum_of_f(n, f) {
+    sum(1..n, {|k| f(k) })
+}
+
+func f(n) { n.euler_phi }
+
+say 20.of { inverse_moebius_transform_1(_, f) }
+say 20.of { inverse_moebius_transform_2(_, f) }
+
+say ''
+
+say 20.of { partial_sum_of_f(_, f) }
+say 20.of { partial_sum_of_f_recurrence(_, f) }
+
+__END__
+[0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153, 171, 190]
+[0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153, 171, 190]
+
+[0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120]
+[0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120]

@@ -254,6 +254,7 @@ A simple collection of Sidef scripts.
     * [Partial sums of sigma function fast](./Math/partial_sums_of_sigma_function_fast.sf)
     * [Partial sums of sigma function times k](./Math/partial_sums_of_sigma_function_times_k.sf)
     * [Partial sums of sigma function times k^m](./Math/partial_sums_of_sigma_function_times_k^m.sf)
+    * [Partial sums recursive sublinear formula](./Math/partial_sums_recursive_sublinear_formula.sf)
     * [Partial sums sublinear formula](./Math/partial_sums_sublinear_formula.sf)
     * [Pell factorization](./Math/pell_factorization.sf)
     * [Pell method for square roots](./Math/pell_method_for_square_roots.sf)
