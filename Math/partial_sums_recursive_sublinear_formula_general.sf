@@ -1,0 +1,94 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 06 February 2019
+# https://github.com/trizen
+
+# A very nice sub-linear recursive formula for computing partial sums of two arithmetical functions f(k) and g(k):
+#   Sum_{k=1..n} f(k) * g(k)
+
+# For example, in computing partial sums of the Euler totient function, we have f(k) = phi(k) and g(k) = 1, where:
+#   Sum_{d|n} phi(d) = n
+
+# So the closed-form to partial sums to this Dirichlet convolution would be:
+#   Sum_{k=1..n} Sum_{d|k} phi(k) = Sum_{k=1..n} k = n*(n+1)/2
+
+# This allows us to compute partial sums of the Euler totient function in sub-linear time.
+
+# See also:
+#   https://oeis.org/A002088 -- Sum of totient function: a(n) = Sum_{k=1..n} phi(k).
+#   https://oeis.org/A011755 -- Sum_{k=1..n} k*phi(k).
+
+func dirichlet_convolution_partial_sum_1(n, f, g) {
+    sum(1..n, {|k|
+        g(k) * sum(1..floor(n/k), {|j|
+            f(j)
+        })
+    })
+}
+
+func dirichlet_convolution_partial_sum_2(n, f, g) {
+    sum(1..n, {|k|
+        k.divisors.sum{|d|
+            f(d) * g(k/d)
+        }
+    })
+}
+
+func partial_sum_of_fg_recurrence(n, f, g) {
+
+    if (n <= 1) {
+        return sum(1..n, {|k| f(k) * g(k) })
+    }
+
+    var A = sum(1..n, {|k| sum(1..floor(n/k), {|j| g(j) * f(j) }) * f(k) })
+    var B = sum(2..n, {|k| f(k) * __FUNC__(floor(n/k), f, g) })
+
+    return (A - B)
+}
+
+
+func partial_sum_of_fg_recurrence_sublinear(n, f, g) {
+
+    # In practice, we precompute the partial sums of f(k) * g(k) up to about k = 2 * k^(2/3)
+    if (n <= 1) {
+        return sum(1..n, {|k| f(k) * g(k) })
+    }
+
+    var s = n.isqrt
+    var A = sum(1..n, {|k| sum(1..floor(n/k), {|j| g(j) * f(j) }) * f(k) })      # replace with closed-form (if possible)
+
+    for k in (2 .. floor(n/(s+1))) {
+        A -= (f(k) * __FUNC__(floor(n/k), f, g))
+    }
+
+    for k in (1 .. s) {
+        A -= (__FUNC__(k, f, g) * (sum(1..floor(n/k), {|j| f(j) }) - sum(1..floor(n/(k+1)), {|j| f(j) })))
+    }
+
+    return A
+}
+
+func partial_sum_of_fg(n, f, g) {
+    sum(1..n, {|k| f(k) * g(k) })
+}
+
+func f(n) { n }
+func g(n) { n.euler_phi }
+
+say 20.of { dirichlet_convolution_partial_sum_1(_, f, g) }
+say 20.of { dirichlet_convolution_partial_sum_2(_, f, g) }
+
+say ''
+
+say 20.of { partial_sum_of_fg(_, f, g) }
+say 20.of { partial_sum_of_fg_recurrence(_, f, g) }
+say 20.of { partial_sum_of_fg_recurrence_sublinear(_, f, g) }
+
+__END__
+[0, 1, 4, 9, 17, 26, 41, 54, 74, 95, 122, 143, 183, 208, 247, 292, 340, 373, 436, 473]
+[0, 1, 4, 9, 17, 26, 41, 54, 74, 95, 122, 143, 183, 208, 247, 292, 340, 373, 436, 473]
+
+[0, 1, 3, 9, 17, 37, 49, 91, 123, 177, 217, 327, 375, 531, 615, 735, 863, 1135, 1243, 1585]
+[0, 1, 3, 9, 17, 37, 49, 91, 123, 177, 217, 327, 375, 531, 615, 735, 863, 1135, 1243, 1585]
+[0, 1, 3, 9, 17, 37, 49, 91, 123, 177, 217, 327, 375, 531, 615, 735, 863, 1135, 1243, 1585]
