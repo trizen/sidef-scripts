@@ -1,30 +1,28 @@
 #!/usr/bin/ruby
 
-func continued_fraction(a, b, n=100) {
-    a.run + (n > 0 ? (b.run / continued_fraction(a, b, n-1)) : 0);
+# Generic implementation of continued fractions.
+
+func continued_fraction(a, b, f, n = 1000, r = 1) {
+    f(func (r) {
+        r < n ? (a(r) / (b(r) + __FUNC__(r+1))) : 0
+    }(r))
 }
 
-var f = Hash.new(
-    "√2" => [
-        do { var n = 0; { n++ ? 2 : 1 } },
-        { 1 },
-    ],
-    "e" => [
-        do { var n = 0; { n++ || 2 } },
-        do { var n = 0; { n++ || 1 } },
-    ],
-    "π" => [
-        do { var n = 0; { n++ ? 6 : 3 } },
-        do { var n = 0; { (2*(n++) + 1)**2 } },
-        1_000,
-    ],
-    "π/2" => [
-        do { var n = 0; { 1/(n++ || 1) } },
-        { 1 },
-        1_000,
-    ]
-);
+var params = Hash(
+    "φ"  => [ { 1 }, { 1 }, { 1 + _ } ],
+    "√2" => [ { 1 }, { 2 }, { 1 + _ } ],
+    "e"  => [ { _ }, { _ }, { 1 + 1/_ } ],
+    "π"  => [ { (2*_ - 1)**2 }, { 6 }, { 3 + _ } ],
+    "τ"  => [ { _**2 }, { 2*_ + 1 }, { 8 / (1 + _) } ],     # very fast convergence
+)
 
-f.each { |k,v|
-    printf("%3s ≈ %.9f\n", k, continued_fraction(v...));
-};
+for k in (params.keys.sort) {
+    printf("%2s ≈ %s\n", k, continued_fraction(params{k}...))
+}
+
+__END__
+ e ≈ 2.7182818284590452353602874713526624977572470937
+ π ≈ 3.14159265383979292596359650286939597045138933078
+ τ ≈ 6.28318530717958647692528676655900576839433879875
+ φ ≈ 1.61803398874989484820458683436563811772030917981
+√2 ≈ 1.41421356237309504880168872420969807856967187538
