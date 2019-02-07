@@ -1,0 +1,118 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 07 February 2019
+# https://github.com/trizen
+
+# A sublinear algorithm for computing the partial sums of the Jordan totient function times k^m.
+
+# The partial sums of the Jordan totient function is defined as:
+#
+#   a(n,j,m) = Sum_{k=1..n} k^m * J_j(k)
+#
+# where J_j(k) is the Jordan totient function.
+
+# Example:
+#   a(10^1, 2, 1) = 2431
+#   a(10^2, 2, 1) = 21128719
+#   a(10^3, 2, 1) = 208327305823
+#   a(10^4, 2, 1) = 2080103011048135
+#   a(10^5, 2, 1) = 20798025097513144783
+#   a(10^6, 2, 1) = 207977166477794042245831
+#   a(10^7, 2, 1) = 2079768770407248541815183631
+#   a(10^8, 2, 1) = 20797684646417657386198683679183
+#   a(10^9, 2, 1) = 207976843496387628847025371255443991
+
+# General asymptotic formula:
+#
+#   Sum_{k=1..n} k^m * J_j(k)  ~  F_(m+j)(n) / zeta(j+1).
+#
+# where F_m(n) are the Faulhaber polynomials.
+
+# OEIS sequences:
+#   https://oeis.org/A321879 -- Partial sums of the Jordan function J_2(k), for 1 <= k <= n.
+#   https://oeis.org/A002088 -- Sum of totient function: a(n) = Sum_{k=1..n} phi(k).
+#   https://oeis.org/A064018 -- Sum of the Euler totients phi for 10^n.
+#   https://oeis.org/A272718 -- Partial sums of gcd-sum sequence A018804.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Faulhaber's_formula
+#   https://en.wikipedia.org/wiki/Dirichlet_hyperbola_method
+#   https://en.wikipedia.org/wiki/Jordan%27s_totient_function
+#   https://trizenx.blogspot.com/2018/11/partial-sums-of-arithmetical-functions.html
+
+func partial_sums_of_jordan_totient_recurrence(n, m, z) is cached {
+
+    if (n <= 1) {
+        return sum(1..n, {|k|
+            k**z * jordan_totient(k, m)
+        })
+    }
+
+    faulhaber_sum(n, m + z) - sum(2..n, {|k|
+       k**z * __FUNC__(int(n/k), m, z)
+    })
+}
+
+func partial_sums_of_jordan_totient_simple(n, m, z) is cached {
+
+    if (n <= 1) {
+        return sum(1..n, {|k|
+            k**z * jordan_totient(k, m)
+        })
+    }
+
+    var A = faulhaber_sum(n, m + z)
+
+    var B = sum(2..floor(n / (1+floor(sqrt(n)))), {|k|
+        k**z * __FUNC__(floor(n/k), m, z)
+    })
+
+    var C = sum(1..floor(sqrt(n)), {|k|
+        (faulhaber_sum(floor(n/k), z) - faulhaber(floor(n/(k+1)), z)) * __FUNC__(k, m, z)
+    })
+
+    A - B - C
+}
+
+func partial_sums_of_jordan_totient_sublinear(n, m, z) {     # sub-linear time
+
+    var lookup_size = (2 + 2*n.iroot(3)**2)
+    var jordan_sum_lookup = [0]
+
+    for k in (1..lookup_size) {
+        jordan_sum_lookup[k] = (jordan_sum_lookup[k-1] + (k**z * k.jordan_totient(m)))
+    }
+
+    var cache = Hash()
+
+    func (n) {
+
+        if (n <= lookup_size) {
+            return jordan_sum_lookup[n]
+        }
+
+        if (cache.has(n)) {
+            return cache{n}
+        }
+
+        var A = faulhaber_sum(n, m + z)
+
+        var B = sum(2 .. floor(n/(1+n.isqrt)), {|k|
+            k**z * __FUNC__(floor(n/k))
+        })
+
+        var C = sum(1 .. n.isqrt, {|k|
+            (faulhaber_sum(floor(n/k), z) - faulhaber(floor(n/(k+1)), z)) * __FUNC__(k)
+        })
+
+        cache{n} = (A - B - C)
+    }(n)
+}
+
+var m = 2
+var z = 1
+
+for k in (1..5) {
+    say ("a(10^#{k}, #{m}, #{z}) = ", partial_sums_of_jordan_totient_sublinear(10**k, m, z))
+}
