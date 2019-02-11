@@ -58,11 +58,10 @@ func holf_pell_factorization(n, iter=10000) {
 
     for k in (1 .. iter) {
 
-        var f = pell_factorization(n*k)
+        var f = gcd(pell_factorization(n*k), n)
 
-        if (f.is_between(2, n*k - 1)) {
-            var g = gcd(f, n)
-            return g if g.is_between(2, n-1)
+        if (f.is_between(2, n-1)) {
+            return f
         }
     }
 
