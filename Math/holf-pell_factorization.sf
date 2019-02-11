@@ -1,0 +1,77 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 11 February 2019
+# https://github.com/trizen
+
+# A simple integer factorization method, using square root convergents and small multipliers, inspired by William Hart's OLF method.
+
+# Efficient in factoring numbers that are close to perfect squares.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pell%27s_equation
+#   https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization
+#   https://programmingpraxis.com/2014/01/28/harts-one-line-factoring-algorithm/
+
+func pell_factorization(n) {
+
+    var x = n.isqrt
+    var y = x
+    var z = 1
+    var r = 2*x
+    var w = r
+
+    return n if n.is_prime
+    return x if n.is_square
+
+    var (f1, f2) = (1, x)
+
+    2.times {
+
+        y = (r*z - y)
+        z = ((n - y*y) / z)
+        r = round((x + y) / z)
+
+        (f1, f2) = (f2, (r*f2 + f1)%n)
+
+        var u = f1
+        var v = (u*u)%n
+
+        if (v > w) {
+            v = (n - v)
+        }
+
+        if (v.is_square) {
+            var g = gcd(u - v.isqrt, n)
+            if (g.is_between(2, n-1)) {
+                return g
+            }
+        }
+
+        return 1 if (z == 1)
+    }
+
+    return 1
+}
+
+func holf_pell_factorization(n, iter=10000) {
+
+    for k in (1 .. iter) {
+
+        var f = pell_factorization(n*k)
+
+        if (f.is_between(2, n*k - 1)) {
+            var g = gcd(f, n)
+            return g if g.is_between(2, n-1)
+        }
+    }
+
+    return 1
+}
+
+say holf_pell_factorization(501683471371554052574395593328002385856815909090992391730837714087618687789563199570570904748766683429134165931903849390638583070098709002977060135024453968329425015984667453956539152122050098453561508979991634026587581234275280113197333815352093406638207274145779974221097800552970426675930071039999999999999999999999999)
+say holf_pell_factorization(126727335216251935155511386856292269344039435369339223952841818402341178946842787391524421251641584095380245040090295288781100410936392638772851127857739674291628104658325634644906472821071273024005952940961745631724673242565456694421601734604687078622903224894582381431189998689129881876425605119999999999999999999999999)
+
+__END__
+44796583413093193287215634651008016235543664766903178304924622669704447996750359492291902708555128777401775001997067403960568901240094719999999999999999999999999
+90526428980625828101248261690578699475994489216450172824535174978361071993433018140673220056871822737666086983202407045503649654589358079999999999999999999999999
