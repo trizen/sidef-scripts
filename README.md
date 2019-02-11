@@ -180,6 +180,7 @@ A simple collection of Sidef scripts.
     * [Harmonic numbers of k-th order](./Math/harmonic_numbers_of_k-th_order.sf)
     * [Harmonic prime powers](./Math/harmonic_prime_powers.sf)
     * [Haversine formula](./Math/haversine_formula.sf)
+    * [Holf factorization](./Math/holf_factorization.sf)
     * [Integer root](./Math/integer_root.sf)
     * [Integer root binary search](./Math/integer_root_binary_search.sf)
     * [Integer square root](./Math/integer_square_root.sf)
