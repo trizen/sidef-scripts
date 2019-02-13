@@ -2,32 +2,67 @@
 
 # Daniel "Trizen" Șuteu
 # Date: 01 February 2019
+# Edit: 13 February 2019
 # https://github.com/trizen
 
 # A very fast primality precheck.
-# This test is passed by the numbers without middle divisors (which includes all the odd primes).
 
 # See also:
 #   https://oeis.org/A112045 -- Positions of primes among nonsquares.
 #   https://oeis.org/A319801 -- Odd numbers without middle divisors.
 
-func primality_precheck(n) {
+func primality_precheck(n, r = n.ilog2) {
 
     return false if (n <= 1)
     return true  if (n == 2)
+
     return false if n.is_even
+    return false if n.is_power
 
     var v = (n - n.isqrt)
     var u = powmod(v, 2, n)
 
     if (u.is_square) {
-        if (gcd(u.isqrt - v, n) == 1) {
-            return true
+        if (gcd(u.isqrt - v, n) != 1) {
+            return false
         }
     }
 
-    return false
+    for k in (1..r) {       # HOLF method
+        var s = isqrt(k*n)+1
+        var u = powmod(s, 2, n)
+
+        if (u.is_square) {
+            if (gcd(s - u.isqrt, n) != 1) {
+                return false
+            }
+        }
+    }
+
+    # Trial factor up to 30*log_2(n)
+    n.trial_factor(30*r).len == 1
 }
 
 say { primality_precheck(_) }.grep(1..100)                      # [2, 3, 5, 7, 11, 13, 17, 19, 21, 23, 27, 29, 31, 33, 37, 41, 43, 47, 51, 53, 55, 57, 59, 61, 65, 67, 69, 71, 73, 75, 77, 79, 83, 85, 89, 91, 95, 97]
-say { primality_precheck(_) }.grep(1..100).grep{!.is_prime}     # [21, 27, 33, 51, 55, 57, 65, 69, 75, 77, 85, 91, 95]
+
+say "\n=> Testing numbers of the form n! + 1:"
+
+for n in (10..50) {
+    if (primality_precheck(n! + 1)) {
+        say ("Passed: #{n! + 1}", is_prime(n! + 1) ? ' (prime)' : '')
+    }
+}
+
+__END__
+=> Testing numbers of the form n! + 1:
+Passed: 39916801 (prime)
+Passed: 2432902008176640001
+Passed: 10888869450418352160768000001 (prime)
+Passed: 8841761993739701954543616000001
+Passed: 295232799039604140847618609643520000001
+Passed: 13763753091226345046315979581580902400000001 (prime)
+Passed: 523022617466601111760007224100074291200000001
+Passed: 33452526613163807108170062053440751665152000000001 (prime)
+Passed: 2658271574788448768043625811014615890319638528000000001
+Passed: 258623241511168180642964355153611979969197632389120000000001
+Passed: 12413915592536072670862289047373375038521486354677760000000001
