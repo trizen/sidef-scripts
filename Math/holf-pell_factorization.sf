@@ -13,7 +13,7 @@
 #   https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization
 #   https://programmingpraxis.com/2014/01/28/harts-one-line-factoring-algorithm/
 
-func pell_factorization(n) {
+func pell_factorization(n, iter=2) {
 
     var x = n.isqrt
     var y = x
@@ -26,7 +26,7 @@ func pell_factorization(n) {
 
     var (f1, f2) = (1, x)
 
-    2.times {
+    iter.times {
 
         y = (r*z - y)
         z = ((n - y*y) / z)

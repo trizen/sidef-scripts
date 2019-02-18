@@ -10,7 +10,7 @@ func HOLF_factor(n, iter=100000) {
 
     for k in (1..iter) {
 
-        var s = 1+isqrt(n*k)
+        var s = 1+isqrt(n * 4*k)
         var m = (s**2 % n)
 
         if (m.is_square) {
