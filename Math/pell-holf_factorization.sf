@@ -1,0 +1,86 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 18 February 2019
+# https://github.com/trizen
+
+# A simple integer factorization method, using square root convergents, combined with the HOLF method.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pell%27s_equation
+#   http://wrap.warwick.ac.uk/54707/1/WRAP_Hart_S1446788712000146a.pdf
+
+func pell_holf_factorization(n) {
+
+    var x = n.isqrt
+    var y = x
+    var z = 1
+    var r = 2*x
+    var w = r
+
+    return n if n.is_prime
+    return x if n.is_square
+
+    var (f1, f2) = (1, x)
+    var k = 1
+
+    loop {
+
+        y = (r*z - y)
+        z = ((n - y*y) / z)
+        r = round((x + y) / z)
+
+        var s = 1+isqrt(n * 4*k)
+        var m = (s*s % n)
+
+        if (m.is_square) {
+            var g = gcd(n, s - m.isqrt)
+
+            if (g.is_between(2, n-1)) {
+                return g
+            }
+        }
+
+        (f1, f2) = (f2, (r*f2 + f1)%n)
+
+        var u = f1
+        var v = (u*u)%n
+
+        if (v > w) {
+            v = (n - v)
+        }
+
+        if (v.is_square) {
+            var g = gcd(u - v.isqrt, n)
+            if (g.is_between(2, n-1)) {
+                return g
+            }
+        }
+
+        ++k
+        return n if (z == 1)
+    }
+}
+
+for n in (1..10) {
+    var n = 2.of { 15.random_nbit_prime }.prod
+    say ("PellFactor(#{n}) = ", pell_holf_factorization(n))
+}
+
+say pell_holf_factorization(501683471371554052574395593328002385856815909090992391730837714087618687789563199570570904748766683429134165931903849390638583070098709002977060135024453968329425015984667453956539152122050098453561508979991634026587581234275280113197333815352093406638207274145779974221097800552970426675930071039999999999999999999999999)
+say pell_holf_factorization(126727335216251935155511386856292269344039435369339223952841818402341178946842787391524421251641584095380245040090295288781100410936392638772851127857739674291628104658325634644906472821071273024005952940961745631724673242565456694421601734604687078622903224894582381431189998689129881876425605119999999999999999999999999)
+
+__END__
+PellFactor(700619593) = 29201
+PellFactor(454862633) = 21817
+PellFactor(691249777) = 30631
+PellFactor(430147321) = 23819
+PellFactor(586983343) = 32371
+PellFactor(935383093) = 30161
+PellFactor(411982057) = 21673
+PellFactor(822287573) = 31139
+PellFactor(631566191) = 19763
+PellFactor(793815643) = 27749
+
+44796583413093193287215634651008016235543664766903178304924622669704447996750359492291902708555128777401775001997067403960568901240094719999999999999999999999999
+90526428980625828101248261690578699475994489216450172824535174978361071993433018140673220056871822737666086983202407045503649654589358079999999999999999999999999

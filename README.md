@@ -260,6 +260,7 @@ A simple collection of Sidef scripts.
     * [Partial sums recursive sublinear formula](./Math/partial_sums_recursive_sublinear_formula.sf)
     * [Partial sums recursive sublinear formula general](./Math/partial_sums_recursive_sublinear_formula_general.sf)
     * [Partial sums sublinear formula](./Math/partial_sums_sublinear_formula.sf)
+    * [Pell-holf factorization](./Math/pell-holf_factorization.sf)
     * [Pell factorization](./Math/pell_factorization.sf)
     * [Pell method for square roots](./Math/pell_method_for_square_roots.sf)
     * [Perfect squares in catalan's triangle](./Math/perfect_squares_in_catalan_s_triangle.sf)
