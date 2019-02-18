@@ -22,9 +22,8 @@ func pell_holf_factorization(n) {
     return x if n.is_square
 
     var (f1, f2) = (1, x)
-    var k = 1
 
-    loop {
+    for k in (1..Inf) {
 
         y = (r*z - y)
         z = ((n - y*y) / z)
@@ -57,7 +56,6 @@ func pell_holf_factorization(n) {
             }
         }
 
-        ++k
         return n if (z == 1)
     }
 }
