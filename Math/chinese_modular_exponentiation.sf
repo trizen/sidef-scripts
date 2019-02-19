@@ -1,0 +1,36 @@
+#!/usr/bin/ruby
+
+# Compute modular exponentation, using the Chinese remainder theorem (CRT) and Fermat's little theorem.
+
+# This assumes that the modulo `m` can be factorized.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Modular_exponentiation
+#   https://en.wikipedia.org/wiki/Chinese_remainder_theorem
+#   https://en.wikipedia.org/wiki/Fermat%27s_little_theorem
+
+func chinese_powmod(b, n, m) {
+
+    if (gcd(b, m) != 1) {
+        return powmod(b, n, m)
+    }
+
+    Math.chinese(
+        m.factor_map {|p,k|
+            [powmod(b, (n % (p**(k-1) * (p-1))), p**k), p**k]
+        }...
+    )
+}
+
+say chinese_powmod(2, 5040, 43*97)                      #=> 1
+say chinese_powmod(2, 43*97, 5040)                      #=> 128
+say chinese_powmod(2, 626958621819, 626958621819)       #=> 626958621818
+
+for k in (1..100) {
+
+    var a = 1e10.irand
+    var b = 1e10.irand
+    var c = 1e10.irand
+
+    assert_eq(powmod(a, b, c), chinese_powmod(a, b, c))
+}
