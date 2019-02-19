@@ -2,6 +2,7 @@
 
 # Daniel "Trizen" Șuteu
 # Date: 11 February 2019
+# Edit: 19 February 2019
 # https://github.com/trizen
 
 # A simple integer factorization method, using square root convergents and small multipliers, inspired by William Hart's OLF method.
@@ -13,60 +14,54 @@
 #   https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization
 #   https://programmingpraxis.com/2014/01/28/harts-one-line-factoring-algorithm/
 
-func pell_factorization(n, iter=2) {
+func create_pell (n, k) {
 
-    var x = n.isqrt
+    var N = (n * k)
+    var x = N.isqrt
     var y = x
     var z = 1
     var r = 2*x
-    var w = r
+
+    var (f1, f2) = (1, x)
+
+    {
+        y = (r*z - y)
+        z = ((N - y*y) / z)
+        r = ((x + y) // z)      #/ integer division /
+
+        (f1, f2) = (f2, (r*f2 + f1)%n)
+
+        (f1, powmod(f1, 2, n))
+    }
+}
+
+func holf_pell_factorization(n, iter=10000) {
+
+    var x = n.isqrt
 
     return n if n.is_prime
     return x if n.is_square
 
-    var (f1, f2) = (1, x)
-
-    iter.times {
-
-        y = (r*z - y)
-        z = ((n - y*y) / z)
-        r = round((x + y) / z)
-
-        (f1, f2) = (f2, (r*f2 + f1)%n)
-
-        var u = f1
-        var v = (u*u)%n
-
-        if (v > w) {
-            v = (n - v)
-        }
-
+    var check_congruence = { |u,v|
         if (v.is_square) {
             var g = gcd(u - v.isqrt, n)
             if (g.is_between(2, n-1)) {
                 return g
             }
         }
-
-        return 1 if (z == 1)
     }
-
-    return 1
-}
-
-func holf_pell_factorization(n, iter=10000) {
 
     for k in (1 .. iter) {
 
-        var f = gcd(pell_factorization(n*k), n)
+        var f = create_pell(n, 2 * k)
 
-        if (f.is_between(2, n-1)) {
-            return f
+        2.times {
+            check_congruence(f())
         }
     }
-
-    return 1
 }
+
+say [763546828801, 6031047559681, 184597450297471, 732785991945841, 18641350656000001, 55212580317094201, 9969815738350374661, 73410179782535364796052059].map(holf_pell_factorization) #=> [2621431, 4122691, 60761401, 121060801, 409599991, 452852401, 35723051521, 34271896307617]
 
 say holf_pell_factorization(501683471371554052574395593328002385856815909090992391730837714087618687789563199570570904748766683429134165931903849390638583070098709002977060135024453968329425015984667453956539152122050098453561508979991634026587581234275280113197333815352093406638207274145779974221097800552970426675930071039999999999999999999999999)
 say holf_pell_factorization(126727335216251935155511386856292269344039435369339223952841818402341178946842787391524421251641584095380245040090295288781100410936392638772851127857739674291628104658325634644906472821071273024005952940961745631724673242565456694421601734604687078622903224894582381431189998689129881876425605119999999999999999999999999)
