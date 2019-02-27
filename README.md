@@ -21,6 +21,7 @@ A simple collection of Sidef scripts.
     * [One-time pad](./Encryption/one-time_pad.sf)
 * File
     * [Fdf](./File/fdf.sf)
+    * [Make filenames safe](./File/make_filenames_safe.sf)
 * Game solvers
     * [Sudoku](./Game%20solvers/sudoku.sf)
 * Games
