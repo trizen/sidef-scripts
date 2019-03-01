@@ -9,7 +9,7 @@
 #   https://en.wikipedia.org/wiki/Truncatable_prime
 
 func digits2num(digits, base) {
-    digits.map_kv {|k,v| base**k * v  }.sum
+    digits.sum_kv {|k,v| base**k * v }
 }
 
 func generate_from_prefix(p, base) {

@@ -41,7 +41,7 @@
 #   https://en.wikipedia.org/wiki/Bernoulli_polynomials
 #   https://trizenx.blogspot.com/2018/08/interesting-formulas-and-exercises-in.html
 
-func fast_sigma_partial_sum(n, m, j) {      # O(sqrt(n)) complexity
+func sigma_partial_sum(n, m, j) {      # O(sqrt(n)) complexity
 
     var total = 0
 
@@ -59,7 +59,23 @@ func fast_sigma_partial_sum(n, m, j) {      # O(sqrt(n)) complexity
     return total
 }
 
-func sigma_partial_sum(n, m, j) {           # just for testing
+func sigma_partial_sum_2(n, m, j) {      # O(sqrt(n)) complexity
+
+    var total = 0
+
+    var s = n.isqrt
+
+    for k in (1 .. s) {
+        total += (k**m * faulhaber_sum(floor(n/k), m+j))
+        total += (k**(m+j) * faulhaber_sum(floor(n/k), m))
+    }
+
+    total -= (faulhaber_sum(s, j+m) * faulhaber_sum(s, m))
+
+    return total
+}
+
+func sigma_partial_sum_test(n, m, j) {           # just for testing
     sum(1..n, {|k| k**m * k.sigma(j) })
 }
 
@@ -69,9 +85,11 @@ for m in (0..10) {
     var n = 1000.irand
 
     var t1 = sigma_partial_sum(n, m, j)
-    var t2 = fast_sigma_partial_sum(n, m, j)
+    var t2 = sigma_partial_sum_2(n, m, j)
+    var t3 = sigma_partial_sum_test(n, m, j)
 
     assert_eq(t1, t2)
+    assert_eq(t2, t3)
 
     say "Sum_{k=1..#{n}} k^#{m} * σ_#{j}(k) = #{t2}"
 }

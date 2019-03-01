@@ -22,7 +22,7 @@ say "Solution:  #{S}"
 say "Polynomial: #{P}\n"
 
 for n in (^v.len) {
-    say ("a(#{n}) = ", S.map_kv {|k,v| v * n**k }.sum)
+    say ("a(#{n}) = ", S.sum_kv {|k,v| v * n**k })
 }
 
 __END__
