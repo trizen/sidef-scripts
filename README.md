@@ -326,6 +326,7 @@ A simple collection of Sidef scripts.
     * [Split summation](./Math/split_summation.sf)
     * [Sqrt 2 approximation](./Math/sqrt_2_approximation.sf)
     * [Sqrt convergents](./Math/sqrt_convergents.sf)
+    * [Square congruence lookup factorization](./Math/square_congruence_lookup_factorization.sf)
     * [Square product subsets](./Math/square_product_subsets.sf)
     * [Square root arithmetic-harmonic mean](./Math/square_root_arithmetic-harmonic_mean.sf)
     * [Square root modulo n](./Math/square_root_modulo_n.sf)
