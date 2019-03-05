@@ -1,0 +1,62 @@
+#!/usr/bin/ruby
+
+# Pollard's rho factorization algorithm.
+
+# This version uses the polynomial:
+#   f(x) = x^e + 2*e - 1
+
+# where e = lcm(1..B), for a small bound B.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm
+
+func rho_factor(n) {
+
+    var B = n.ilog(5)**2
+    var e = B.consecutive_lcm
+
+    if (n.len <= 12) {
+        e = 2
+    }
+
+    var c = (2*e - 1)
+
+    func f(x) {
+        (powmod(x, e, n) + c) % n
+    }
+
+    var a0 = 1
+    var a1 = f(a0)
+    var a2 = f(a1)
+
+    loop {
+
+        a1 = f(a1)
+        a2 = f(f(a2))
+
+        var g = gcd(n, a1 - a2)
+
+        return g if g.is_between(2, n-1)
+    }
+}
+
+var t = [
+    314159265358979323, 350011490889402191, 2954624367769580651,
+    7167393334524676153, 10033529742475370477, 20135752530477192241,
+    21316902507352787201, 2559469924891866771047, 63469917720180180377579
+]
+
+for n in (t) {
+    say ("factor(#{n}) = ", rho_factor(n))
+}
+
+__END__
+factor(314159265358979323) = 990371647
+factor(350011490889402191) = 692953181
+factor(2954624367769580651) = 6029022121
+factor(7167393334524676153) = 4721424559
+factor(10033529742475370477) = 1412164441
+factor(20135752530477192241) = 5907768749
+factor(21316902507352787201) = 3055371353
+factor(2559469924891866771047) = 266349879973
+factor(63469917720180180377579) = 126115748167
