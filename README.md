@@ -23,6 +23,7 @@ A simple collection of Sidef scripts.
     * [Fdf](./File/fdf.sf)
     * [Make filenames safe](./File/make_filenames_safe.sf)
 * Game solvers
+    * [Chess960 initial positions](./Game%20solvers/chess960_initial_positions.sf)
     * [Sudoku](./Game%20solvers/sudoku.sf)
 * Games
     * [Asciiplanes](./Games/asciiplanes.sf)

@@ -1,0 +1,29 @@
+#!/usr/bin/ruby
+
+# Generate the initial positions in Fischer Random Chess (also known as chess960).
+
+# See also:
+#   https://en.wikipedia.org/wiki/Chess960
+
+var pieces = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook']
+
+func isok (row) {
+    var king = row.index('king')
+    var (rook1, rook2) = row.indices_of('rook')...
+    king.is_between(rook1, rook2) || return false
+    var (bishop1, bishop2) = row.indices_of('bishop')...
+    bishop1+bishop2 -> is_odd
+}
+
+var chess960 = gather {
+    pieces.permutations {|*a|
+        take(a) if isok(a)
+    }
+}
+
+chess960 = chess960.uniq
+
+say "There are #{chess960.len} initial positions."
+
+__END__
+There are 960 initial positions.
