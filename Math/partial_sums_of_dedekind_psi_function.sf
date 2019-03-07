@@ -48,14 +48,32 @@ func dedekind_psi_partial_sum (n, m) {      # O(sqrt(n)) complexity
 
     var s = n.isqrt
     var u = int(n/(s+1))
+    var prev = squarefree_count(n)
 
     for k in (1..s) {
-        total += (squarefree_count(int(n/(k+1))+1, int(n/k)) * faulhaber_sum(k, m))
+        var curr = squarefree_count(floor(n/(k+1)))
+        total += (faulhaber_sum(k, m) * (prev - curr))
+        prev = curr
     }
 
-    moebius(0, u).each_kv { |k,v|
-        total += faulhaber_sum(int(n/k), m) if v
+    for k in (1..u) {
+        total += faulhaber_sum(int(n/k), m) if k.is_square_free
     }
+
+    return total
+}
+
+func dedekind_psi_partial_sum_2 (n, m) {      # O(sqrt(n)) complexity
+
+    var total = 0
+    var s = n.isqrt
+
+    for k in (1..s) {
+        total += faulhaber_sum(floor(n/k), m) if k.is_square_free
+        total += (squarefree_count(floor(n/k)) * k**m)
+    }
+
+    total -= faulhaber_sum(s, m)*squarefree_count(s)
 
     return total
 }
@@ -69,9 +87,11 @@ for m in (0 .. 10) {
     var n = 10000.irand
 
     var t1 = dedekind_psi_partial_sum(n, m)
-    var t2 = dedekind_psi_partial_sum_test(n, m)
+    var t2 = dedekind_psi_partial_sum_2(n, m)
+    var t3 = dedekind_psi_partial_sum_test(n, m)
 
     assert_eq(t1, t2)
+    assert_eq(t1, t3)
 
     say "Sum_{k=1..#{n}} ψ_#{m}(k) = #{t1}"
 }
