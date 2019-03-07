@@ -40,7 +40,7 @@
 #   https://en.wikipedia.org/wiki/Jordan%27s_totient_function
 #   https://trizenx.blogspot.com/2018/08/interesting-formulas-and-exercises-in.html
 
-func jordan_totient_partial_sum (n, m) {
+func jordan_totient_partial_sum (n, m) {       # O(sqrt(n)) complexity
 
     var total = 0
 
@@ -58,6 +58,21 @@ func jordan_totient_partial_sum (n, m) {
     return total
 }
 
+func jordan_totient_partial_sum_2 (n, m) {     # O(sqrt(n)) complexity
+
+    var total = 0
+    var s = n.isqrt
+
+    for k in (1..s) {
+        total += (moebius(k) * faulhaber_sum(floor(n/k), m))
+        total += (k**m * mertens(floor(n/k)))
+    }
+
+    total -= mertens(s)*faulhaber_sum(s, m)
+
+    return total
+}
+
 func jordan_totient_partial_sum_test (n, m) {    # just for testing
     1..n -> sum {|k| jordan_totient(k, m) }
 }
@@ -67,9 +82,11 @@ for m in (0 .. 10) {
     var n = 10000.irand
 
     var t1 = jordan_totient_partial_sum(n, m)
-    var t2 = jordan_totient_partial_sum_test(n, m)
+    var t2 = jordan_totient_partial_sum_2(n, m)
+    var t3 = jordan_totient_partial_sum_test(n, m)
 
     assert_eq(t1, t2)
+    assert_eq(t1, t3)
 
     say "Sum_{k=1..#{n}} J_#{m}(k) = #{t1}"
 }
