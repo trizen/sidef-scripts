@@ -252,6 +252,7 @@ A simple collection of Sidef scripts.
     * [Partial sums of euler totient function](./Math/partial_sums_of_euler_totient_function.sf)
     * [Partial sums of gcd-sum function](./Math/partial_sums_of_gcd-sum_function.sf)
     * [Partial sums of gcd-sum function fast](./Math/partial_sums_of_gcd-sum_function_fast.sf)
+    * [Partial sums of inverse moebius transform of dedekind function](./Math/partial_sums_of_inverse_moebius_transform_of_dedekind_function.sf)
     * [Partial sums of jordan totient function](./Math/partial_sums_of_jordan_totient_function.sf)
     * [Partial sums of jordan totient function times k^m](./Math/partial_sums_of_jordan_totient_function_times_k^m.sf)
     * [Partial sums of prime bigomega function](./Math/partial_sums_of_prime_bigomega_function.sf)
