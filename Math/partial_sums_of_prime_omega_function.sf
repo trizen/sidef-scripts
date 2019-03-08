@@ -98,6 +98,21 @@ func prime_omega_partial_sum (n, m=0) {     # O(sqrt(n)) complexity
     return total
 }
 
+func prime_omega_partial_sum_2 (n, m=0) {     # O(sqrt(n)) complexity
+
+    var total = 0
+    var s = n.isqrt
+
+    for k in (1..s) {
+        total += (k**m * prime_count(floor(n/k)))
+        total += faulhaber_sum(floor(n/k), m) if k.is_prime
+    }
+
+    total -= prime_count(s)*faulhaber_sum(s, m)
+
+    return total
+}
+
 func prime_omega_partial_sum_test (n, m=0) {    # just for testing
     var total = 0
 
@@ -113,9 +128,11 @@ for m in (0 .. 10) {
     var n = 10000.irand
 
     var t1 = prime_omega_partial_sum(n, m)
-    var t2 = prime_omega_partial_sum_test(n, m)
+    var t2 = prime_omega_partial_sum_2(n, m)
+    var t3 = prime_omega_partial_sum_test(n, m)
 
     assert_eq(t1, t2)
+    assert_eq(t1, t3)
 
     say "Sum_{k=1..#{n}} omega_#{m}(k) = #{t1}"
 }

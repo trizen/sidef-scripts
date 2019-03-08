@@ -4,11 +4,11 @@
 # Date: 07 November 2018
 # https://github.com/trizen
 
-# A new formula for computing the partial-sums of:
+# Formula in terms of Bernoulli polynomials for computing the partial-sums of:
 #
-#   `sigma_j(k)`, for `1 <= k <= n`
+#   a(n) = Sum_{k=1..n} sigma_j(k)
 #
-# with fixed positive integer `j`, without using the sigma function.
+# for some fixed j >= 0, without using the sigma function.
 
 # Formulas:
 #   a(n) = Sum_{k=1..n} sigma_j(k)

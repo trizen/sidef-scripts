@@ -75,13 +75,7 @@
 #   https://en.wikipedia.org/wiki/Prime-counting_function
 #   https://trizenx.blogspot.com/2018/11/partial-sums-of-arithmetical-functions.html
 
-func prime_power_count(n) {
-    sum(1..n.ilog2, {|k|
-        prime_count(n.iroot(k))
-    })
-}
-
-func prime_bigomega_partial_sum(n, m) {
+func prime_bigomega_partial_sum(n, m) {     # O(sqrt(n)) complexity
 
     var s = n.isqrt
     var u = floor(n/(s+1))
@@ -89,12 +83,27 @@ func prime_bigomega_partial_sum(n, m) {
     var total = 0
 
     for k in (1..s) {
-        total += faulhaber_sum(k, m)*(prime_power_count(floor(n/k)) - prime_power_count(floor(n/(k+1))))
+        total += faulhaber_sum(k, m)*(prime_power_count(floor(n/(k+1))+1, floor(n/k)))
     }
 
     for k in (1..u) {
         total += faulhaber_sum(floor(n/k), m) if k.is_prime_power
     }
+
+    return total
+}
+
+func prime_bigomega_partial_sum_2(n, m) {
+
+    var s = n.isqrt
+    var total = 0
+
+    for k in (1..s) {
+        total += (k**m * prime_power_count(floor(n/k)))
+        total += faulhaber_sum(floor(n/k), m) if k.is_prime_power
+    }
+
+    total -= prime_power_count(s)*faulhaber_sum(s, m)
 
     return total
 }
@@ -114,9 +123,11 @@ for m in (0 .. 10) {
     var n = 10000.irand
 
     var t1 = prime_bigomega_partial_sum(n, m)
-    var t2 = prime_bigomega_partial_sum_test(n, m)
+    var t2 = prime_bigomega_partial_sum_2(n, m)
+    var t3 = prime_bigomega_partial_sum_test(n, m)
 
     assert_eq(t1, t2)
+    assert_eq(t1, t3)
 
     say "Sum_{k=1..#{n}} bigomega_#{m}(k) = #{t1}"
 }

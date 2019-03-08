@@ -48,12 +48,9 @@ func dedekind_psi_partial_sum (n, m) {      # O(sqrt(n)) complexity
 
     var s = n.isqrt
     var u = int(n/(s+1))
-    var prev = squarefree_count(n)
 
     for k in (1..s) {
-        var curr = squarefree_count(floor(n/(k+1)))
-        total += (faulhaber_sum(k, m) * (prev - curr))
-        prev = curr
+        total += (faulhaber_sum(k, m) * squarefree_count(floor(n/(k+1))+1, floor(n/k)))
     }
 
     for k in (1..u) {
