@@ -81,7 +81,7 @@ func dedekind_psi_partial_sum_test (n, m) {    # just for testing
 
 for m in (0 .. 10) {
 
-    var n = 10000.irand
+    var n = 1000.irand
 
     var t1 = dedekind_psi_partial_sum(n, m)
     var t2 = dedekind_psi_partial_sum_2(n, m)

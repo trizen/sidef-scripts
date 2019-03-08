@@ -249,6 +249,7 @@ A simple collection of Sidef scripts.
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
     * [Partial sums of dedekind psi function](./Math/partial_sums_of_dedekind_psi_function.sf)
+    * [Partial sums of dedekind psi function recursive](./Math/partial_sums_of_dedekind_psi_function_recursive.sf)
     * [Partial sums of euler totient function](./Math/partial_sums_of_euler_totient_function.sf)
     * [Partial sums of gcd-sum function](./Math/partial_sums_of_gcd-sum_function.sf)
     * [Partial sums of gcd-sum function fast](./Math/partial_sums_of_gcd-sum_function_fast.sf)

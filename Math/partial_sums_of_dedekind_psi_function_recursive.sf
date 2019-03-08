@@ -1,0 +1,107 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 08 March 2019
+# https://github.com/trizen
+
+# Recursive formula for computing partial sums of the Dedekind psi function.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Dedekind_psi_function
+#   https://trizenx.blogspot.com/2018/11/partial-sums-of-arithmetical-functions.html
+
+func dedekind_psi_partial_sum (n, m) {
+
+    var mu = moebius(0, n.isqrt)
+
+    func R (n) is cached {      # A064608(n) = Sum_{k=1..n} 2^omega(k)
+
+        var total = 0
+
+        for k in (1..n.isqrt) {
+            total += mu[k]*(
+                2*sum(1..isqrt(n / k**2), {|j|
+                    floor(n / (j * k**2))
+                }) - isqrt(n / k**2)**2
+            ) if mu[k]
+        }
+
+        return total
+    }
+
+    func D (n) is cached {     # Sum_{k=1..n} Sum_{d|k} 2^omega(k) * (k/d)^m
+
+        var s = n.isqrt
+        var total = 0
+
+        for k in (1..s) {
+            total += (2**omega(k) * faulhaber(floor(n/k), m))
+            total += (k**m * R(floor(n/k)))
+        }
+
+        total -= R(s)*faulhaber_sum(s, m)
+
+        return total
+    }
+
+    var lookup_size = (2 + 2*n.iroot(3)**2)
+    var dedekind_sum_lookup = [0]
+
+    for k in (1..lookup_size) {
+        dedekind_sum_lookup[k] = (dedekind_sum_lookup[k-1] +  k.dedekind_psi(m))
+    }
+
+    var cache = Hash()
+
+    func (n) {
+
+        if (n <= lookup_size) {
+            return dedekind_sum_lookup[n]
+        }
+
+        if (cache.has(n)) {
+            return cache{n}
+        }
+
+        var A = D(n)
+
+        var B = sum(2 .. floor(n/(1+n.isqrt)), {|k|
+            __FUNC__(floor(n/k))
+        })
+
+        var C = sum(1 .. n.isqrt, {|k|
+            (floor(n/k) - floor(n/(k+1))) * __FUNC__(k)
+        })
+
+        cache{n} = (A - B - C)
+    }(n)
+}
+
+func dedekind_psi_partial_sum_test (n, m) {    # just for testing
+    1..n -> sum {|k| dedekind_psi(k, m) }
+}
+
+for m in (0 .. 10) {
+
+    var n = 100.irand
+
+    var t1 = dedekind_psi_partial_sum(n, m)
+    var t2 = dedekind_psi_partial_sum_test(n, m)
+
+    assert_eq(t1, t2)
+
+    say "Sum_{k=1..#{n}} ψ_#{m}(k) = #{t1}"
+}
+
+__END__
+Sum_{k=1..96} ψ_0(k) = 345
+Sum_{k=1..47} ψ_1(k) = 1686
+Sum_{k=1..29} ψ_2(k) = 9998
+Sum_{k=1..43} ψ_3(k) = 962082
+Sum_{k=1..31} ψ_4(k) = 6404948
+Sum_{k=1..92} ψ_5(k) = 106212512590
+Sum_{k=1..41} ψ_6(k) = 30483567832
+Sum_{k=1..41} ψ_7(k) = 1102280090206
+Sum_{k=1..27} ψ_8(k) = 997166331596
+Sum_{k=1..55} ψ_9(k) = 27720063080249258
+Sum_{k=1..81} ψ_10(k) = 95772724544494382222
