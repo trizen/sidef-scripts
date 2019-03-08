@@ -12,9 +12,20 @@
 
 func dedekind_psi_partial_sum (n, m) {
 
+    var lookup_size = (2 + 2*n.iroot(3)**2)
+    var omega_sum_lookup = [0]
+
+    for k in (1..lookup_size) {
+        omega_sum_lookup[k] = (omega_sum_lookup[k-1] + 2**(k.omega))
+    }
+
     var mu = moebius(0, n.isqrt)
 
     func R (n) is cached {      # A064608(n) = Sum_{k=1..n} 2^omega(k)
+
+        if (n <= lookup_size) {
+            return omega_sum_lookup[n]
+        }
 
         var total = 0
 
@@ -44,7 +55,6 @@ func dedekind_psi_partial_sum (n, m) {
         return total
     }
 
-    var lookup_size = (2 + 2*n.iroot(3)**2)
     var dedekind_sum_lookup = [0]
 
     for k in (1..lookup_size) {

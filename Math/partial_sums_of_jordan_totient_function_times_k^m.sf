@@ -64,11 +64,11 @@ func partial_sums_of_jordan_totient_simple(n, m, z) is cached {
 
     var A = faulhaber_sum(n, m + z)
 
-    var B = sum(2..floor(n / (1+floor(sqrt(n)))), {|k|
+    var B = sum(2..floor(n / (1+floor(isqrt(n)))), {|k|
         k**z * __FUNC__(floor(n/k), m, z)
     })
 
-    var C = sum(1..floor(sqrt(n)), {|k|
+    var C = sum(1..floor(isqrt(n)), {|k|
         (faulhaber_sum(floor(n/k), z) - faulhaber(floor(n/(k+1)), z)) * __FUNC__(k, m, z)
     })
 

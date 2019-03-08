@@ -31,23 +31,35 @@
 #   https://oeis.org/A064608 -- Partial sums of A034444: sum of number of unitary divisors from 1 to n.
 #   https://oeis.org/A061503 -- Sum_{k<=n} (tau(k^2)), where tau is the number of divisors function.
 
-func R(n) {     # O(sqrt(n)) complexity
+func inverse_moebius_of_dedekind_partial_sum (n, m) {
 
-    var total = 0
-    var mu = moebius(0, n.isqrt)
+    var lookup_size = (2 + 2*n.iroot(3)**2)
+    var omega_sum_lookup = [0]
 
-    mu.each_kv { |k,v|
-        total += v*(
-            2*sum(1..floor(sqrt(n / k**2)), {|j|
-                floor(n / (j * k**2))
-            }) - floor(sqrt(n / k**2))**2
-        ) if v
+    for k in (1..lookup_size) {
+        omega_sum_lookup[k] = (omega_sum_lookup[k-1] + 2**(k.omega))
     }
 
-    return total
-}
+    var mu = moebius(0, n.isqrt)
 
-func inverse_moebius_of_dedekind_partial_sum (n, m) {
+    func R(n) {   # A064608(n) = Sum_{k=1..n} 2^omega(k)
+
+        if (n <= lookup_size) {
+            return omega_sum_lookup[n]
+        }
+
+        var total = 0
+
+        for k in (1..n.isqrt) {
+            total += mu[k]*(
+                2*sum(1..floor(isqrt(n / k**2)), {|j|
+                    floor(n / (j * k**2))
+                }) - floor(isqrt(n / k**2))**2
+            ) if mu[k]
+        }
+
+        return total
+    }
 
     var s = n.isqrt
     var total = 0
