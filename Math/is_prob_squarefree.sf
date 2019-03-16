@@ -9,6 +9,19 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Square-free_integer
 
+func is_squarefree_over_prod (n, k) {
+
+    var g = gcd(n, k)
+
+    if (g > 1) {
+        var r = (n / g)
+        return true if (r == 1)
+        return false if (gcd(r, k) > 1)
+    }
+
+    return true
+}
+
 func store_random_factor(a, f) {
     *a = f()
     (*a).len > 1
@@ -44,6 +57,12 @@ func is_prob_squarefree(r, tries=50) {
     }
 
     return false if r.is_power
+
+    static FP = 5.of {|k|
+        10**(k+2) -> primorial
+    }
+
+    FP.all { is_squarefree_over_prod(r, _) } || return false
 
     loop {
         var f = r.trial_factor(1e6)

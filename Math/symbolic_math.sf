@@ -18,7 +18,7 @@ class Symbol()   < Base {}
 
 class Base {
     #const I = Exp(Fraction(1, 2) * Log(-1))
-    const I = Power(-1, Fraction(1, 2))
+    has I = Power(-1, Fraction(1, 2))
 
     method sin {
         Fraction(Exp(I * self) - Exp(-I * self), (2*I))
