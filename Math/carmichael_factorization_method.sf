@@ -21,8 +21,8 @@ func solve_cubic_equation (a, b, c, d) {
     var p = (3*a*c - b*b)/(3*a*a)
     var q = (2*b**3 - 9*a*b*c + 27*a*a*d)/(27 * a**3)
 
-    var t = (cbrt(-(q/2) + sqrt((q**2 / 4) + (p**3 / 27))) +
-             cbrt(-(q/2) - sqrt((q**2 / 4) + (p**3 / 27))))
+    var t = (icbrt(-(q/2) + isqrt((q**2 / 4) + (p**3 / 27))) +
+             icbrt(-(q/2) - isqrt((q**2 / 4) + (p**3 / 27))))
 
     var x = (t - b/(3*a))
 
@@ -31,11 +31,9 @@ func solve_cubic_equation (a, b, c, d) {
 
 func carmichael_factorization(n) {
 
-    local Num!PREC = *"#{abs(10 + n.ilog2)}"
-
     var try_parameters = {|a,b,c|
 
-        var t = solve_cubic_equation(a, b, c, -n).round
+        var t = solve_cubic_equation(a, b, c, -n).floor
         var g = gcd(t, n)
 
         if (g.is_between(2, n-1)) {
@@ -60,9 +58,10 @@ func carmichael_factorization(n) {
     }
 }
 
-say carmichael_factorization(7520940423059310542039581)                         #=> 79443853
-say carmichael_factorization(1000000032900000272110000405099)                   #=> 10000000103
-say carmichael_factorization(570115866940668362539466801338334994649)           #=> 4563211789627
-say carmichael_factorization(8325544586081174440728309072452661246289)          #=> 11153738721817
-say carmichael_factorization(1169586052690021349455126348204184925097724507)    #=> 166585508879747
-say carmichael_factorization(61881629277526932459093227009982733523969186747)   #=> 1233150073853267
+say carmichael_factorization(7520940423059310542039581)                                         #=> 79443853
+say carmichael_factorization(1000000032900000272110000405099)                                   #=> 10000000103
+say carmichael_factorization(570115866940668362539466801338334994649)                           #=> 4563211789627
+say carmichael_factorization(8325544586081174440728309072452661246289)                          #=> 11153738721817
+say carmichael_factorization(1169586052690021349455126348204184925097724507)                    #=> 166585508879747
+say carmichael_factorization(61881629277526932459093227009982733523969186747)                   #=> 1233150073853267
+say carmichael_factorization(173315617708997561998574166143524347111328490824959334367069087)   #=> 173823271649325368927
