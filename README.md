@@ -323,6 +323,7 @@ A simple collection of Sidef scripts.
     * [Siqs factorization](./Math/siqs_factorization.sf)
     * [Smallest k-gonal inverse](./Math/smallest_k-gonal_inverse.sf)
     * [Solovay-strassen primality test](./Math/solovay-strassen_primality_test.sf)
+    * [Solve cubic equation real](./Math/solve_cubic_equation_real.sf)
     * [Solve linear congruence equation](./Math/solve_linear_congruence_equation.sf)
     * [Solve pell equation](./Math/solve_pell_equation.sf)
     * [Split summation](./Math/split_summation.sf)
