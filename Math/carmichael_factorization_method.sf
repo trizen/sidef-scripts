@@ -24,7 +24,7 @@ func solve_cubic_equation (a, b, c, d) {
     var t = (icbrt(-(q/2) + isqrt((q**2 / 4) + (p**3 / 27))) +
              icbrt(-(q/2) - isqrt((q**2 / 4) + (p**3 / 27))))
 
-    var x = (t - b/(3*a))
+    var x = round(t - b/(3*a))
 
     return x
 }
@@ -33,7 +33,7 @@ func carmichael_factorization(n) {
 
     var try_parameters = {|a,b,c|
 
-        var t = solve_cubic_equation(a, b, c, -n).floor
+        var t = solve_cubic_equation(a, b, c, -n)
         var g = gcd(t, n)
 
         if (g.is_between(2, n-1)) {
