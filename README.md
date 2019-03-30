@@ -197,6 +197,7 @@ A simple collection of Sidef scripts.
     * [Inverse of fibonacci](./Math/inverse_of_fibonacci.sf)
     * [Invmod of coprime factorials](./Math/invmod_of_coprime_factorials.sf)
     * [Is both truncatable prime](./Math/is_both_truncatable_prime.sf)
+    * [Is carmichael number](./Math/is_carmichael_number.sf)
     * [Is even perfect](./Math/is_even_perfect.sf)
     * [Is even perfect 2](./Math/is_even_perfect_2.sf)
     * [Is perfect power](./Math/is_perfect_power.sf)

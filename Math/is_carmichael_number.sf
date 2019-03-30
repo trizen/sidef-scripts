@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 30 March 2019
+# https://github.com/trizen
+
+# Prove if a given number `n` is a Carmichael number, using the divisors of `n-1`.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Carmichael_number
+#   https://en.wikipedia.org/wiki/Von_Staudt%E2%80%93Clausen_theorem
+
+# C. Pomerance, J. L. Selfridge, and S. S. Wagstaff, Jr., The pseudoprimes to 25*10^9, Math. Comp., 35 (1980), 1003-1026.
+#   http://www.ams.org/journals/mcom/1980-35-151/S0025-5718-1980-0572872-7/home.html
+
+func bernoulli_denominator (n) {
+
+    return 1 if n.is_zero
+    return 2 if n.is_one
+    return 1 if n.is_odd
+
+    n.divisors.grep {|d|
+        d+1 -> is_prob_prime
+    }.prod {|d|
+        d+1
+    }
+}
+
+func is_carmichael (n) {
+
+    # Make sure `n` is not prime
+    return false if (n<=1 || n.is_prime)
+
+    # Is a Carmichael number iff `n` divides the denominator of Bernoulli(n-1)
+    n.divides(bernoulli_denominator(n-1))
+}
+
+say is_carmichael.first(5)
+
+__END__
+561, 1105, 1729, 2465, 2821, 6601, 8911, 10585, 15841, 29341
