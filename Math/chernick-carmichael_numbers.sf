@@ -1,0 +1,64 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 30 March 2019
+# https://github.com/trizen
+
+# Generate the extended Chernick-Carmichael numbers bellow a given limit.
+
+# See also:
+#   https://oeis.org/A317126
+#   https://oeis.org/A317136
+
+# Generate the factors of a Chernick number, given m and k,
+# where k is the number of distinct prime factors.
+func chernick_carmichael_factors (m, k) {
+    [6*m + 1, 12*m + 1, {|j| 2**j * 9*m + 1 }.map(1 .. k-2)...]
+}
+
+# Generate the Chernick-Carmichael bellow a given limit
+func chernick_carmichael_numbers(limit) {
+
+    var terms = []
+
+    for k in (3 .. Inf) {
+
+        # We can stop the search when:
+        #   (6*m + 1) * (12*m + 1) * Product_{j=1..k-2} (9 * 2^j * m + 1)
+        # is greater than the limit, for m=1.
+        if (chernick_carmichael_factors(1, k).prod > limit) {
+            break
+        }
+
+        for m in (1 .. Inf) {
+
+            # `m` must be divisible by 2^(k-4)
+            if (k >= 5) {
+                m % (2**(k - 4)) == 0 || next
+            }
+
+            # Generate the k-distinct factors
+            var f = chernick_carmichael_factors(m, k)
+            var c = f.prod
+
+            break if (c > limit)
+
+            # Check the conditions for an extended Chernick-Carmichael number
+            f.all { .is_prime } || next
+
+            # Sanity check (optional)
+            assert(c.is_carmichael, "#{c} is not a Carmichael number")
+
+            # Is a Chernick-Carmichael number (we store it)
+            terms << c
+        }
+    }
+
+    # Return the sorted list
+    return terms.sort
+}
+
+say chernick_carmichael_numbers(10**10)
+
+__END__
+[1729, 63973, 294409, 56052361, 118901521, 172947529, 216821881, 228842209, 1299963601, 2301745249, 9624742921]
