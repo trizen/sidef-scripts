@@ -71,6 +71,7 @@ A simple collection of Sidef scripts.
     * [Arithmetic derivative](./Math/arithmetic_derivative.sf)
     * [BBP-type formulae](./Math/BBP-type_formulae.sf)
     * [Bernoulli approx](./Math/bernoulli_approx.sf)
+    * [Bernoulli denominators](./Math/bernoulli_denominators.sf)
     * [Bernoulli numbers from factorials](./Math/bernoulli_numbers_from_factorials.sf)
     * [Bernoulli numbers from pascal triangle](./Math/bernoulli_numbers_from_pascal_triangle.sf)
     * [Bernoulli numbers from pascal triangle 2](./Math/bernoulli_numbers_from_pascal_triangle_2.sf)

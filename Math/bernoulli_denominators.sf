@@ -1,0 +1,40 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 30 March 2019
+# https://github.com/trizen
+
+# Fast computation of the denominator of the nth-Bernoulli number.
+
+# See also:
+#   https://oeis.org/A139822
+#   https://en.wikipedia.org/wiki/Von_Staudt%E2%80%93Clausen_theorem
+
+func bernoulli_denominator (n) {
+
+    return 1 if n.is_zero
+    return 2 if n.is_one
+    return 1 if n.is_odd
+
+    n.divisors.grep {|d|
+        d+1 -> is_prob_prime
+    }.prod {|d|
+        d+1
+    }
+}
+
+for n in (0..10) {
+    say ("denom(B(10^#{n})) = ", bernoulli_denominator(10**n))
+}
+
+__END__
+denom(B(10^0)) = 2
+denom(B(10^1)) = 66
+denom(B(10^2)) = 33330
+denom(B(10^3)) = 342999030
+denom(B(10^4)) = 2338224387510
+denom(B(10^5)) = 9355235774427510
+denom(B(10^6)) = 936123257411127577818510
+denom(B(10^7)) = 9601480183016524970884020224910
+denom(B(10^8)) = 394815332706046542049668428841497001870
+denom(B(10^9)) = 24675958688943241584150818852261991458372001870
