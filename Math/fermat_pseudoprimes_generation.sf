@@ -42,7 +42,7 @@ func fermat_pseudoprimess(limit) {
 }
 
 func is_fermat_pseudoprime(n) {
-    powmod(2, n-1, n)
+    powmod(2, n-1, n) == 1
 }
 
 var pseudoprimes = fermat_pseudoprimess(10000)
