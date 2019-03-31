@@ -149,6 +149,7 @@ A simple collection of Sidef scripts.
     * [Fermat factorization method](./Math/fermat_factorization_method.sf)
     * [Fermat factorization method 2](./Math/fermat_factorization_method_2.sf)
     * [Fermat hybrid factorization method](./Math/fermat_hybrid_factorization_method.sf)
+    * [Fermat pseudoprimes generation](./Math/fermat_pseudoprimes_generation.sf)
     * [Fermat strong primality test](./Math/fermat_strong_primality_test.sf)
     * [Fibonacci closed solution](./Math/fibonacci_closed_solution.sf)
     * [Fibonacci factorization method](./Math/fibonacci_factorization_method.sf)

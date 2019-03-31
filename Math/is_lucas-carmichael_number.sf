@@ -13,7 +13,7 @@
 #   https://oeis.org/A322702 -- a(n) is the product of primes p such that p+1 divides n.
 #   https://oeis.org/A006972 -- Lucas-Carmichael numbers: squarefree composite numbers n such that p | n => p+1 | n+1.
 
-func bernoulli_lucas_denominator (n) {      # A322702
+func lucas_bernoulli_denominator (n) {      # A322702
 
     n.divisors.grep {|d|
         d-1 -> is_prob_prime
@@ -28,7 +28,7 @@ func is_lucas_carmichael (n) {
     return false if (n<=1 || n.is_prime)
 
     # Is a Lucas-Carmichael number iff `n` divides Product_{d|n+1, d-1 is prime} (d-1).
-    n.divides(bernoulli_lucas_denominator(n+1))
+    n.divides(lucas_bernoulli_denominator(n+1))
 }
 
 say is_lucas_carmichael.first(5)
