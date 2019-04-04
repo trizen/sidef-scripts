@@ -55,17 +55,17 @@ func liouville_sum(n) {
         }
 
         var s = n.isqrt
-        var M = n.isqrt
+        var L = n.isqrt
 
         for k in (2 .. floor(n/(s+1))) {
-            M -= __FUNC__(floor(n/k))
+            L -= __FUNC__(floor(n/k))
         }
 
         for k in (1..s) {
-            M -= (liouville_sum_lookup[k] * (floor(n/k) - floor(n/(k+1))))
+            L -= (liouville_sum_lookup[k] * (floor(n/k) - floor(n/(k+1))))
         }
 
-        cache{n} = M
+        cache{n} = L
     }(n)
 }
 
