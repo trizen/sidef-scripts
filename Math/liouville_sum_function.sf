@@ -35,11 +35,10 @@ func liouville_sum(n) {
 
     var lookup_size = (2 * n.iroot(3)**2)
 
-    var liouville_lookup = [0]
     var liouville_sum_lookup = [0]
 
     for k in (1..lookup_size) {
-        liouville_sum_lookup[k] = (liouville_sum_lookup[k-1] + (liouville_lookup[k] = liouville(k)))
+        liouville_sum_lookup[k] = (liouville_sum_lookup[k-1] + liouville(k))
     }
 
     var cache = Hash()
@@ -75,7 +74,7 @@ func liouville_sum_test(n) {  # formula in terms of the Mertens function
     })
 }
 
-for n in (1 .. 6) {    # takes ~1.4 seconds
+for n in (1 .. 6) {    # takes ~1.3 seconds
 
     var L1 = liouville_sum(10**n)
     var L2 = liouville_sum_test(10**n)
