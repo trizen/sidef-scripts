@@ -68,6 +68,7 @@ A simple collection of Sidef scripts.
     * [Arithmetic-geometric-harmonic mean](./Math/arithmetic-geometric-harmonic_mean.sf)
     * [Arithmetic-geometric mean](./Math/arithmetic-geometric_mean.sf)
     * [Arithmetic-harmonic mean](./Math/arithmetic-harmonic_mean.sf)
+    * [Arithmetic convolution](./Math/arithmetic_convolution.sf)
     * [Arithmetic derivative](./Math/arithmetic_derivative.sf)
     * [BBP-type formulae](./Math/BBP-type_formulae.sf)
     * [Bernoulli approx](./Math/bernoulli_approx.sf)

@@ -15,7 +15,7 @@ func dirichlet_convolution(n, f, g) {
 # Example:
 #   Dirichlet convolution of sigma(n) (A000203) with phi(n) (A000010).
 
-var f = { 1  }
-var g = { .factorial  }
+var f = { .sigma }
+var g = { .euler_phi }
 
 say 20.of {|n| dirichlet_convolution(n, f, g) }     # https://oeis.org/A038040

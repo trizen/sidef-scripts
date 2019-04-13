@@ -1,0 +1,20 @@
+#!/usr/bin/ruby
+
+# Arithmetical convolution of two functions.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Convolution
+
+func convolution(n, f, g) {
+    sum(1..n, {|k|
+        f(k) * g(n - k + 1)
+    })
+}
+
+# Example:
+#   Convolution of sigma(n) (A000203) with phi(n) (A000010).
+
+var f = { .sigma }
+var g = { .euler_phi }
+
+say 20.of {|n| convolution(n, f, g) }     # https://oeis.org/A086733
