@@ -1,0 +1,52 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 13 April 2019
+# https://github.com/trizen
+
+# A simple factorization method, using the binary search algorithm, for numbers with exactly three distinct prime factors of the form:
+#
+#   n = a * ((a±1)*x ± 1) *  ((a±1)*y ± 1)
+#
+# for x,y relatively small.
+
+# Many Carmichael numbers and Lucas pseudoprimes are of this form and can be factorized relatively fast by this method.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Cubic_function
+#   https://en.wikipedia.org/wiki/Binary_search_algorithm
+
+func carmichael_factorization(n) {
+
+    var blocks = [
+        {|x,a,b|
+            x * ((x-1)*a + 1) * ((x-1)*b + 1)
+        },
+
+        {|x,a,b|
+            x * ((x+1)*a - 1) * ((x+1)*b - 1)
+        },
+    ]
+
+    for a in (1..11), b in (a+1 .. 23) {
+
+        for block in blocks {
+
+            var r = bsearch_le(n.icbrt, {|x| block(x, a, b) <=> n })
+            var g = gcd(r, n)
+
+            if (g.is_between(2, n-1)) {
+                return r
+            }
+        }
+    }
+
+    return 1
+}
+
+say carmichael_factorization(7520940423059310542039581)                                         #=> 79443853
+say carmichael_factorization(570115866940668362539466801338334994649)                           #=> 4563211789627
+say carmichael_factorization(8325544586081174440728309072452661246289)                          #=> 11153738721817
+say carmichael_factorization(1169586052690021349455126348204184925097724507)                    #=> 166585508879747
+say carmichael_factorization(61881629277526932459093227009982733523969186747)                   #=> 1233150073853267
+say carmichael_factorization(173315617708997561998574166143524347111328490824959334367069087)   #=> 173823271649325368927

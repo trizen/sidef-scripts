@@ -7,7 +7,7 @@
 # A new factorization method for numbers with exactly three distinct prime factors of the form:
 #
 #   n = a * (a+x) * (a+y)
-#   n = a * ((a±1)*x ± 1) *  ((a±1)*y ± 1)
+#   n = a * ((a±1)*x ± 1) * ((a±1)*y ± 1)
 #
 # for x,y relatively small.
 
