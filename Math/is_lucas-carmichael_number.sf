@@ -14,7 +14,6 @@
 #   https://oeis.org/A006972 -- Lucas-Carmichael numbers: squarefree composite numbers n such that p | n => p+1 | n+1.
 
 func lucas_bernoulli_denominator (n) {      # A322702
-
     n.divisors.grep {|d|
         d-1 -> is_prob_prime
     }.prod {|d|
