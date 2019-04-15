@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# Compute the sucessive differences of a given sequence.
+# Compute the successive differences of a given sequence.
 
 # An Introduction to "sequences" and discrete calculus:
 #   https://www.youtube.com/watch?v=J-Gow6SfG2c
@@ -17,7 +17,7 @@ func differences(seq) {
     return deltas
 }
 
-say "=> Dfference of powers:"
+say "=> Difference of powers:"
 
 for n in (0 .. 5) {
      say differences(n+1 -> of {|k| k**n })
@@ -33,7 +33,7 @@ for n in (^10) {
 }
 
 __END__
-=> Dfference of powers:
+=> Difference of powers:
 [[1]]
 [[0, 1], [1]]
 [[0, 1, 4], [1, 3], [2]]

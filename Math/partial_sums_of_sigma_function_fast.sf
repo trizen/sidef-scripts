@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 # Author: Daniel "Trizen" Șuteu
-# Date: 08 Novermber 2018
+# Date: 08 November 2018
 # https://github.com/trizen
 
 # A new generalized algorithm with O(sqrt(n)) complexity for computing the partial-sums of the `sigma_j(k)` function:

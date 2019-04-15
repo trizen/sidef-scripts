@@ -5,7 +5,7 @@
 # The Recamán's sequence is defined as:
 #   a(0) = 0
 #   a(n) = a(n-1) - n, if positive and not already in the sequence,
-#   a(n) = a(n-1) + n, otherwse
+#   a(n) = a(n-1) + n, otherwise
 
 # OEIS sequence:
 #   https://oeis.org/A005132

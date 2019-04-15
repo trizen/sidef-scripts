@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# An efficient algorithm for computing Fibonacci(n) (mod m) for arbitary large integers.
+# An efficient algorithm for computing Fibonacci(n) (mod m) for arbitrary large integers.
 
 # Algorithm from:
 #   https://metacpan.org/source/KRYDE/Math-NumSeq-72/lib/Math/NumSeq/Fibonacci.pm

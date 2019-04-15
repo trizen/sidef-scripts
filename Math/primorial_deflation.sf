@@ -13,7 +13,7 @@
 
 # See also:
 #   https://oeis.org/A181815 -- "primorial deflation" of A025487(n)
-#   https://oeis.org/A108951 -- "primorial inflation" of n is A108951(n)
+#   https://oeis.org/A108951 -- "primorial inflation" of n
 
 func primorial_deflation (n) {
 

@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# Compute modular exponentation, using the Chinese remainder theorem (CRT) and Fermat's little theorem.
+# Compute modular exponentiation, using the Chinese remainder theorem (CRT) and Fermat's little theorem.
 
 # This assumes that the modulo `m` can be factorized.
 

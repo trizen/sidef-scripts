@@ -29,7 +29,7 @@ func incomplete_e_asymptotic (n) {
     (-sqrt(1/n)/sqrt(2*π) - (11 * (1/n)**(3/2))/(12*sqrt(2*π))) * exp((1 - log(n))*n)
 }
 
-# Identitity for gamma(n+1) = n!
+# Identity for gamma(n+1) = n!
 func approximate_factorial(n) {
 
     var a = (e - incomplete_e(n))
