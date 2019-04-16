@@ -5,25 +5,34 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Chess960
 
-var pieces = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook']
+var pieces = %w(♛ ♚ ♜ ♜ ♝ ♝ ♞ ♞)
 
-func isok (row) {
-    var king = row.index('king')
-    var (rook1, rook2) = row.indices_of('rook')...
+func is_valid_960 (backrank) {
+    var king = backrank.index('♚')
+    var (rook1, rook2) = backrank.indices_of('♜')...
     king.is_between(rook1, rook2) || return false
-    var (bishop1, bishop2) = row.indices_of('bishop')...
+    var (bishop1, bishop2) = backrank.indices_of('♝')...
     bishop1+bishop2 -> is_odd
 }
 
-var chess960 = gather {
-    pieces.permutations {|*a|
-        take(a) if isok(a)
+func random_960_position {
+    pieces.shuffle.permutations {|*a|
+        return a if is_valid_960(a)
     }
 }
 
-chess960 = chess960.uniq
+say "Here's a random 960 position: #{random_960_position().join(' ')}"
+
+var chess960 = gather {
+    pieces.permutations {|*a|
+        take(a) if is_valid_960(a)
+    }
+}
+
+chess960.uniq!      # remove duplicates
 
 say "There are #{chess960.len} initial positions."
 
 __END__
+Here's a random 960 position: ♞ ♜ ♝ ♛ ♞ ♚ ♜ ♝
 There are 960 initial positions.
