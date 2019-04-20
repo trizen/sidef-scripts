@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+
+# Modular computation of the tetration operation, using using Euler's theorem.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Tetration
+#   https://www.youtube.com/watch?v=vzhzwLp_qrs
+
+func tetration(x, n, m) {
+    return x if (n == 1)
+
+    var t = m.euler_phi
+    var e = 0
+
+    if (t > 1) {
+        e = (__FUNC__(x, n-1, t) % m)
+    }
+
+    powmod(x, e, m)
+}
+
+for n in (2 .. 1000) {
+    var k = n.prime
+    if (tetration(10, 10, k) + 23 % k == 0) {
+        say "#{'%3s' % k} | (10∆10 + 23)"
+    }
+}
+
+__END__
+  3 | (10∆10 + 23)
+ 13 | (10∆10 + 23)
+673 | (10∆10 + 23)
