@@ -6,17 +6,12 @@
 #   https://en.wikipedia.org/wiki/Tetration
 #   https://www.youtube.com/watch?v=vzhzwLp_qrs
 
-func tetration(x, n, m) {
-    return x if (n == 1)
+func tetration(a, b, m) {
 
-    var t = m.euler_phi
-    var e = 0
+    return 0 if (m == 1)
+    return 1 if (b == 0)
 
-    if (t > 1) {
-        e = (__FUNC__(x, n-1, t) % m)
-    }
-
-    powmod(x, e, m)
+    powmod(a, __FUNC__(a, b-1, m.euler_phi), m)
 }
 
 for n in (2 .. 1000) {
