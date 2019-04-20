@@ -247,6 +247,7 @@ A simple collection of Sidef scripts.
     * [Modular exponentiation](./Math/modular_exponentiation.sf)
     * [Modular fibonacci number cassini](./Math/modular_fibonacci_number_cassini.sf)
     * [Modular fibonacci number fast](./Math/modular_fibonacci_number_fast.sf)
+    * [Modular hyperoperation](./Math/modular_hyperoperation.sf)
     * [Modular lucas sequences U V](./Math/modular_lucas_sequences_U_V.sf)
     * [Modular multiplicative inverse](./Math/modular_multiplicative_inverse.sf)
     * [Modular tetration](./Math/modular_tetration.sf)

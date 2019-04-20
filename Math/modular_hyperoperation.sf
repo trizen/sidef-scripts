@@ -1,0 +1,86 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 20 April 2019
+# https://github.com/trizen
+
+# Generalized implementation of Knuth's up-arrow hyperoperation (modulo some m).
+
+# See also:
+#   https://en.wikipedia.org/wiki/Knuth%27s_up-arrow_notation
+
+func hyper1 (n, k, m) {
+    powmod(n, k, m)
+}
+
+func hyper2 (n, k, m) is cached {
+
+    return 0 if (m == 1)
+    return 1 if (k == 0)
+
+    hyper1(n, __FUNC__(n, k-1, euler_phi(m)), m)
+}
+
+func hyper3 (n, k, m) is cached {
+
+    return 0 if (m == 1)
+    return 1 if (k == 0)
+
+    hyper2(n, __FUNC__(n, k-1, euler_phi(m)), m)
+}
+
+func hyper4 (n, k, m) is cached {
+
+    return 0 if (m == 1)
+    return 1 if (k == 0)
+
+    hyper3(n, __FUNC__(n, k-1, euler_phi(m)), m)
+}
+
+func knuth (k, n, g, m) is cached {
+
+    (n >= 1) && (g == 0) && return 1
+
+    n == 0 && return ((k * g) % m)
+    n == 1 && return hyper1(k, g, m)
+    n == 2 && return hyper2(k, g, m)
+    n == 3 && return hyper3(k, g, m)
+    n == 4 && return hyper4(k, g, m)
+
+    __FUNC__(k, n-1, __FUNC__(k, n, g-1, m), m)
+}
+
+var m = 10**3
+
+for k in (0..6) {
+
+    var x = 100.irand
+    var y = 100.irand
+
+    var n = knuth(x, k, y, m)
+
+    printf("%5s %10s %5s = %5s   (mod %s)\n", x, ('↑' * k) || '*', y, n, m)
+}
+
+say "\n=> Finding prime factors of 10↑↑10 + 23:";
+
+for n in (2 .. 1000) {
+    var k = n.prime
+    if (knuth(10, 2, 10, k) + 23 % k == 0) {
+        say "#{'%3s' % k} | (10↑↑10 + 23)"
+    }
+}
+
+__END__
+   21          *    85 =   785   (mod 1000)
+   93          ↑    91 =   157   (mod 1000)
+   69         ↑↑     3 =   629   (mod 1000)
+   12        ↑↑↑    41 =    16   (mod 1000)
+   76       ↑↑↑↑    25 =   576   (mod 1000)
+   93      ↑↑↑↑↑    76 =   893   (mod 1000)
+   63     ↑↑↑↑↑↑    43 =   967   (mod 1000)
+
+=> Finding prime factors of 10↑↑10 + 23:
+  3 | (10↑↑10 + 23)
+ 13 | (10↑↑10 + 23)
+673 | (10↑↑10 + 23)
