@@ -242,6 +242,7 @@ A simple collection of Sidef scripts.
     * [LUP decomposition](./Math/LUP_decomposition.sf)
     * [Mandelbrot set](./Math/mandelbrot_set.sf)
     * [Mathematical formulas](./Math/mathematical_formulas.sf)
+    * [Mediant-cfrac factorization](./Math/mediant-cfrac_factorization.sf)
     * [Mertens function](./Math/mertens_function.sf)
     * [Miller rabin primality test](./Math/miller_rabin_primality_test.sf)
     * [Modular exponentiation](./Math/modular_exponentiation.sf)
