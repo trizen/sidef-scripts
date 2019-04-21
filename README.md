@@ -142,6 +142,7 @@ A simple collection of Sidef scripts.
     * [Factorial expansion](./Math/factorial_expansion.sf)
     * [Farey factorization method](./Math/farey_factorization_method.sf)
     * [Farey fraction approximations](./Math/farey_fraction_approximations.sf)
+    * [Farey fraction approximations 2](./Math/farey_fraction_approximations_2.sf)
     * [Farey sequences](./Math/farey_sequences.sf)
     * [Fast fourier transform](./Math/fast_fourier_transform.sf)
     * [Faulhaber's formula](./Math/faulhaber_s_formula.sf)
