@@ -1,11 +1,10 @@
 #!/usr/bin/ruby
 
 # Daniel "Trizen" Șuteu
-# Date: 15 September 2018
-# Edit: 25 October 2018
+# Date: 20 April 2019
 # https://github.com/trizen
 
-# Variation of the continued-fraction factorization method, but using the mediant inequality to approximate sqrt(n).
+# Continued-fraction factorization method, combined with the mediant inequality to approximate sqrt(n).
 
 # See also:
 #   https://en.wikipedia.org/wiki/Continued_fraction_factorization
@@ -47,7 +46,33 @@ func gauss_elimination(A, n) {
     return I
 }
 
-func farey_factorization (n) {
+func check_factor (n, g, factors) {
+
+    while (g `divides` n) {
+
+        n /= g;
+        factors << g
+
+        if (is_prime(n)) {
+            factors << n
+            return 1
+        }
+    }
+
+    return n
+}
+
+func next_multiplier (k) {
+    k += 2
+
+    while (!k.is_square_free) {
+        ++k
+    }
+
+    return k
+}
+
+func farey_factorization (n, multiplier=1) {
 
     # Check for primes and negative numbers
     return []  if (n <= 1)
@@ -90,17 +115,29 @@ func farey_factorization (n) {
         }
     }
 
-    var x = n.isqrt
+    var N = n*multiplier
+    var x = N.isqrt
 
     var a1 = x
-    var a2 = 1
+    var b1 = 1
 
-    var b1 = x+1
+    var a2 = x+1
     var b2 = 1
 
-    var B = 3*int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
+    var y = x
+    var z = 1
+    var w = x+x
+    var r = w
 
-    var factor_base  = B.primes.grep {|p| (p <= 2) || (kronecker(n, p) == 1) }
+    var (e1, e2) = (1, 0)
+    var (f1, f2) = (0, 1)
+
+    #var B = int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
+    var nf = int(exp(sqrt(log(n) * log(log(n))))**(sqrt(2) / 4))
+
+    #var factor_base  = B.primes.grep {|p| (p <= 97) || (kronecker(N, p) == 1) }
+    var factor_base = (1..Inf -> lazy.map { .prime }.grep {|p| (p <= 2) || (kronecker(N, p) == 1) }.first(nf))
+
     var factor_prod  = factor_base.prod
     var factor_index = Hash(factor_base ~Z ^factor_base -> flat...)
 
@@ -119,29 +156,54 @@ func farey_factorization (n) {
         return sig
     }
 
-    while (A.len <= L) {
+    while (A.len < L) {
+
+        # Continued fraction expansion of sqrt(N)
+        y = (r*z - y)
+        z = ((N - y*y) / z)
+        r = round((x + y) / z)
+
+        var a = ((x*f2 + e2) % n)
+        var b = (a*a % n)
+        var c = (b > w ? n-b : b)
+
+        resolve_factor(a, c) if c.is_square
+
+        if (c.is_smooth_over_prod(factor_prod)) {
+            var c_factors = c.factor_exp
+
+            if (c_factors) {
+                A << exponent_signature(c_factors)
+                Q << [a, c]
+            }
+        }
+
+        (f1, f2) = (f2, (r*f2 + f1) % n)
+        (e1, e2) = (e2, (r*e2 + e1) % n)
+
+        if (z == 1) {
+            return __FUNC__(n, next_multiplier(multiplier))
+        }
 
         # Mediant inequality
-        var m = (a1 + b1)/(a2 + b2)
+        var a3 = a1+a2
+        var b3 = b1+b2
 
-        if (m*m < n) {
-            (a1, a2) = m.nude
+        if (a3*a3 < N*b3*b3) {
+            (a1, b1) = (a3, b3)
         }
         else {
-            (b1, b2) = m.nude
+            (a2, b2) = (a3, b3)
         }
 
         # There is a good chance that `numerator(m)^2 (mod n)` is B-smooth
-        var t = (m.numerator % n)
+        var t = (a3 % n)
         var v = (t*t % n)
+
+        v = (n-v) if (n-v < v)
 
         # If `v` is a square, then `gcd(t - sqrt(v), n)` is divisor of `n`.
         resolve_factor(t, v) if v.is_square
-
-        if (n-v < v) {
-            v = (n - v)
-            resolve_factor(t, v) if v.is_square
-        }
 
         if (v.is_smooth_over_prod(factor_prod)) {
 
@@ -161,10 +223,15 @@ func farey_factorization (n) {
     var I  = gauss_elimination(A, L-1)
     var LR = (A.end - A.rindex_by { !.is_zero })
 
+    var rem     = n
+    var factors = []
+
     for solution in (I.last(LR)) {
 
         var X = 1
         var Y = 1
+
+        var done = false
 
         for i in (^Q) {
 
@@ -173,25 +240,53 @@ func farey_factorization (n) {
                 X *= Q[i][0] %= n      #=
                 Y *= Q[i][1]
 
-                resolve_factor(X, Y)
+                var g = gcd(X - Y.isqrt, rem)
+
+                if ((g > 1) && (g < rem)) {
+                    rem = check_factor(rem, g, factors)
+                    if (rem == 1) { done = true; break }
+                }
             }
+        }
+
+        break if done
+    }
+
+    var final_factors = []
+
+    for f in (factors) {
+        if (f.is_prime) {
+            final_factors << f
+        }
+        else {
+            final_factors << __FUNC__(f)...
         }
     }
 
-    return [n]
+    if (rem != 1) {
+        if (rem != n) {
+            final_factors << __FUNC__(rem)...
+        }
+        else {
+            final_factors << rem
+        }
+    }
+
+    # Failed to factorize n (try again with a multiplier)
+    if (rem == n) {
+        return __FUNC__(n, next_multiplier(multiplier))
+    }
+
+    # Return all prime factors of n
+    final_factors.sort
 }
 
-var composites = (ARGV ? ARGV.map{.to_i} : {|k| irand(2, 1<<k) }.map(2..60) )
+var composites = (ARGV ? ARGV.map{.to_i} : {|k| irand(2, 1<<k) }.map(2..40) )
 
 for n in (composites) {
 
     var factors = farey_factorization(n)
     assert_eq(factors.prod, n)
 
-    if (factors.all { .is_prime }) {
-        say "#{n} = #{factors.join(' * ')}"
-    }
-    else {
-        say "#{n} = #{factors.join(' * ')} (incomplete factorization)"
-    }
+    say "#{n} = #{factors.map {|f| f.is_prime ? f : \"#{f} (composite)\"}.join(' * ')}"
 }
