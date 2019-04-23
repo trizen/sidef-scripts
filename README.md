@@ -325,6 +325,7 @@ A simple collection of Sidef scripts.
     * [Round half to even](./Math/round_half_to_even.sf)
     * [RSA algorithm](./Math/RSA_algorithm.sf)
     * [Secant numbers](./Math/secant_numbers.sf)
+    * [Semiconvergents,sf](./Math/semiconvergents,sf)
     * [Semiprime count](./Math/semiprime_count.sf)
     * [Sequence polynomial closed form](./Math/sequence_polynomial_closed_form.sf)
     * [Sequence succesive differences](./Math/sequence_succesive_differences.sf)
