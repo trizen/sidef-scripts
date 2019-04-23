@@ -89,21 +89,6 @@ func farey_factorization (n, multiplier=1) {
         return (factors * power -> sort)
     }
 
-    # Check for divisibility by 2
-    if (n.is_even) {
-
-        var v = n.valuation(2)
-        var t = n>>v
-
-        var factors = v.of(2)
-
-        if (t > 1) {
-            factors += __FUNC__(t)
-        }
-
-        return factors
-    }
-
     var resolve_factor = {|a,b|
         var g = gcd(a - b.isqrt, n)
 
