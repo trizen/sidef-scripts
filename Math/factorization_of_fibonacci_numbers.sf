@@ -1,0 +1,46 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 23 April 2019
+# https://github.com/trizen
+
+# Find factors of Fibonacci numbers, using the property:
+#
+#   d|n => F(d)|F(n)
+#
+# where F(n) is the n-th Fibonacci number.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Fibonacci
+
+func factor_fibonacci(n) {
+
+    var acc = 1
+    var factors = []
+
+    n.divisors.each {|d|
+        var f = d.fibonacci
+        var t = f/gcd(acc, f)
+        factors << t if (t > 1)
+        acc *= f
+    }
+
+    var u = factors.prod
+    var v = n.fibonacci
+
+    if (v > u) {
+        factors << v/u
+    }
+
+    factors.sort
+}
+
+for k in (3..6) {
+    say ("F(#{k}!) = ", factor_fibonacci(k!))
+}
+
+__END__
+F(3!) = [2, 4]
+F(4!) = [2, 3, 4, 7, 12, 23]
+F(5!) = [2, 3, 4, 5, 7, 11, 12, 23, 31, 41, 61, 2161, 2521, 4974481]
+F(6!) = [2, 3, 4, 5, 7, 11, 17, 19, 23, 31, 41, 47, 61, 72, 107, 1103, 2161, 2521, 97921, 103681, 109441, 4868641, 4974481, 10749957121, 10783342081, 23735900452321, 115562692701892638721, 13354478339945439424243379671493453537281]

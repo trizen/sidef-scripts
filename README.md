@@ -140,6 +140,7 @@ A simple collection of Sidef scripts.
     * [Factorial approximations](./Math/factorial_approximations.sf)
     * [Factorial dsc algorithm](./Math/factorial_dsc_algorithm.sf)
     * [Factorial expansion](./Math/factorial_expansion.sf)
+    * [Factorization of fibonacci numbers](./Math/factorization_of_fibonacci_numbers.sf)
     * [Farey factorization method](./Math/farey_factorization_method.sf)
     * [Farey fraction approximations](./Math/farey_fraction_approximations.sf)
     * [Farey fraction approximations 2](./Math/farey_fraction_approximations_2.sf)
