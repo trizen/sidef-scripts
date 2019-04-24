@@ -8,10 +8,10 @@
 
 func build_dict (n, words) {
     var dict = Hash()
-    for i in (0 .. words.end-n) {
-        var prefix = words.slice(i, i+n-1)
-        dict{prefix.join(' ')} := [] << words[i+n]
-    }
+    words.each_cons(n+1, {|*prefix|
+        var suffix = prefix.pop
+        dict{prefix.join(' ')} := [] << suffix
+    })
     return dict
 }
 
