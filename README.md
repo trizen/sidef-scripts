@@ -157,6 +157,7 @@ A simple collection of Sidef scripts.
     * [Fermat pseudoprimes generation](./Math/fermat_pseudoprimes_generation.sf)
     * [Fermat strong primality test](./Math/fermat_strong_primality_test.sf)
     * [Fibonacci closed solution](./Math/fibonacci_closed_solution.sf)
+    * [Fibonacci encoding](./Math/fibonacci_encoding.sf)
     * [Fibonacci factorization method](./Math/fibonacci_factorization_method.sf)
     * [Fibonacci k-th order](./Math/fibonacci_k-th_order.sf)
     * [Fibonacci k-th order efficient algorithm](./Math/fibonacci_k-th_order_efficient_algorithm.sf)
