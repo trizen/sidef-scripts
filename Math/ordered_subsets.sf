@@ -6,25 +6,25 @@
 
 # Given an array of elements, generate all the possible ordered subsets of consecutive elements (with no swaps and go gaps).
 
-# For example, given the array [1,2,3,4], there are 16 different ways:
-#   []
-#   [[1]]
-#   [[1, 2]]
-#   [[1, 2, 3]]
-#   [[1, 2, 3, 4]]
-#   [[1], [2]]
-#   [[1], [2, 3]]
-#   [[1], [2, 3, 4]]
-#   [[1, 2], [3]]
-#   [[1, 2], [3, 4]]
-#   [[1, 2, 3], [4]]
-#   [[1], [2], [3]]
-#   [[1], [2], [3, 4]]
-#   [[1], [2, 3], [4]]
-#   [[1, 2], [3], [4]]
-#   [[1], [2], [3], [4]]
+# For example, given the array [1,2,3,4,5], there are 16 different ways:
+#   [[1, 2, 3, 4, 5]]
+#   [[1], [2, 3, 4, 5]]
+#   [[1, 2], [3, 4, 5]]
+#   [[1, 2, 3], [4, 5]]
+#   [[1, 2, 3, 4], [5]]
+#   [[1], [2], [3, 4, 5]]
+#   [[1], [2, 3], [4, 5]]
+#   [[1], [2, 3, 4], [5]]
+#   [[1, 2], [3], [4, 5]]
+#   [[1, 2], [3, 4], [5]]
+#   [[1, 2, 3], [4], [5]]
+#   [[1], [2], [3], [4, 5]]
+#   [[1], [2], [3, 4], [5]]
+#   [[1], [2, 3], [4], [5]]
+#   [[1, 2], [3], [4], [5]]
+#   [[1], [2], [3], [4], [5]]
 
-# In general, for a given array with `n` elements, there are `2^n` possibilities.
+# In general, for a given array with `n` elements, there are `2^(n-1)` possibilities.
 
 func split_at_indices(array, indices) {
 
@@ -42,10 +42,13 @@ func split_at_indices(array, indices) {
 func ordered_subsets(array, callback) {
     for k in (0..array.len) {
         combinations(array.len, k, {|*indices|
-            callback(split_at_indices(array, indices))
+            var t = split_at_indices(array, indices)
+            if (t.sum_by{.len} == array.len) {
+                callback(t)
+            }
         })
     }
 }
 
-var arr = [1,2,3,4]
+var arr = [1,2,3,4,5]
 ordered_subsets(arr, { .say })
