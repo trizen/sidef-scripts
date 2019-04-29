@@ -426,6 +426,7 @@ A simple collection of Sidef scripts.
     * [Longest common prefix](./Text/longest_common_prefix.sf)
     * [Longest common subsequence](./Text/longest_common_subsequence.sf)
     * [Markov chain text generator](./Text/markov_chain_text_generator.sf)
+    * [Ordered concatenations](./Text/ordered_concatenations.sf)
     * [Shell string expand](./Text/shell_string_expand.sf)
     * [Smart word wrap lazy](./Text/smart_word_wrap_lazy.sf)
     * [Soundex](./Text/soundex.sf)

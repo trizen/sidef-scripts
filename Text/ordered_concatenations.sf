@@ -1,0 +1,126 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 29 April 2019
+# https://github.com/trizen
+
+# Given an array of strings, find all the possible ordered concatenations.
+
+# For example, given the array ["1", "2", "3", "4", "5"], there are 16 different ways:
+#    ["1", "2", "3", "4", "5"]
+#    ["1", "2", "3", "45"]
+#    ["1", "2", "34", "5"]
+#    ["1", "2", "345"]
+#    ["1", "23", "4", "5"]
+#    ["1", "23", "45"]
+#    ["1", "234", "5"]
+#    ["1", "2345"]
+#    ["12", "3", "4", "5"]
+#    ["12", "3", "45"]
+#    ["12", "34", "5"]
+#    ["12", "345"]
+#    ["123", "4", "5"]
+#    ["123", "45"]
+#    ["1234", "5"]
+#    ["12345"]
+
+# In general, for a given array with `n` distict elements, there are `2^(n-1)` possibilities.
+
+# This problem is similar in flavor to the non-greedy text wrapping problem.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Line_wrap_and_word_wrap
+
+func create_tries(array) {
+
+    var root = []
+
+    for i in (^array) {
+        root << [array.slice(0, i)..., __FUNC__(array.slice(i+1))]
+    }
+
+    root
+}
+
+func make_paths (array) {
+
+    var head = []
+
+    while (array) {
+        break if array[0].kind_of(Array)
+        head << array.shift
+    }
+
+    var row = []
+    for path in (array) {
+        row << Hash(head.join, __FUNC__(path))
+    }
+
+    row ? row : head.join
+}
+
+func combine(root, hash) {
+
+    var row = []
+    hash.each{|key,value|
+
+        root << key
+
+        if (value.kind_of(Array)) {
+            for item in (value) {
+                row << __FUNC__(root, item)
+            }
+        }
+        else {
+            row << (root..., value)
+        }
+
+        root.pop
+    }
+
+    row
+}
+
+func normalize(array) {
+
+    var normalized = []
+    for item in (array) {
+
+        if (item.kind_of(Array)) {
+            normalized << __FUNC__(item)...
+        }
+        else {
+            normalized << array
+            break
+        }
+    }
+
+    normalized
+}
+
+func ordered_concatenations(array) {
+
+    var tries = create_tries(array)
+
+    var paths = []
+    for group in (tries) {
+        paths << make_paths(group)
+    }
+
+    var combinations = []
+    while (paths) {
+
+        if (paths[0].kind_of(Array)) {
+            paths << paths.shift...
+            next
+        }
+
+        var path = paths.shift
+        combinations << combine([], path)
+    }
+
+    normalize(combinations).map { .grep { _ != "" } }
+}
+
+var array = %w(1 2 3 4 5)
+ordered_concatenations(array).each{ .say }
