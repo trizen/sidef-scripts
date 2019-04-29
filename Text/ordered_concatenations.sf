@@ -30,6 +30,10 @@
 
 # See also:
 #   https://en.wikipedia.org/wiki/Line_wrap_and_word_wrap
+#   https://trizenx.blogspot.com/2013/11/smart-word-wrap.html
+
+# Simpler solution:
+#   https://github.com/trizen/sidef-scripts/blob/master/Math/ordered_subsets.sf
 
 func create_tries(array) {
 

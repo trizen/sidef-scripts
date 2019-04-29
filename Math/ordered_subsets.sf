@@ -1,0 +1,51 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 29 April 2019
+# https://github.com/trizen
+
+# Given an array of elements, generate all the possible ordered subsets of consecutive elements (with no swaps and go gaps).
+
+# For example, given the array [1,2,3,4], there are 16 different ways:
+#   []
+#   [[1]]
+#   [[1, 2]]
+#   [[1, 2, 3]]
+#   [[1, 2, 3, 4]]
+#   [[1], [2]]
+#   [[1], [2, 3]]
+#   [[1], [2, 3, 4]]
+#   [[1, 2], [3]]
+#   [[1, 2], [3, 4]]
+#   [[1, 2, 3], [4]]
+#   [[1], [2], [3]]
+#   [[1], [2], [3, 4]]
+#   [[1], [2, 3], [4]]
+#   [[1, 2], [3], [4]]
+#   [[1], [2], [3], [4]]
+
+# In general, for a given array with `n` elements, there are `2^n` possibilities.
+
+func split_at_indices(array, indices) {
+
+    var parts = []
+    var i = 0
+
+    for j in (indices) {
+        parts << array.slice(i, j)
+        i = j+1
+    }
+
+    parts
+}
+
+func ordered_subsets(array, callback) {
+    for k in (0..array.len) {
+        combinations(array.len, k, {|*indices|
+            callback(split_at_indices(array, indices))
+        })
+    }
+}
+
+var arr = [1,2,3,4]
+ordered_subsets(arr, { .say })
