@@ -4,7 +4,7 @@
 # Date: 29 April 2019
 # https://github.com/trizen
 
-# Given an array of elements, generate all the possible ordered subsets of consecutive elements (with no swaps and go gaps).
+# Given an array of elements, generate all the possible consecutive partitions (with no swaps and go gaps).
 
 # For example, given the array [1,2,3,4,5], there are 16 different ways:
 #   [[1, 2, 3, 4, 5]]
@@ -39,7 +39,7 @@ func split_at_indices(array, indices) {
     parts
 }
 
-func ordered_subsets(array, callback) {
+func consecutive_partitions(array, callback) {
     for k in (0..array.len) {
         combinations(array.len, k, {|*indices|
             var t = split_at_indices(array, indices)
@@ -51,4 +51,4 @@ func ordered_subsets(array, callback) {
 }
 
 var arr = [1,2,3,4,5]
-ordered_subsets(arr, { .say })
+consecutive_partitions(arr, { .say })
