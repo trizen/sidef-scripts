@@ -15,9 +15,7 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Binary_search_algorithm
 
-func carmichael_factorization(n, a=2, b=3, l=2, h=6, rep=500) {
-
-    var range = @(l..h)
+func carmichael_factorization(n, k=3, l=2, h=6) {
 
     var blocks = [
         {|x,params|
@@ -33,31 +31,29 @@ func carmichael_factorization(n, a=2, b=3, l=2, h=6, rep=500) {
         },
     ]
 
-    rep.times {
+    @(l..h).combinations(k-1, {|*params|
 
-        var params = range.pick(irand(a,b)).sort
+            for block in blocks {
 
-        for block in blocks {
+                var r = bsearch_le(n.iroot(k), {|x| block(x, params).prod*x <=> n })
+                var g = gcd(r, n)
 
-            var r = bsearch_le(n.iroot(params.len + 1), {|x| block(x, params).prod*x <=> n })
-            var g = gcd(r, n)
-
-            if (g.is_between(2, n-1)) {
-                return [r, block(r, params)...].grep { .divides(n) }
+                if (g > 1) {
+                    return [r, block(r, params)...].grep { .divides(n) }
+                }
             }
-        }
-    }
+    })
 
     return 1
 }
 
-say carmichael_factorization(7520940423059310542039581, a:2, b:2)                                         #=> 79443853
-say carmichael_factorization(570115866940668362539466801338334994649, a:2, b:2)                           #=> 4563211789627
-say carmichael_factorization(8325544586081174440728309072452661246289, a:2, b:2)                          #=> 11153738721817
+say carmichael_factorization(7520940423059310542039581, k:3)                                         #=> 79443853
+say carmichael_factorization(570115866940668362539466801338334994649, k:3)                           #=> 4563211789627
+say carmichael_factorization(8325544586081174440728309072452661246289, k:3)                          #=> 11153738721817
 
-say carmichael_factorization(1169586052690021349455126348204184925097724507, a:2, b:2, l:11, h:23)                   #=> 166585508879747
-say carmichael_factorization(61881629277526932459093227009982733523969186747, a:2, b:2, l:3, h:11)                   #=> 1233150073853267
-say carmichael_factorization(173315617708997561998574166143524347111328490824959334367069087, a:2, b:2, l:3, h:11)   #=> 173823271649325368927
+say carmichael_factorization(1169586052690021349455126348204184925097724507, k:3, l:11, h:23)                   #=> 166585508879747
+say carmichael_factorization(61881629277526932459093227009982733523969186747, k:3, l:3, h:11)                   #=> 1233150073853267
+say carmichael_factorization(173315617708997561998574166143524347111328490824959334367069087, k:3, l:3, h:11)   #=> 173823271649325368927
 
 # Works even with larger numbers
-say carmichael_factorization(131754870930495356465893439278330079857810087607720627102926770417203664110488210785830750894645370240615968198960237761)      #=> 245960883729518060519840003581
+say carmichael_factorization(131754870930495356465893439278330079857810087607720627102926770417203664110488210785830750894645370240615968198960237761, k:4)      #=> 245960883729518060519840003581
