@@ -1,0 +1,18 @@
+#!/usr/bin/ruby
+
+# Numerical approximation of the derivative of a function `f(x)`, at a given value `x`.
+
+# Formula:
+#   f'(x) = Limit_{h -> 0} (f(x + h) - f(x))/h
+
+# See also:
+#   https://en.wikipedia.org/wiki/Derivative
+
+func derivative(f, x, h=1e-49) {
+    (f(x + h) - f(x)) / h
+}
+
+# Example for: f(x) = x^3 + x^2
+#       where: f'(x) = 3*x^2 + 2*x
+
+say derivative({|x| x**3 + x**2 }, 10)       #=> 320

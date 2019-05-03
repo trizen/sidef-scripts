@@ -124,6 +124,7 @@ A simple collection of Sidef scripts.
     * [Convergents to cube root of 2](./Math/convergents_to_cube_root_of_2.sf)
     * [Cousin mersenne primes lucas-lehmer](./Math/cousin_mersenne_primes_lucas-lehmer.sf)
     * [Cuban primes](./Math/cuban_primes.sf)
+    * [Derivative numerical approximation](./Math/derivative_numerical_approximation.sf)
     * [Difference of two squares solutions](./Math/difference_of_two_squares_solutions.sf)
     * [Digamma function](./Math/digamma_function.sf)
     * [Dirichlet convolution](./Math/dirichlet_convolution.sf)
