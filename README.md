@@ -97,7 +97,6 @@ A simple collection of Sidef scripts.
     * [Both truncatable primes in base](./Math/both_truncatable_primes_in_base.sf)
     * [BPSW primality test](./Math/BPSW_primality_test.sf)
     * [Carmichael factorization method](./Math/carmichael_factorization_method.sf)
-    * [Carmichael factorization method binary search](./Math/carmichael_factorization_method_binary_search.sf)
     * [Carmichael factorization method generalized](./Math/carmichael_factorization_method_generalized.sf)
     * [Cartesian product](./Math/cartesian_product.sf)
     * [Cauchy numbers of first type recurrence](./Math/cauchy_numbers_of_first_type_recurrence.sf)
