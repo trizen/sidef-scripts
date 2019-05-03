@@ -264,6 +264,7 @@ A simple collection of Sidef scripts.
     * [Number of 3Xn arrays with row permutations A212856](./Math/number_of_3Xn_arrays_with_row_permutations_A212856.sf)
     * [Number of representations as sum of 3 triangles](./Math/number_of_representations_as_sum_of_3_triangles.sf)
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
+    * [Numerical differentiation](./Math/numerical_differentiation.sf)
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
     * [Partial sums of dedekind psi function](./Math/partial_sums_of_dedekind_psi_function.sf)
     * [Partial sums of dedekind psi function recursive](./Math/partial_sums_of_dedekind_psi_function_recursive.sf)

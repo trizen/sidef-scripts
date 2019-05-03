@@ -1,0 +1,27 @@
+#!/usr/bin/ruby
+
+# N-th numerical differentiation of a function `f(x)`, at a given value `x`.
+
+# Formula for first derivative:
+#   f'(x) = Limit_{h -> 0} (f(x + h) - f(x))/h
+
+# which can be extended to the n-th derivative as:
+#   f^(n)(x) = Limit_{h -> 0} (-1)^(n+1) * 1/h^n * Sum_{k=0..n} (-1)^(k+1) * binomial(n, k) * f(x + h*k)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Derivative
+#   https://en.wikipedia.org/wiki/Numerical_differentiation
+
+func derivative_nth(f, x, n=1, h=1e-49) {
+    (-1)**(n+1) * sum(0..n, {|k|
+        (-1)**(k+1) * binomial(n, k) * f(x + h*k)
+    }) / h**n
+}
+
+var x = 10
+var f = {|x| x**3 + x**2 }
+
+say derivative_nth(f, x)          #=> 320
+say derivative_nth(f, x, 2)       #=> 62
+say derivative_nth(f, x, 3)       #=> 6
+say derivative_nth(f, x, 4)       #=> 0
