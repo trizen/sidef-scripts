@@ -1,0 +1,50 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 11 May 2019
+# https://github.com/trizen
+
+# Find small factors of Fermat numbers: F(k) = 2^(2^k) + 1.
+
+# This takes advantage of the fact that the prime factors of Fermat numbers have the form:
+#
+#   2^(k+2) * u + 1
+#
+# for some integer `u`.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Fermat_number
+
+func fermat_small_factor(k) {
+
+    var F = (2**(2**k) + 1)
+    var t = 2**(k+2)
+
+    for u in (2..1e4) {
+        if (is_prime(t*u + 1)) {
+            var z = (t*u + 1)
+            if (z `divides` F) {
+                return z
+            }
+        }
+    }
+
+    return nil
+}
+
+for k in (3..18) {
+    var d = fermat_small_factor(k)
+    say "2^(2^#{k}) + 1 is divisible by #{d}" if d
+}
+
+__END__
+2^(2^3) + 1 is divisible by 257
+2^(2^4) + 1 is divisible by 65537
+2^(2^5) + 1 is divisible by 641
+2^(2^6) + 1 is divisible by 274177
+2^(2^9) + 1 is divisible by 2424833
+2^(2^11) + 1 is divisible by 319489
+2^(2^12) + 1 is divisible by 114689
+2^(2^15) + 1 is divisible by 1214251009
+2^(2^16) + 1 is divisible by 825753601
+2^(2^18) + 1 is divisible by 13631489
