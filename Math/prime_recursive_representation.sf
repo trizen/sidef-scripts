@@ -1,0 +1,36 @@
+#!/usr/bin/ruby
+
+# Represent a given prime using only 2s and 1s, recursively using its P +/- 1 factorization.
+
+func pminus1_representation(p) {
+
+    return "2" if (p == 2)
+
+    '(' + (p-1 -> factor_map{|p,e|
+        var t = __FUNC__(p)
+        e == 1 ? t : "#{t}^#{e}"
+    }.join(' * ')) + ' + 1)'
+}
+
+func pplus1_representation(p) {
+
+    return "2" if (p == 2)
+
+    '(' + (p+1 -> factor_map{|p,e|
+        var t = __FUNC__(p)
+        e == 1 ? t : "#{t}^#{e}"
+    }.join(' * ')) + ' - 1)'
+}
+
+say "=> P-1 representation:"
+say pminus1_representation(59649589127497217)
+
+say "\n=> P+1 representation:"
+say pplus1_representation(59649589127497217)
+
+__END__
+=> P-1 representation:
+(2^9 * (2 * (2 * (2 + 1) + 1) * (2^6 * (2 * (2 + 1) + 1) + 1) * (2 * (2 + 1)^3 * (2^2 * (2 + 1)^2 * (2^2 + 1) + 1) * (2^2 * (2 + 1)^2 * (2^6 * (2 * (2 + 1) * (2^3 * (2^4 + 1) + 1) + 1) + 1) + 1) + 1) + 1) + 1)
+
+=> P+1 representation:
+(2 * (2^2 - 1) * (2 * (2^4 * (2^3 * (2^2 - 1) - 1) - 1) - 1) * (2^3 * (2^5 - 1) * (2^4 * (2^2 - 1) * (2^3 - 1) * (2 * (2^2 - 1) * (2^2 * (2 * (2^2 - 1) - 1) - 1) - 1) - 1) * (2 * (2^2 - 1) * (2 * (2 * (2^2 - 1)^2 - 1) * (2^3 * (2^2 - 1) - 1) * (2^2 * (2^3 - 1) * (2^2 * (2^2 - 1) - 1) - 1) - 1) - 1) - 1) - 1)

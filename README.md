@@ -310,6 +310,7 @@ A simple collection of Sidef scripts.
     * [Prime big omega function generalized old](./Math/prime_big_omega_function_generalized_old.sf)
     * [Prime omega function generalized](./Math/prime_omega_function_generalized.sf)
     * [Prime power counting function](./Math/prime_power_counting_function.sf)
+    * [Prime recursive representation](./Math/prime_recursive_representation.sf)
     * [Primorial deflation](./Math/primorial_deflation.sf)
     * [Problem of apollonius](./Math/problem_of_apollonius.sf)
     * [Product of prime sigmas of divisors](./Math/product_of_prime_sigmas_of_divisors.sf)
