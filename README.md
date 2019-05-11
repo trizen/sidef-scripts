@@ -250,6 +250,7 @@ A simple collection of Sidef scripts.
     * [Mathematical formulas](./Math/mathematical_formulas.sf)
     * [Mertens function](./Math/mertens_function.sf)
     * [Miller rabin primality test](./Math/miller_rabin_primality_test.sf)
+    * [Mills constant](./Math/mills_constant.sf)
     * [Modular exponentiation](./Math/modular_exponentiation.sf)
     * [Modular fibonacci number cassini](./Math/modular_fibonacci_number_cassini.sf)
     * [Modular fibonacci number fast](./Math/modular_fibonacci_number_fast.sf)
