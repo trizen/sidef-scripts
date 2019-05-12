@@ -1,8 +1,9 @@
-# sidef-scripts
+sidef-scripts
+=============
 
-A simple collection of Sidef scripts.
+A nice collection of day-to-day Sidef scripts.
 
-## Summary
+### Summary
 
 * Decoding
     * [Base64 decoder](./Decoding/base64_decoder.sf)
