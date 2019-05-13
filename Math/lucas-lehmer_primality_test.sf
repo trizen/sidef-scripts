@@ -2,8 +2,11 @@
 
 # Simple implementation of the Lucas-Lehmer primality test for Mersenne numbers.
 
+# The test is equivalent to computing the Lucas sequence: V(4, 1, 2^p) mod (2^p - 1).
+
 # See also:
 #   https://en.wikipedia.org/wiki/Lucas%E2%80%93Lehmer_primality_test
+#   https://oeis.org/A003010 -- A Lucas-Lehmer sequence: a(0) = 4; for n>0, a(n) = a(n-1)^2 - 2.
 
 func lucas_lehmer(p) {
 
