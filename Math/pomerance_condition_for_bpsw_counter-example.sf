@@ -1,0 +1,60 @@
+#!/usr/bin/ruby
+
+# The Carl Pomerance conditions for construting a counter-example to the Baillie-PSW test.
+
+# See also:
+#   http://pseudoprime.com/dopo.pdf
+
+func pomerance_condition(p, T = 1e6) {     # original condition
+
+    # p == 3 (mod 8) and (5/p) = -1
+    is_congruent(p, 3, 8) && (kronecker(5, p) == -1) &&
+
+    # (p-1)/2 and (p+1)/4 are T-smooth
+    is_smooth((p-1)/2, T) && is_smooth((p+1)/4, T) &&
+
+    # (p-1)/2 and (p+1)/4 are squarefree
+    is_squarefree((p-1)/2) && is_squarefree((p+1)/4) &&
+
+    # all factors q of (p-1)/2 are q == 1 (mod 4)
+    factor((p-1)/2).all { |q|
+        (q < T) && is_congruent(q, 1, 4)
+    } &&
+
+    # all factors q of (p+1)/4 are q == 3 (mod 4)
+    factor((p+1)/4).all {|q|
+        (q < T) && is_congruent(q, 3, 4)
+    }
+}
+
+func non_smooth_pomerance_condition(p) {   # weaker condition
+
+    # p == 3 (mod 8) and (5/p) = -1
+    is_congruent(p, 3, 8) && (kronecker(5, p) == -1) &&
+
+    # (p-1)/2 and (p+1)/4 are squarefree
+    is_squarefree((p-1)/2) && is_squarefree((p+1)/4) &&
+
+    # all factors q of (p-1)/2 are q == 1 (mod 4)
+    factor((p-1)/2).all { |q|
+        is_congruent(q, 1, 4)
+    } &&
+
+    # all factors q of (p+1)/4 are q == 3 (mod 4)
+    factor((p+1)/4).all {|q|
+        is_congruent(q, 3, 4)
+    }
+}
+
+var T = 1e5
+var k = 5
+
+1e3.times {
+    var p = random_prime(T, T**k)
+
+    if (pomerance_condition(p, T)) {
+        say p
+    }
+}
+
+say primes(5000).grep(non_smooth_pomerance_condition)
