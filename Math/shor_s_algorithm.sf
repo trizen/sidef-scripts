@@ -1,0 +1,56 @@
+#!/usr/bin/ruby
+
+# Simple implementation of Shor's algorithm for integer factorization.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Shor%27s_algorithm
+
+func find_period(a, n) {
+
+    # Find the smallest integer r such that a^(x+r) == a^x (mod n).
+    # TODO: implement this function on a quantum computer.
+
+    return znorder(a, n)        # shortcut
+
+    func f(x) {
+        powmod(a, x, n)
+    }
+
+    var t = f(n)
+
+    for r in (2 .. Inf) {
+        if (t == f(n+r)) {
+            return r
+        }
+    }
+}
+
+func shor_algorithm(n) {
+
+    return n if n.is_prime      # n must not be prime
+    return n if n.is_power      # n must not be a prime power
+
+    var a = irand(2, n-1)       # pick a random number 2 <= a < n
+    var g = gcd(a, n)           # compute gcd(a, n)
+
+    return g if (g != 1)        # make sure gcd(a, n) = 1
+
+    var r = find_period(a, n)   # find the multiplication order of `a` in group (Z_n)^x
+
+    if (r.is_odd) {             # if `r` is odd, try again
+        return shor_algorithm(n)
+    }
+
+    var t = powmod(a, r/2, n)       # a^(r/2) (mod n)
+
+    if (t == n-1) {                 # if a^(r/2) == -1 (mod n), try again
+        return shor_algorithm(n)
+    }
+
+    # `gcd(a^(r/2) - 1, n)` and `gcd(a^(r/2) + 1, n)` are non-trivial factors of n
+    [gcd(t-1, n), gcd(t+1, n)].grep { .is_between(2, n-1) }.sort
+}
+
+say shor_algorithm(43*97)           #=> [43, 97]
+say shor_algorithm(2**64 + 1)       #=> [274177, 67280421310721]
+say shor_algorithm(2**128 + 1)      #=> [59649589127497217, 5704689200685129054721]

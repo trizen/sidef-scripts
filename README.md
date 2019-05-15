@@ -339,6 +339,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Semiprime count](./Math/semiprime_count.sf)
     * [Sequence polynomial closed form](./Math/sequence_polynomial_closed_form.sf)
     * [Sequence succesive differences](./Math/sequence_succesive_differences.sf)
+    * [Shor's algorithm](./Math/shor_s_algorithm.sf)
     * [Sierpinski diamond](./Math/sierpinski_diamond.sf)
     * [Sierpinski sidef](./Math/sierpinski_sidef.sf)
     * [Sierpinski triangle](./Math/sierpinski_triangle.sf)
