@@ -30,21 +30,26 @@ func chernick_carmichael_numbers(limit) {
             break
         }
 
+        var multiplier = 1
+
+        # `m` must be divisible by 2^(k-4)
+        if (k > 4) {
+            multiplier = 1<<(k-4)
+        }
+
         for m in (1 .. Inf) {
 
-            # `m` must be divisible by 2^(k-4)
-            if (k >= 5) {
-                m % (2**(k - 4)) == 0 || next
-            }
-
             # Generate the k-distinct factors
-            var f = chernick_carmichael_factors(m, k)
+            var f = chernick_carmichael_factors(m * multiplier, k)
+
+            # Check the condition for an extended Chernick-Carmichael number
+            f.all { .is_prime } || next
+
+            # The product of these primes is Carmichael number
             var c = f.prod
 
+            # Stop the loop if the limit has been exceeded
             break if (c > limit)
-
-            # Check the conditions for an extended Chernick-Carmichael number
-            f.all { .is_prime } || next
 
             # Sanity check (optional)
             assert(c.is_carmichael, "#{c} is not a Carmichael number")
