@@ -814,9 +814,8 @@ class SIQS (
                 # Use SIQS to factorize f
                 var F = self.find_prime_factors(f)
 
-                #foreach my $p (@factors) {
                 F.each {|p|
-                    *rem = self.check_factor(rem, p, factors)
+                    *rem = self.check_factor(*rem, p, factors)
                     break if (*rem == 1)
                 }
             }
