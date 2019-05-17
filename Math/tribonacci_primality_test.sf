@@ -1,0 +1,96 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 18 May 2019
+# https://github.com/trizen
+
+# A new primality test, using a Tribonacci-like sequence.
+
+# Sequence definition:
+#   T(0) = 0
+#   T(1) = 0
+#   T(2) = 9
+#   T(n) = T(n-1) + 3*T(n-2) + 9*T(n-3)
+
+# The sequence starts as:
+#   0, 0, 9, 9, 36, 144, 333, 1089, 3384, 9648, 29601, 89001, 264636, 798048, ...
+
+# When p is a prime > 5 congruent to {1,2,3} mod 8, then T(p) == 0 (mod p).
+# When p is a prime > 5 congruent to   {5,7} mod 8, then T(p) == 4 (mod p).
+
+# Known counter-examples to the weak version:
+#   88561, 162401, 334153, 410041, 825265, 1569457, 1615681, 3057601, 4767841, 5148001, 5632705, 6313681, 7207201, ...
+
+# Known counter-examples to the strong version:
+#   5148001, 7519441, 8719921, 29111881, 178837201, 186393481, 221884001, 392099401, 399906001, 434932961, 438359041, 555465601, 558977761, ...
+
+# Matrix for p == {1,2,3} (mod 8)
+const A123 = Matrix(
+                [1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]
+            )
+
+# Matrix for p == {5,7} (mod 8)
+const A57 = Matrix(
+                [4, 2, 3],
+                [1, 5, 3],
+                [1, 2, 6],
+            )
+
+# Base matrix
+const BASE = Matrix(
+                [0, 3, 0],
+                [0, 0, 3],
+                [1, 1, 1],
+            )
+
+# Tribonacci-like sequence modulo m
+func tribonaccimod(n, m) {
+    BASE.powmod(n, m)
+}
+
+func is_tribonacci_pseudoprime(n) {
+
+    return false if (n <= 1)
+    return true  if (n <= 3)
+    return false if (n.is_even)
+    return true  if (n == 5)
+
+    # Fermat base-2 test (optional)
+    powmod(2, n-1, n) == 1 || return false
+
+    # The remainder modulo 8
+    var r = n%8
+
+    # For primes p congruent to {1, 2, 3} mod 8, we get 0.
+    if (r ~~ [1,2,3]) {
+
+        # Strong version: check if `n` is also a Fibonacci pseudoprime.
+        is_fibonacci_pseudoprime(n) || return false
+
+        # Compute T_(n-1) (mod n)
+        var A = tribonaccimod(n-1, n)
+        return (A == A123)
+    }
+
+    # For primes p congruent to {5, 7} mod 8, we get 4.
+    if (r ~~ [5,7]) {
+
+        # Compute T_(n+1) (mod n)
+        var A = tribonaccimod(n+1, n)
+        return (A == A57)
+    }
+
+    return false
+}
+
+var C1 = [561, 1105, 1729, 2465, 2821, 6601, 8911, 10585, 15841, 29341, 41041, 46657, 52633, 62745, 63973, 75361, 101101, 115921,
+         126217, 162401, 172081, 188461, 252601, 278545, 294409, 314821, 334153, 340561, 399001, 410041, 449065, 488881, 512461]
+
+var C2 = [5148001, 7519441, 8719921, 29111881, 178837201, 186393481, 221884001]
+
+say C1.grep(is_tribonacci_pseudoprime)    #=> []
+say C2.grep(is_tribonacci_pseudoprime)    #=> [5148001, 7519441, 8719921, 29111881, 178837201, 186393481, 221884001]
+
+say is_tribonacci_pseudoprime.first(25)   #=> [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
