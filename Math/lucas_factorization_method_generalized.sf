@@ -1,0 +1,80 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 17 May 2019
+# https://github.com/trizen
+
+# A new integer factorization method, using the modular Lucas U sequence.
+
+# It uses the smallest divisor `d` of `p - kronecker(D, n)`, such that `U_d(P,Q) = 0 (mod p)`.
+
+# By selecting a small bound B, we compute `k = lcm(1..B)`, hoping that `k` is a
+# multiple of `d`, then `gcd(U_k(P,Q) (mod n), n)` in a non-trivial factor of `n`.
+
+# This method is similar in flavor to Pollard's p-1 and Williams's p+1 methods.
+
+func lucas_factorization(n, B = n.ilog2**2, a = 1, b = 5) {
+
+    var L = B.consecutive_lcm
+
+    for P in (a .. b) {             # P > 0, P < n
+
+        var Q = irand(-n, n-1)      # Q < n
+        var D = (P*P - 4*Q)         # D != 0
+
+        D || next
+
+        var F = try { lucasUmod(P, Q, L, n) } \\ next
+        var g = gcd(F, n)
+
+        if (g.is_between(2, n-1)) {
+            return g
+        }
+    }
+
+    return 1
+}
+
+say lucas_factorization(257221 * 470783,                700);    #=> 470783           (p+1 is  700-smooth)
+say lucas_factorization(333732865481 * 1632480277613,  3000);    #=> 333732865481     (p-1 is 3000-smooth)
+say lucas_factorization(1124075136413 * 3556516507813, 4000);    #=> 1124075136413    (p+1 is 4000-smooth)
+say lucas_factorization(6555457852399 * 7864885571993,  700);    #=> 6555457852399    (p-1 is  700-smooth)
+say lucas_factorization(7553377229 * 588103349,         800);    #=> 7553377229       (p+1 is  800-smooth)
+
+for k in (10..50) {
+
+    var n = (random_prime(2**k) * random_prime(2**k))
+    var B = 8*int(exp(sqrt(log(n) * log(log(n))) / 2))
+    var p = lucas_factorization(n, B)
+
+    if (p.is_prime) {
+        say "#{n} = #{p} * #{n/p}"
+    }
+}
+
+__END__
+1098947 = 683 * 1609
+3059429 = 1483 * 2063
+6512993 = 821 * 7933
+57606617 = 5431 * 10607
+174907669 = 7937 * 22037
+1759396517 = 46199 * 38083
+2378045827 = 76679 * 31013
+9236684929 = 41491 * 222619
+26180302453 = 108967 * 240259
+17777879953 = 98323 * 180811
+2692088381837 = 1374257 * 1958941
+2335955746093 = 4312961 * 541613
+90707847818641 = 12850811 * 7058531
+472153976836973 = 14571107 * 32403439
+334066509182312441 = 1043357477 * 320184133
+633497402663384509 = 876274397 * 722944097
+9284234147413737557 = 2673658063 * 3472483739
+158495270425670543821 = 14872678039 * 10656807739
+167821505065613669143 = 10577372321 * 15866086583
+211225651750010050357 = 4448313713 * 47484432389
+11854320114182178323269 = 99693495271 * 118907658739
+772323021695922630289 = 54803533259 * 14092577171
+168233019237186593148037 = 487441215403 * 345134990479
+49758229648443541997314349 = 7016837554687 * 7091261449427
+6384031017948052159207031 = 2300064692551 * 2775587590481

@@ -92,7 +92,7 @@ say lucas_factorization(1124075136413 * 3556516507813, 4000);    #=> 11240751364
 say lucas_factorization(6555457852399 * 7864885571993,  700);    #=> 6555457852399    (p-1 is  700-smooth)
 say lucas_factorization(7553377229 * 588103349,         800);    #=> 7553377229       (p+1 is  800-smooth)
 
-for k in (2..40) {
+for k in (2..20) {
 
     var n = 2.of { random_nbit_prime(k) }.prod
     var p = lucas_factorization(n, 2 * n.ilog2**2)
