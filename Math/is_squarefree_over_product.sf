@@ -1,0 +1,39 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 19 May 2019
+# https://github.com/trizen
+
+# Efficient algorithm for determinining if a given number is squarefree over a squarefree product.
+
+# Algorithm:
+#     1. Let n be the number to be tested.
+#     2. Let k be the product of the primes <= B.
+#     3. Compute the greatest common divisor: g = gcd(n, k)
+#     4. If g is greater than 1, then n = r*g.
+#        - If r = 1, then n is B-smooth and squarefree.
+#        - Otherwise, if gcd(r, k) > 1, then n is not squarefree.
+#     5. If this step is reached, then n is not B-smooth.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Square-free_integer
+
+func is_squarefree_over_prod (n, k) {
+
+    var g = gcd(n, k)                          # g is the greatest common divisor of n and k
+
+    if (g > 1) {
+        var r = (n / g)                        # r = n/g
+        return true if (r == 1)                # it's smooth and squarefree if r = 1
+        return false if (gcd(r, k) > 1)        # if gcd(r, k) > 1, then it's not squarefree
+    }
+
+    return false   # it's not smooth over the product
+}
+
+# Example for finding 19-smooth squarefree numbers
+var k = 19.primorial      # product of primes <= 19
+
+for n in (1..1000) {
+    say (n, ' = ', n.factor) if is_squarefree_over_prod(n, k)
+}
