@@ -296,6 +296,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Permutations iter](./Math/permutations_iter.sf)
     * [Permutations rec](./Math/permutations_rec.sf)
     * [Phi finder factorization algorithm](./Math/phi_finder_factorization_algorithm.sf)
+    * [Pi from perimeters of polygons](./Math/pi_from_perimeters_of_polygons.sf)
     * [Pisano periods](./Math/pisano_periods.sf)
     * [Pisano periods efficient algorithm](./Math/pisano_periods_efficient_algorithm.sf)
     * [Pollard p minus 1 factorization](./Math/pollard_p_minus_1_factorization.sf)
