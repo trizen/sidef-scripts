@@ -7,6 +7,13 @@
 
 # A very fast primality precheck.
 
+# For a prime p > 2, we have:
+#   (p - floor(sqrt(p)))^2 == x^2 (mod p)
+#   p - floor(sqrt(p)) + x = p
+#
+# Therefore x = floor(sqrt(p)), and:
+#   gcd(p - k*floor(sqrt(p)), p) = 1, for any k >= 1 and p > k.
+
 # See also:
 #   https://oeis.org/A112045 -- Positions of primes among nonsquares.
 #   https://oeis.org/A319801 -- Odd numbers without middle divisors.
@@ -19,16 +26,13 @@ func primality_precheck(n, r = n.ilog2) {
     return false if n.is_even
     return false if n.is_power
 
-    var v = (n - n.isqrt)
-    var u = powmod(v, 2, n)
+    var u = n.isqrt
 
-    if (u.is_square) {
-        if (gcd(u.isqrt - v, n) != 1) {
-            return false
-        }
+    for k in (1 .. r) {
+        gcd(n - k*u, n) == 1 || return false
     }
 
-    for k in (1..r) {       # HOLF method
+    for k in (1 .. r) {       # HOLF method
         var s = isqrt(k*n)+1
         var u = powmod(s, 2, n)
 
