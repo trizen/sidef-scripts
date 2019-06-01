@@ -12,8 +12,13 @@
 
 # Generate the factors of a Chernick number, given m and k,
 # where k is the number of distinct prime factors.
-func chernick_carmichael_factors (m, k) {
-    [6*m + 1, 12*m + 1, {|j| 2**j * 9*m + 1 }.map(1 .. k-2)...]
+func chernick_carmichael_factors (n, m) {
+    [6*m + 1, 12*m + 1, {|i| 2**i * 9*m + 1 }.map(1 .. n-2)...]
+}
+
+func is_chernick_carmichael (n, m) {
+    (n==2) ? (is_prime(6*m + 1) && is_prime(12*m + 1))
+           : (is_prime(2**(n-2) * 9*m + 1) && __FUNC__(n-1, m))
 }
 
 # Generate the Chernick-Carmichael bellow a given limit
@@ -21,29 +26,27 @@ func chernick_carmichael_numbers(limit) {
 
     var terms = []
 
-    for k in (3 .. Inf) {
+    for n in (3 .. Inf) {
 
         # We can stop the search when:
-        #   (6*m + 1) * (12*m + 1) * Product_{j=1..k-2} (9 * 2^j * m + 1)
+        #   (6*m + 1) * (12*m + 1) * Product_{j=1..n-2} (9 * 2^j * m + 1)
         # is greater than the limit, for m=1.
-        if (chernick_carmichael_factors(1, k).prod > limit) {
+        if (chernick_carmichael_factors(n, 1).prod > limit) {
             break
         }
 
-        var multiplier = 1
+        # `m` must be divisible by 2^(n-4)
+        var multiplier = (n>4 ? 2**(n-4) : 1)
 
-        # `m` must be divisible by 2^(k-4)
-        if (k > 4) {
-            multiplier = 1<<(k-4)
-        }
+        for k in (1 .. Inf) {
 
-        for m in (1 .. Inf) {
+            var m = (k * multiplier)
 
-            # Generate the k-distinct factors
-            var f = chernick_carmichael_factors(m * multiplier, k)
+            # All factors must be prime
+            is_chernick_carmichael(n, m) || next
 
-            # Check the condition for an extended Chernick-Carmichael number
-            f.all { .is_prime } || next
+            # Generate the n-distinct factors
+            var f = chernick_carmichael_factors(n, m)
 
             # The product of these primes is Carmichael number
             var c = f.prod
