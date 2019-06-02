@@ -1,0 +1,31 @@
+#!/usr/bin/ruby
+
+# A nice formula for computing the primitive part of a given function.
+
+# Given a function f(n), the primitive part of f(n) is:
+#
+#   Product_{d|n} f(d)^μ(n/d)
+#
+# where μ(x) is the Möbius function.
+
+# See also:
+#   https://oeis.org/A061446 -- Primitive part of Fibonacci(n).
+#   https://oeis.org/A105603 -- Primitive parts of Jacobsthal numbers.
+#   https://oeis.org/A250269 -- Primitive part of n! (for n>=1): n! = Product_{d|n} a(d).
+
+func primitive_part(f, n) {
+    n.divisors.prod {|d|
+        f(d)**moebius(n/d)
+    }
+}
+
+say 15.of { primitive_part({ .fib }, _+1) }
+say 11.of { primitive_part({ .factorial }, _+1) }
+say 15.of { primitive_part({ lucasu(1, -2, _) }, _+1) }
+say 15.of { primitive_part({ .ipow2 }, _+1) }
+
+__END__
+[1, 1, 2, 3, 5, 4, 13, 7, 17, 11, 89, 6, 233, 29, 61]
+[1, 2, 6, 12, 120, 60, 5040, 1680, 60480, 15120, 39916800]
+[1, 1, 3, 5, 11, 7, 43, 17, 57, 31, 683, 13, 2731, 127, 331]
+[2, 2, 4, 4, 16, 4, 64, 16, 64, 16, 1024, 16, 4096, 64, 256]
