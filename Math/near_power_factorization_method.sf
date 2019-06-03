@@ -1,0 +1,68 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 03 June 2019
+# https://github.com/trizen
+
+# A simple factorization method for numbers close to a perfect power.
+
+# Very effective for numbers of the form:
+#
+#   n^k - 1
+#
+# where k has many divisors.
+
+func near_power_factorization(n, bound=100) {
+
+    var orig = n
+
+    func f(r, e, k) {
+        var factors = gather {
+            e.divisors.each {|d|
+
+                for j in (1, -1) {
+
+                    var t = (r**d - k*j)
+                    var g = gcd(t, n)
+
+                    if (g.is_between(2, n-1)) {
+                        while (g.divides(n)) {
+                            n /= g
+                            take(g)
+                        }
+                    }
+                }
+            }
+        }
+
+        factors << orig/factors.prod
+        factors.sort
+    }
+
+    for j in (1..bound) {
+        for k in (1, -1) {
+
+            var u = (k * j**2)
+
+            if (is_power(n + u)) {
+
+                var r = perfect_root(n + u)
+                var e = perfect_power(n + u)
+
+                return f(r, e, j)
+            }
+        }
+    }
+
+    return [n]
+}
+
+if (ARGV) {
+    say near_power_factorization(Num(ARGV[0]))
+    return 1
+}
+
+say near_power_factorization(2**256 - 1)        #=> [3, 5, 17, 257, 65537, 4294967297, 18446744073709551617, 340282366920938463463374607431768211457]
+say near_power_factorization(10**120 + 1)       #=> [100000001, 9999999900000001, 99999999000000009999999900000001, 10000000099999999999999989999999899999999000000000000000100000001]
+say near_power_factorization(10**120 - 1)       #=> [3, 9, 11, 37, 91, 101, 9091, 9901, 10001, 11111, 90090991, 99009901, 99990001, 109889011, 9999000099990001, 10099989899000101, 100009999999899989999000000010001]
+say near_power_factorization(10**120 - 25)      #=> [3, 5, 5, 29, 2298850574712643678160919540229885057471264367816091954023, 199999999999999999999999999999999999999999999999999999999999]
