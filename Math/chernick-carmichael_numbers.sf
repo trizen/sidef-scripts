@@ -35,8 +35,11 @@ func chernick_carmichael_numbers(limit) {
             break
         }
 
-        # `m` must be divisible by 5 * 2^(n-4)
-        var multiplier = (n>4 ? (5 * 2**(n-4)) : 1)
+        # `m` must be divisible by 2^(n-4), for n > 4
+        var multiplier = (n>4 ? (2**(n-4)) : 1)
+
+        # Optimization for n > 5
+        multiplier *= 5 if (n > 5)
 
         for k in (1 .. Inf) {
 
