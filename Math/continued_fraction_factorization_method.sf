@@ -111,9 +111,6 @@ func cffmm (n, multiplier=1) {
     var w = x+x
     var r = w
 
-    var (e1, e2) = (1, 0)
-    var (f1, f2) = (0, 1)
-
     #var B = int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
     var nf = int(exp(sqrt(log(n) * log(log(n))))**(sqrt(2) / 4) / 1.25)
 
@@ -138,31 +135,28 @@ func cffmm (n, multiplier=1) {
         return sig
     }
 
+    var (f1, f2) = (1, x)
+
     while (A.len < L) {
 
         y = (r*z - y)
-        z = ((N - y*y) / z)
-        r = round((x + y) / z)
+        z = idiv((N - y*y), z)
+        r = idiv((x + y), z)
 
-        var a = ((x*f2 + e2) % n)
-        var b = (a*a % n)
-        var c = (b > w ? n-b : b)
+        (f1, f2) = (f2, (r*f2 + f1) % n)
 
-        if (c.is_square) {
-            resolve_factor(a, c)
+        if (z.is_square) {
+            resolve_factor(f1, z)
         }
 
-        if (c.is_smooth_over_prod(factor_prod)) {
-            var c_factors = c.factor_exp
+        if (z.is_smooth_over_prod(factor_prod)) {
+            var c_factors = z.factor_exp
 
             if (c_factors) {
                 A << exponent_signature(c_factors)
-                Q << [a, c]
+                Q << [f1, z]
             }
         }
-
-        (f1, f2) = (f2, (r*f2 + f1) % n)
-        (e1, e2) = (e2, (r*e2 + e1) % n)
 
         if (z == 1) {
             return __FUNC__(n, next_multiplier(multiplier))

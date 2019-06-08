@@ -31,7 +31,7 @@ func create_pell (n, k) {
 
         (f1, f2) = (f2, (r*f2 + f1)%n)
 
-        (f1, powmod(f1, 2, n))
+        (f1, z)
     }
 }
 

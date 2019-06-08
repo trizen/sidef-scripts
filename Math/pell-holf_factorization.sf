@@ -42,15 +42,8 @@ func pell_holf_factorization(n) {
 
         (f1, f2) = (f2, (r*f2 + f1)%n)
 
-        var u = f1
-        var v = (u*u)%n
-
-        if (v > w) {
-            v = (n - v)
-        }
-
-        if (v.is_square) {
-            var g = gcd(u - v.isqrt, n)
+        if (z.abs.is_square) {
+            var g = gcd(f1 - z.abs.isqrt, n)
             if (g.is_between(2, n-1)) {
                 return g
             }
