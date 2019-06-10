@@ -34,7 +34,7 @@ func pollard_p1(n) {
 
     loop {
         p = p.next_prime
-        a = powmod(a, p * (n.ilog(p) + 1), n)
+        a = powmod(a, p * n.ilog(p), n)
         g = gcd(a - 1, n)
 
         if (g > 1) {
@@ -60,12 +60,3 @@ say pollard_p1(2**42 + 1)
 say pollard_p1(2**62 - 1)
 say pollard_p1(2**64 + 1)
 say pollard_p1(38568900844635025971879799293495379321)
-
-for n in (2..1000) {
-    var factors = pollard_p1(n)
-
-    assert_eq(factors.prod, n)
-    assert(factors.all{.is_prime})
-
-    #say "#{n} = #{factors.join(' * ')}"
-}
