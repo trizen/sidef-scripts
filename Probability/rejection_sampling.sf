@@ -1,9 +1,9 @@
 #!/usr/bin/ruby
 
-#
-## Rejection sampling algorithm
-## https://en.wikipedia.org/wiki/Rejection_sampling
-#
+# Rejection sampling algorithm.
+
+# See also:
+#    https://en.wikipedia.org/wiki/Rejection_sampling
 
 func accept_reject(table) {
 
