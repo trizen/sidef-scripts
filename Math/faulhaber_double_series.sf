@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# A double series with complexity ~O(p^2) for computing the sum of consecutive powers:
+# A double series, with ~O(p^2) complexity, for computing the sum of consecutive powers:
 #
 #    1^p + 2^p + 3^p + ... + n^p
 #

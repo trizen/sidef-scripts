@@ -1,0 +1,33 @@
+#!/usr/bin/ruby
+
+# Efficient formula for computing:
+#
+#   S_p(n) = Sum_{k=1..n} Sum_{j=1..k} j^p
+#
+# for some positive integer p.
+
+# The formula is:
+#   S_p(n) = (n+1) * F_p(n) - F_(p+1)(n)
+
+# where F_n(x) are the Faulhaber polynomials, defined as:
+#
+#   F_n(x) = (Bernoulli(n+1, x+1) - Bernoulli(n+1, 1)) / (n+1)
+#
+# where Bernoulli(n,x) are the Bernoulli polynomials.
+
+# See also:
+#   https://oeis.org/A101089
+#   https://projecteuler.net/problem=487
+#   https://en.wikipedia.org/wiki/Faulhaber's_formula
+#   https://en.wikipedia.org/wiki/Bernoulli_polynomials
+
+func sums_of_power_sums(n, p) {
+    (n+1) * faulhaber_sum(n, p) - faulhaber_sum(n, p+1)
+}
+
+say sums_of_power_sums(100, 4)      #=> 35375333830
+
+say 10.of { sums_of_power_sums(_, 1) }      #=> [0, 1, 4, 10, 20, 35, 56, 84, 120, 165]
+say 10.of { sums_of_power_sums(_, 2) }      #=> [0, 1, 6, 20, 50, 105, 196, 336, 540, 825]
+say 10.of { sums_of_power_sums(_, 3) }      #=> [0, 1, 10, 46, 146, 371, 812, 1596, 2892, 4917]
+say 10.of { sums_of_power_sums(_, 4) }      #=> [0, 1, 18, 116, 470, 1449, 3724, 8400, 17172, 32505]
