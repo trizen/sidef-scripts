@@ -1,0 +1,28 @@
+#!/usr/bin/ruby
+
+# A double series with complexity ~O(p^2) for computing the sum of consecutive powers:
+#
+#    1^p + 2^p + 3^p + ... + n^p
+#
+# where p is a positive integer.
+
+# See also:
+#   http://mathworld.wolfram.com/PowerSum.html
+#   https://en.wikipedia.org/wiki/Faulhaber's_formula
+
+func faulhaber_double_series(n, p) {
+    sum(1..p, {|i|
+        sum(0..^i, {|j|
+            (-1)**j * (i-j)**p * binomial(n + p - i + 1, n - i) * binomial(p+1, j)
+        })
+    })
+}
+
+say faulhaber_double_series(100, 2)     #=> 338350
+say faulhaber_double_series(100, 3)     #=> 25502500
+say faulhaber_double_series(100, 4)     #=> 2050333330
+
+for k in (1..10) {      # run some tests
+    var n = 1e7.irand
+    assert_eq(faulhaber_double_series(n, k), n.faulhaber(k))
+}

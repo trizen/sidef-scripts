@@ -150,6 +150,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Farey fraction approximations 2](./Math/farey_fraction_approximations_2.sf)
     * [Farey sequences](./Math/farey_sequences.sf)
     * [Fast fourier transform](./Math/fast_fourier_transform.sf)
+    * [Faulhaber double series](./Math/faulhaber_double_series.sf)
     * [Faulhaber's formula](./Math/faulhaber_s_formula.sf)
     * [Faulhaber's formula explicit](./Math/faulhaber_s_formula_explicit.sf)
     * [Faulhaber's triangle](./Math/faulhaber_s_triangle.sf)
