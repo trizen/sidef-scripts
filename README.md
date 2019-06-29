@@ -234,6 +234,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Left-right truncatable primes](./Math/left-right_truncatable_primes.sf)
     * [Left truncatable primes](./Math/left_truncatable_primes.sf)
     * [Left truncatable primes in base](./Math/left_truncatable_primes_in_base.sf)
+    * [Legendary question six](./Math/legendary_question_six.sf)
     * [Legendre factorial](./Math/legendre_factorial.sf)
     * [Levenshtein distance iter](./Math/levenshtein_distance_iter.sf)
     * [Levenshtein distance rec](./Math/levenshtein_distance_rec.sf)
