@@ -127,6 +127,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Cuban primes](./Math/cuban_primes.sf)
     * [Cyclotomic polynomial](./Math/cyclotomic_polynomial.sf)
     * [Derivative numerical approximation](./Math/derivative_numerical_approximation.sf)
+    * [Difference of powers factorization method](./Math/difference_of_powers_factorization_method.sf)
     * [Difference of two squares solutions](./Math/difference_of_two_squares_solutions.sf)
     * [Digamma function](./Math/digamma_function.sf)
     * [Dirichlet convolution](./Math/dirichlet_convolution.sf)

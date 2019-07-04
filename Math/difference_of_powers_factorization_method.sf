@@ -1,0 +1,87 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 04 July 2019
+# https://github.com/trizen
+
+# A simple factorization method for numbers that can be expressed as a difference of powers.
+
+# Very effective for numbers of the form:
+#
+#   n^k - 1
+#
+# where k has many divisors.
+
+func diff_power_factorization (n) {
+
+    var orig = n
+    var f_params = []
+
+    var f = func (r1, e1, r2, e2) {
+        var factors = []
+
+        var divs1 = divisors(e1)
+        var divs2 = divisors(e2)
+
+        for d1 in (divs1), d2 in (divs2), j in (1, -1) {
+            var t = (r1**d1 - (j * r2**d2))
+            var g = gcd(t, n)
+
+            if (g.is_between(2, n-1)) {
+                while (n%g == 0) {
+                    n /= g
+                    factors << g
+                }
+            }
+        }
+
+        factors.sort
+    }
+
+    for r1 in (2 .. n.ilog2) {
+
+        var e1 = n.ilog(r1)
+        var u  = r1**(e1+1)
+        var dx = (u - n)
+
+        if (dx.is_power) {
+
+            var e2 = dx.perfect_power
+            var r2 = dx.perfect_root
+
+            f_params << [r1, e1+1, r2, e2]
+        }
+    }
+
+    for r1 in (2 .. n.ilog2) {
+
+        var e1 = n.ilog(r1)
+        var u  = r1**e1
+        var dx = (n - u)
+
+        if (dx.is_power) {
+
+            var e2 = dx.perfect_power
+            var r2 = dx.perfect_root
+
+            f_params << [r1, e1, r2, e2]
+        }
+    }
+
+    var factors = f_params.map { f(_...) }.flat
+    factors << (orig / factors.prod)
+    return factors.sort
+}
+
+if (ARGV) {
+    say diff_power_factorization(Num(ARGV[0]))
+    return 1
+}
+
+say diff_power_factorization(2**256 - 1)          #=> [3, 5, 17, 257, 65537, 4294967297, 18446744073709551617, 340282366920938463463374607431768211457]
+say diff_power_factorization(10**120 + 1)         #=> [100000001, 9999999900000001, 99999999000000009999999900000001, 10000000099999999999999989999999899999999000000000000000100000001]
+say diff_power_factorization(10**120 - 1)         #=> [3, 9, 11, 37, 91, 101, 9091, 9901, 10001, 11111, 90090991, 99009901, 99990001, 109889011, 9999000099990001, 10099989899000101, 100009999999899989999000000010001]
+say diff_power_factorization(10**120 - 25)        #=> [3, 5, 5, 29, 2298850574712643678160919540229885057471264367816091954023, 199999999999999999999999999999999999999999999999999999999999]
+say diff_power_factorization(10**105 - 1)         #=> [9, 111, 11111, 1111111, 90090991, 900900990991, 900009090090909909099991, 1109988789001111109989898989900111110998878900111]
+say diff_power_factorization(10**105 + 1)         #=> [11, 91, 9091, 909091, 769223077, 156985855573, 1099988890111109888900011, 910009191000909089989898989899909091000919100091]
+say diff_power_factorization(10**120 - 2134**2)   #=> [3, 7, 7, 36, 61, 167280026764804282368685178989628638340582134493141518903, 18518518518518518518518518518518518518518518518518518518479]
