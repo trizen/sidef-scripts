@@ -38,7 +38,7 @@ func diff_power_factorization (n) {
         factors.sort
     }
 
-    for r1 in (2 .. n.ilog2) {
+    for r1 in (2 .. n.ilog2) {      # difference of powers
 
         var e1 = n.ilog(r1)
         var u  = r1**(e1+1)
@@ -53,7 +53,7 @@ func diff_power_factorization (n) {
         }
     }
 
-    for r1 in (2 .. n.ilog2) {
+    for r1 in (2 .. n.ilog2) {      # sum of powers
 
         var e1 = n.ilog(r1)
         var u  = r1**e1

@@ -1,0 +1,76 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 05 July 2019
+# https://github.com/trizen
+
+# A simple factorization method, based on congruences of powers.
+
+# Given a composite integer `n`, if we find:
+#
+#   a^k == b^k (mod n)
+#
+# for some k >= 2, then gcd(a-b, n) may be a non-trivial factor of n.
+
+func cgpow_factor (n) {
+
+    var params = []
+    var orig = n
+
+    # For better efficiency, we check only the range [2, min(50, floor(log_2(n)))]
+    for e in (2 .. min(n.ilog2, 50)) {
+
+        var root = n.iroot(e)
+
+        for j in (1, 0) {
+
+            var k = (root + j)
+            var u = k.powmod(e, n)
+
+            if (u.is_power(e)) {
+                var r = u.iroot(e)
+                params << [r, k]
+            }
+
+            if ((n-u).is_power(e)) {
+                var r = (n-u).iroot(e)
+                params << [r, k]
+            }
+        }
+    }
+
+    var f = func (r, k) {
+        var factors = []
+
+        for t in (r+k, k-r) {
+            var g = gcd(t, n)
+            if (g.is_between(2, n-1)) {
+                while (n%g == 0) {
+                    n /= g
+                    factors << g
+                }
+            }
+        }
+
+        factors
+    }
+
+    var factors = params.map { f(_...) }.flat
+    factors << (orig / factors.prod)
+    return factors.sort
+}
+
+if (ARGV) {
+    say cgpow_factor(Num(ARGV[0]))
+    return 1
+}
+
+say cgpow_factor(ipow(2,  256) - 1)                             #=> [3, 5, 17, 257, 65537, 4294967297, 18446744073709551617, 340282366920938463463374607431768211457]
+say cgpow_factor(ipow(10, 120) + 1)                             #=> [9999999900000001, 10000000000000000000000000000000000000001, 10000000099999999999999989999999899999999000000000000000100000001]
+say cgpow_factor(ipow(10, 120) - 1)                             #=> [3, 3367, 90090991, 109889011, 99999999990000000001, 99999999999999999999, 1000000000000000000000000000000000000000000000000000000000001]
+say cgpow_factor(ipow(10, 120) - 25)                            #=> [5, 199999999999999999999999999999999999999999999999999999999999, 1000000000000000000000000000000000000000000000000000000000005]
+say cgpow_factor(ipow(10, 105) - 1)                             #=> [3, 90090991, 33333336666667, 99999999999999999999999999999999999, 1109988789001111109989898989900111110998878900111]
+say cgpow_factor(ipow(10, 105) + 1)                             #=> [109889011, 99999990000001, 100000000000000000000000000000000001, 910009191000909089989898989899909091000919100091]
+say cgpow_factor(ipow(10, 120) - ipow(2134, 2))                 #=> [54, 18518518518518518518518518518518518518518518518518518518479, 1000000000000000000000000000000000000000000000000000000002134]
+say cgpow_factor((ipow(2, 128) - 1) * (ipow(2, 256) - 1))       #=> [340282366920938463463374607431768211455, 340282366920938463463374607431768211455, 340282366920938463463374607431768211457]
+say cgpow_factor(ipow(ipow(4, 64) - 1, 3) - 1)                  #=> [2, 170141183460469231731687303715884105727, 115792089237316195423570985008687907852929702298719625575994209400481361428481]

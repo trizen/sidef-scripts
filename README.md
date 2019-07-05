@@ -112,6 +112,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Complex zeta function representations](./Math/complex_zeta_function_representations.sf)
     * [Conditional euler totient function](./Math/conditional_euler_totient_function.sf)
     * [Confluent hypergeometric function of the first kind](./Math/confluent_hypergeometric_function_of_the_first_kind.sf)
+    * [Congruence of powers factorization method](./Math/congruence_of_powers_factorization_method.sf)
     * [Congruence solution inverse of x+n mod x = n](./Math/congruence_solution_inverse_of_x+n_mod_x_=_n.sf)
     * [Congruence solution inverse of x-n mod x = n](./Math/congruence_solution_inverse_of_x-n_mod_x_=_n.sf)
     * [Consecutive partitions](./Math/consecutive_partitions.sf)
