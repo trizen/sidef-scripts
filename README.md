@@ -64,6 +64,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Voronoi diagram](./Image/voronoi_diagram.sf)
 * Math
     * [AGM calculate pi](./Math/AGM_calculate_pi.sf)
+    * [Aitken's array](./Math/aitken_s_array.sf)
     * [Akiyama-tanigawa numerators](./Math/akiyama-tanigawa_numerators.sf)
     * [Almost divisors](./Math/almost_divisors.sf)
     * [Arithmetic-geometric-harmonic mean](./Math/arithmetic-geometric-harmonic_mean.sf)
