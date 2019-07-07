@@ -1,0 +1,22 @@
+#!/usr/bin/ruby
+
+# Fast algorithm for computing the first n Bell numbers, using Aitken's array.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Bell_number
+
+func bell_numbers (n) {
+
+    var acc = []
+    var bell = [1]
+
+    for k in (1..n) {
+        acc.unshift(bell[-1])
+        acc.accumulate!
+        bell.push(acc[-1])
+    }
+
+    bell
+}
+
+say bell_numbers(14).join(', ')
