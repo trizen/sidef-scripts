@@ -15,7 +15,15 @@ func aitken_array (n) {
     }
 }
 
+func aitken_array_recmap (n) {
+    [[1]].recmap {|A|
+        A.len >= n ? break : [[A[-1], A...].accumulate]
+    }
+}
+
 aitken_array(10).each { .say }
+
+assert_eq(aitken_array(10), aitken_array_recmap(10))
 
 __END__
 [1]
