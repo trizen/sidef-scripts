@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# A simple version of the continued fraction factorization method, combined with modular arithmetic.
+# A simple version of the continued fraction factorization method, without the linear algebra stage.
 
 # Similar to solving the Pell equation:
 #   x^2 - d*y^2 = 1, where `d` is known.

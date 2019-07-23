@@ -1,10 +1,7 @@
 #!/usr/bin/ruby
 
-# A simple implementation of the continued fraction factorization method,
-# combined with modular arithmetic (variation of the Brillhart-Morrison algorithm).
-
-# Similar to solving the Pell equation:
-#   x^2 - d*y^2 = 1, where `d` is known.
+# A simple implementation of the continued fraction factorization method.
+# (variation of the Brillhart-Morrison algorithm).
 
 # See also:
 #   https://en.wikipedia.org/wiki/Pell%27s_equation
