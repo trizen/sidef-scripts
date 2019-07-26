@@ -369,6 +369,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Solve cubic equation real](./Math/solve_cubic_equation_real.sf)
     * [Solve linear congruence equation](./Math/solve_linear_congruence_equation.sf)
     * [Solve pell equation](./Math/solve_pell_equation.sf)
+    * [Sophie germain factorization method](./Math/sophie_germain_factorization_method.sf)
     * [Split summation](./Math/split_summation.sf)
     * [Sqrt 2 approximation](./Math/sqrt_2_approximation.sf)
     * [Sqrt convergents](./Math/sqrt_convergents.sf)

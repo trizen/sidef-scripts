@@ -16,6 +16,8 @@
 #   1   10   54  200  560 1242 2235 3288 3915 3610 2188
 #   1   11   65  264  814 2002 4037 6765 9438 10813 9713 5798
 
+# Conjecture: there is no Motzkin number divisible by 8.
+
 # See also:
 #   https://oeis.org/A001006
 #   https://en.wikipedia.org/wiki/Motzkin_number

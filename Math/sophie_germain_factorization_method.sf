@@ -1,0 +1,96 @@
+#!?usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 26 July 2019
+# https://github.com/trizen
+
+# A simple factorization method, based on Sophie Germain's identity:
+#   x^4 + 4y^4 = (x^2 + 2xy + 2y^2) * (x^2 - 2xy + 2y^2)
+
+# This method is also effective for numbers of the form: n^4 + 4^(2k+1).
+
+# See also:
+#   https://oeis.org/A227855 -- Numbers of the form x^4 + 4*y^4.
+#   https://www.quora.com/What-is-Sophie-Germains-Identity
+
+func sophie_germain_factorization (n) {
+
+    func sophie(A, B) {
+        var factors = []
+
+        for f in (
+            A**2 + 2*B*B - 2*A*B,
+            A**2 + 2*B*B + 2*A*B,
+        ) {
+            var g = gcd(f, n)
+
+            if (g.is_between(2, n-1)) {
+                while (n%g == 0) {
+                    n /= g
+                    factors << g
+                }
+            }
+        }
+
+        factors
+    }
+
+    var orig = n
+    var sophie_params = []
+
+    func process_root(r1) {
+
+        var x  = (4 * r1**4)
+        var dx = (n - x)
+
+        if (dx.is_power(4)) {
+            var r2 = dx.iroot(4)
+            sophie_params << [r2, r1]
+        }
+
+        var y  = (r1**4)
+        var dy = (n - y)
+
+        if ((dy%4 == 0) && (dy/4).is_power(4)) {
+            var r2 = (dy/4).iroot(4)
+            sophie_params << [r1, r2]
+        }
+    }
+
+    # Try to find n = x^4 + 4*y^4, for x or y small.
+    for r in (2..n.ilog2) {
+        process_root(r)
+    }
+
+    # Try to find n = x^4 + 4*y^4 for x,y close to floor(n/5)^(1/4).
+    var k = floor(n/5).iroot(4)
+
+    for j in (0..100) {
+        process_root(k + j)
+    }
+
+    var factors = []
+
+    for args in (sophie_params) {
+        factors << sophie(args...)...
+    }
+
+    factors << orig/factors.prod
+    factors.sort
+}
+
+if (ARGV) {
+    say sophie_germain_factorization(Num(ARGV[0]))
+    return 1
+}
+
+say sophie_germain_factorization(ipow(43,        4) + 4*ipow(372485613, 4))     #=> [277491031750210669, 277491095817736105]
+say sophie_germain_factorization(ipow(372485613, 4) + 4*ipow(97,        4))     #=> [138745459629795665, 138745604154213509]
+say sophie_germain_factorization(ipow(372485613, 4) + 4*ipow(372485629, 4))     #=> [138745543811525897, 693727695218548205]
+say sophie_germain_factorization(ipow(372485629, 4) + 4*ipow(372485511, 4))     #=> [138745455904945045, 693727455337830721]
+
+say '';
+
+say sophie_germain_factorization(ipow(4, 117) + ipow(53,  4))       #=> [166153499473114453560556010453601017, 166153499473114514665395754616490745]
+say sophie_germain_factorization(ipow(4, 213) + ipow(240, 4))       #=> [13164036458569648337239753460419861813422875717854660184319779072, 13164036458569648337239753460497746266300898132282617629258080512]
+say sophie_germain_factorization(ipow(4, 251) + ipow(251, 4))       #=> [3618502788666131106986593281521497099061968496512379043906292883903830095385, 3618502788666131106986593281521497141767405545090156208559806116590740633113]
