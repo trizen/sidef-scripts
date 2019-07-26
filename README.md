@@ -271,6 +271,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Modular multiplicative inverse](./Math/modular_multiplicative_inverse.sf)
     * [Modular tetration](./Math/modular_tetration.sf)
     * [Moebius transform](./Math/moebius_transform.sf)
+    * [Motzkin numbers](./Math/motzkin_numbers.sf)
     * [Motzkin triangle](./Math/motzkin_triangle.sf)
     * [Multiple modular multiplicative inversions](./Math/multiple_modular_multiplicative_inversions.sf)
     * [N-bit random prime](./Math/n-bit_random_prime.sf)
