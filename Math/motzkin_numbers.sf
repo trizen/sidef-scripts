@@ -16,7 +16,11 @@
 #   1   10   54  200  560 1242 2235 3288 3915 3610 2188
 #   1   11   65  264  814 2002 4037 6765 9438 10813 9713 5798
 
-# Conjecture: there is no Motzkin number divisible by 8.
+# There is no Motzkin number divisible by 8.
+
+# Eu Sen-Peng & Liu Shu-Chung & Yeh, Yeong-nan proved in 2008 that no Motzkin number
+# is a multiple of 8, in their paper "Catalan and Motzkin numbers modulo 4 and 8".
+# https://www.math.sinica.edu.tw/www/file_upload/mayeh/2008CatalanandMotzkinnumbersmodulo4and8.pdf
 
 # See also:
 #   https://oeis.org/A001006

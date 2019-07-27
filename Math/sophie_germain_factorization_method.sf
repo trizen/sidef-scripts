@@ -1,4 +1,4 @@
-#!?usr/bin/ruby
+#!/usr/bin/ruby
 
 # Daniel "Trizen" Șuteu
 # Date: 26 July 2019
@@ -38,7 +38,7 @@ func sophie_germain_factorization (n) {
     var orig = n
     var sophie_params = []
 
-    func process_root(r1) {
+    func sophie_check_root(r1) {
 
         var x  = (4 * r1**4)
         var dx = (n - x)
@@ -59,14 +59,14 @@ func sophie_germain_factorization (n) {
 
     # Try to find n = x^4 + 4*y^4, for x or y small.
     for r in (2..n.ilog2) {
-        process_root(r)
+        sophie_check_root(r)
     }
 
     # Try to find n = x^4 + 4*y^4 for x,y close to floor(n/5)^(1/4).
     var k = floor(n/5).iroot(4)
 
     for j in (0..100) {
-        process_root(k + j)
+        sophie_check_root(k + j)
     }
 
     var factors = []
