@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+
+# Subquadratic algorithm for converting a given integer into a list of digits in a given base.
+
+# Algorithm presented in the book:
+#
+#   Modern Computer Arithmetic
+#           - by Richard P. Brent and Paul Zimmermann
+#
+
+func FastIntegerOutput(A, B) {
+
+    if (A < B) {
+        return [A]
+    }
+
+    # Find k such that B^(2k - 2) <= A < B^(2k)
+    var k = (A.ilog(B)>>1 + 1)
+
+    #assert(B**(2*k - 2) <= A)
+    #assert(A < B**(2*k))
+
+    var (Q,R) = A.divmod(B**k)
+    var r     = __FUNC__(R, B)
+
+    [__FUNC__(Q, B)..., (k - r.len).of(0)..., r...]
+}
+
+for B in (2..100) {     # run some tests
+    var N = 1e20.irand
+
+    var a = N.digits(B)
+    var b = FastIntegerOutput(N, B)
+
+    assert_eq(a.flip, b)
+}
+
+say FastIntegerOutput(5040, 10)     #=> [5, 0, 4, 0]
+say FastIntegerOutput(5040, 11)     #=> [3, 8, 7, 2]
+say FastIntegerOutput(5040, 12)     #=> [2, 11, 0, 0]
+say FastIntegerOutput(5040, 13)     #=> [2, 3, 10, 9]

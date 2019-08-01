@@ -133,6 +133,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Difference of powers factorization method](./Math/difference_of_powers_factorization_method.sf)
     * [Difference of two squares solutions](./Math/difference_of_two_squares_solutions.sf)
     * [Digamma function](./Math/digamma_function.sf)
+    * [Digits in base subquadratic algorithm](./Math/digits_in_base_subquadratic_algorithm.sf)
     * [Dirichlet convolution](./Math/dirichlet_convolution.sf)
     * [Dirichlet hyperbola method](./Math/dirichlet_hyperbola_method.sf)
     * [Discrete fourier transform](./Math/discrete_fourier_transform.sf)
