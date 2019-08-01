@@ -1,0 +1,36 @@
+#!/usr/bin/ruby
+
+# Subquadratic algorithm for computing the sum of digits of a given integer in a given base.
+
+# Based on the FastIntegerOutput algorithm presented in the book:
+#
+#   Modern Computer Arithmetic
+#           - by Richard P. Brent and Paul Zimmermann
+#
+
+func FastSumOfDigits(A, B) {
+
+    if (A < B) {
+        return A
+    }
+
+    # Find k such that B^(2k - 2) <= A < B^(2k)
+    var k = (A.ilog(B)>>1 + 1)
+
+    var (Q,R) = A.divmod(B**k)
+    __FUNC__(R, B) + __FUNC__(Q, B)
+}
+
+for B in (2..100) {     # run some tests
+    var N = 1e20.irand
+
+    var a = N.sumdigits(B)
+    var b = FastSumOfDigits(N, B)
+
+    assert_eq(a, b)
+}
+
+say FastSumOfDigits(5040, 10)     #=> 9
+say FastSumOfDigits(5040, 11)     #=> 20
+say FastSumOfDigits(5040, 12)     #=> 13
+say FastSumOfDigits(5040, 13)     #=> 24
