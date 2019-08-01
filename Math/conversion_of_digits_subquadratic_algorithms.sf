@@ -1,0 +1,55 @@
+#!/usr/bin/ruby
+
+# Subquadratic algorithms for converting a given integer into a list of digits in a given base, and viceversa.
+
+# Algorithms presented in the book:
+#
+#   Modern Computer Arithmetic
+#           - by Richard P. Brent and Paul Zimmermann
+#
+
+func FastIntegerInput(digits, B) {
+
+    var l = digits.flip
+    var (b, k) = (B, l.len)
+
+    while (k > 1) {
+
+        l = l.map_slice(2, {|lx,ly|
+            defined(ly) ? (lx + b*ly) : (lx)
+        })
+
+        (b, k) = (b*b, ceil(k/2))
+    }
+
+    l[0]
+}
+
+func FastIntegerOutput(A, B) {
+
+    if (A < B) {
+        return [A]
+    }
+
+    var k = (A.ilog(B)>>1 + 1)
+
+    var (Q,R) = A.divmod(B**k)
+    var r     = __FUNC__(R, B)
+
+    [__FUNC__(Q, B)..., (k - r.len).of(0)..., r...]
+}
+
+for B in (2..100) {     # run some tests
+    var N = 1e20.irand
+
+    var a = N.digits(B)
+    var b = FastIntegerOutput(N, B)
+
+    assert_eq(a.flip, b)
+    assert_eq(FastIntegerInput(b, B), N)
+}
+
+say FastIntegerInput(FastIntegerOutput(5040, 10), 10)     #=> 5040
+say FastIntegerInput(FastIntegerOutput(5040, 11), 11)     #=> 5040
+say FastIntegerInput(FastIntegerOutput(5040, 12), 12)     #=> 5040
+say FastIntegerInput(FastIntegerOutput(5040, 13), 13)     #=> 5040
