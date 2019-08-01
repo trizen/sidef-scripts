@@ -10,15 +10,20 @@
 
 func FastSumOfDigits(A, B) {
 
-    if (A < B) {
-        return A
-    }
-
     # Find k such that B^(2k - 2) <= A < B^(2k)
     var k = (A.ilog(B)>>1 + 1)
 
-    var (Q,R) = A.divmod(B**k)
-    __FUNC__(R, B) + __FUNC__(Q, B)
+    func (A, k) {
+
+        if (A < B) {
+            return A
+        }
+
+        var (Q,R) = A.divmod(B**k)
+        var t = (k+1)>>1
+
+        __FUNC__(R, t) + __FUNC__(Q, t)
+    }(A, k)
 }
 
 for B in (2..100) {     # run some tests
