@@ -1,0 +1,33 @@
+#!/usr/bin/ruby
+
+# Find the largest palindrome that is the product of two numbers, each having an equal `n` number of digits.
+
+# See also:
+#   https://oeis.org/A308803
+#   https://projecteuler.net/problem=4
+
+func largest_palindrome_product (n) {
+
+    for k in (10**n ^.. 10**(n-1)) {
+        var t = Num("#{k}#{k.to_s.flip}")
+
+        t.divisors.grep{.len == n}.combinations(2, {|a,b|
+            if (a*b == t) {
+                return [a, b, t]
+            }
+        })
+    }
+}
+
+for k in (2..5) {
+    say ("a(#{k}) = ", largest_palindrome_product(k))
+}
+
+__END__
+a(2) = [91, 99, 9009]
+a(3) = [913, 993, 906609]
+a(4) = [9901, 9999, 99000099]
+a(5) = [99681, 99979, 9966006699]
+a(6) = [999001, 999999, 999000000999]
+a(7) = [9997647, 9998017, 99956644665999]
+a(8) = [99990001, 99999999, 9999000000009999]
