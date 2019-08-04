@@ -1,0 +1,30 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 04 August 2019
+# https://github.com/trizen
+
+# Generate all the divisors d of n, such that d <= k.
+
+func divisors_le (n, k) {
+
+    var d  = [1]
+    var pp = n.factor_exp.grep{ _[0] <= k }
+
+    for p,e in (pp) {
+        var r = 1
+        d << gather {
+            e.times {
+                r *= p
+                d.each { |u|
+                    take(u*r) if (u*r <= k)
+                }
+            }
+        }...
+    }
+
+    d.sort
+}
+
+# Generate the divisors of 5040 less than or equal to 42
+say divisors_le(5040, 42)

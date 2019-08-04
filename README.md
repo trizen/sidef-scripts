@@ -139,6 +139,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Dirichlet convolution](./Math/dirichlet_convolution.sf)
     * [Dirichlet hyperbola method](./Math/dirichlet_hyperbola_method.sf)
     * [Discrete fourier transform](./Math/discrete_fourier_transform.sf)
+    * [Divisors less than k](./Math/divisors_less_than_k.sf)
     * [Divisors of factorial in range iterator](./Math/divisors_of_factorial_in_range_iterator.sf)
     * [Draw grid of squares](./Math/draw_grid_of_squares.sf)
     * [Elementary cellular automaton](./Math/elementary_cellular_automaton.sf)
