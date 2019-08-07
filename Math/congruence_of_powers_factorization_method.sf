@@ -18,7 +18,7 @@ func cgpow_factor (n) {
     var orig = n
 
     # For better efficiency, we check only the range [2, min(50, floor(log_2(n)))]
-    for e in (2 .. min(n.ilog2, 50)) {
+    for e in (2 .. min(n.ilog2, 50) -> flip) {
 
         var root = n.iroot(e)
 

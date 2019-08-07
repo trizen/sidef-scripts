@@ -217,6 +217,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Inverse of factorial](./Math/inverse_of_factorial.sf)
     * [Inverse of factorial stirling](./Math/inverse_of_factorial_stirling.sf)
     * [Inverse of fibonacci](./Math/inverse_of_fibonacci.sf)
+    * [Inverse of sigma function](./Math/inverse_of_sigma_function.sf)
     * [Invmod of coprime factorials](./Math/invmod_of_coprime_factorials.sf)
     * [Is both truncatable prime](./Math/is_both_truncatable_prime.sf)
     * [Is carmichael number](./Math/is_carmichael_number.sf)

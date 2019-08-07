@@ -1,0 +1,56 @@
+#!/usr/bin/ruby
+
+# Given a positive integer `n`, this algorithm finds all the numbers k
+# such that sigma(k) = n, where `sigma(k)` is the sum of divisors of `k`.
+
+# Based on "invphi.gp" code by Max Alekseyev.
+
+# See also:
+#   https://home.gwu.edu/~maxal/gpscripts/
+
+func inverse_sigma(n, m=3)  {
+
+    return [1] if (n == 1)
+
+    gather {
+        for d in (n.divisors.grep {|d| d >= m }), p in (prime_divisors(d-1)) {
+            var P = (d*(p-1) + 1)
+            var k = (P.valuation(p) - 1)
+            next if ((k < 1) || (P != p**(k+1)))
+            take(__FUNC__(n/d, d).grep {|x|
+                !(p `divides` x)
+            }.scalar_mul(p**k)...)
+        }
+    }.uniq
+}
+
+for n in (1..70) {
+    var arr = inverse_sigma(n) || next
+    say "σ−¹(#{n}) = [#{arr.join(', ')}]";
+}
+
+__END__
+σ−¹(1) = [1]
+σ−¹(3) = [2]
+σ−¹(4) = [3]
+σ−¹(6) = [5]
+σ−¹(7) = [4]
+σ−¹(8) = [7]
+σ−¹(12) = [6, 11]
+σ−¹(13) = [9]
+σ−¹(14) = [13]
+σ−¹(15) = [8]
+σ−¹(18) = [10, 17]
+σ−¹(20) = [19]
+σ−¹(24) = [14, 15, 23]
+σ−¹(28) = [12]
+σ−¹(30) = [29]
+σ−¹(31) = [16, 25]
+σ−¹(32) = [21, 31]
+σ−¹(36) = [22]
+σ−¹(38) = [37]
+σ−¹(39) = [18]
+σ−¹(40) = [27]
+σ−¹(42) = [26, 20, 41]
+σ−¹(44) = [43]
+σ−¹(48) = [33, 35, 47]
