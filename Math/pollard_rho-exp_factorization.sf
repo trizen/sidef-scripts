@@ -10,7 +10,7 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm
 
-func rho_factor(n) {
+func rho_exp_factor(n) {
 
     var B = n.ilog(5)**2
     var e = B.consecutive_lcm
@@ -47,7 +47,7 @@ var t = [
 ]
 
 for n in (t) {
-    say ("factor(#{n}) = ", rho_factor(n))
+    say ("factor(#{n}) = ", rho_exp_factor(n))
 }
 
 __END__
