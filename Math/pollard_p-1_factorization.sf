@@ -10,20 +10,14 @@ func pollard_pm1_factor (n, B = n.ilog(2)**3) {
     return n if ((n <= 1) || n.is_prime)
     return 2 if n.is_even
 
-    var (t, g) = (2, 1)
+    var t = 2
 
     for k in (2 .. B) {
-
         t = powmod(t, k, n)
-        g = gcd(t-1, n)
-
-        g <= 1 && next
-        g >= n && break
-
-        return g
+        is_coprime(t-1, n) || break
     }
 
-    return 1
+    return gcd(t-1, n)
 }
 
 say pollard_pm1_factor(1204123279);                                #=> 25889

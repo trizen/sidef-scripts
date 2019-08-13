@@ -12,17 +12,18 @@ func rho_factor(n, tries = 50000) {
         powmod(x, 2, n) + 1
     }
 
-    var a0 = 1
-    var a1 = f(a0)
-    var a2 = f(a1)
+    var x = f(1)
+    var y = f(x)
 
     tries.times {
-        a1 = f(a1)
-        a2 = f(f(a2))
-        is_coprime(n, a1-a2) || break
+
+        x = f(x)
+        y = f(f(y))
+
+        is_coprime(n, x-y) || break
     }
 
-    return gcd(a1-a2, n)
+    return gcd(x-y, n)
 }
 
 say rho_factor(503*863)                   #=> 863

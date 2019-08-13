@@ -10,7 +10,7 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm
 
-func rho_exp_factor(n) {
+func rho_exp_factor(n, tries = 50000) {
 
     var B = n.ilog(5)**2
     var e = B.consecutive_lcm
@@ -25,19 +25,18 @@ func rho_exp_factor(n) {
         (powmod(x, e, n) + c) % n
     }
 
-    var a0 = 1
-    var a1 = f(a0)
-    var a2 = f(a1)
+    var x = f(1)
+    var y = f(x)
 
-    loop {
+    tries.times {
 
-        a1 = f(a1)
-        a2 = f(f(a2))
+        x = f(x)
+        y = f(f(y))
 
-        var g = gcd(n, a1 - a2)
-
-        return g if g.is_between(2, n-1)
+        is_coprime(n, x-y) || break
     }
+
+    return gcd(x-y, n)
 }
 
 var t = [
