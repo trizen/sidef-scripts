@@ -2,28 +2,30 @@
 
 # Pollard's rho integer factorization algorithm.
 
-# Algorithm translated from:
-#   https://facthacks.cr.yp.to/rho.html
-
 # See also:
+#   https://facthacks.cr.yp.to/rho.html
 #   https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm
 
-func rho_factor(n) {
+func rho_factor(n, tries = 50000) {
 
-   var c  = 10
-   var a0 = 1
-   var a1 = (a0*a0 + c)
-   var a2 = (a1*a1 + c)
+    func f(x) {      # can be any polynomial
+        powmod(x, 2, n) + 1
+    }
 
-   while (is_coprime(n, a2-a1)) {
-     a1 = ((a1*a1 + c) % n)
-     a2 = ((a2*a2 + c) % n)
-     a2 = ((a2*a2 + c) % n)
-   }
+    var a0 = 1
+    var a1 = f(a0)
+    var a2 = f(a1)
 
-   var g = gcd(n, a2-a1)
-   return [n/g, g]
+    tries.times {
+        a1 = f(a1)
+        a2 = f(f(a2))
+        is_coprime(n, a1-a2) || break
+    }
+
+    return gcd(a1-a2, n)
 }
 
-say rho_factor(503*863)             #=> [503, 863]
-say rho_factor(314159265358979323)  #=> [317213509, 990371647]
+say rho_factor(503*863)                   #=> 863
+say rho_factor(33670570905491953)         #=> 36169843
+say rho_factor(314159265358979323)        #=> 317213509
+say rho_factor(242363923520394591022973)  #=> 786757556719

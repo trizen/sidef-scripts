@@ -1,0 +1,31 @@
+#!/usr/bin/ruby
+
+# Simple implementation of Pollard's p−1 integer factorization algorithm.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm
+
+func pollard_pm1_factor (n, B = n.ilog(2)**3) {
+
+    return n if ((n <= 1) || n.is_prime)
+    return 2 if n.is_even
+
+    var (t, g) = (2, 1)
+
+    for k in (2 .. B) {
+
+        t = powmod(t, k, n)
+        g = gcd(t-1, n)
+
+        g <= 1 && next
+        g >= n && break
+
+        return g
+    }
+
+    return 1
+}
+
+say pollard_pm1_factor(1204123279);                                #=> 25889
+say pollard_pm1_factor(406816927495811038353579431);               #=> 9074269
+say pollard_pm1_factor(38568900844635025971879799293495379321);    #=> 17495058332072672321
