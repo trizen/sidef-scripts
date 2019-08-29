@@ -4,7 +4,7 @@
 # Date: 19 May 2019
 # https://github.com/trizen
 
-# Efficient algorithm for determinining if a given number is squarefree over a squarefree product.
+# Efficient algorithm for determining if a given number is squarefree over a squarefree product.
 
 # Algorithm:
 #     1. Let n be the number to be tested.
@@ -24,14 +24,14 @@ func is_squarefree_over_prod (n, k) {
 
     if (g > 1) {
         var r = (n / g)                        # r = n/g
-        return true if (r == 1)                # it's smooth and squarefree if r = 1
+        return true  if (r == 1)               # it's smooth and squarefree if r = 1
         return false if (gcd(r, k) > 1)        # if gcd(r, k) > 1, then it's not squarefree
     }
 
     return false   # it's not smooth over the product
 }
 
-# Example for finding 19-smooth squarefree numbers
+# Example for checking 19-smooth squarefree numbers
 var k = 19.primorial      # product of primes <= 19
 
 for n in (1..1000) {

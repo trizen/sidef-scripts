@@ -19,18 +19,18 @@
 
 func is_smooth_over_prod(n, k) {
 
-    var g = gcd(n, k)
+    return true  if (n == 1)
+    return false if (n <= 0)
 
-    while (g > 1) {                   # while gcd(n, k) > 1
-        n.remdiv!(g)                  # remove any divisibility by g
-        return true if (n == 1)       # smooth if n == 1
-        g = gcd(n, k)                 # take the gcd again and repeat
+    for (var g = gcd(n,k); g > 1; g = gcd(n,k)) {
+        n.remdiv!(g)                # remove any divisibility by g
+        return true if (n == 1)     # smooth if n == 1
     }
 
     return false
 }
 
-# Example for finding 19-smooth numbers
+# Example for checking 19-smooth numbers
 var k = 19.primorial      # product of primes <= 19
 
 for n in (1..1000) {

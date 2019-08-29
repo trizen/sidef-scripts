@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# The Carl Pomerance conditions for construting a counter-example to the Baillie-PSW test.
+# The Carl Pomerance conditions for constructing a counter-example to the Baillie-PSW test.
 
 # See also:
 #   http://pseudoprime.com/dopo.pdf

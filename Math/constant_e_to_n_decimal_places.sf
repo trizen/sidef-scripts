@@ -4,7 +4,7 @@
 # Date: 14 May 2018
 # https://github.com/trizen
 
-# Caclulate the value of `e` to a given number of decimal places.
+# Calculate the value of `e` to a given number of decimal places.
 
 # Bonus: PARI/GP program for verifying the value of `k` returned from `number_of_required_terms(n)`:
 #   isok(n, k) = (k * (log(k)-1) + log(2*Pi*k)/2) / log(10) < n && ((k+1) * (log(k+1)-1) + log(2*Pi*(k+1))/2) / log(10) > n;
