@@ -268,6 +268,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Mertens function](./Math/mertens_function.sf)
     * [Miller rabin primality test](./Math/miller_rabin_primality_test.sf)
     * [Mills constant](./Math/mills_constant.sf)
+    * [Modular bell numbers recurrence](./Math/modular_bell_numbers_recurrence.sf)
     * [Modular cyclotomic polynomial](./Math/modular_cyclotomic_polynomial.sf)
     * [Modular exponentiation](./Math/modular_exponentiation.sf)
     * [Modular fibonacci number cassini](./Math/modular_fibonacci_number_cassini.sf)

@@ -1,0 +1,53 @@
+#!/usr/bin/ruby
+
+# A recurrence for computing the Bell numbers modulo a given integer.
+
+# Interesting fact:
+#   Bell(p) == 2 (mod p) for prime numbers p.
+
+# See also:
+#   https://oeis.org/A166226 -- Bell number n modulo n.
+#   https://oeis.org/A325630 -- Numbers k such that Bell(k) is divisible by k.
+#   http://mathworld.wolfram.com/BellNumber.html
+
+func modular_binomial(n, k, m) is cached {
+
+    return 1 if (n == k)
+    return 0 if (n == 0)
+
+    (__FUNC__(n-1, k-1, m) + __FUNC__(n-1, k, m)) % m
+}
+
+func modular_bell(n, k=0, m=n) is cached {
+
+    return 1 if (n == 0)
+    return 0 if (k == n)
+
+    (__FUNC__(n, k+1, m) + (__FUNC__(k, 0, m)*modular_binomial(n-1, k, m))) % m
+}
+
+for k in (1..20) {
+    say "Bell(#{'%2d' % k}) == #{'%2d' % modular_bell(k)} (mod #{k})"
+}
+
+__END__
+Bell( 1) ==  0 (mod 1)
+Bell( 2) ==  0 (mod 2)
+Bell( 3) ==  2 (mod 3)
+Bell( 4) ==  3 (mod 4)
+Bell( 5) ==  2 (mod 5)
+Bell( 6) ==  5 (mod 6)
+Bell( 7) ==  2 (mod 7)
+Bell( 8) ==  4 (mod 8)
+Bell( 9) ==  6 (mod 9)
+Bell(10) ==  5 (mod 10)
+Bell(11) ==  2 (mod 11)
+Bell(12) ==  1 (mod 12)
+Bell(13) ==  2 (mod 13)
+Bell(14) == 12 (mod 14)
+Bell(15) ==  5 (mod 15)
+Bell(16) ==  3 (mod 16)
+Bell(17) ==  2 (mod 17)
+Bell(18) == 13 (mod 18)
+Bell(19) ==  2 (mod 19)
+Bell(20) == 12 (mod 20)
