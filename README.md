@@ -283,6 +283,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Multiple modular multiplicative inversions](./Math/multiple_modular_multiplicative_inversions.sf)
     * [N-bit random prime](./Math/n-bit_random_prime.sf)
     * [Near-power factorization method](./Math/near-power_factorization_method.sf)
+    * [Next palindrome in base](./Math/next_palindrome_in_base.sf)
     * [Nth root good rational approximations](./Math/nth_root_good_rational_approximations.sf)
     * [Nth smooth number](./Math/nth_smooth_number.sf)
     * [Number of 3Xn arrays with row permutations A212856](./Math/number_of_3Xn_arrays_with_row_permutations_A212856.sf)
