@@ -260,6 +260,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Lucas-lehmer primality test](./Math/lucas-lehmer_primality_test.sf)
     * [Lucas factorization method](./Math/lucas_factorization_method.sf)
     * [Lucas factorization method generalized](./Math/lucas_factorization_method_generalized.sf)
+    * [Lucas primality test](./Math/lucas_primality_test.sf)
     * [Lucas sequences of k-th order](./Math/lucas_sequences_of_k-th_order.sf)
     * [Lucas sequences U V](./Math/lucas_sequences_U_V.sf)
     * [LUP decomposition](./Math/LUP_decomposition.sf)

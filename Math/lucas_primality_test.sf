@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+# Simple implementation of the Lucas primality test.
+# https://en.wikipedia.org/wiki/Lucas_primality_test
+
+func lucas_primality_test(n, k = (2 * n.log2**2)) {     # for odd n > 2
+
+    n.is_odd   || return false
+    n.is_power && return false
+
+    var f = factor(n-1).uniq.map{|p| (n-1)/p }.sort
+
+    k.times {
+        var a = irand(2, n-1)
+        powmod(a, n-1, n) == 1 || return false
+
+        f.all {|r|
+            powmod(a, r, n) != 1
+        } && return true                # definitely prime
+    }
+
+    return false        # possibly composite
+}
+
+say lucas_primality_test(41! + 1, 10)        #=> true
+say lucas_primality_test(43! + 1, 10)        #=> false
