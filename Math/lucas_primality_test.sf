@@ -8,11 +8,16 @@ func lucas_primality_test(n, k = (2 * n.log2**2)) {     # for odd n > 2
     n.is_odd   || return false
     n.is_power && return false
 
-    var f = factor(n-1).uniq.map{|p| (n-1)/p }.sort
+    func factor_nm1(n) is cached {
+        factor(n-1).uniq.map{|p| (n-1)/p }.sort
+    }
 
     k.times {
         var a = irand(2, n-1)
-        powmod(a, n-1, n) == 1 || return false
+
+        powmod(a, n-1, n) == 1 || return false      # definitely composite
+
+        var f = factor_nm1(n)
 
         f.all {|r|
             powmod(a, r, n) != 1
