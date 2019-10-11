@@ -354,6 +354,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Repunits from repunits](./Math/repunits_from_repunits.sf)
     * [Right truncatable primes](./Math/right_truncatable_primes.sf)
     * [Right truncatable primes in base](./Math/right_truncatable_primes_in_base.sf)
+    * [Roots of unity convergents](./Math/roots_of_unity_convergents.sf)
     * [Round half to even](./Math/round_half_to_even.sf)
     * [RSA algorithm](./Math/RSA_algorithm.sf)
     * [Secant numbers](./Math/secant_numbers.sf)
