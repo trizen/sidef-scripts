@@ -4,7 +4,7 @@
 # Date: 16 October 2019
 # https://github.com/trizen
 
-# Generalize elementary cellular automaton, by using `n` color-states and looking at `k` neighbors left-to-right.
+# Generalization of the elementary cellular automaton, by using `n` color-states and looking at `k` neighbors left-to-right.
 
 # For example, a value of `n = 3` and `k = 2` uses three different color-states and looks at 2 neighbors to the left and 2 neighbors to the right.
 
@@ -21,28 +21,25 @@ func automaton(n, k, callback, rule=120, iter=50, cells=[1]) {
 
     var states = @(^n).variations_with_repetition(2*k + 1)
     var digits = rule.digits(n)
-    var table  = Hash()
+    var lookup = Array()
 
     for i,s in (states.kv) {
-        table{s.digits2num(n)} = digits[i]\\0
+        lookup[s.digits2num(n)] = digits[i]\\0
     }
 
     var padding = ((iter-cells.len)/2 -> of(0))
     cells = [padding..., cells..., padding...]
 
-    var neighbors_range = (-k .. k)
+    var len = cells.len
+    var neighbors_range = @(-k .. k)
 
     (iter/2).times {
         callback(cells)
-
-        var previous = [cells...]
-        var len = previous.len
-
-        cells[] = table{
-            previous.range.map { |i|
-                neighbors_range.map {|j| previous[(i+j) % len] }.digits2num(n)
+        cells[] = lookup[
+            cells.range.map { |i|
+                neighbors_range.map {|j| cells[(i+j) % len] }.digits2num(n)
             }...
-        }
+        ]
     }
 
     return cells
