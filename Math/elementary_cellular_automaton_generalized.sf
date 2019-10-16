@@ -1,0 +1,69 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 16 October 2019
+# https://github.com/trizen
+
+# Generalize elementary cellular automaton, by using `n` color-states and looking at `k` neighbors left-to-right.
+
+# For example, a value of `n = 3` and `k = 2` uses three different color-states and looks at 2 neighbors to the left and 2 neighbors to the right.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Cellular_automaton
+#   https://en.wikipedia.org/wiki/Elementary_cellular_automaton
+#   http://rosettacode.org/wiki/Elementary_cellular_automaton
+
+# YouTube lectures:
+#   https://www.youtube.com/watch?v=S3tYzCPuVsA
+#   https://www.youtube.com/watch?v=pGGIE5uhPRQ
+
+func automaton(n, k, callback, rule=120, iter=50, cells=[1]) {
+
+    var states = @(^n).variations_with_repetition(2*k + 1)
+    var digits = rule.digits(n)
+    var table  = Hash()
+
+    for i,s in (states.kv) {
+        table{s.digits2num(n)} = digits[i]\\0
+    }
+
+    var padding = ((iter-cells.len)/2 -> of(0))
+    cells = [padding..., cells..., padding...]
+
+    var neighbors_range = (-k .. k)
+
+    (iter/2).times {
+        callback(cells)
+
+        var previous = [cells...]
+        var len = previous.len
+
+        cells[] = table{
+            previous.range.map { |i|
+                neighbors_range.map {|j| previous[(i+j) % len] }.digits2num(n)
+            }...
+        }
+    }
+
+    return cells
+}
+
+var chars = [' ', '*', '.', '#']
+
+say "\n=> 2x1 Automaton"
+
+automaton(2, 1, rule: 90, callback: {|row|
+    say row.map { chars[_] }.join
+})
+
+say "\n=> 3x1 Automaton"
+
+automaton(3, 1, rule: 843693805713, callback: {|row|
+    say row.map { chars[_] }.join
+})
+
+say "\n=> 3x2 Automaton"
+
+automaton(3, 2, rule: 590193390821886729275563552433397050190, iter: 80, callback: {|row|
+    say row.map { chars[_] }.join
+})

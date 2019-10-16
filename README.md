@@ -143,6 +143,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Divisors of factorial in range iterator](./Math/divisors_of_factorial_in_range_iterator.sf)
     * [Draw grid of squares](./Math/draw_grid_of_squares.sf)
     * [Elementary cellular automaton](./Math/elementary_cellular_automaton.sf)
+    * [Elementary cellular automaton generalized](./Math/elementary_cellular_automaton_generalized.sf)
     * [Elliptic-curve factorization method](./Math/elliptic-curve_factorization_method.sf)
     * [Equally spaced squares solutions](./Math/equally_spaced_squares_solutions.sf)
     * [Euler numbers from factorials](./Math/euler_numbers_from_factorials.sf)
