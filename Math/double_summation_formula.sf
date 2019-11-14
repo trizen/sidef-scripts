@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 14 November 2019
+# https://github.com/trizen
+
+# Single sum formula for a double summation.
+
+# Given any function f(k), let:
+#   F(n) = Sum_{k=1..n} f(k)
+#   S(n) = Sum_{k=1..n} F(k)
+
+# then:
+#   S(n) = Sum_{k=1..n} Sum_{j=1..k} f(j)
+#   S(n) = Sum_{k=1..n} f(k) * (n - k + 1)
+
+func f(k) {     # any function f(k)
+    k.euler_phi
+}
+
+func F(n) {     # partial sums of f(k)
+    sum(1..n, {|k|
+        f(k)
+    })
+}
+
+func S(n) {     # partial sums of F(k)
+    sum(1..n, {|k|
+        F(k)
+    })
+}
+
+func G(n) {     # equivalent with S(n)
+    sum(1..n, {|k|
+        f(k) * (n - k + 1)
+    })
+}
+
+say F(100)      #=> 3044
+say S(100)      #=> 104359
+say G(100)      #=> 104359

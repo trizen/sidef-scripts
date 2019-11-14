@@ -38,7 +38,7 @@
 #   Y + M - D
 #   Y - M + D
 
-# Only one such birthday eixsts between the years 1 and 10000, and that is:
+# Only one such birthday exists between the years 1 and 10000, and that is:
 #   Y = 1980
 #   M = 12
 #   D = 19

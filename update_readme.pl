@@ -7,7 +7,7 @@
 
 # Updated the README.md file by adding new scripts to the summary.
 
-use 5.014;
+use 5.016;
 use strict;
 use autodie;
 use warnings;
@@ -50,7 +50,8 @@ my $main_dir     = File::Spec->curdir;
         my $cwd = getcwd();
 
         chdir $dir;
-        my @files = map { {name => $_, path => File::Spec->rel2abs($_)} } glob('*');    # sorting for free
+        my @files = sort { $a->{key} cmp $b->{key} }
+          map { {key => fc(s/\.\w+\z//r), name => $_, path => File::Spec->rel2abs($_)} } glob('*');
         chdir $cwd;
 
         my $make_section_url = sub {
