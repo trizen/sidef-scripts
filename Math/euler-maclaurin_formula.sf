@@ -1,0 +1,71 @@
+#!/usr/bin/ruby
+
+# Simple implementation of the Euler–Maclaurin formula.
+
+# See also:
+#   https://www.youtube.com/watch?v=fw1kRz83Fj0
+#   https://en.wikipedia.org/wiki/Numerical_differentiation
+#   https://en.wikipedia.org/wiki/Euler%E2%80%93Maclaurin_formula
+
+func nth_derivative(f, x, n=1, h=1e-49) {
+    (-1)**(n+1) * sum(0..n, {|k|
+        (-1)**(k+1) * binomial(n, k) * f(x + h*k)
+    }) / h**n
+}
+
+func integral_slow (f, from, to, dx = 0.01) {
+    sum(from..to `by` dx, {|x|
+        f(x) * dx -> float
+    })
+}
+
+func integral(f, left, right, ε = 1e-9) {   # Adaptive Simpson's method
+
+    func quadrature_mid(l, lf, r, rf) {
+        var mid = (l+r)/2
+        var midf = f(mid)
+        (mid, midf, abs(r-l)/6 * (lf + 4*midf + rf))
+    }
+
+    func recursive_asr(a, fa, b, fb, ε, whole, m, fm) {
+        var (lm, flm, left)  = quadrature_mid(a, fa, m, fm)
+        var (rm, frm, right) = quadrature_mid(m, fm, b, fb)
+        var Δ = (left + right - whole)
+        abs(Δ) <= 15*ε
+            ? (left + right + Δ/15)
+            : (__FUNC__(a, fa, m, fm, ε/2, left,  lm, flm) +
+               __FUNC__(m, fm, b, fb, ε/2, right, rm, frm))
+    }
+
+    var (lf = f(left), rf = f(right))
+    var (mid, midf, whole) = quadrature_mid(left, lf, right, rf)
+    recursive_asr(left, lf, right, rf, ε, whole, mid, midf)
+}
+
+func periodized_Bernoulli(k, x) {
+    bernoulli(k, x - floor(x))
+}
+
+func error_term(f, from, to, p) {
+    (-1)**(p+1) * integral({|x|
+        nth_derivative(f, x, p) * periodized_Bernoulli(p, x) / p! -> float
+    }, from, to)
+}
+
+func Euler_Maclaurin_formula(f, from, to, p = 4) {
+    var A = integral(f, from, to)
+    var B = (f(from) + f(to))/2
+
+    var C = sum(1..floor(p/2), {|k|
+        (bernoulli(2*k) / (2*k)!) * (nth_derivative(f, to, 2*k - 1) - nth_derivative(f, from, 2*k - 1))
+    })
+
+    var D = error_term(f, from, to, p)
+
+    return (A + B + C + D)
+}
+
+var f = {|x| 1 / x**3 }
+
+say zeta(3)                                 #=> 1.20205690315959428539973816151144999076498629234
+say Euler_Maclaurin_formula(f, 1, 1000)     #=> 1.20205639241256425706033823067495286909577131977

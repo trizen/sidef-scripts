@@ -147,6 +147,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Elementary cellular automaton generalized](./Math/elementary_cellular_automaton_generalized.sf)
     * [Elliptic-curve factorization method](./Math/elliptic-curve_factorization_method.sf)
     * [Equally spaced squares solutions](./Math/equally_spaced_squares_solutions.sf)
+    * [Euler-maclaurin formula](./Math/euler-maclaurin_formula.sf)
     * [Euler numbers from factorials](./Math/euler_numbers_from_factorials.sf)
     * [Euler's totient theorem expmod](./Math/euler_s_totient_theorem_expmod.sf)
     * [Extended greatest common divisor](./Math/extended_greatest_common_divisor.sf)
