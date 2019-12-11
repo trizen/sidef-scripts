@@ -13,11 +13,13 @@ func lucasUVmod(P, Q, n, m) {
 
     var s = n.valuation(2)
 
-    for j in (n.ilog2 `downto` s+1) {
+    n >>= (s+1)
+
+    for bit in (n.as_bin.chars) {
 
         Q1 = (Q1 * Q2)%m
 
-        if (n.getbit(j)) {
+        if (bit) {
             Q2 = (Q1 * Q)%m
             U1 = (U1 * V2)%m
             V1 = (V2*V1 - P*Q1)%m
@@ -46,6 +48,8 @@ func lucasUVmod(P, Q, n, m) {
     return (U1, V1)
 }
 
+#--------------------------------------------------------
+
 var p = 1e6.irand
 var q = 1e6.irand
 var n = 1e20.irand
@@ -55,3 +59,23 @@ var (U, V) = lucasUVmod(p, q, n, m)
 
 say "lucasU(P=#{p}, Q=#{q}, N=#{n}) = #{U} (mod #{m})"
 say "lucasV(P=#{p}, Q=#{q}, N=#{n}) = #{V} (mod #{m})"
+
+for k in (1..20) {      # run some tests
+
+    var p = 1e30.random_prime
+
+    assert_eq([lucasUVmod(1, -1, p, p)][1], 1)
+    assert_eq([lucasUVmod(1, -1, p - kronecker(p, 5), p)][0], 0)
+
+    var n = 1e30.irand
+    var m = 1e30.irand
+
+    var P = (100.irand * [-1,1].rand)
+    var Q = (100.irand * [-1,1].rand)
+
+    var (U1, V1) = lucasUVmod(P, Q, n, m)
+    var (U2, V2) = (try { lucasumod(P, Q, n, m) } \\ next, try { lucasvmod(P, Q, n, m) } \\ next)
+
+    assert_eq(U1, U2)
+    assert_eq(V1, V2)
+}

@@ -106,6 +106,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Cauchy numbers of first type recurrence](./Math/cauchy_numbers_of_first_type_recurrence.sf)
     * [Central trinomial triangle](./Math/central_trinomial_triangle.sf)
     * [Champernowne constant nth digit](./Math/champernowne_constant_nth_digit.sf)
+    * [Chebyshev factorization method](./Math/chebyshev_factorization_method.sf)
     * [Chernick-carmichael numbers](./Math/chernick-carmichael_numbers.sf)
     * [Chinese modular exponentiation](./Math/chinese_modular_exponentiation.sf)
     * [Chinese remainder theorem](./Math/chinese_remainder_theorem.sf)
