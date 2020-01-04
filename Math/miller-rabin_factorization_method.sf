@@ -26,29 +26,28 @@
 
 func miller_rabin_factor(n, k=100) {
 
-    var d = n-1
-    var s = d.valuation(2)
+    var D = n-1
+    var s = D.valuation(2)
     var r = s-1
-
-    d >>= s
+    var d = D>>s
 
     for a in (2..k) {
         var x = powmod(a, d, n)
-        next if ((x == 1) || (x == n-1))
+        next if ((x == 1) || (x == D))
 
-        r.times {|k|
-            x.powmod!(2, n)
+        r.times {
+            var y = powmod(x, 2, n)
 
-            if (x == 1) {
-                var t = powmod(a, d << k, n)
-                var g = gcd(t+1, n)
+            if (y == 1) {
+                var g = gcd(x+1, n)
 
                 if (g.is_between(2, n-1)) {
                     return [g, n/g].min
                 }
             }
 
-            break if (x == n-1)
+            x = y
+            break if (x == D)
         }
     }
 
