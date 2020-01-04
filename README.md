@@ -272,6 +272,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Mandelbrot set](./Math/mandelbrot_set.sf)
     * [Mathematical formulas](./Math/mathematical_formulas.sf)
     * [Mertens function](./Math/mertens_function.sf)
+    * [Miller-rabin factorization method](./Math/miller-rabin_factorization_method.sf)
     * [Miller rabin primality test](./Math/miller_rabin_primality_test.sf)
     * [Mills constant](./Math/mills_constant.sf)
     * [Modular bell numbers recurrence](./Math/modular_bell_numbers_recurrence.sf)
