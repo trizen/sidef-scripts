@@ -317,6 +317,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Pell-holf factorization](./Math/pell-holf_factorization.sf)
     * [Pell factorization](./Math/pell_factorization.sf)
     * [Pell method for square roots](./Math/pell_method_for_square_roots.sf)
+    * [Pepin-proth primality test generalized](./Math/pepin-proth_primality_test_generalized.sf)
     * [Perfect squares in catalan's triangle](./Math/perfect_squares_in_catalan_s_triangle.sf)
     * [Permutations iter](./Math/permutations_iter.sf)
     * [Permutations rec](./Math/permutations_rec.sf)

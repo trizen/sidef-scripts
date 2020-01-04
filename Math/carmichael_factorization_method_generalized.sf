@@ -39,7 +39,8 @@ func carmichael_factorization(n, k=3, l=2, h=6) {
                 var g = gcd(r, n)
 
                 if (g > 1) {
-                    return [r, block(r, params)...].grep { .divides(n) }
+                    var f = [r, block(r, params)...].grep { .divides(n) }
+                    return (f ? f : g)
                 }
             }
     })

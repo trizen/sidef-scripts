@@ -56,6 +56,8 @@ func carmichael_factorization(n, l=2, h=23) {
         try_parameters(a, ( 2*y + 1)*x + y, (y + 1)*x + (y + 1))
         try_parameters(a, (-2*y - 1)*x - y, (y + 1)*x + (y + 1))
     })
+
+    return 1
 }
 
 say carmichael_factorization(7520940423059310542039581)                                         #=> 79443853

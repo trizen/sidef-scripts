@@ -1,0 +1,68 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 04 January 2020
+# https://github.com/trizen
+
+# Generalization of the Pépin-Proth test.
+
+# Let `n` be an odd positive integer that is not a perfect power:
+#   1) find an integer `a` such that: kronecker(a, n) = -1.
+#   2) if `n` is prime, then: a^((n-1)/2) == -1 (mod n)
+
+# There are a few composites that also satisfiy this property for some values of `a`.
+# To overcome this, we try to find `a` in the sequence `k, k+1, k+2, ...`, where `k` is a random starting value <= floor(sqrt(n)). A random value of `k` is computed at each iteration.
+# For better accuracy, we repeat the test several times. If we find an `a` such that `kronecker(a, n) = -1` and `a^((n-1)/2) != -1 (mod n)`, then `n` is definitely composite.
+
+# See also:
+#   https://en.wikipedia.org/wiki/P%C3%A9pin's_test
+#   https://en.wikipedia.org/wiki/Proth%27s_theorem
+#   https://en.wikipedia.org/wiki/Pocklington_primality_test
+
+func pepin_primality_test(n, reps=10) {
+
+    return true  if (n == 2)
+    return false if (n.is_even)
+    return false if (n <= 1)
+    return false if (n.is_power)
+
+    var s = n.isqrt
+
+    reps.times {
+        var a = (s.irand..n -> first {|k|
+            kronecker(k, n) == -1
+        })
+        powmod(a, (n-1)/2, n) == n-1 || return false
+    }
+
+    return true
+}
+
+#
+## Run a few tests
+#
+
+assert(pepin_primality_test(41! + 1))
+assert(pepin_primality_test(2**127 - 1))
+
+assert(!pepin_primality_test(43! + 1))
+assert(!pepin_primality_test(335603208601))
+assert(!pepin_primality_test(30459888232201))
+assert(!pepin_primality_test(30990302851201))
+assert(!pepin_primality_test(162021627721801))
+assert(!pepin_primality_test(2107679818823041))
+assert(!pepin_primality_test(15245346051376561))
+assert(!pepin_primality_test(15667976553657751))
+assert(!pepin_primality_test(1372144392322327801))
+
+say pepin_primality_test.first(25)
+
+assert_eq([341, 561, 645, 1105, 1387, 1729, 1905, 2047, 2465, 2701, 2821, 3277, 4033,
+           4369, 4371, 4681, 5461, 6601, 7957, 8321, 8481, 8911, 10261, 10585, 11305,
+           12801, 13741, 13747, 13981, 14491, 15709, 15841, 16705, 18705, 18721, 19951,
+           23001, 23377, 25761, 29341].grep(pepin_primality_test), [])
+
+assert_eq([561, 1105, 1729, 2465, 2821, 6601, 8911, 10585, 15841, 29341, 41041, 46657,
+           52633, 62745, 63973, 75361, 101101, 115921, 126217, 162401, 172081, 188461,
+           252601, 278545, 294409, 314821, 334153, 340561, 399001, 410041, 449065, 488881,
+           512461].grep(pepin_primality_test), [])
