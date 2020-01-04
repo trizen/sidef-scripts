@@ -24,7 +24,7 @@
 #   https://www.math.waikato.ac.nz/~kab/509/bigbook.pdf
 #   https://en.wikipedia.org/wiki/Miller-Rabin_primality_test
 
-func miller_rabin_factor(n, k = min(n-1, 2 * ilog2(n)**2)) {
+func miller_rabin_factor(n, k=100) {
 
     var d = n-1
     var s = d.valuation(2)
@@ -34,7 +34,7 @@ func miller_rabin_factor(n, k = min(n-1, 2 * ilog2(n)**2)) {
 
     for a in (2..k) {
         var x = powmod(a, d, n)
-        next if (x == n-1)
+        next if ((x == 1) || (x == n-1))
 
         r.times {|k|
             x.powmod!(2, n)
