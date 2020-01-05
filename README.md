@@ -326,6 +326,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Pi from perimeters of polygons](./Math/pi_from_perimeters_of_polygons.sf)
     * [Pisano periods](./Math/pisano_periods.sf)
     * [Pisano periods efficient algorithm](./Math/pisano_periods_efficient_algorithm.sf)
+    * [Pocklington-pratt primality proving](./Math/pocklington-pratt_primality_proving.sf)
     * [Pollard p-1 factorization](./Math/pollard_p-1_factorization.sf)
     * [Pollard rho-exp factorization](./Math/pollard_rho-exp_factorization.sf)
     * [Pollard rho factorization](./Math/pollard_rho_factorization.sf)

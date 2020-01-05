@@ -11,9 +11,10 @@ func pollard_pm1_factor (n, B = n.ilog(2)**3) {
     return 2 if n.is_even
 
     var t = 2
+    var G = B*B
 
-    for k in (2 .. B) {
-        t = powmod(t, k, n)
+    for (var p = 2; p <= B; p.next_prime!) {
+        t = powmod(t, p**G.ilog(p), n)
         is_coprime(t-1, n) || break
     }
 
@@ -21,5 +22,6 @@ func pollard_pm1_factor (n, B = n.ilog(2)**3) {
 }
 
 say pollard_pm1_factor(1204123279);                                #=> 25889
+say pollard_pm1_factor(83910721266759813859)                       #=> 4545646757
 say pollard_pm1_factor(406816927495811038353579431);               #=> 9074269
 say pollard_pm1_factor(38568900844635025971879799293495379321);    #=> 17495058332072672321
