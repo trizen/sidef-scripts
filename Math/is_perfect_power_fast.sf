@@ -1,0 +1,85 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 05 January 2020
+# https://github.com/trizen
+
+# A fast pretest for checking if a number `n` is a perfect power.
+#      (i.e. can be expressed as: n = a^k with k > 1)
+
+# Algorithm:
+#   1. Let `n` be the number to be tested.
+#   2. Let `k` be the primorial of `B`.
+#   3. Compute the greatest common divisor: `g = gcd(n,k)`.
+#   4. If `g` is greater than `1`, then `n = r * g^e`, for some `e >= 1`:
+#       * if `r = 1` and `e = 1`, then `n` is not a perfect power.
+#       * if `r = 1` and `e > 1`, then `n` is a perfect power.
+#       * if `r` is prime, then `n` is not a perfect power. (optional)
+#       * Factorize `g` into primes `p_k` and compute multiplicity `e_k` in `n`:
+#           * if `gcd(e_k) = 1`, then `n` is not a perfect power.
+#           * if `gcd(e_k) = b`, with `b >= 2` and `n = floor(n^(1/b))^b` , then `n` is  a perfect power.
+#   5. If this step is reached, then `n` is probably a perfect power.
+
+func is_perfect_power_pretest(n,k) {
+
+    var g = gcd(n,k)
+
+    if (g > 1) {
+        var e = valuation(n,g)
+        var r = (n / g**e)
+
+        if ((r == 1) && (e == 1)) {
+            return false
+        }
+
+        if ((r == 1) && (e > 1)) {
+            return true
+        }
+
+        var f = g.factor.map {|p|
+            [p, n.valuation(p)]
+        }
+
+        var b = f.map { .tail }.gcd
+
+        if (b == 1) {
+            return false
+        }
+
+        var t = (n / f.prod_2d {|p,e| p**e })
+
+        if (t.is_prime) {
+            return false
+        }
+    }
+
+    if (n.is_prime) {
+        return false
+    }
+
+    return true
+}
+
+func is_perfect_power(n) {
+
+    for k in (n.ilog2 `downto` 2) {
+        if (n.iroot(k)**k == n) {
+            return k
+        }
+    }
+
+    return 1
+}
+
+
+say is_perfect_power(1234**14)     #=> 14
+say is_perfect_power(27*49)        #=> 1
+
+var k = 29.primorial
+say is_perfect_power_pretest(1234**14, k)       #=> true
+say is_perfect_power_pretest(27*49, k)          #=> false
+
+var a = (2..1000 -> grep { is_perfect_power(_) > 1 })
+var b = (2..1000 -> grep { is_perfect_power_pretest(_, k) })
+
+assert_eq(a, b)

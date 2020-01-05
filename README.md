@@ -230,6 +230,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Is even perfect 2](./Math/is_even_perfect_2.sf)
     * [Is lucas-carmichael number](./Math/is_lucas-carmichael_number.sf)
     * [Is perfect power](./Math/is_perfect_power.sf)
+    * [Is perfect power fast](./Math/is_perfect_power_fast.sf)
     * [Is prob squarefree](./Math/is_prob_squarefree.sf)
     * [Is smooth over product](./Math/is_smooth_over_product.sf)
     * [Is squarefree over product](./Math/is_squarefree_over_product.sf)
