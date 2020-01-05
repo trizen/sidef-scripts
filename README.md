@@ -414,6 +414,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Tangent numbers](./Math/tangent_numbers.sf)
     * [Tonelli shanks algorithm](./Math/tonelli_shanks_algorithm.sf)
     * [Towers of hanoi](./Math/towers_of_hanoi.sf)
+    * [Trial division with primorials](./Math/trial_division_with_primorials.sf)
     * [Tribonacci closed form](./Math/tribonacci_closed_form.sf)
     * [Tribonacci numbers](./Math/tribonacci_numbers.sf)
     * [Tribonacci primality test](./Math/tribonacci_primality_test.sf)
