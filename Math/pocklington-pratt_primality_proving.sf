@@ -26,13 +26,7 @@ func pocklington_pratt_primality_test(n, lim=2**64) is cached {
     var B = f.pop
     var S = n.isqrt
 
-    if (B <= lim) {
-        if (B.is_prime) {
-            f << B
-            B = 1
-        }
-    }
-    elsif (__FUNC__(B)) {
+    if (__FUNC__(B)) {
         f << B
         B = 1
     }
@@ -41,7 +35,7 @@ func pocklington_pratt_primality_test(n, lim=2**64) is cached {
         var A = f.prod
 
         if (A>S && is_coprime(A, B)) {
-            return f.uniq.grep{|p| p > 2 }.all {|p|
+            return f.uniq.all {|p|
                 2..1000 -> any {
                     var a = irand(2, D)
                     say [a, p]
