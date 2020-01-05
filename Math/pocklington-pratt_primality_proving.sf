@@ -39,7 +39,7 @@ func pocklington_pratt_primality_test(n, lim=2**64) is cached {
                 1..Inf -> any {
                     var a = irand(2, D)
                     say [a, p]
-                    powmod(a, D, n) == 1 || return false
+                    n.is_strong_pseudoprime(a) || return false
                     is_coprime(powmod(a, D/p, n) - 1, n)
                 }
             }
