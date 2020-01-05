@@ -13,26 +13,20 @@
 
 func pocklington_pratt_primality_test(n, lim=2**64) is cached {
 
-    n.is_prob_prime || return false
-
-    if (n < lim) {
+    if ((n <= lim) || (n <= 2)) {
         return n.is_prime
     }
+
+    n.is_prob_prime || return false
 
     say ":: Proving primality of: #{n}"
 
     var D = n-1
-    var v = valuation(D,2)
-    var d = D>>v
-    var f = d.trial_factor(1e7)
+    var f = D.trial_factor(1e7)
     var B = f.pop
     var S = n.isqrt
 
-    if (2**v * f.prod > S) {
-        f += v.of(2)
-    }
-
-    if (B < lim) {
+    if (B <= lim) {
         if (B.is_prime) {
             f << B
             B = 1
@@ -47,8 +41,8 @@ func pocklington_pratt_primality_test(n, lim=2**64) is cached {
         var A = f.prod
 
         if (A>S && is_coprime(A, B)) {
-            return f.uniq.all {|p|
-                2..100 -> any {
+            return f.uniq.grep{|p| p > 2 }.all {|p|
+                2..1000 -> any {
                     var a = irand(2, D)
                     say [a, p]
                     powmod(a, D, n) == 1 || return false
