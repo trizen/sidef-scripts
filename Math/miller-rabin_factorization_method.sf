@@ -32,22 +32,14 @@ func miller_rabin_factor(n, k=100) {
     var d = D>>s
 
     for a in (2..k) {
-        var x = powmod(a, d, n)
-        next if ((x == 1) || (x == D))
-
-        r.times {
-            var y = powmod(x, 2, n)
-
-            if (y == 1) {
-                var g = gcd(x+1, n)
-
+        for b in (0..r) {
+            var x = powmod(a, d << b, n)
+            for i in (1, -1) {
+                var g = gcd(x+i, n)
                 if (g.is_between(2, n-1)) {
-                    return [g, n/g].min
+                    return g
                 }
             }
-
-            x = y
-            break if (x == D)
         }
     }
 

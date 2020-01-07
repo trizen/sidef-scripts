@@ -1,0 +1,42 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 07 January 2020
+# https://github.com/trizen
+
+# A simple factorization method, using the Lucas `U_n(P,Q)` sequences.
+# Inspired by the Miller-Rabin factorization method.
+
+# Works best on Lucas pseudoprimes.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Lucas_pseudoprime
+#   https://en.wikipedia.org/wiki/Miller-Rabin_primality_test
+
+func lucas_miller_factor(n, k=100) {
+
+    var D = n+1
+    var s = D.valuation(2)
+    var r = s-1
+    var d = D>>s
+
+    for P in (1..k) {
+        var Q = -min(1e6.irand, n.irand)
+
+        for b in (0..r) {
+            var x = lucasUmod(P, Q, d << b, n)
+            var g = gcd(x, n)
+            if (g.is_between(2, n-1)) {
+                return g
+            }
+        }
+    }
+
+    return 1
+}
+
+say lucas_miller_factor(16641689036184776955112478816668559)
+say lucas_miller_factor(17350074279723825442829581112345759)
+say lucas_miller_factor(61881629277526932459093227009982733523969186747)
+say lucas_miller_factor(173315617708997561998574166143524347111328490824959334367069087)
+say lucas_miller_factor(2425361208749736840354501506901183117777758034612345610725789878400467)
