@@ -1,0 +1,136 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 08 January 2020
+# https://github.com/trizen
+
+# Prove the primality of a number, using the Lucas `U` sequence, recursively factoring N+1.
+
+# Choose P and Q such that D = P^2 - 4*Q is not a square modulo N.
+# Let N+1 = F*R with F > R, where R is odd and the prime factorization of F is known.
+# If there exists a Lucas sequence of discriminant D with U(N+1) == 0 (mod N) and gcd(U((N+1)/q), N) = 1 for each prime q dividing F, then N is prime;
+# If no such sequence exists for a given P and Q, a new P' and Q' with the same D can be computed as P' = P + 2 and Q' = P + Q + 1 (the same D must be used for all the factors q).
+
+# See also:
+#   https://en.wikipedia.org/wiki/Primality_certificate
+#   https://math.stackexchange.com/questions/663341/n1-primality-proving-is-slow
+
+func lucas_primality_proving(n, lim=2**64) is cached {
+
+    if ((n <= lim) || (n <= 2)) {
+        return n.is_prime
+    }
+
+    n.is_prob_prime || return false
+
+    var d = n+1
+    var f = d.trial_factor(1e6)
+    var B = f.pop
+
+    if (__FUNC__(B)) {
+        f << B
+        B = 1
+    }
+
+    func find_PQD() {
+
+       var l = min(1e9, n-1)
+
+       loop {
+            var P = irand(1, l)
+            var Q = (irand(1,l) * [1,-1].rand)
+            var D = (P*P - 4*Q)
+
+            next if is_square(D % n)
+            next if (P >= n)
+            next if (Q >= n)
+
+            return (P, Q, D)
+        }
+    }
+
+    func prove_primality() {
+        var (P, Q, D) = find_PQD()
+
+        n.is_strong_pseudoprime(P)   || return false
+        lucasUmod(P, Q, n+1, n) == 0 || return __FUNC__()
+
+        return f.uniq.all {|p|
+            1..Inf -> any {
+                assert_eq(D, P*P - 4*Q)
+
+                if (P>=n || Q>=n) {
+                    return __FUNC__()
+                }
+
+                if (is_coprime(lucasUmod(P, Q, d/p, n), n)) {
+                    say [P, Q, p]
+                    true
+                }
+                else {
+                    (P, Q) = (P+2, P+Q+1)
+                    n.is_strong_pseudoprime(P) || return false
+                    false
+                }
+            }
+        }
+    }
+
+    loop {
+        var A = f.prod
+
+        if (A>B && is_coprime(A, B)) {
+            say "\n:: Proving primality of: #{n}"
+            return prove_primality()
+        }
+
+        var e = B.ecm_factor.grep(__FUNC__)
+        f += e
+        B /= e.prod
+    }
+}
+
+say lucas_primality_proving(115792089237316195423570985008687907853269984665640564039457584007913129603823)
+
+__END__
+:: Proving primality of: 160667761273563902473
+[525548388, -399472563, 2]
+[525548388, -399472563, 23]
+[525548388, -399472563, 137]
+[525548388, -399472563, 2591]
+[525548388, -399472563, 77261]
+[525548388, -399472563, 127356937]
+
+:: Proving primality of: 84919921767502888050045396989
+[662860964, 2738161172, 2]
+[662860966, 3401022137, 3]
+[662860966, 3401022137, 5]
+[662860966, 3401022137, 257]
+[662860966, 3401022137, 2539]
+[662860966, 3401022137, 160667761273563902473]
+
+:: Proving primality of: 767990784468614637092681680819989903265059687929
+[162174617, -732365655, 2]
+[162174619, -570191037, 3]
+[162174619, -570191037, 5]
+[162174619, -570191037, 7]
+[162174619, -570191037, 56737]
+[162174619, -570191037, 190097]
+[162174619, -570191037, 3992873]
+[162174619, -570191037, 84919921767502888050045396989]
+
+:: Proving primality of: 1893865274499603695070553024902095101451637190432913
+[146526490, 989692981, 2]
+[146526490, 989692981, 3]
+[146526490, 989692981, 137]
+[146526490, 989692981, 767990784468614637092681680819989903265059687929]
+
+:: Proving primality of: 115792089237316195423570985008687907853269984665640564039457584007913129603823
+[171404524, -518797671, 2]
+[171404524, -518797671, 3]
+[171404524, -518797671, 1669]
+[171404524, -518797671, 14083]
+[171404524, -518797671, 1857767]
+[171404524, -518797671, 29170630189]
+[171404524, -518797671, 1893865274499603695070553024902095101451637190432913]
+true
