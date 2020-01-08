@@ -44,6 +44,7 @@ func lucas_primality_proving(n, lim=2**64) is cached {
             next if is_square(D % n)
             next if (P >= n)
             next if (Q >= n)
+            next if (kronecker(D,n) != -1)
 
             return (P, Q, D)
         }
@@ -53,7 +54,7 @@ func lucas_primality_proving(n, lim=2**64) is cached {
         var (P, Q, D) = find_PQD()
 
         n.is_strong_pseudoprime(P+1) || return false
-        lucasUmod(P, Q, n+1, n) == 0 || return __FUNC__()
+        lucasUmod(P, Q, n+1, n) == 0 || return false
 
         return f.uniq.all {|p|
             1..Inf -> any {
