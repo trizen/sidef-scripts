@@ -37,7 +37,7 @@ func lucas_primality_proving(n, lim=2**64) is cached {
        var l = min(1e9, n-1)
 
        loop {
-            var P = irand(1, l)
+            var P = (irand(1,l))
             var Q = (irand(1,l) * [1,-1].rand)
             var D = (P*P - 4*Q)
 
@@ -52,7 +52,7 @@ func lucas_primality_proving(n, lim=2**64) is cached {
     func prove_primality() {
         var (P, Q, D) = find_PQD()
 
-        n.is_strong_pseudoprime(P)   || return false
+        n.is_strong_pseudoprime(P+1) || return false
         lucasUmod(P, Q, n+1, n) == 0 || return __FUNC__()
 
         return f.uniq.all {|p|
