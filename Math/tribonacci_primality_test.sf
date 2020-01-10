@@ -18,11 +18,13 @@
 # When p is a prime > 5 congruent to {1,2,3} mod 8, then T(p) == 0 (mod p).
 # When p is a prime > 5 congruent to   {5,7} mod 8, then T(p) == 4 (mod p).
 
+# The strong version also includes a base-2 strong Miller-Rabin test.
+
 # Known counter-examples to the weak version:
 #   88561, 162401, 334153, 410041, 825265, 1569457, 1615681, 3057601, 4767841, 5148001, 5632705, 6313681, 7207201, ...
 
 # Known counter-examples to the strong version:
-#   5148001, 7519441, 8719921, 29111881, 178837201, 186393481, 221884001, 392099401, 399906001, 434932961, 438359041, 555465601, 558977761, ...
+#   29111881, ...
 
 # Matrix for p == {1,2,3} (mod 8)
 const A123 = Matrix(
@@ -57,17 +59,14 @@ func is_tribonacci_pseudoprime(n) {
     return false if (n.is_even)
     return true  if (n == 5)
 
-    # Fermat base-2 test (optional)
-    powmod(2, n-1, n) == 1 || return false
+    # Strong base-2 test (optional)
+    n.is_strong_pseudoprime(2) || return false
 
     # The remainder modulo 8
     var r = n%8
 
     # For primes p congruent to {1, 2, 3} mod 8, we get 0.
     if (r ~~ [1,2,3]) {
-
-        # Strong version: check if `n` is also a Fibonacci pseudoprime.
-        is_fibonacci_pseudoprime(n) || return false
 
         # Compute T_(n-1) (mod n)
         var A = tribonaccimod(n-1, n)
@@ -88,9 +87,9 @@ func is_tribonacci_pseudoprime(n) {
 var C1 = [561, 1105, 1729, 2465, 2821, 6601, 8911, 10585, 15841, 29341, 41041, 46657, 52633, 62745, 63973, 75361, 101101, 115921,
          126217, 162401, 172081, 188461, 252601, 278545, 294409, 314821, 334153, 340561, 399001, 410041, 449065, 488881, 512461]
 
-var C2 = [5148001, 7519441, 8719921, 29111881, 178837201, 186393481, 221884001]
+var C2 = [5148001, 7519441, 8719921, 29111881, 178837201, 186393481, 221884001, 392099401, 399906001, 434932961, 438359041, 555465601, 558977761]
 
 say C1.grep(is_tribonacci_pseudoprime)    #=> []
-say C2.grep(is_tribonacci_pseudoprime)    #=> [5148001, 7519441, 8719921, 29111881, 178837201, 186393481, 221884001]
+say C2.grep(is_tribonacci_pseudoprime)    #=> [29111881]
 
 say is_tribonacci_pseudoprime.first(25)   #=> [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]

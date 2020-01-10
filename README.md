@@ -421,7 +421,6 @@ A nice collection of day-to-day Sidef scripts.
     * [Tribonacci closed form](./Math/tribonacci_closed_form.sf)
     * [Tribonacci numbers](./Math/tribonacci_numbers.sf)
     * [Tribonacci primality test](./Math/tribonacci_primality_test.sf)
-    * [Trizen primality test](./Math/trizen_primality_test.sf)
     * [Twin primes from partial products](./Math/twin_primes_from_partial_products.sf)
     * [Unreduced continued fractions](./Math/unreduced_continued_fractions.sf)
     * [Unreduced fractions](./Math/unreduced_fractions.sf)
