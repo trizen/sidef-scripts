@@ -234,6 +234,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Is prob squarefree](./Math/is_prob_squarefree.sf)
     * [Is smooth over product](./Math/is_smooth_over_product.sf)
     * [Is squarefree over product](./Math/is_squarefree_over_product.sf)
+    * [Jacobi symbol](./Math/jacobi_symbol.sf)
     * [Julia set](./Math/julia_set.sf)
     * [Karatsuba multiplication](./Math/karatsuba_multiplication.sf)
     * [Kempner binomial numbers](./Math/kempner_binomial_numbers.sf)
