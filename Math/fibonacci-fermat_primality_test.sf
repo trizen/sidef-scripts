@@ -5,7 +5,7 @@
 # Date: 11 August 2018
 # https://github.com/trizen
 
-# A simple primality test using the Frobenius test with respect to Fibonacci polynomial x^2-x-1, and a base-2 Fermat test.
+# A simple primality test with respect to Fibonacci polynomial x^2-x-1, and a base-2 Fermat test.
 
 # Smallest counter-examples are:
 #   219781, 252601, 399001, 512461, 722261, 741751, 852841, 1024651, 1193221, 1533601, 1690501, 1735841, 1857241, 1909001, 2100901
@@ -15,7 +15,7 @@
 #   https://en.wikipedia.org/wiki/Fermat_primality_test
 #   https://en.wikipedia.org/wiki/Frobenius_pseudoprime
 
-func frobenius_fermat_primality_test(n) {
+func fibonacci_fermat_primality_test(n) {
 
     return false if (n <= 1)
     return true  if (n == 2)
@@ -23,17 +23,17 @@ func frobenius_fermat_primality_test(n) {
 
     powmod(2, n-1, n) == 1 || return false
 
-    var l = legendre(n, 5)
+    var k = kronecker(5, n)
 
-    fibmod(n - l, n) == 0 || return false
-    fibmod(n + l, n) == 1 || return false
+    fibmod(n - k, n) == 0 || return false
+    fibmod(n + k, n) == 1 || return false
 
     return true
 }
 
 # Test some Carmichael numbers
 var carmichael = [252601, 278545, 294409, 314821, 334153, 340561, 399001, 410041, 449065, 488881, 512461]
-say carmichael.grep {|n| frobenius_fermat_primality_test(n) }                #=> [252601, 399001, 512461]
+say carmichael.grep {|n| fibonacci_fermat_primality_test(n) }                #=> [252601, 399001, 512461]
 
 # Filter the primes in a given range
-say {|n| frobenius_fermat_primality_test(n) }.grep(15912519589..15912519859) #=> [15912519629, 15912519643, 15912519661, 15912519769, 15912519829, 15912519839, 15912519851, 15912519853]
+say {|n| fibonacci_fermat_primality_test(n) }.grep(15912519589..15912519859) #=> [15912519629, 15912519643, 15912519661, 15912519769, 15912519829, 15912519839, 15912519851, 15912519853]
