@@ -189,7 +189,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Fibonacci pseudoprimes generation](./Math/fibonacci_pseudoprimes_generation.sf)
     * [Fibonacci strong pseudoprimes generation](./Math/fibonacci_strong_pseudoprimes_generation.sf)
     * [Fraction approximation](./Math/fraction_approximation.sf)
-    * [Frobenius quadratic primality test](./Math/frobenius_quadratic_primality_test.sf)
+    * [Frobenius primality test](./Math/frobenius_primality_test.sf)
     * [Function inverse binary search](./Math/function_inverse_binary_search.sf)
     * [Function inverse mediant inequality](./Math/function_inverse_mediant_inequality.sf)
     * [Gamma function](./Math/gamma_function.sf)

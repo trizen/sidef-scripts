@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# Implementation of the quadratic Frobenius primality test.
+# Simple implementation of the Frobenius primality test.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Frobenius_pseudoprime
