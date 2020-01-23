@@ -10,7 +10,7 @@
 # where:
 #   T_n(x) = (1/2) * V_n(2x, 1)
 
-# where V_n(P, Q) are the Lucas V sequences.
+# where V_n(P, Q) is the Lucas V sequence.
 
 # See also:
 #   https://oeis.org/A001075
@@ -57,7 +57,7 @@ func lucasVmod(P, Q, n, m) {
 
 func chebyshev_factorization(n, B = n.ilog2**2, a = 3) {
     var x = a
-    var s = B.isqrt
+    var G = B*B
     var i = invmod(2, n)
 
     func chebyshevTmod(a, x) {
@@ -65,7 +65,7 @@ func chebyshev_factorization(n, B = n.ilog2**2, a = 3) {
     }
 
     for (var p = 2; p <= B; p.next_prime!) {
-        x = chebyshevTmod((p > s) ? p : p**B.ilog(p), x)      # T_k(x) (mod n)
+        x = chebyshevTmod(p**G.ilog(p), x)      # T_k(x) (mod n)
         var g = gcd(x-1, n)
         return g if (g > 1)
     }
