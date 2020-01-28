@@ -2,7 +2,8 @@
 
 # Simple implementation of the Lucas-Lehmer primality test for Mersenne numbers.
 
-# The test is equivalent to computing the Lucas sequence: V(4, 1, 2^p) mod (2^p - 1).
+# M = 2^p - 1 is prime if and only if the Lucas sequence V_n(P,Q) satisfies the following congruence:
+#   V_M(4, 1) == 4 (mod M)
 
 # See also:
 #   https://en.wikipedia.org/wiki/Lucas%E2%80%93Lehmer_primality_test

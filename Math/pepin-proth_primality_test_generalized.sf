@@ -10,7 +10,7 @@
 #   1) find an integer `a` such that: kronecker(a, n) = -1.
 #   2) if `n` is prime, then: a^((n-1)/2) == -1 (mod n)
 
-# There are a few composites that also satisfiy this property for some values of `a`.
+# There are a few composites that also satisfy this property for some values of `a`.
 # To overcome this, we try to find `a` in the sequence `k, k+1, k+2, ...`, where `k` is a random starting value <= floor(sqrt(n)). A random value of `k` is computed at each iteration.
 # For better accuracy, we repeat the test several times. If we find an `a` such that `kronecker(a, n) = -1` and `a^((n-1)/2) != -1 (mod n)`, then `n` is definitely composite.
 
