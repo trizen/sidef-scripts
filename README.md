@@ -181,6 +181,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Fibonacci encoding](./Math/fibonacci_encoding.sf)
     * [Fibonacci factorization method](./Math/fibonacci_factorization_method.sf)
     * [Fibonacci first and last k digits](./Math/fibonacci_first_and_last_k_digits.sf)
+    * [Fibonacci first k digits in base b](./Math/fibonacci_first_k_digits_in_base_b.sf)
     * [Fibonacci k-th order](./Math/fibonacci_k-th_order.sf)
     * [Fibonacci k-th order efficient algorithm](./Math/fibonacci_k-th_order_efficient_algorithm.sf)
     * [Fibonacci k-th order period](./Math/fibonacci_k-th_order_period.sf)
