@@ -20,7 +20,7 @@ func binet_log_approx(n) {
 
 func nth_fib_first_k_digits(n,k) {
     var f = binet_log_approx(n)
-    floor(exp(f - log(10)*(floor(f / log(10) + 1))) * 10**k)
+    floor(10**k * exp(f - log(10)*floor(f/log(10) + 1)))
 }
 
 func nth_fib_last_k_digits(n,k) {

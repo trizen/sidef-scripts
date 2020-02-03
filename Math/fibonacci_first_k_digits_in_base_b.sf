@@ -4,10 +4,18 @@
 # Date: 02 February 2020
 # https://github.com/trizen
 
-# Compute the first k digits of the n-th Fibonacci number, in base b.
+# Efficiently compute the first k digits (in base b) of the n-th Fibonacci number, using Binet's formula.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Fibonacci_number
+#   https://rosettacode.org/wiki/Fibonacci_matrix-exponentiation
+
+func f(n) {
+    n*log((1+sqrt(5))/2) - log(5)/2
+}
 
 func nth_fib_first_k_digits(n,k,b=10) {
-    floor(b**(k-1) * exp(n*log((1+sqrt(5))/2) - log(b)*floor((n*log((1+sqrt(5))/2) - log(5)/2)/log(b)))/sqrt(5)).to_i
+    int(b**(k-1) * exp(f(n) - log(b)*floor(f(n)/log(b))))
 }
 
 for k in (16, 32, 64) {
