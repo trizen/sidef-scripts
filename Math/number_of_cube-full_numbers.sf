@@ -1,0 +1,61 @@
+#!/usr/bin/ruby
+
+# Fast algorithm for counting the number of cube-full numbers <= n.
+# A positive integer n is considered cube-full, if for every prime p that divides n, so does p^3. Note that 1 is considered cube-full.
+
+# See also:
+#   THE DISTRIBUTION OF CUBE-FULL NUMBERS, by P. SHIU (1990).
+
+# OEIS:
+#   https://oeis.org/A036966 -- 3-full (or cube-full, or cubefull) numbers: if a prime p divides n then so does p^3.
+
+func cubefull_count(n) {
+    var total = 0
+
+    for a in (1 .. n.iroot(5)) {
+        for b in (1 .. iroot(floor(n / a**5), 4)) {
+            var t = (a**5 * b**4)
+            total += (iroot(floor(n/t), 3) * moebius(a*b)**2)
+        }
+    }
+
+    return total
+}
+
+func sum_of_cubefull_divisors_count(n) {
+
+    # Let:
+    #   f(n) = 1 if n is cube-full; 0 otherwise
+
+    # Then:
+    #   a(n) = Sum_{k=1..n} Sum_{d|k} f(d)
+    #        = Sum_{k=1..n} f(d) * floor(n/k)
+
+    # Which can be computed in sublinear time as:
+    #    a(n) = Sum_{k=1..s} (f(k)*floor(n/k) + R(floor(n/k))) - s*R(s)
+    # where:
+    #   s = floor(sqrt(n))
+    #   R(n) = Sum_{k=1..n} f(k)
+
+    var s = n.isqrt
+    var t = 0
+
+    for k in (1..s) {
+        t += floor(n/k) if k.is_powerful(3)
+        t += cubefull_count(floor(n/k))
+    }
+
+    t -= s*cubefull_count(s)
+    return t
+}
+
+say 50.of(cubefull_count)
+say 50.of(sum_of_cubefull_divisors_count)
+
+assert_eq(sum_of_cubefull_divisors_count(16), 19)
+assert_eq(sum_of_cubefull_divisors_count(100), 126)
+assert_eq(sum_of_cubefull_divisors_count(1e4), 13344)
+
+__END__
+[0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+[0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 26, 28, 29, 30, 32, 33, 34, 35, 36, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 59, 60]
