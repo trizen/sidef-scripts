@@ -1,0 +1,47 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 10 February 2020
+# https://github.com/trizen
+
+# Find factors of a number of special form, using the cyclotomic
+# polynomials C(n, b), for n = 1..floor(1+log_b(n)) and b fixed.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Cyclotomic_polynomial
+
+func cyclotomic_factorization(n, base=10) {
+
+    var lim = n.ilog(base)+1
+
+    gather {
+        for k in (1..lim) {
+
+            var t = cyclotomic(k, base)
+            var g = gcd(n, t)
+
+            g.is_between(2, n-1) || next
+
+            while (g.divides(n)) {
+                n /= g
+                take([k, g])
+            }
+        }
+    }
+}
+
+var n = ((10**258 - 1)/9 - 10**(258/2) - 1)
+cyclotomic_factorization(n).each { .say }
+
+__END__
+[2, 11]
+[2, 11]
+[4, 101]
+[6, 91]
+[8, 10001]
+[16, 100000001]
+[32, 10000000000000001]
+[64, 100000000000000000000000000000001]
+[86, 909090909090909090909090909090909090909091]
+[128, 10000000000000000000000000000000000000000000000000000000000000001]
+[258, 1098901098901098901098901098901098901098900989010989010989010989010989010989010989011]
