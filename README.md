@@ -131,6 +131,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Conversion of digits subquadratic algorithms](./Math/conversion_of_digits_subquadratic_algorithms.sf)
     * [Cousin mersenne primes lucas-lehmer](./Math/cousin_mersenne_primes_lucas-lehmer.sf)
     * [Cuban primes](./Math/cuban_primes.sf)
+    * [Cube-full numbers](./Math/cube-full_numbers.sf)
     * [Cyclotomic polynomial](./Math/cyclotomic_polynomial.sf)
     * [Cyclotomic polynomials expansion](./Math/cyclotomic_polynomials_expansion.sf)
     * [Derivative numerical approximation](./Math/derivative_numerical_approximation.sf)

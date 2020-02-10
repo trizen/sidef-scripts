@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 # Fast algorithm for counting the number of cube-full numbers <= n.
-# A positive integer n is considered cube-full, if for every prime p that divides n, so does p^3. Note that 1 is considered cube-full.
+# A positive integer n is considered cube-full, if for every prime p that divides n, so does p^3.
 
 # See also:
 #   THE DISTRIBUTION OF CUBE-FULL NUMBERS, by P. SHIU (1990).
