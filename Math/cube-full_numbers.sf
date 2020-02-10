@@ -9,22 +9,19 @@
 # OEIS:
 #   https://oeis.org/A036966 -- 3-full (or cube-full, or cubefull) numbers: if a prime p divides n then so does p^3.
 
-func cubefull_numbers (n) {   # cubefull numbers <= n
+func cubefull_numbers (n) {    # cubefull numbers <= n
 
     var cubefull = Set()
 
-    for a in (1..iroot(n, 5)) {
-        for b in (1 .. iroot(idiv(n, a**5), 4)) {
-            var v = (a**5 * b**4)
-            for c in (1..iroot(idiv(n, v), 3)) {
-              cubefull << v*c*c*c
-            }
+    for a in (1..iroot(n,5)), b in (1..iroot(idiv(n, a**5), 4)) {
+        var v = (a**5 * b**4)
+        for c in (1..iroot(idiv(n, v), 3)) {
+            cubefull << (v * c**3)
         }
     }
 
     cubefull.sort
 }
-
 
 say cubefull_numbers(1e4)
 
