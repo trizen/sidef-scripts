@@ -1,0 +1,72 @@
+#!/usr/bin/ruby
+
+# Fast algorithm for counting the number of square-full numbers <= n.
+# A positive integer n is square-full, if for every prime p that divides n, so does p^2.
+
+# See also:
+#   The distribution of square-full integers, by H.-Q. Liu.
+
+# OEIS:
+#   https://oeis.org/A001694 -- Powerful (square-full) numbers.
+#   https://oeis.org/A118896 -- Number of powerful numbers <= 10^n.
+
+# 1) PARI/GP:
+#   Q(n) = sum(m=1, sqrtnint(n, 6), sum(b=1, sqrtnint(n\m^6, 3), sqrtint(n\(m^6*b^3)) * moebius(m)));
+
+# 2) PARI/GP:
+#   Q(n) = my(s=0); forsquarefree(k=1, sqrtnint(n, 3), s += sqrtint(n\k[1]^3)); s
+
+func squarefull_count(n) {
+
+    var total = 0
+
+    for m in (1..iroot(n, 6) -> lazy.grep{.is_square_free}) {
+        for b in (1..iroot(idiv(n, m**6), 3)) {
+            total += moebius(m)*isqrt(idiv(n, (m*m*b)**3))
+        }
+    }
+
+    return total
+}
+
+func squarefull_count_faster(n) {
+
+    var total = 0
+
+    for k in (1 .. n.iroot(3)) {
+        total += isqrt(idiv(n, k**3)) if k.is_square_free
+    }
+
+    return total
+}
+
+for n in (1..10) {
+
+    var a = squarefull_count(10**n)
+    var b = squarefull_count_faster(10**n)
+
+    assert_eq(a, b)
+    say ("Q(10^#{n}) = ", a)
+}
+
+__END__
+Q(10^1) = 4
+Q(10^2) = 14
+Q(10^3) = 54
+Q(10^4) = 185
+Q(10^5) = 619
+Q(10^6) = 2027
+Q(10^7) = 6553
+Q(10^8) = 21044
+Q(10^9) = 67231
+Q(10^10) = 214122
+Q(10^11) = 680330
+Q(10^12) = 2158391
+Q(10^13) = 6840384
+Q(10^14) = 21663503
+Q(10^15) = 68575557
+Q(10^16) = 217004842
+Q(10^17) = 686552743
+Q(10^18) = 2171766332
+Q(10^19) = 6869227848
+Q(10^20) = 21725636644

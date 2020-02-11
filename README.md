@@ -307,6 +307,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Number of cube-full numbers](./Math/number_of_cube-full_numbers.sf)
     * [Number of mXn arrays with rows being permutations](./Math/number_of_mXn_arrays_with_rows_being_permutations.sf)
     * [Number of representations as sum of 3 triangles](./Math/number_of_representations_as_sum_of_3_triangles.sf)
+    * [Number of square-full numbers](./Math/number_of_square-full_numbers.sf)
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
     * [Number to expression form](./Math/number_to_expression_form.sf)
     * [Numerical differentiation](./Math/numerical_differentiation.sf)
