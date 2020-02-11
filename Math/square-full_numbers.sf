@@ -1,0 +1,31 @@
+#!/usr/bin/ruby
+
+# Fast algorithm for generating all the square-full numbers <= n.
+# A positive integer n is square-full, if for every prime p that divides n, so does p^2.
+# This are numbers of the form a^2 * b^3, for a,b >= 1.
+
+# See also:
+#   The distribution of square-full integers, by H.-Q. Liu.
+
+# OEIS:
+#   https://oeis.org/A001694 -- Powerful (square-full) numbers.
+#   https://oeis.org/A118896 -- Number of powerful numbers <= 10^n.
+
+func squarefull_numbers(n) {        # square-full numbers <= n
+
+    var squarefull = Set()
+
+    for b in (1 .. iroot(n,3)) {
+        var t = b**3
+        for a in (1 .. isqrt(idiv(n, t))) {
+            squarefull << (t*a*a)
+        }
+    }
+
+    return squarefull.sort
+}
+
+say squarefull_numbers(1e3)
+
+__END__
+[1, 4, 8, 9, 16, 25, 27, 32, 36, 49, 64, 72, 81, 100, 108, 121, 125, 128, 144, 169, 196, 200, 216, 225, 243, 256, 288, 289, 324, 343, 361, 392, 400, 432, 441, 484, 500, 512, 529, 576, 625, 648, 675, 676, 729, 784, 800, 841, 864, 900, 961, 968, 972, 1000]
