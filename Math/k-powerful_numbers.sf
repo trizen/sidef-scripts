@@ -21,7 +21,7 @@
 
 func k_powerful_numbers(n, k=2) {
 
-    var powerful = Set()
+    var powerful = []
 
     func (m,r) {
 
@@ -31,6 +31,10 @@ func k_powerful_numbers(n, k=2) {
         }
 
         for a in (1 .. iroot(idiv(n,m), r)) {
+            if (r > k) {
+                a.is_coprime(m) || next
+                a.is_squarefree || next
+            }
             __FUNC__(m * a**r, r-1)
         }
 
