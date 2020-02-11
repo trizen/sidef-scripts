@@ -242,6 +242,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Is squarefree over product](./Math/is_squarefree_over_product.sf)
     * [Jacobi symbol](./Math/jacobi_symbol.sf)
     * [Julia set](./Math/julia_set.sf)
+    * [K-powerful numbers](./Math/k-powerful_numbers.sf)
     * [Karatsuba multiplication](./Math/karatsuba_multiplication.sf)
     * [Kempner binomial numbers](./Math/kempner_binomial_numbers.sf)
     * [Knapsack problem 0 1](./Math/knapsack_problem_0_1.sf)

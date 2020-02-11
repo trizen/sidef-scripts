@@ -2,7 +2,7 @@
 
 # Fast algorithm for generating all the square-full numbers <= n.
 # A positive integer n is square-full, if for every prime p that divides n, so does p^2.
-# This are numbers of the form a^2 * b^3, for a,b >= 1.
+# These are numbers of the form: a^2 * b^3, for a,b >= 1.
 
 # See also:
 #   The distribution of square-full integers, by H.-Q. Liu.

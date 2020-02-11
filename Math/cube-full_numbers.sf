@@ -2,12 +2,13 @@
 
 # Fast algorithm for generating all the cube-full numbers <= n.
 # A positive integer n is considered cube-full, if for every prime p that divides n, so does p^3.
+# These are numbers of the form: a^3 * b^4 * c^5, for a,b,c >= 1.
 
 # See also:
 #   THE DISTRIBUTION OF CUBE-FULL NUMBERS, by P. SHIU (1990).
 
 # OEIS:
-#   https://oeis.org/A036966 -- 3-full (or cube-full, or cubefull) numbers: if a prime p divides n then so does p^3.
+#   https://oeis.org/A036966 -- cube-full numbers
 
 func cubefull_numbers (n) {    # cubefull numbers <= n
 
