@@ -1,0 +1,65 @@
+#!/usr/bin/ruby
+
+# Generate all the k-imperfect numbers less than or equal to n.
+# Based on Michel Marcus's algorithm from A328860.
+
+# k-imperfect numbers, are numbers n such that:
+#   n = k * Sum_{d|n} d * (-1)^Ω(n/d)
+
+# See also:
+#   https://oeis.org/A206369 -- rho function.
+#   https://oeis.org/A127724 -- k-imperfect numbers for some k >= 1.
+#   https://oeis.org/A127725 -- Numbers that are 2-imperfect.
+#   https://oeis.org/A127726 -- Numbers that are 3-imperfect.
+#   https://oeis.org/A328860 -- Numbers that are 4-imperfect.
+
+func rho_prime_power(p,e) {
+    round(p**(e+1) / (p+1))
+}
+
+func rho_factors(F) {
+    F.prod_2d {|p,e|
+        round(p**(e+1) / (p+1))
+    }
+}
+
+func k_imperfect_numbers(limit, A, B = 1) is cached {
+
+    var sol = []
+
+    with (gcd(A, B)) {|g|
+        A /= g
+        B /= g
+    }
+
+    if (A == 1) {
+        return [1] if (B == 1)
+        return []
+    }
+
+    var f = A.factor_exp
+    var rho = rho_factors(f)
+    var (p,n) = f.tail...
+
+    var r = rho_prime_power(p, n)
+
+    for (var pn = p**n; pn <= limit; pn *= p) {
+        for k in (__FUNC__(idiv(limit, pn) + 1, A*r, B*pn)) {
+            sol << pn*k if is_coprime(pn, k)
+        }
+        r = rho_prime_power(p, ++n)
+    }
+
+    if (rho == B) {
+        sol << A
+    }
+
+    sol.grep { _ <= limit }.sort.uniq
+}
+
+say k_imperfect_numbers(10**7, 2)      # 2-imperfect numbers <= 10^7
+say k_imperfect_numbers(10**7, 3)      # 3-imperfect numbers <= 10^7
+
+__END__
+[2, 12, 40, 252, 880, 10880, 75852, 715816960]
+[6, 120, 126, 2520, 2640, 30240, 32640, 37800, 37926, 55440, 685440, 758520, 831600, 2600640, 5533920, 6917400, 9102240, 10281600, 11377800, 16687440, 152182800, 206317440, 250311600, 475917120, 866829600, 1665709920, 1881532800, 2082137400, 2147450880, 3094761600, 7660224000]

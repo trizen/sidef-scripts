@@ -28,12 +28,14 @@ func k_powerful_count(n, k=2) {
 
     func (m,r) {
 
+        var t = iroot(idiv(n,m), r)
+
         if (r <= k) {
-            count += iroot(idiv(n,m), r)
+            count += t
             return nil
         }
 
-        for a in (1 .. iroot(idiv(n,m), r)) {
+        for a in (1 .. t) {
             a.is_coprime(m) || next
             a.is_squarefree || next
             __FUNC__(m * a**r, r-1)
