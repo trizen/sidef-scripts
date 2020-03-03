@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 #
-## http://rosettacode.org/wiki/Voronoi_diagram
+## https://rosettacode.org/wiki/Voronoi_diagram
 #
 
 require('Imager')

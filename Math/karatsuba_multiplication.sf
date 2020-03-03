@@ -1,7 +1,9 @@
 #!/usr/bin/ruby
 
-# A simple implementation of the Karatsuba multiplication,
-# which was the first subquadratic-time multiplication algorithm.
+# A simple implementation of the Karatsuba multiplication.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Karatsuba_algorithm
 
 func karatsuba_multiplication(x, y, n=8) {
     if (n <= 1) {

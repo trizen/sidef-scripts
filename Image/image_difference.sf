@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 #
-## http://rosettacode.org/wiki/Percentage_difference_between_images
+## https://rosettacode.org/wiki/Percentage_difference_between_images
 #
 
 require('Imager')
@@ -9,7 +9,7 @@ require('Imager')
 func img_diff(a, b) {
 
     func from_file(name) {
-         %s|Imager|.new(file => name)
+         %O<Imager>.new(file => name)
     }
 
     func size(img) {
@@ -17,11 +17,15 @@ func img_diff(a, b) {
     }
 
     func pixel_diff(p1, p2) {
-        [p1.rgba] »-« [p2.rgba] -> map { .abs }.sum
+        [p1.rgba] »-« [p2.rgba] -> sum_by { .abs }
     }
 
     func read_pixel(img, x, y) {
         img.getpixel(x => x, y => y)
+    }
+
+    func read_line(img, y) {
+        img.getscanline(y => y)
     }
 
     var(img1, img2) = (from_file(a), from_file(b))
@@ -34,8 +38,15 @@ func img_diff(a, b) {
     }
 
     var sum = 0
-    for y,x in (^h1 ~X ^w1) {
-        sum += pixel_diff(read_pixel(img1, x, y), read_pixel(img2, x, y))
+
+    for y in (^h1) {
+
+        var *line1 = read_line(img1, y)
+        var *line2 = read_line(img2, y)
+
+        [line1, line2].zip {|p1, p2|
+            sum += pixel_diff(p1, p2)
+        }
     }
 
     sum / (w1 * h1 * 255 * 3)

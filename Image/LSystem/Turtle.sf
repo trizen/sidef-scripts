@@ -13,7 +13,7 @@ class Turtle(
     color  = 'black',
 ) {
 
-    has im = %s<Image::Magick>.new(size => "#{x}x#{y}")
+    has im = %O<Image::Magick>.new(size => "#{x}x#{y}")
 
     method init {
         angle.deg2rad!
@@ -26,10 +26,10 @@ class Turtle(
         im.Draw(
             primitive => 'line',
             points    => join(' ',
-                           int(x    * scale + xoff),
-                           int(y    * scale + yoff),
-                           int(newx * scale + xoff),
-                           int(newy * scale + yoff),
+                           round(x    * scale + xoff),
+                           round(y    * scale + yoff),
+                           round(newx * scale + xoff),
+                           round(newy * scale + yoff),
                         ),
             stroke      => color,
             strokewidth => 1,

@@ -51,7 +51,7 @@ class LSystem(
             if (table.contains(c)) {
                 table{c}.run
             }
-            elsif (c.contains(/^[[:upper:]]\z/)) {
+            elsif (c.is_uppercase) {
                 turtle.forward(len)
             }
         }

@@ -11,11 +11,11 @@ var lsys = LSystem(
     width:  1000,
     height: 1000,
 
-    scale: 0.4,
-    xoff: -280,
-    yoff: 400,
+    scale: 1,
+    xoff: -980,
+    yoff: -100,
 
-    len:   30,
+    len:   15,
     angle: 120,
     turn:  30,
     color: 'dark red',
