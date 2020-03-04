@@ -19,7 +19,7 @@ func lucas_factorization(n, B = n.ilog2**2, a = 1, b = 5) {
 
     for P in (a .. b) {             # P > 0, P < n
 
-        var Q = irand(-n, n-1)      # Q < n
+        var Q = irand(-1e6, 1e6)    # Q < n
         var D = (P*P - 4*Q)         # D != 0
 
         D || next

@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# The Baillie-PSW primality test, named after Robert Baillie, Carl Pomerance, John Selfridge, and Samuel Wagstaff.
+# The strong Baillie-PSW primality test, named after Robert Baillie, Carl Pomerance, John Selfridge, and Samuel Wagstaff.
 
 # No counter-examples are known to this test.
 
@@ -14,13 +14,18 @@
 #   https://en.wikipedia.org/wiki/Lucas_pseudoprime
 #   https://en.wikipedia.org/wiki/Baillie%E2%80%93PSW_primality_test
 
-func findQ(n) {
+# Find Q for P = 1, such that kronecker(1 - 4Q, n) = -1.
+func findQ(N) {
     for k in (2 .. Inf) {
-        var D = ((-1)**k * (2*k + 1))
 
-        if (D.kronecker(n) == -1) {
-            return ((1 - D)/4)
+        var D = ((-1)**k * (2*k + 1))
+        var K = kronecker(D, N)
+
+        if (K.is_zero && gcd(D, N).is_between(2, N-1)) {
+            return nil
         }
+
+        return ((1 - D)/4) if (K == -1)
     }
 }
 
@@ -32,9 +37,9 @@ func BPSW_primality_test(n) {
     return false if n.is_even
     return false if n.is_power
 
-    2.powmod(n-1, n) == 1 || return false
+    n.is_strong_pseudoprime(2) || return false
 
-    var Q = findQ(n)
+    var Q = findQ(n) \\ return false
     var d = n+1
     var s = d.valuation(2)
     var t = d>>(s+1)
@@ -70,7 +75,8 @@ func BPSW_primality_test(n) {
     return true if U1.is_congruent(0, n)
     return true if V1.is_congruent(0, n)
 
-    s.times {
+    (s-1).times {
+
         U1 = (U1 * V1)%n
         V1 = (V1*V1 - 2*Q1)%n
         Q1 = (Q1 * Q1)%n

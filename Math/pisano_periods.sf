@@ -13,12 +13,9 @@ func pisano_period_pp(p,k) is cached {
 
     var (a, b, n) = (0, 1, p**k)
 
-    for k in (1..Inf) {
+    1..Inf -> first_by {
         (a, b) = (b, (a+b) % n)
-
-        if ([a,b] == [0,1]) {
-            return k
-        }
+        (a == 0) && (b == 1)
     }
 }
 

@@ -24,9 +24,8 @@ func lucasVmod(P, Q, n, m) {
     var(Q1 = 1, Q2 = 1)
 
     var s = n.valuation(2)
-    n >>= (s+1)
 
-    for bit in (n.as_bin.chars) {
+    for bit in ((n>>(s+1)).as_bin.chars) {
 
         Q1 = (Q1 * Q2)%m
 
