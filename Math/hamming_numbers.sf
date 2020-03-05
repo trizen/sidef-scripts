@@ -5,6 +5,7 @@
 func hamming_numbers (limit, primes) {
 
     var h = [1]
+
     primes.each {|p|
         h.each {|n|
             if (n*p <= limit) {
@@ -16,6 +17,6 @@ func hamming_numbers (limit, primes) {
     return h
 }
 
-# Example: 5-smooth numbers bellow 100
+# Example: 5-smooth numbers <= 100
 var h = hamming_numbers(100, [2, 3, 5])
 say h.sort
