@@ -35,9 +35,8 @@ func k_powerful_count(n, k=2) {
             return nil
         }
 
-        for a in (1 .. t) {
+        t.each_squarefree {|a|
             a.is_coprime(m) || next
-            a.is_squarefree || next
             __FUNC__(m * a**r, r-1)
         }
 

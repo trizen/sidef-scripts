@@ -20,7 +20,7 @@ func squarefull_count(n) {
 
     var total = 0
 
-    for m in (1..iroot(n, 6) -> lazy.grep{.is_square_free}) {
+    iroot(n, 6).each_squarefree {|m|
         for b in (1..iroot(idiv(n, m**6), 3)) {
             total += moebius(m)*isqrt(idiv(n, (m*m*b)**3))
         }
@@ -33,8 +33,8 @@ func squarefull_count_faster(n) {
 
     var total = 0
 
-    for k in (1 .. n.iroot(3)) {
-        total += isqrt(idiv(n, k**3)) if k.is_square_free
+    n.iroot(3).each_squarefree {|k|
+        total += isqrt(idiv(n, k**3))
     }
 
     return total

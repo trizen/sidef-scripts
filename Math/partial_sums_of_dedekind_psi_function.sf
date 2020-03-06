@@ -53,8 +53,8 @@ func dedekind_psi_partial_sum (n, m) {      # O(sqrt(n)) complexity
         total += (faulhaber_sum(k, m) * squarefree_count(floor(n/(k+1))+1, floor(n/k)))
     }
 
-    for k in (1..u) {
-        total += faulhaber_sum(int(n/k), m) if k.is_square_free
+    u.each_squarefree {|k|
+        total += faulhaber_sum(int(n/k), m)
     }
 
     return total
@@ -65,8 +65,11 @@ func dedekind_psi_partial_sum_2 (n, m) {      # O(sqrt(n)) complexity
     var total = 0
     var s = n.isqrt
 
+    s.each_squarefree {|k|
+        total += faulhaber_sum(floor(n/k), m)
+    }
+
     for k in (1..s) {
-        total += faulhaber_sum(floor(n/k), m) if k.is_square_free
         total += (squarefree_count(floor(n/k)) * k**m)
     }
 
