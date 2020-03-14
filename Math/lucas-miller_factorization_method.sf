@@ -21,7 +21,7 @@ func lucas_miller_factor(n, k=100) {
     var d = D>>s
 
     for P in (1..k) {
-        var Q = -min(1e6.irand, n.irand)
+        var Q = ([1,-1].rand * irand(min(1e7, n-1)))
 
         for b in (0..r) {
             var x = lucasUmod(P, Q, d << b, n)

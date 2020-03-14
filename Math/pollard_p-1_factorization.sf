@@ -13,7 +13,7 @@ func pollard_pm1_factor (n, B = n.ilog(2)**3) {
     var t = 2
     var G = B*B
 
-    for (var p = 2; p <= B; p.next_prime!) {
+    B.primes_each {|p|
         t = powmod(t, p**G.ilog(p), n)
         is_coprime(t-1, n) || break
     }

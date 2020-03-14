@@ -13,7 +13,7 @@
 #   https://en.wikipedia.org/wiki/Lucas_pseudoprime
 #   https://en.wikipedia.org/wiki/Baillie%E2%80%93PSW_primality_test
 
-func lucas_factorization(n, B) {
+func lucas_factorization(n, B = n.ilog2**2) {
 
     return n if (n <= 3)
 
@@ -46,7 +46,7 @@ func lucas_factorization(n, B) {
     var(V1 = 2, V2 = 1)
     var(Q1 = 1, Q2 = 1)
 
-    for bit in (d.as_bin.first(-s - 1).chars) {
+    for bit in ((d>>(s+1)).as_bin.chars) {
 
         Q1 = (Q1 * Q2)%n
 
@@ -71,7 +71,7 @@ func lucas_factorization(n, B) {
     Q1 = (Q1 * Q2)%n
 
     check_factor(U1)
-    check_factor(V1-2)
+    check_factor(V1)
 
     s.times {
 
@@ -80,7 +80,7 @@ func lucas_factorization(n, B) {
         Q1 = (Q1 * Q1)%n
 
         check_factor(U1)
-        check_factor(V1-2)
+        check_factor(V1)
     }
 
     return 1

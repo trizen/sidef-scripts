@@ -89,12 +89,9 @@ class Number {
     }
 }
 
-var p = 2
-
 var r = Fraction(1, 1)
 
-10.times {
+prime(10).primes_each {|p|
     r *= (1 - Fraction(1, p))
     say r
-    p.next_prime!
 }

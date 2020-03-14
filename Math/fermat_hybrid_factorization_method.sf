@@ -147,6 +147,11 @@ func fermat_hybrid_factorization (n) {
     __FUNC__(p - s) -> sort
 }
 
+if (ARGV) {
+    say fermat_hybrid_factorization(ARGV[0].to_i)
+    return 1
+}
+
 for k in (1..63) {
     var n = irand(2, 1<<k)
     var prime_factors = fermat_hybrid_factorization(n)

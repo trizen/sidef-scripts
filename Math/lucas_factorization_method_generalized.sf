@@ -17,14 +17,14 @@ func lucas_factorization(n, B = n.ilog2**2, a = 1, b = 5) {
 
     var L = B.consecutive_lcm
 
-    for P in (a .. b) {             # P > 0, P < n
+    for P in (a .. b) {           # P > 0, P < n
 
-        var Q = irand(-1e6, 1e6)    # Q < n
-        var D = (P*P - 4*Q)         # D != 0
+        var Q = ([1,-1].rand * irand(min(1e7, n-1)))
+        var D = (P*P - 4*Q)
 
         D || next
 
-        var F = try { lucasUmod(P, Q, L, n) } \\ next
+        var F =  lucasUmod(P, Q, L, n)
         var g = gcd(F, n)
 
         if (g.is_between(2, n-1)) {
