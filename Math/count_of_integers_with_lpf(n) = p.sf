@@ -25,12 +25,11 @@ func count_with_lpf (n, p) {
             u += prime_count(q, p-1)
             break
         }
-        else {
-            u += v
-        }
+
+        u += v
     }
 
-    t - u
+    return (t - u)
 }
 
 for p in (primes(20)) {
