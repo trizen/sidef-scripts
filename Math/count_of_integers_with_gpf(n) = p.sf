@@ -1,0 +1,48 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 15 March 2020
+# https://github.com/trizen
+
+# Given `n` and `p`, count the number of integers k <= n, such that:
+#    gpf(k) = p
+# where `gpf(k)` is the greatest prime factor of k.
+
+func count_with_gpf (n, p, q = 2) is cached {
+
+    var t = n.ilog(p)
+
+    if (t == 0) {
+        return 0
+    }
+
+    if (q == p) {
+        return t
+    }
+
+    var w = n.ilog(q)
+
+    if (w == 1) {
+        return 1
+    }
+
+    var count = 0
+
+    for k in (0 .. w) {
+        count += __FUNC__(idiv(n, q**k), p, q.next_prime)
+    }
+
+    return count
+}
+
+for p in (primes(15)) {
+    say ("a(10^n, #{p}) for n below 10: ", 10.range.map { count_with_gpf(10**_, p) })
+}
+
+__END__
+a(10^n,  2) for n below 10: [0, 3, 6, 9, 13, 16, 19, 23, 26, 29]
+a(10^n,  3) for n below 10: [0, 3, 13, 30, 53, 84, 122, 166, 217, 276]
+a(10^n,  5) for n below 10: [0, 2, 14, 46, 108, 212, 365, 578, 861, 1224]
+a(10^n,  7) for n below 10: [0, 1, 12, 55, 163, 381, 766, 1387, 2322, 3664]
+a(10^n, 11) for n below 10: [0, 0, 9, 51, 184, 503, 1159, 2365, 4411, 7673]
+a(10^n, 13) for n below 10: [0, 0, 7, 50, 211, 651, 1674, 3769, 7681, 14498]

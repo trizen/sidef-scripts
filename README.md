@@ -138,6 +138,8 @@ A nice collection of day-to-day Sidef scripts.
     * [Convergents to cube root of 2](./Math/convergents_to_cube_root_of_2.sf)
     * [Conversion of digits subquadratic algorithms](./Math/conversion_of_digits_subquadratic_algorithms.sf)
     * [Count of cube-full numbers](./Math/count_of_cube-full_numbers.sf)
+    * [Count of integers with gpf(n) = p](./Math/count_of_integers_with_gpf(n)%20=%20p.sf)
+    * [Count of integers with lpf(n) = p](./Math/count_of_integers_with_lpf(n)%20=%20p.sf)
     * [Count of k-powerful numbers](./Math/count_of_k-powerful_numbers.sf)
     * [Count of square-full numbers](./Math/count_of_square-full_numbers.sf)
     * [Cousin mersenne primes lucas-lehmer](./Math/cousin_mersenne_primes_lucas-lehmer.sf)
