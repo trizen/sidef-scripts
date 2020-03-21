@@ -7,10 +7,10 @@
 # Convert any media file with ffmpeg, using `n` parallel processes.
 
 func ffmpeg_convert(input, output) {
-    Sys.run("ffmpeg", "-loglevel", "fatal", "-i", input, output)
+    Sys.run("ffmpeg", "-loglevel", "fatal", "-i", input, "-vn", "-sn", "-dn", output)
 }
 
-func replace_extension(file, ext) {
+func prepare_file(file, outdir, ext) {
 
     var out = ""
 
@@ -21,7 +21,9 @@ func replace_extension(file, ext) {
         out = (file + "." + ext)
     }
 
-    if (out == file) {
+    out = File(outdir, File(out).basename)
+
+    if (File(out).rel2abs == File(file).rel2abs) {
         return nil
     }
 
@@ -66,12 +68,10 @@ ARGV.each_slice(threads, {|*slice|
 
     var files = slice.grep { File(_).exists }
 
-    var conversions = files.map {|f|
-        [f, replace_extension(f, format)]
+    var conversions = files.map {|file|
+        [file, prepare_file(file, outdir, format)]
     }.grep {
         defined(.tail)
-    }.map_2d {|from, to|
-        [from, File(outdir, File(to).basename)]
     }.grep {
         !.tail.exists
     }

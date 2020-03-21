@@ -86,7 +86,7 @@ func main() {
         printf("[%2d] %s -> %s\n", counter++, file, outputFile)
 
         var args = ['-i', file.to_s, ffmpegArg..., outputFile]
-        forks.append({executeCmd(ffmpegCmd, args)}.fork)
+        forks.append(executeCmd.ffork(ffmpegCmd, args))
 
         if (forks.len >= maxThreads) {
             wait_th(forks)
