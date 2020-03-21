@@ -5,6 +5,9 @@ A nice collection of day-to-day Sidef scripts.
 
 ### Summary
 
+* Converters
+    * [Any2any](./Converters/any2any.sf)
+    * [Any2mp3](./Converters/any2mp3.sf)
 * Decoding
     * [Base64 decoder](./Decoding/base64_decoder.sf)
     * [Cnp](./Decoding/cnp.sf)

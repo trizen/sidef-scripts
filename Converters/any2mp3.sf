@@ -1,0 +1,105 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 17 June 2014
+# Edit: 21 March 2020
+# Website: http://github.com/trizen
+
+# Convert any media file to MP3, using `n` parallel processes of ffmpeg.
+
+func usage(code=0) {
+    var name = File(__FILE__).basename
+
+    print <<"USAGE"
+usage:
+      #{name} [options] [input files]
+
+options:
+       -b  --bitrate=i   : MP3 bitrate (default: 192)
+       -t  --threads=i   : use this many threads (default: 2)
+       -o  --outdir=s    : output directory (default: .)
+
+example:
+      #{name} -t 4 *.mp4    # convert MP4 to MP3
+USAGE
+
+    Sys.exit(code)
+}
+
+func executeCmd(cmd, arg) {
+    Sys.run(cmd, arg...)
+}
+
+func wait_th(forks) {
+    say ":: Running threads: #{forks.len}"
+    say ":: FFmpeg exit-code: #{forks.pop_rand.wait}"
+}
+
+func main() {
+    const extensionRe = %r/\.\w{1,5}\z/
+    const outputFormat = "mp3"
+
+    const ffmpegCmd = "ffmpeg"
+
+    var bitrate    = 192
+    var maxThreads = 2
+    var outputDir  = Dir.cwd
+
+    ARGV.getopt!(
+        'b|bitrate=i' => \bitrate,
+        'o|outdir=s'  => \outputDir,
+        't|threads=i' => \maxThreads,
+        'h|help'      => usage,
+    )
+
+    var ffmpegArg = ["-loglevel", "fatal", "-y", "-vn", "-ac", "2", "-ab", "#{bitrate}K", "-ar", "48000", "-f", outputFormat]
+
+    if (ARGV.len == 0) {
+        Sys.warn("\n[!] No input file has been provided!\n")
+        usage(2)
+    }
+
+    if (!outputDir.exists) {
+        outputDir.create || die "Can't create dir `#{outputDir}': #{$!}"
+    }
+
+    var forks = []
+    var counter = 0
+
+    ARGV.each { |entry|
+
+        var file = File(entry)
+
+        if (!file.exists) {
+            Sys.warn("File `#{file}' does not exists! Skipping file...\n")
+            next
+        }
+
+        if (!file.is_file) {
+            Sys.warn("File `#{file}' is not a plain file! Skipping it...\n")
+            next
+        }
+
+        var outputFile = file.basename.sub(extensionRe)
+
+        outputFile = File(outputDir, outputFile + '.' + outputFormat)
+        printf("[%2d] %s -> %s\n", counter++, file, outputFile)
+
+        var args = ['-i', file.to_s, ffmpegArg..., outputFile]
+        forks.append({executeCmd(ffmpegCmd, args)}.fork)
+
+        if (forks.len >= maxThreads) {
+            wait_th(forks)
+        }
+    }
+
+    while (forks.len > 0) {
+        wait_th(forks)
+    }
+
+    if (counter > 0) {
+        say ":: All done!"
+    }
+}
+
+main()

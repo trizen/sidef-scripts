@@ -1,0 +1,93 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 21 March 2020
+# https://github.com/trizen
+
+# Convert any media file with ffmpeg, using `n` parallel processes.
+
+func ffmpeg_convert(input, output) {
+    Sys.run("ffmpeg", "-loglevel", "fatal", "-i", input, output)
+}
+
+func replace_extension(file, ext) {
+
+    var out = ""
+
+    if (file =~ /^(.*)\.\w+\z/s) {|m|
+        out = (m[0] + "." + ext)
+    }
+    else {
+        out = (file + "." + ext)
+    }
+
+    if (out == file) {
+        return nil
+    }
+
+    return out
+}
+
+var threads = 2
+var format  = 'webm'
+var outdir  = Dir.cwd
+
+func print_help(exit_code=0) {
+
+    var name = File(__FILE__).basename
+
+    print <<"EOT"
+usage: #{name} [options] [files]
+
+options:
+    -f  --format=s  : output format (default: #{format})
+    -o  --outdir=s  : output directory (default: .)
+    -t  --threads=i : number of threads to use (default: #{threads})
+
+example:
+    #{name} -f webm -t 4 *.mp3    # convert MP3 to OPUS (webm)
+EOT
+
+    Sys.exit(exit_code)
+}
+
+ARGV.getopt!(
+    'f|format=s'  => \format,
+    't|threads=i' => \threads,
+    'o|outdir=s'  => \outdir,
+    'h|help'      => print_help,
+)
+
+outdir.exists || outdir.make_path || die "Can't create directory <<#{outdir}>>: #{$!}"
+
+ARGV || print_help(1)
+
+ARGV.each_slice(threads, {|*slice|
+
+    var files = slice.grep { File(_).exists }
+
+    var conversions = files.map {|f|
+        [f, replace_extension(f, format)]
+    }.grep {
+        defined(.tail)
+    }.map_2d {|from, to|
+        [from, File(outdir, File(to).basename)]
+    }.grep {
+        !.tail.exists
+    }
+
+    conversions || next
+
+    conversions.each_2d {|from,to|
+        say ":: Converting: '#{from}' -> '#{to}'"
+    }
+
+    var forks = conversions.map_2d {|input, output|
+        ffmpeg_convert.fork(input, output)
+    }
+
+    forks.each {|t|
+        say ":: Waiting..."
+        t.wait
+    }
+})
