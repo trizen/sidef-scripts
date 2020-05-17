@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# Generate the generalized Hamming numbers bellow a certain limit, given a set of primes.
+# Generate the generalized Hamming numbers below a certain limit, given a set of primes.
 
 func hamming_numbers (limit, primes) {
 

@@ -4,7 +4,7 @@
 # Date: 30 March 2019
 # https://github.com/trizen
 
-# Generate the extended Chernick-Carmichael numbers bellow a given limit.
+# Generate the extended Chernick-Carmichael numbers below a given limit.
 
 # See also:
 #   https://oeis.org/A317126
@@ -21,7 +21,7 @@ func is_chernick_carmichael (n, m) {
            : (is_prime(2**(n-2) * 9*m + 1) && __FUNC__(n-1, m))
 }
 
-# Generate the Chernick-Carmichael bellow a given limit
+# Generate the Chernick-Carmichael below a given limit
 func chernick_carmichael_numbers(limit) {
 
     var terms = []

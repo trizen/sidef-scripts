@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# Modular computation of the tetration operation, using using Euler's theorem.
+# Modular computation of the tetration operation, using Euler's theorem.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Tetration

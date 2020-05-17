@@ -13,7 +13,7 @@
 # 2. Removing both digits, the number is still prime.
 # 3. Continuing this process, we end up with X.
 
-# Full sequence for prime numbers X bellow 10:
+# Full sequence for prime numbers X below 10:
 #   2, 3, 5, 7, 131, 137, 173, 179, 373, 379, 431, 479, 673, 971, 21319, 33739, 54799, 63793, 66733, 76733, 91373, 91733, 94793, 2913739, 3667333, 9637937, 696379373, 896379373
 
 # See also:

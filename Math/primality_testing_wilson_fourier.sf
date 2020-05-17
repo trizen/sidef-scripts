@@ -28,6 +28,6 @@ func is_wilson_prime_2(n) {
     (n*(i*log(1 - exp(-(2*i*π*Γ(n))/n)) - i*log(1 - exp((2*i*π*Γ(n))/n)) + π))/(2*π*(n-1))
 }
 
-# Display the primes bellow 100
+# Display the primes below 100
 say (1..100 -> grep { is_wilson_prime_1(_) =~= 1 })
 say (1..100 -> grep { is_wilson_prime_2(_) =~= 1 })

@@ -44,7 +44,7 @@ func is_fermat_prime_3(n) {
     (i*n*acoth(tanh((log(1 - exp(-((i*π*exp(log(2)*n))/n))) - log(1 - exp((i*π*exp(log(2)*n))/n)))/2)))/π
 }
 
-# Display the primes bellow 100
+# Display the primes below 100
 say (1..100 -> grep { is_fermat_prime_1(_) =~= 1 })
 say (1..100 -> grep { is_fermat_prime_2(_) =~= 1 })
 say (1..100 -> grep { is_fermat_prime_3(_) =~= 1 })

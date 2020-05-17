@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# Count the number of semiprimes bellow a certain limit.
+# Several algorithms for counting the number of semiprimes <= n.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Semiprime
@@ -8,16 +8,29 @@
 func semiprime_count_1(n) {
     var t = 0
     n.isqrt.primes.sum {|p|
-        prime_count(n // p) - ++t + 1
+        prime_count(idiv(n,p)) - ++t + 1
     }
 }
 
 func semiprime_count_2(n) {
     n.isqrt.primes.sum {|p|
-        prime_count(p, n // p)
+        prime_count(p, idiv(n,p))
     }
 }
 
+func semiprime_count_3(n) {
+
+    var t = 2*n.isqrt.primes.sum {|p|
+        prime_count(idiv(n,p))
+    }
+
+    var r = prime_count(n.isqrt)
+
+    (t + r - r**2)/2
+}
+
 var n = irand(10**8)
+
 say semiprime_count_1(n)
 say semiprime_count_2(n)
+say semiprime_count_3(n)
