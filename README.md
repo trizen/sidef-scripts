@@ -171,6 +171,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Euler-maclaurin formula](./Math/euler-maclaurin_formula.sf)
     * [Euler numbers from factorials](./Math/euler_numbers_from_factorials.sf)
     * [Euler's totient theorem expmod](./Math/euler_s_totient_theorem_expmod.sf)
+    * [Exact division](./Math/exact_division.sf)
     * [Extended greatest common divisor](./Math/extended_greatest_common_divisor.sf)
     * [Factorial approximation from incomplete gamma](./Math/factorial_approximation_from_incomplete_gamma.sf)
     * [Factorial approximations](./Math/factorial_approximations.sf)
