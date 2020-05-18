@@ -1,0 +1,58 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 18 May 2020
+# https://github.com/trizen
+
+# Concept for a factorization method based on the Chinese Remainder Theorem (CRT).
+
+# Example:
+#   n = 43*97
+
+# We have:
+#   n == 1 mod 2
+#   n == 1 mod 3
+#   n == 1 mod 5
+#   n == 6 mod 7
+#   n == 2 mod 11
+
+# 43 = chinese(Mod(1,2), Mod(1,3), Mod(3,5), Mod(1,7))
+# 97 = chinese(Mod(1,2), Mod(1,3), Mod(2,5), Mod(6,7))
+
+# For some small primes p, we try to find pairs of a and b, such that:
+#   a*b == n mod p
+
+# Then using either the `a` or the `b` values, we can construct a factor of n, using the CRT.
+
+func CRT_factor(n, p = 3, crt = Mod(1, 2), L = n*n) {
+
+    var v = crt.lift
+
+    if (!is_coprime(n, v)) {
+        return gcd(n, v)
+    }
+
+    if (v > L) {
+        return nil
+    }
+
+    var r = Mod(n, p)
+
+    var inverses = (1..^p -> map{|k|
+        r / k -> lift
+    })
+
+    inverses = inverses.map {|a| chinese(crt, Mod(a, p)) }.grep { .lift > v }.sort.flip
+
+    for inv in (inverses) {
+        with (__FUNC__(n, p.next_prime, inv, L)) {|t|
+            return t if defined(t)
+        }
+    }
+
+    return nil
+}
+
+say CRT_factor(43*97, 5)        #=> 43
+say CRT_factor(503*863)         #=> 863
+say CRT_factor(2**32 + 1, 11)   #=> 641

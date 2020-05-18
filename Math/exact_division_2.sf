@@ -1,0 +1,36 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 18 May 2020
+# https://github.com/trizen
+
+# Algorithm for performing exact division of two large integers, using the Chinese Remainder Theorem (CRT).
+
+func exact_division(n,k) {
+
+    var crt = Mod(0, 1)
+
+    var logk = k.ilog2
+    var logn = n.ilog2-1
+
+    for(var p = 2; true ; p.next_prime!) {
+        crt = (chinese(crt, Mod(n, p) / k) || next)
+
+        if (crt.lift.ilog2 + logk >= logn) {
+            break if (crt.lift*k >= n)
+        }
+    }
+
+    crt.lift
+}
+
+say exact_division(43*97, 43)
+say exact_division(43*97, 97)
+
+say exact_division(100!, 50!)
+
+with (10!) {|n|
+    n.divisors.each {|d|
+        assert_eq(exact_division(n, d), n/d)
+    }
+}
