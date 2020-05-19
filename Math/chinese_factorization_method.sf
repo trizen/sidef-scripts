@@ -4,7 +4,7 @@
 # Date: 18 May 2020
 # https://github.com/trizen
 
-# Concept for a factorization method based on the Chinese Remainder Theorem (CRT).
+# Concept for an integer factorization method based on the Chinese Remainder Theorem (CRT).
 
 # Example:
 #   n = 43*97
@@ -36,13 +36,7 @@ func CRT_factor(n, p = 3, crt = Mod(1, 2), L = n*n) {
         return nil
     }
 
-    var r = Mod(n, p)
-
-    var inverses = (1..^p -> map{|k|
-        r / k -> lift
-    })
-
-    inverses = inverses.map {|a| chinese(crt, Mod(a, p)) }.grep { .lift > v }.sort.flip
+    var inverses = (1..^p -> map {|a| chinese(crt, Mod(a, p)) }.grep { .lift > v }.sort.flip)
 
     for inv in (inverses) {
         with (__FUNC__(n, p.next_prime, inv, L)) {|t|
