@@ -1,0 +1,63 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 22 May 2020
+# https://github.com/trizen
+
+# Count the number of k-almost primes <= n.
+
+# Definition:
+#   A number is k-almost prime if it is the product of k prime numbers (not necessarily distinct).
+#   In other works, a number n is k-almost prime iff: bigomega(n) = k.
+
+# See also:
+#   https://mathworld.wolfram.com/AlmostPrime.html
+
+# OEIS:
+#   https://oeis.org/A072000 -- count of 2-almost primes
+#   https://oeis.org/A072114 -- count of 3-almost primes
+#   https://oeis.org/A082996 -- count of 4-almost primes
+
+func k_prime_count(n,k) {
+
+    if (k == 1) {
+        return pi(n)
+    }
+
+    var count = 0
+
+    func (m, p, r) {
+
+        if (r == 2) {
+            var j = pi(p)-2
+
+            each_prime(p, idiv(n, m).isqrt, {|r|
+                count += (pi(idiv(n, m*r)) - ++j)
+            })
+
+            return nil
+        }
+
+        each_prime(p, idiv(n,m).iroot(r), {|q|
+            __FUNC__(m*q, q, r-1)
+        })
+    }(1, 2, k)
+
+    return count
+}
+
+for k in (1..10) {
+    say ("Count of #{'%2d' % k}-almost primes for 10^n: ", 7.of { k_prime_count(10**_, k) })
+}
+
+__END__
+Count of  1-almost primes for 10^n: [0, 4, 25, 168, 1229, 9592, 78498, 664579, 5761455, 50847534]
+Count of  2-almost primes for 10^n: [0, 4, 34, 299, 2625, 23378, 210035, 1904324, 17427258, 160788536]
+Count of  3-almost primes for 10^n: [0, 1, 22, 247, 2569, 25556, 250853, 2444359, 23727305, 229924367]
+Count of  4-almost primes for 10^n: [0, 0, 12, 149, 1712, 18744, 198062, 2050696, 20959322, 212385942]
+Count of  5-almost primes for 10^n: [0, 0, 4, 76, 963, 11185, 124465, 1349779, 14371023, 150982388]
+Count of  6-almost primes for 10^n: [0, 0, 2, 37, 485, 5933, 68963, 774078, 8493366, 91683887]
+Count of  7-almost primes for 10^n: [0, 0, 0, 14, 231, 2973, 35585, 409849, 4600247, 50678212]
+Count of  8-almost primes for 10^n: [0, 0, 0, 7, 105, 1418, 17572, 207207, 2367507, 26483012]
+Count of  9-almost primes for 10^n: [0, 0, 0, 2, 47, 671, 8491, 101787, 1180751, 13377156]
+Count of 10-almost primes for 10^n: [0, 0, 0, 0, 22, 306, 4016, 49163, 578154, 6618221]

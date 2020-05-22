@@ -1,0 +1,68 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 22 May 2020
+# https://github.com/trizen
+
+# Fast algorithm for computing: Sum_{k=1..n} 2^bigomega(k).
+
+# OEIS:
+#   https://oeis.org/A069205 -- a(n) = Sum_{k=1..n} 2^bigomega(k).
+
+func k_prime_count(n,k) {
+
+    if (k == 1) {
+        return pi(n)
+    }
+
+    if (k == 2) {
+        return semiprime_count(n)
+    }
+
+    var count = 0
+
+    func (m, p, r) {
+
+        if (r == 2) {
+            var j = pi(p)-2
+
+            each_prime(p, idiv(n, m).isqrt, {|r|
+                count += (pi(idiv(n, m*r)) - ++j)
+            })
+
+            return nil
+        }
+
+        each_prime(p, idiv(n,m).iroot(r), {|q|
+            __FUNC__(m*q, q, r-1)
+        })
+    }(1, 2, k)
+
+    return count
+}
+
+func S(n) {     # S(n) = Sum_{k=1..n} 2^bigomega(k)
+    1 + sum(1..n.ilog2, {|k|
+        2**k * k_prime_count(n,k)
+    })
+}
+
+assert_eq(
+    1..100->map{|k| 2**bigomega(k) }.accumulate,
+    1..100->map(S)
+)
+
+for k in (1..6) {
+    say "S(10^#{k}) = #{S(10**k)}"
+}
+
+__END__
+S(10^1) = 33
+S(10^2) = 811
+S(10^3) = 15301
+S(10^4) = 260615
+S(10^5) = 3942969
+S(10^6) = 55282297
+S(10^7) = 746263855
+S(10^8) = 9613563919
+S(10^9) = 120954854741
