@@ -1,0 +1,27 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 24 May 2020
+# https://github.com/trizen
+
+# Modular exponentiation of a Gaussian integer.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Modular_exponentiation
+
+func complex_powmod(a, b, n, m) {
+
+    # Computes:
+    #   (a + b*i)^n mod m
+
+    var (x, y) = (1, 0)
+
+    do {
+        (x, y) = ((x*a - y*b)%m, (x*b + y*a)%m) if n.is_odd
+        (a, b) = ((a*a - b*b)%m, (2*a*b)%m)
+    } while (n >>= 1)
+
+    (x, y)
+}
+
+say [complex_powmod(3, 4, 1000, 1e6)]     #=> [585313, 426784]

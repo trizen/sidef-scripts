@@ -124,6 +124,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Chinese remainder theorem](./Math/chinese_remainder_theorem.sf)
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Coin change](./Math/coin_change.sf)
+    * [Complex modular exponentiation](./Math/complex_modular_exponentiation.sf)
     * [Complex modular multiplicative inverse](./Math/complex_modular_multiplicative_inverse.sf)
     * [Complex zeta function representations](./Math/complex_zeta_function_representations.sf)
     * [Conditional euler totient function](./Math/conditional_euler_totient_function.sf)
