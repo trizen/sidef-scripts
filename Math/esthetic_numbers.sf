@@ -1,0 +1,72 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 30 May 2020
+# https://github.com/trizen
+
+# Fast algorithm for generating esthetic numbers in a given base.
+
+# See also:
+#   https://rosettacode.org/wiki/Esthetic_numbers
+
+# OEIS:
+#   https://oeis.org/A000975 -- base 2
+#   https://oeis.org/A033068 -- base 3
+#   https://oeis.org/A033075 -- base 10
+
+func generate_esthetic(root, upto, callback, b=10) {
+
+    var v = root.digits2num(b)
+
+    if (v > upto) {
+        return nil
+    }
+
+    callback(v)
+
+    var t = root.head
+
+    __FUNC__([t+1, root...], upto, callback, b) if (t+1  < b)
+    __FUNC__([t-1, root...], upto, callback, b) if (t-1 >= 0)
+}
+
+func upto_esthetic(upto, b=10) {
+    gather {
+        for k in (1..^b) {
+            generate_esthetic([k], upto, { take(_) }, b)
+        }
+    }.sort
+}
+
+func first_n_esthetic(n, b=10) {
+
+    var m = n**2
+
+    loop {
+        var list = upto_esthetic(m, b)
+        return list.first(n) if (list.len >= n)
+        m *= b
+    }
+}
+
+for b in (2..16) {
+    say ("First 20 esthetic numbers in base #{'%2d'%b}: ",
+        first_n_esthetic(20, b))
+}
+
+__END__
+First 20 esthetic numbers in base  2: [1, 2, 5, 10, 21, 42, 85, 170, 341, 682, 1365, 2730, 5461, 10922, 21845, 43690, 87381, 174762, 349525, 699050]
+First 20 esthetic numbers in base  3: [1, 2, 3, 5, 7, 10, 16, 21, 23, 30, 32, 48, 50, 64, 70, 91, 97, 145, 151, 192]
+First 20 esthetic numbers in base  4: [1, 2, 3, 4, 6, 9, 11, 14, 17, 25, 27, 36, 38, 46, 57, 59, 68, 70, 100, 102]
+First 20 esthetic numbers in base  5: [1, 2, 3, 4, 5, 7, 11, 13, 17, 19, 23, 26, 36, 38, 55, 57, 67, 69, 86, 88]
+First 20 esthetic numbers in base  6: [1, 2, 3, 4, 5, 6, 8, 13, 15, 20, 22, 27, 29, 34, 37, 49, 51, 78, 80, 92]
+First 20 esthetic numbers in base  7: [1, 2, 3, 4, 5, 6, 7, 9, 15, 17, 23, 25, 31, 33, 39, 41, 47, 50, 64, 66]
+First 20 esthetic numbers in base  8: [1, 2, 3, 4, 5, 6, 7, 8, 10, 17, 19, 26, 28, 35, 37, 44, 46, 53, 55, 62]
+First 20 esthetic numbers in base  9: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 19, 21, 29, 31, 39, 41, 49, 51, 59, 61]
+First 20 esthetic numbers in base 10: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 21, 23, 32, 34, 43, 45, 54, 56, 65]
+First 20 esthetic numbers in base 11: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 23, 25, 35, 37, 47, 49, 59, 61]
+First 20 esthetic numbers in base 12: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 25, 27, 38, 40, 51, 53, 64]
+First 20 esthetic numbers in base 13: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 27, 29, 41, 43, 55, 57]
+First 20 esthetic numbers in base 14: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 29, 31, 44, 46, 59]
+First 20 esthetic numbers in base 15: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 31, 33, 47, 49]
+First 20 esthetic numbers in base 16: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 33, 35, 50]
