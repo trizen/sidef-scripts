@@ -30,22 +30,18 @@ func generate_esthetic(root, upto, callback, b=10) {
     __FUNC__([t-1, root...], upto, callback, b) if (t-1 >= 0)
 }
 
-func upto_esthetic(upto, b=10) {
+func between_esthetic(from, upto, b=10) {
     gather {
         for k in (1..^b) {
-            generate_esthetic([k], upto, { take(_) }, b)
+            generate_esthetic([k], upto, { take(_) if (_ >= from) }, b)
         }
     }.sort
 }
 
 func first_n_esthetic(n, b=10) {
-
-    var m = n**2
-
-    loop {
-        var list = upto_esthetic(m, b)
+    for (var m = n**2; true ; m *= b) {
+        var list = between_esthetic(1, m, b)
         return list.first(n) if (list.len >= n)
-        m *= b
     }
 }
 
