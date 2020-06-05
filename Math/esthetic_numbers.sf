@@ -18,10 +18,7 @@ func generate_esthetic(root, upto, callback, b=10) {
 
     var v = root.digits2num(b)
 
-    if (v > upto) {
-        return nil
-    }
-
+    return nil if (v > upto)
     callback(v)
 
     var t = root.head

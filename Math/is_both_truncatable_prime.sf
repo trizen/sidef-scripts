@@ -25,10 +25,6 @@
 #  https://oeis.org/A323390 - Total number of primes that are both left-truncatable and right-truncatable in base n.
 #  https://oeis.org/A323396 - Irregular array read by rows, where T(n, k) is the k-th prime that is both left-truncatable and right-truncatable in base n.
 
-func digits2num(arr, base) {
-    arr.sum_kv {|k,v| base**k * v }
-}
-
 func is_left_truncatable_prime(n, base) {
 
     var digits = n.digits(base)

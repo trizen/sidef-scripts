@@ -1,0 +1,38 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 05 June 2020
+# https://github.com/trizen
+
+# Find a real solution to x^x^x^...^x = n for a tower of k powers.
+
+func tower_of_powers_inverse(n, k) {  # solution for x^x^...^x = n
+    bsearch_inverse(n, {|v|
+        k.of(v).reduce{|a,b|
+            b**a
+        } <~> n
+    })
+}
+
+func nested_powers_inverse(n, k) {   # solution for ((...)^x)^x = n
+    bsearch_inverse(n, {|v|
+        k.of(v).reduce{|a,b|
+            a**b
+        } <~> n
+    })
+}
+
+# Find x such that x^(x^(x^x)) = 2
+# x =1.4466014324298641745973339875976614806873210422...
+with (tower_of_powers_inverse(2, 4)) {|x|
+    say x
+    assert(x**(x**(x**x))  =~= 2)
+}
+
+# Find x such that ((x^x)^x)^x = 2
+# x = 1.3367097349494955658483777999091512580783714292...
+# Equivalently: x^(x^3) = 2
+with (nested_powers_inverse(2, 4)) {|x|
+    say x
+    assert(((x**x)**x)**x =~= 2)
+}

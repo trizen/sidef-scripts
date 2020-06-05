@@ -9,10 +9,6 @@
 #   https://en.wikipedia.org/wiki/Truncatable_prime
 #   https://rosettacode.org/wiki/Find_largest_left_truncatable_prime_in_a_given_base
 
-func digits2num(digits, base) {
-    digits.map_kv {|k,v| base**k * v  }.sum
-}
-
 func generate_from_suffix(p, base) {
 
     var seq = [p]

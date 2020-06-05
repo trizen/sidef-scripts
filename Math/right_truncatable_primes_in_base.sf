@@ -8,10 +8,6 @@
 #   https://www.youtube.com/watch?v=azL5ehbw_24
 #   https://en.wikipedia.org/wiki/Truncatable_prime
 
-func digits2num(digits, base) {
-    digits.sum_kv {|k,v| base**k * v }
-}
-
 func generate_from_prefix(p, base) {
 
     var seq = [p]

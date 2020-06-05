@@ -452,6 +452,8 @@ A nice collection of day-to-day Sidef scripts.
     * [System of linear equations](./Math/system_of_linear_equations.sf)
     * [Tangent numbers](./Math/tangent_numbers.sf)
     * [Tonelli shanks algorithm](./Math/tonelli_shanks_algorithm.sf)
+    * [Tower of distinct powers](./Math/tower_of_distinct_powers.sf)
+    * [Tower of powers inverse](./Math/tower_of_powers_inverse.sf)
     * [Towers of hanoi](./Math/towers_of_hanoi.sf)
     * [Trial division with primorials](./Math/trial_division_with_primorials.sf)
     * [Tribonacci closed form](./Math/tribonacci_closed_form.sf)
