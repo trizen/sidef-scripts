@@ -9,7 +9,7 @@
 func smooth_count(n, p) {
 
     if (p == 2) {
-        return 1+n.ilog(2)
+        return 1+n.ilog2
     }
 
     var q = p.prev_prime

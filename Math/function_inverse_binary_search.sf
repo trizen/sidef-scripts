@@ -17,7 +17,7 @@ func binary_inverse (n, f, min=0, max=n, prec=192) {
 
     loop {
         var m = (min+max)/2
-        var c = approx_cmp(f(m), n)
+        var c = (f(m) <~> n)
 
         if (c < 0) {
             min = m

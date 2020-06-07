@@ -1,0 +1,60 @@
+#!/usr/bin/ruby
+
+# A perfect square N has a splitting representation (S) if it's possible to segment
+# the decimal representation of N into a list of integers L, such that sum(L) = sqrt(n).
+
+# See also:
+#   https://oeis.org/A104113
+#   https://projecteuler.net/problem=719
+
+func S_representation(n) {
+
+    var v = n.isqrt
+    var D = n.digits
+
+    for k in (1 .. D.len>>1) {
+        combinations(D.len, k, {|*indices|
+            var t = D.segment(indices...)
+            if (t.sum{.digits2num} == v) {
+                return t
+            }
+        })
+    }
+
+    return false
+}
+
+for n in (2 .. 1000 -> map { _*_ }) {
+    var arr = S_representation(n) || next
+    say ("sqrt(#{n}) = ", arr.flip.map{.digits2num}.grep.join(' + '))
+}
+
+__END__
+sqrt(81) = 8 + 1
+sqrt(100) = 10
+sqrt(1296) = 1 + 29 + 6
+sqrt(2025) = 20 + 25
+sqrt(3025) = 30 + 25
+sqrt(6724) = 6 + 72 + 4
+sqrt(8281) = 82 + 8 + 1
+sqrt(9801) = 98 + 1
+sqrt(10000) = 100
+sqrt(55225) = 5 + 5 + 225
+sqrt(88209) = 88 + 209
+sqrt(136161) = 1 + 361 + 6 + 1
+sqrt(136900) = 1 + 369
+sqrt(143641) = 14 + 364 + 1
+sqrt(171396) = 17 + 1 + 396
+sqrt(431649) = 4 + 3 + 1 + 649
+sqrt(455625) = 45 + 5 + 625
+sqrt(494209) = 494 + 209
+sqrt(571536) = 5 + 715 + 36
+sqrt(627264) = 62 + 726 + 4
+sqrt(826281) = 826 + 2 + 81
+sqrt(842724) = 842 + 72 + 4
+sqrt(893025) = 8 + 930 + 2 + 5
+sqrt(929296) = 929 + 29 + 6
+sqrt(980100) = 980 + 10
+sqrt(982081) = 982 + 8 + 1
+sqrt(998001) = 998 + 1
+sqrt(1000000) = 1000

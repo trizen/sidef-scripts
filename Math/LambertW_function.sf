@@ -18,7 +18,7 @@ func lambertW(c) {
     var x = (sqrt(c) + 1)
     var y = 0
 
-    while (approx_cmp(abs(x - y), 0)) {
+    while (!(x =~= y)) {
         y = x
         x = ((x + c) / (1 + log(x)))
     }

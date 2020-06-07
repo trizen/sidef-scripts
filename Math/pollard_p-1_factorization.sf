@@ -5,7 +5,7 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm
 
-func pollard_pm1_factor (n, B = n.ilog(2)**3) {
+func pollard_pm1_factor (n, B = n.ilog2**3) {
 
     return n if ((n <= 1) || n.is_prime)
     return 2 if n.is_even

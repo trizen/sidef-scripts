@@ -25,7 +25,7 @@ func mediant_inverse (n, f, min=0, max=n, prec=192) {
 
     loop {
         var m = (ln+rn)/(ld+rd)
-        var c = approx_cmp(f(m), n)
+        var c = (f(m) <~> n)
 
         if (c < 0) {
             (ln, ld) = m.nude
