@@ -1,0 +1,34 @@
+#!/usr/bin/ruby
+
+# Erdos construction method for Lucas-Carmichael numbers:
+#   1. Choose an integer L with many prime factors.
+#   2. Let P be the set of primes d-1, where d|L and d-1 does not divide L.
+#   3. Find a subset S of P such that prod(S) == -1 (mod L). Then prod(S) is a Lucas-Carmichael number.
+
+var L = 480
+var P = L.divisors.map { .dec }.grep { .is_odd && .is_prime }.grep {|p| L%p != 0 }
+
+for k in (3..P.len) {
+    P.combinations(k, {|*S|
+        if (S.prod % L == L-1) {
+            say S.prod
+        }
+    })
+}
+
+__END__
+51359
+357599
+6023039
+12676799
+16868159
+86450399
+1456083839
+741722399
+10138322879
+3422728799
+674628479
+1458700319
+39472666079
+410636052959
+1087044101759

@@ -1,0 +1,45 @@
+#!/usr/bin/ruby
+
+# Erdos construction method for Carmichael numbers:
+#   1. Choose an integer L with many prime factors.
+#   2. Let P be the set of primes d+1, where d|L and d+1 does not divide L.
+#   3. Find a subset S of P such that prod(S) == 1 (mod L). Then prod(S) is a Carmichael number.
+
+var L = 720
+var P = L.divisors.map { .inc }.grep { .is_odd && .is_prime }.grep {|p| L%p != 0 }
+
+for k in (3..P.len) {
+    P.combinations(k, {|*S|
+        if (S.prod % L == 1) {
+            say S.prod
+        }
+    })
+}
+
+__END__
+15841
+115921
+488881
+41041
+172081
+5310721
+12262321
+16778881
+18162001
+76595761
+609865201
+133205761
+561777121
+1836304561
+832060801
+1932608161
+20064165121
+84127131361
+354725143201
+1487328704641
+3305455474321
+1945024664401
+2110112460001
+8879057210881
+65121765643441
+30614445878401
