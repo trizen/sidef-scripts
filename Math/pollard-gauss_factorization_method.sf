@@ -1,0 +1,40 @@
+#!/usr/bin/ruby
+
+# Pollard's p−1 integer factorization algorithm, combined with Gaussian integers.
+
+# It can find a factor p if either p-1 or p+1 is B-smooth.
+
+# Let's consider the following Gaussian integer:
+#    G = 1+2i = (1,2)
+
+# For some smooth bound B, we compute:
+#   (x,y) = G^lcm(1..B)
+
+# We then check if gcd(y,n) is a non-trivial factor n.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Gaussian_integer
+#   https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm
+
+func pollard_gauss_factor (n, B = n.ilog2**3) {
+
+    return n if ((n <= 1) || n.is_prime)
+    return 2 if n.is_even
+
+    var t = Gauss(1, 2)
+
+    B.primes_each {|p|
+        t = powmod(t, p**B.ilog(p), n)
+        is_coprime(t.imag, n) || break
+    }
+
+    return gcd(t.imag, n)
+}
+
+say pollard_gauss_factor(1204123279);                                #=> 46511
+say pollard_gauss_factor(83910721266759813859)                       #=> 4545646757
+say pollard_gauss_factor(406816927495811038353579431);               #=> 9074269
+say pollard_gauss_factor(38568900844635025971879799293495379321);    #=> 17495058332072672321
+
+say pollard_gauss_factor(257221 * 470783,              700);     #=> 470783           (p+1 is  700-smooth)
+say pollard_gauss_factor(333732865481 * 1632480277613, 3000);    #=> 333732865481     (p-1 is 3000-smooth)

@@ -24,7 +24,7 @@ func lucas_factorization(n, B = n.ilog2**2, a = 1, b = 5) {
 
         D || next
 
-        var F =  lucasUmod(P, Q, L, n)
+        var F = lucasUmod(P, Q, L, n)
         var g = gcd(F, n)
 
         if (g.is_between(2, n-1)) {
