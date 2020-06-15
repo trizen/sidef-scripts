@@ -395,6 +395,7 @@ A nice collection of day-to-day Sidef scripts.
     * [PSW primality test](./Math/PSW_primality_test.sf)
     * [Pythagorean means](./Math/pythagorean_means.sf)
     * [Quadratic formula solution approx](./Math/quadratic_formula_solution_approx.sf)
+    * [Quadratic integers](./Math/quadratic_integers.sf)
     * [Ramanujan sum](./Math/ramanujan_sum.sf)
     * [Rational approximations](./Math/rational_approximations.sf)
     * [Recamán-like sequence](./Math/recamán-like_sequence.sf)
