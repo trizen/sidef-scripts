@@ -12,30 +12,17 @@
 
 class QuadraticInteger(a, b, w = 2) {   # represents: a + b*sqrt(w), for w >= 0
 
-    method mul (QuadraticInteger z) {
-        var (c,d) = (z.a, z.b)
-        QuadraticInteger(a*c + b*d*w, a*d + b*c)
-    }
-
-    __CLASS__.alias_method(:mul, '*')
-
-    method mod (Number m) {
-        QuadraticInteger(a % m, b % m)
-    }
-
-    __CLASS__.alias_method(:mod, '%')
-
     method powmod(Number n, Number m) {
 
-        var x = self
-        var c = QuadraticInteger(1, 0)
+        var (a, b) = (self.a, self.b)
+        var (c, d) = (1, 0)
 
         do {
-            (c *= x) %= m if n.is_odd
-            (x *= x) %= m
+            (c, d) = ((a*c + b*d*w) % m, (a*d + b*c) % m) if n.is_odd
+            (a, b) = ((a*a + b*b*w) % m, (2*a*b) % m)
         } while (n >>= 1)
 
-        return c
+        return QuadraticInteger(c, d, w)
     }
 }
 
