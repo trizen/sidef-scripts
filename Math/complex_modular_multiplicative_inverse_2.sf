@@ -1,0 +1,30 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 23 June 2020
+# https://github.com/trizen
+
+# Formula for computing the modular multiplicative inverse of complex numbers:
+#   1/a mod n, with |gcd(a, n)| = 1.
+
+func complex_modular_inverse (x, y, m) {
+
+    var r = (x*x + y*y)
+
+    # gcd(r, m) must equal 1
+
+    var i = invmod(r, m) || return Gauss(NaN, NaN)
+    var a = ((i*x)%m)
+    var b = (-i*y)%m
+
+    Gauss(a, b)
+}
+
+say complex_modular_inverse(42,  0, 2017)      #=> (1969, 0)
+say complex_modular_inverse( 3,  4, 2017)      #=> (1291, 968)
+say complex_modular_inverse(91, 23, 2017)      #=> (590, 405)
+say complex_modular_inverse(43, 99, 2017)      #=> (1709, 1272)
+say complex_modular_inverse(43, 99, 1234567)   #=> (1019551, 667302)
+
+# Non-existent inverses
+say complex_modular_inverse(43, 99, 1234)      #=> (NaN, NaN)

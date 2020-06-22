@@ -47,7 +47,7 @@ func complex_modular_inverse (a, n) {
         return u%n
     }
 
-    [g.conj, 1, -1, 1i, -1i].map {|i| inverse(a, n, i) }.first_by {|t|
+    [g.conj, 1, -1, 1i, -1i].lazy.map {|i| inverse(a, n, i) }.first_by {|t|
         (t * a) % n == 1
     }
 }

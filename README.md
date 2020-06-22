@@ -127,6 +127,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Coin change](./Math/coin_change.sf)
     * [Complex modular exponentiation](./Math/complex_modular_exponentiation.sf)
     * [Complex modular multiplicative inverse](./Math/complex_modular_multiplicative_inverse.sf)
+    * [Complex modular multiplicative inverse 2](./Math/complex_modular_multiplicative_inverse_2.sf)
     * [Complex zeta function representations](./Math/complex_zeta_function_representations.sf)
     * [Conditional euler totient function](./Math/conditional_euler_totient_function.sf)
     * [Confluent hypergeometric function of the first kind](./Math/confluent_hypergeometric_function_of_the_first_kind.sf)
