@@ -15,33 +15,35 @@ class QuadraticInteger(a, b, w = 2) {   # represents: a + b*sqrt(w), for w >= 0
 
     method add (QuadraticInteger z) {
         var (c,d) = (z.a, z.b)
-        QuadraticInteger(a+c, b+d)
+        QuadraticInteger(a+c, b+d, w)
     }
 
     __CLASS__.alias_method(:add, '+')
 
     method mul (QuadraticInteger z) {
 
-        # (a,b) * (c,d) = a c + a d sqrt(n) + b c sqrt(n) + b d n
-        #               = Quadratic(a c + b d n, a d + b c)
+        # (a,b) * (c,d) = a c + a d sqrt(w) + b c sqrt(w) + b d w
+        #               = Quadratic(a c + b d w, a d + b c)
 
         var (c,d) = (z.a, z.b)
-        QuadraticInteger(a*c + b*d*w, a*d + b*c)
+        QuadraticInteger(a*c + b*d*w, a*d + b*c, w)
     }
 
     __CLASS__.alias_method(:mul, '*')
 
     method mod (Number m) {
-        QuadraticInteger(a % m, b % m)
+        QuadraticInteger(a % m, b % m, w)
     }
+
+    __CLASS__.alias_method(:mod, '%')
 
     method pow(Number n) {
         var x = self
-        var c = QuadraticInteger(1, 0)
+        var c = QuadraticInteger(1, 0, w)
 
         for bit in (n.digits(2)) {
-            c.mul!(x) if bit
-            x.mul!(x)
+            c *= x if bit
+            x *= x
         }
 
         return c
@@ -50,17 +52,11 @@ class QuadraticInteger(a, b, w = 2) {   # represents: a + b*sqrt(w), for w >= 0
     method powmod(Number n, Number m) {
 
         var x = self
-        var c = QuadraticInteger(1, 0)
+        var c = QuadraticInteger(1, 0, w)
 
         for bit in (n.digits(2)) {
-
-            if (bit) {
-                c.mul!(x)
-                c.mod!(m)
-            }
-
-            x.mul!(x)
-            x.mod!(m)
+            (c *= x) %= m if bit        #=
+            (x *= x) %= m               #=
         }
 
         return c
@@ -68,16 +64,18 @@ class QuadraticInteger(a, b, w = 2) {   # represents: a + b*sqrt(w), for w >= 0
 }
 
 # Determine if a given number is probably a prime number.
-# For r=2, the first few counter-examples, are: 6601, 15841, 52633, 162401, 410041, ...
 func is_quadratic_pseudoprime (n, r=2) {
+
+    return false if (n <= 1)
+    return true  if (n <= 3)
 
     return true if (r <= 0)
 
-    var x = QuadraticInteger(r, 1, 2).powmod(n, n)
+    var x = QuadraticInteger(r, 1, r+2).powmod(n, n)
 
     x.a == r || return false
 
-    var y = QuadraticInteger(r, -1, 2).powmod(n, n)
+    var y = QuadraticInteger(r, -1, r+2).powmod(n, n)
 
     y.a == r || return false
 
@@ -88,19 +86,19 @@ say is_quadratic_pseudoprime(43)    #=> true
 say is_quadratic_pseudoprime(97)    #=> true
 
 with (QuadraticInteger(1, 1, 2)) {|q|
-    say 20.of { q.pow(_).a }        #=> A001333: Numerators of continued fraction convergents to sqrt(2).
-    say 20.of { q.pow(_).b }        #=> A000129: Pell numbers.
+    say 20.of { q.pow(_).a }        #=> A001333
+    say 20.of { q.pow(_).b }        #=> A000129
 }
 
-with (QuadraticInteger(1, 1, 1)) {|q|
-    say 20.of { q.pow(_).a }    #=> [1, 1, 2, 6, 12, 28, 56, 136, 272, 656, 1312, 3168, 6336, 15296, 30592, 73856, 147712, 356608, 713216, 1721856]
-    say 20.of { q.pow(_).b }    #=> [0, 1, 2, 4, 8, 20, 40, 96, 192, 464, 928, 2240, 4480, 10816, 21632, 52224, 104448, 252160, 504320, 1217536]
+with (QuadraticInteger(1, 1, 3)) {|q|
+    say 20.of { q.pow(_).a }        #=> A026150
+    say 20.of { q.pow(_).b }        #=> A002605
 }
 
 var n = (274177-1)
 var m = (2**64 + 1)
 
-with (QuadraticInteger(1, 1, 2)) {|q|
+with (QuadraticInteger(3, 4, 2)) {|q|
     var r = q.powmod(n, m)
     say gcd(r.a-1, m)       #=> 2741177
     say gcd(r.b, m)         #=> 2741177
