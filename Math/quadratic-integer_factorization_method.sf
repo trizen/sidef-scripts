@@ -1,0 +1,66 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 22 June 2020
+# https://github.com/trizen
+
+# A simple factorization method, using quadratic integers.
+# Similar in flavor to Pollard's p-1 and Williams's p+1 methods.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Quadratic_integer
+
+class QuadraticInteger(a, b, w = 2) {   # represents: a + b*sqrt(w), for w >= 0
+
+    method mul (QuadraticInteger z) {
+        var (c,d) = (z.a, z.b)
+        QuadraticInteger(a*c + b*d*w, a*d + b*c)
+    }
+
+    __CLASS__.alias_method(:mul, '*')
+
+    method mod (Number m) {
+        QuadraticInteger(a % m, b % m)
+    }
+
+    __CLASS__.alias_method(:mod, '%')
+
+    method powmod(Number n, Number m) {
+
+        var x = self
+        var c = QuadraticInteger(1, 0)
+
+        do {
+            (c *= x) %= m if n.is_odd
+            (x *= x) %= m
+        } while (n >>= 1)
+
+        return c
+    }
+}
+
+func quadratic_factorization (n, B = n.ilog2**2) {
+
+    var t = QuadraticInteger(3, 4)
+
+    primes_each(2, B.isqrt, {|p|
+        t = powmod(t, p**ilog(B, p), n)
+    })
+
+    primes_each(B.isqrt, B, {|p|
+
+        t = powmod(t, p, n)
+
+        if (!is_coprime(t.b, n)) {
+            var g = gcd(t.b, n)
+            return g if g.is_between(2, n-1)
+        }
+    })
+
+    return 1
+}
+
+say quadratic_factorization(524934717838728509869)               #=> 18711680699         (p+1 is  307-smooth)
+say quadratic_factorization(8323759753781305339013)              #=> 98561959037         (p+1 is 3917-smooth)
+say quadratic_factorization(6486152039244634535185721)           #=> 492851064557        (p+1 is 5077-smooth)
+say quadratic_factorization(154499342049364226248203335113)      #=> 457976616241871     (p-1 is 8081-smooth)

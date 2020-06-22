@@ -24,22 +24,27 @@
 #   https://www.math.waikato.ac.nz/~kab/509/bigbook.pdf
 #   https://en.wikipedia.org/wiki/Miller-Rabin_primality_test
 
-func miller_rabin_factor(n, k=100) {
+func miller_rabin_factor(n, tries=100) {
 
     var D = n-1
     var s = D.valuation(2)
     var r = s-1
     var d = D>>s
 
-    for a in (2..k) {
+    tries.times {
+
+        var a = random_prime(1e7)
+        var x = powmod(a, d, n)
+
         for b in (0..r) {
-            var x = powmod(a, d << b, n)
+            break if ((x == 1) || (x == D))
             for i in (1, -1) {
                 var g = gcd(x+i, n)
                 if (g.is_between(2, n-1)) {
                     return g
                 }
             }
+            x = powmod(x, 2, n)
         }
     }
 

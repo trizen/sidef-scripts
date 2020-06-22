@@ -394,6 +394,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Product of primes approx](./Math/product_of_primes_approx.sf)
     * [PSW primality test](./Math/PSW_primality_test.sf)
     * [Pythagorean means](./Math/pythagorean_means.sf)
+    * [Quadratic-integer factorization method](./Math/quadratic-integer_factorization_method.sf)
     * [Quadratic formula solution approx](./Math/quadratic_formula_solution_approx.sf)
     * [Quadratic integers](./Math/quadratic_integers.sf)
     * [Ramanujan sum](./Math/ramanujan_sum.sf)
