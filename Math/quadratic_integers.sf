@@ -49,6 +49,8 @@ class QuadraticInteger(a, b, w = 2) {   # represents: a + b*sqrt(w), for w >= 0
         return c
     }
 
+    __CLASS__.alias_method(:pow, '**')
+
     method powmod(Number n, Number m) {
 
         var x = self

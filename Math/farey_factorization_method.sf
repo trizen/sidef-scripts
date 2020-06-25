@@ -120,8 +120,8 @@ func farey_factorization (n, multiplier=1) {
     #var B = int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
     var nf = int(exp(sqrt(log(n) * log(log(n))))**(sqrt(2) / 4))
 
-    #var factor_base  = B.primes.grep {|p| (p <= 97) || (kronecker(N, p) == 1) }
-    var factor_base = (1..Inf -> lazy.map { .prime }.grep {|p| (p <= 2) || (kronecker(N, p) == 1) }.first(nf))
+    #var factor_base  = B.primes.grep {|p| (p <= 2) || (kronecker(N, p) >= 0) }
+    var factor_base = (1..Inf -> lazy.map { .prime }.grep {|p| (p <= 2) || (kronecker(N, p) >= 0) }.first(nf))
 
     var factor_prod  = factor_base.prod
     var factor_index = Hash(factor_base ~Z ^factor_base -> flat...)
