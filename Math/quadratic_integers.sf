@@ -13,6 +13,14 @@ class QuadraticInteger(a, b, w = 2) {   # represents: a + b*sqrt(w), for w >= 0
         (a == c.a) && (b == c.b) && (w == c.w)
     }
 
+    method conjugate {
+        QuadraticInteger(a, -b, w)
+    }
+
+    method norm {
+        a*a - w*b*b
+    }
+
     method add (QuadraticInteger z) {
         var (c,d) = (z.a, z.b)
         QuadraticInteger(a+c, b+d, w)
@@ -88,13 +96,13 @@ say is_quadratic_pseudoprime(43)    #=> true
 say is_quadratic_pseudoprime(97)    #=> true
 
 with (QuadraticInteger(1, 1, 2)) {|q|
-    say 20.of { q.pow(_).a }        #=> A001333
-    say 20.of { q.pow(_).b }        #=> A000129
+    say 15.of { q.pow(_).a }        #=> A001333
+    say 15.of { q.pow(_).b }        #=> A000129
 }
 
 with (QuadraticInteger(1, 1, 3)) {|q|
-    say 20.of { q.pow(_).a }        #=> A026150
-    say 20.of { q.pow(_).b }        #=> A002605
+    say 15.of { q.pow(_).a }        #=> A026150
+    say 15.of { q.pow(_).b }        #=> A002605
 }
 
 var n = (274177-1)
