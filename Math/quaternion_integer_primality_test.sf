@@ -1,0 +1,94 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 27 June 2020
+# https://github.com/trizen
+
+# A simple primality test based in quaternions.
+
+# Let z = (a,b,c,d) be a quaternion.
+
+# If n is a prime number, then either (1), (2) or (3) is true:
+#   1) z^n == z (mod n)
+#   2) z^n == a (mod n)
+#   3) z^n == (a, n-b, n-c, n-d) (mod n)
+
+# By repeating the test several times, with different (a,b,c,d) values, increases the probability that n is prime.
+
+# For tries = 0, several counter-examples (not necesarily consecutive):
+#   1729, 658801, 1152271, 1857241, 2508013, 4463641, 5968873, 6733693, 10024561, 11119105, 13992265, 18162001, 21584305
+
+# For tries = 1, several counter-examples (not necesarily consecutive):
+#   29111881, 83966401, 132511681, 146843929, 221884001, 985052881, 1318126321, 1688214529, 1701016801, 1705470481, 1846817281
+
+# For tries = 2, several counter-examples (not necesarily consecutive):
+#   83966401, 4765950001, 5118204001, 5675884201, 6974163001, 104510424961, 373523673601, 450302790001
+
+# For tries = 3, several counter-examples (not necesarily consecutive):
+#   4765950001, 104510424961, 373523673601, 1240013784241, 4575844294561, 4866233601601
+
+# See also:
+#   https://en.wikipedia.org/wiki/Quaternion
+
+class Quaternion(a, b=0, c=0, d=0) {
+
+    method to_s {
+        "Quaternion(#{a}, #{b}, #{c}, #{d})"
+    }
+
+    method ==(Quaternion z) {
+        (a == z.a) && (b == z.b) && (c == z.c) && (d == z.d)
+    }
+
+    method powmod(Number n, Number m) {
+
+        var (a,b,c,d) = (self.a,self.b,self.c,self.d)
+        var (a2=1, b2=0, c2=0, d2=0)
+
+        for bit in (n.digits(2)) {
+
+            (a2,b2,c2,d2) = (
+                (a*a2 - b*b2 - c*c2 - d*d2)%m,
+                (a*b2 + b*a2 + c*d2 - d*c2)%m,
+                (a*c2 - b*d2 + c*a2 + d*b2)%m,
+                (a*d2 + b*c2 - c*b2 + d*a2)%m,
+            ) if bit
+
+            (a,b,c,d) = (
+                (a*a - b*b - c*c - d*d)%m,
+                (a*b + b*a + c*d - d*c)%m,
+                (a*c - b*d + c*a + d*b)%m,
+                (a*d + b*c - c*b + d*a)%m,
+            )
+        }
+
+        return Quaternion(a2,b2,c2,d2)
+    }
+}
+
+func quaternion_primality_test(n, tries = 3) {
+
+    var (
+        a = (tries + 1),
+        b = (tries + 2),
+        c = (tries + 3),
+        d = (tries + 4),
+    )
+
+    if (n <= d) {
+        return n.is_prime
+    }
+
+    var z = Quaternion(a,b,c,d)
+    var r = z.powmod(n,n)
+
+    (
+        (r == z) ||
+        (r == Quaternion(a)) ||
+        (r == Quaternion(a, n-b, n-c, n-d))
+    ) && (
+        (tries > 0) ? __FUNC__(n, tries-1) : true
+    )
+}
+
+say 25.by(quaternion_primality_test)    # first 25 primes

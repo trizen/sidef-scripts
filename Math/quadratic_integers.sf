@@ -31,10 +31,6 @@ class Quadratic(a, b, w = 2) {   # represents: a + b*sqrt(w), for w >= 0
     __CLASS__.alias_method(:add, '+')
 
     method mul (Quadratic z) {
-
-        # (a,b) * (c,d) = a c + a d sqrt(w) + b c sqrt(w) + b d w
-        #               = Quadratic(a c + b d w, a d + b c)
-
         var (c,d) = (z.a, z.b)
         Quadratic(a*c + b*d*w, a*d + b*c, w)
     }
