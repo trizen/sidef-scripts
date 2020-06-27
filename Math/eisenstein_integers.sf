@@ -5,19 +5,19 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Eisenstein_integer
 
-class EisensteinInteger(a, b) {   # represents: a + b*w, where w = (-1 + i*sqrt(3))/2
+class Eisenstein(a, b) {   # represents: a + b*w, where w = (-1 + i*sqrt(3))/2
 
     method to_s {
         "Eisenstein(#{a}, #{b})"
     }
 
-    method ==(EisensteinInteger c) {
+    method ==(Eisenstein c) {
         (a == c.a) && (b == c.b)
     }
 
-    method add (EisensteinInteger z) {
+    method add (Eisenstein z) {
         var (c,d) = (z.a, z.b)
-        EisensteinInteger(a+c, b+d)
+        Eisenstein(a+c, b+d)
     }
 
     __CLASS__.alias_method(:add, '+')
@@ -26,22 +26,22 @@ class EisensteinInteger(a, b) {   # represents: a + b*w, where w = (-1 + i*sqrt(
         a*a - a*b + b*b
     }
 
-    method mul (EisensteinInteger z) {
+    method mul (Eisenstein z) {
         var (c,d) = (z.a, z.b)
-        EisensteinInteger(a*c - b*d, b*c + a*d - b*d)
+        Eisenstein(a*c - b*d, b*c + a*d - b*d)
     }
 
     __CLASS__.alias_method(:mul, '*')
 
     method mod (Number m) {
-        EisensteinInteger(a % m, b % m)
+        Eisenstein(a % m, b % m)
     }
 
     __CLASS__.alias_method(:mod, '%')
 
     method pow(Number n) {
         var x = self
-        var c = EisensteinInteger(1, 0)
+        var c = Eisenstein(1, 0)
 
         for bit in (n.digits(2)) {
             c *= x if bit
@@ -56,7 +56,7 @@ class EisensteinInteger(a, b) {   # represents: a + b*w, where w = (-1 + i*sqrt(
     method powmod(Number n, Number m) {
 
         var x = self
-        var c = EisensteinInteger(1, 0)
+        var c = Eisenstein(1, 0)
 
         for bit in (n.digits(2)) {
             (c *= x) %= m if bit        #=
@@ -68,7 +68,7 @@ class EisensteinInteger(a, b) {   # represents: a + b*w, where w = (-1 + i*sqrt(
 }
 
 # Integers (a,b) such that a^2 - a*b + b^2 give the powers of 7.
-with (EisensteinInteger(2,3)) {|q|
+with (Eisenstein(2,3)) {|q|
     say 15.of { q.pow(_).a }        #=> [1, 2, -5, -19, 16, 149, 37, -1006, -1265, 5777, 14632, -25807, -128231, 52418, 950035]
     say 15.of { q.pow(_).b }        #=> [0, 3, 3, -18, -39, 87, 360, -249, -2769, -1026, 18357, 25539, -102960, -281733, 438987]
 }
@@ -76,7 +76,7 @@ with (EisensteinInteger(2,3)) {|q|
 var n = (274177-1)
 var m = (2**64 + 1)
 
-with (EisensteinInteger(2,3)) {|q|
+with (Eisenstein(2,3)) {|q|
     var r = q.powmod(n, m)
     say gcd(r.a-1, m)       #=> 2741177
     say gcd(r.b, m)         #=> 2741177

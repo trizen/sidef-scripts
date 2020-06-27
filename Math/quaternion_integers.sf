@@ -1,0 +1,87 @@
+#!/usr/bin/ruby
+
+# Simple implementation of quaternion integers.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Quaternion
+
+class Quaternion(a, b=0, c=0, d=0) {
+
+    method to_s {
+        "Quaternion(#{a}, #{b}, #{c}, #{d})"
+    }
+
+    method ==(Quaternion z) {
+        (a == z.a) && (b == z.b) && (c == z.c) && (d == z.d)
+    }
+
+    method add (Quaternion z) {
+        var (a2,b2,c2,d2) = (z.a, z.b, z.c, z.d)
+        Quaternion(a+a2, b+b2, c+c2, d+d2)
+    }
+
+    __CLASS__.alias_method(:add, '+')
+
+    method mul (Quaternion z) {
+        var (a2,b2,c2,d2) = (z.a, z.b, z.c, z.d)
+        Quaternion(
+            a*a2 - b*b2 - c*c2 - d*d2,
+            a*b2 + b*a2 + c*d2 - d*c2,
+            a*c2 - b*d2 + c*a2 + d*b2,
+            a*d2 + b*c2 - c*b2 + d*a2,
+        )
+    }
+
+    __CLASS__.alias_method(:mul, '*')
+
+    method mod (Number m) {
+        Quaternion(a % m, b % m, c % m, d % m)
+    }
+
+    __CLASS__.alias_method(:mod, '%')
+
+    method pow(Number n) {
+        var x = self
+        var c = Quaternion(1)
+
+        for bit in (n.digits(2)) {
+            c *= x if bit
+            x *= x
+        }
+
+        return c
+    }
+
+    __CLASS__.alias_method(:pow, '**')
+
+    method powmod(Number n, Number m) {
+
+        var x = self
+        var c = Quaternion(1)
+
+        for bit in (n.digits(2)) {
+            (c *= x) %= m if bit        #=
+            (x *= x) %= m               #=
+        }
+
+        return c
+    }
+}
+
+# Integers (a,b) such that a^2 - a*b + b^2 give the powers of 7.
+with (Quaternion(1,2,3,4)) {|q|
+    say 15.of { q.pow(_).a }        #=> [1, 1, -28, -86, 668, 3916, -12208, -141896, 82448, 4421776, 6370112, -119913056, -430929472, 2735532736, 18398949632]
+    say 15.of { q.pow(_).b }        #=> [0, 2, 4, -52, -224, 1112, 8944, -15472, -299264, -134368, 8709184, 21449408, -218376704, -1080235648, 4390829824]
+    say 15.of { q.pow(_).c }        #=> [0, 3, 6, -78, -336, 1668, 13416, -23208, -448896, -201552, 13063776, 32174112, -327565056, -1620353472, 6586244736]
+    say 15.of { q.pow(_).d }        #=> [0, 4, 8, -104, -448, 2224, 17888, -30944, -598528, -268736, 17418368, 42898816, -436753408, -2160471296, 8781659648]
+}
+
+var n = lcm(1..20)
+var m = (2**64 + 1)
+
+with (Quaternion(2,3,4,5)) {|q|
+    var r = q.powmod(n, m)
+    say gcd(r.b, m)         #=> 2741177
+    say gcd(r.c, m)         #=> 2741177
+    say gcd(r.d, m)         #=> 2741177
+}

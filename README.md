@@ -399,6 +399,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Quadratic-integer factorization method](./Math/quadratic-integer_factorization_method.sf)
     * [Quadratic formula solution approx](./Math/quadratic_formula_solution_approx.sf)
     * [Quadratic integers](./Math/quadratic_integers.sf)
+    * [Quaternion integers](./Math/quaternion_integers.sf)
     * [Ramanujan sum](./Math/ramanujan_sum.sf)
     * [Rational approximations](./Math/rational_approximations.sf)
     * [Recamán-like sequence](./Math/recamán-like_sequence.sf)
