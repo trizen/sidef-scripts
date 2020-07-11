@@ -2,58 +2,68 @@
 
 # Daniel "Trizen" Șuteu
 # Date: 22 May 2020
+# Edit: 11 July 2020
 # https://github.com/trizen
 
-# Fast algorithm for computing: Sum_{k=1..n} 2^bigomega(k).
+# Fast formulas for computing: Sum_{k=1..n} 2^bigomega(k).
 
 # OEIS:
 #   https://oeis.org/A069205 -- a(n) = Sum_{k=1..n} 2^bigomega(k).
 
-func k_prime_count(n,k) {
+# Let:
+#   S(n) = Sum_{k=1..n} 2^bigomega(k)
 
-    if (k == 1) {
-        return pi(n)
-    }
+# Is it possible to compute S(n) in sublinear time? The answer is "yes".
 
-    if (k == 2) {
-        return semiprime_count(n)
-    }
+# Formula #1:
+#
+#   S(n) = 1 + Sum_{k=1..floor(log_2(n))} 2^k * pi_k(n)
+#
+# where pi_k(n) is the number of k-almost primes <= n.
 
-    var count = 0
+# Formula #2:
+#
+#   S(n) = Sum_{2-powerful k <= n} 2^(bigomega(k) - 2*omega(k)) * D(floor(n/k))
+#
+# where D(n) = Sum_{k=1..n} floor(n/k), computed in O(sqrt(n)) steps as:
+#
+#   D(n) = 2*Sum_{k=1..floor(sqrt(n))} floor(n/k) - floor(sqrt(n))^2
 
-    func (m, p, r) {
+# See also:
+#   https://projecteuler.net/problem=708
 
-        if (r == 2) {
-            var j = pi(p)-2
-
-            each_prime(p, idiv(n, m).isqrt, {|r|
-                count += (pi(idiv(n, m*r)) - ++j)
-            })
-
-            return nil
-        }
-
-        each_prime(p, idiv(n,m).iroot(r), {|q|
-            __FUNC__(m*q, q, r-1)
-        })
-    }(1, 2, k)
-
-    return count
+func S(n) {
+    1 + sum(1..n.ilog2, {|k|
+        2**k * almost_prime_count(n,k)
+    })
 }
 
-func S(n) {     # S(n) = Sum_{k=1..n} 2^bigomega(k)
-    1 + sum(1..n.ilog2, {|k|
-        2**k * k_prime_count(n,k)
-    })
+func T(n) {
+    n.powerful.sum {|k|
+        2**(bigomega(k) - 2*omega(k)) * dirichlet_hyperbola(
+            floor(n/k), { 1 }, { 1 }, { _ }, { _ }
+        )
+    }
 }
 
 assert_eq(
     1..100->map{|k| 2**bigomega(k) }.accumulate,
-    1..100->map(S)
+    1..100->map(S),
+)
+
+assert_eq(
+    1..100->map(S),
+    1..100->map(T),
 )
 
 for k in (1..6) {
-    say "S(10^#{k}) = #{S(10**k)}"
+
+    var a = S(10**k)
+    var b = T(10**k)
+
+    assert_eq(a,b)
+
+    say "S(10^#{k}) = #{a}"
 }
 
 __END__

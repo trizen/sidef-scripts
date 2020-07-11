@@ -22,6 +22,13 @@ class Eisenstein(a, b) {   # represents: a + b*w, where w = (-1 + i*sqrt(3))/2
 
     __CLASS__.alias_method(:add, '+')
 
+    method sub (Eisenstein z) {
+        var (c,d) = (z.a, z.b)
+        Eisenstein(a-c, b-d)
+    }
+
+    __CLASS__.alias_method(:sub, '-')
+
     method norm {
         a*a - a*b + b*b
     }

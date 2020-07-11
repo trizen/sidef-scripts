@@ -18,7 +18,7 @@
 #   https://oeis.org/A072114 -- count of 3-almost primes
 #   https://oeis.org/A082996 -- count of 4-almost primes
 
-func k_prime_count(n,k) {
+func almost_prime_count(n,k) {
 
     if (k == 1) {
         return pi(n)
@@ -47,7 +47,7 @@ func k_prime_count(n,k) {
 }
 
 for k in (1..10) {
-    say ("Count of #{'%2d' % k}-almost primes for 10^n: ", 7.of { k_prime_count(10**_, k) })
+    say ("Count of #{'%2d' % k}-almost primes for 10^n: ", 7.of { almost_prime_count(10**_, k) })
 }
 
 __END__
