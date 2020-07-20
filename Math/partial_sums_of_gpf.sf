@@ -1,0 +1,53 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 20 July 2020
+# https://github.com/trizen
+
+# Algorithm with sublinear time for computing:
+#
+#   Sum_{k=2..n} gpf(k)
+#
+# where:
+#   gpf(k) = the greatest prime factor of k
+
+# See also:
+#   https://projecteuler.net/problem=642
+
+func partial_sums_of_gpf(n) {
+
+    var t = 0
+    var s = n.isqrt
+
+    s.each_prime {|p|
+        t += p*smooth_count(idiv(n,p), p)
+    }
+
+    for (var p = s.next_prime; p <= n; p.next_prime!) {
+
+        var u = idiv(n,p)
+        var r = idiv(n,u)
+
+        t += u*sum_primes(p,r)
+        p = r
+    }
+
+    return t
+}
+
+for k in (1..7) {
+    say "S(10^#{k}) = #{partial_sums_of_gpf(10**k)}"
+}
+
+__END__
+S(10^1)  = 32
+S(10^2)  = 1915
+S(10^3)  = 135946
+S(10^4)  = 10118280
+S(10^5)  = 793111753
+S(10^6)  = 64937323262
+S(10^7)  = 5494366736156
+S(10^8)  = 476001412898167
+S(10^9)  = 41985754895017934
+S(10^10) = 3755757137823525252
+S(10^11) = 339760245382396733607

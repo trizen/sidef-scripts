@@ -10,7 +10,7 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Digamma_function
 
-define γ = Num.Y
+define γ = Num.EulerGamma
 
 func digamma(n) {
     -γ - ::sum(1 ..^ n, { |k|

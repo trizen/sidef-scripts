@@ -1,0 +1,80 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 20 July 2020
+# https://github.com/trizen
+
+# Algorithm with sublinear time for computing:
+#
+#   Sum_{k=2..n} lpf(k)
+#
+# where:
+#   lpf(k) = the lest prime factor of k
+
+# See also:
+#   https://projecteuler.net/problem=521
+
+func rough_count (n,p) {
+
+    func (n,p) {
+
+        if (p > n.isqrt) {
+            return 1
+        }
+
+        if (p == 2) {
+            return (n >> 1)
+        }
+
+        if (p == 3) {
+            var t = idiv(n,3)
+            return (t - (t >> 1))
+        }
+
+        var u = 0
+        var t = idiv(n,p)
+
+        for (var q = 2; q < p; q.next_prime!) {
+
+            var v = __FUNC__(t - (t % q), q)
+
+            if (v == 1) {
+                u += prime_count(q, p-1)
+                break
+            }
+
+            u += v
+        }
+
+        t - u
+    }(n*p, p)
+}
+
+func partial_sums_of_lpf(n) {
+
+    var t = 0
+    var s = n.isqrt
+
+    s.each_prime {|p|
+        t += p*rough_count(idiv(n,p), p)
+    }
+
+    t + sum_primes(s.next_prime, n)
+}
+
+for k in (1..6) {
+    say "S(10^#{k}) = #{partial_sums_of_lpf(10**k)}"
+}
+
+__END__
+S(10^1)  = 28
+S(10^2)  = 1257
+S(10^3)  = 79189
+S(10^4)  = 5786451
+S(10^5)  = 455298741
+S(10^6)  = 37568404989
+S(10^7)  = 3203714961609
+S(10^8)  = 279218813374515
+S(10^9)  = 24739731010688477
+S(10^10) = 2220827932427240957
+S(10^11) = 201467219561892846337

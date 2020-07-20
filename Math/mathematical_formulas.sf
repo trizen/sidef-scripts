@@ -10,7 +10,7 @@ const n = (ARGV ? Num(ARGV[0]) : 30)       # number of iterations
 
 define ℯ = Num.e
 define π = Num.pi
-define γ = Num.Y
+define γ = Num.EulerGamma
 define C = Num.C
 
 func display(r, t) {

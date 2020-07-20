@@ -31,7 +31,7 @@ func asymptotic_formula(n) {
     const c = -1.13992198618906561279972872003946000480696456161386195911639472087583455473348121357
 
     # Asymptotic formula based on Merten's theorem (1874) (see: https://oeis.org/A064608)
-    (n*zeta(2) * (log(n) + 2*Num.Y - 1 + c))
+    (n*zeta(2) * (log(n) + 2*Num.EulerGamma - 1 + c))
 }
 
 func asymptotic_formula2(n) {
@@ -40,7 +40,7 @@ func asymptotic_formula2(n) {
     const A = 1.28242712910062263687534256886979172776768892732500119206374002174040630885882646112973649195820237439420646120399
 
     # Asymptotic formula in terms of the Glaisher-Kinkelin constant
-    zeta(2) * n * (2 * (-12 * log(A) + Num.Y + log(Num.tau)) + log(n) + 2*Num.Y - 1)
+    zeta(2) * n * (2 * (-12 * log(A) + Num.EulerGamma + log(Num.tau)) + log(n) + 2*Num.EulerGamma - 1)
 }
 
 func sum_of_number_of_divisors_of_gcd (n) {

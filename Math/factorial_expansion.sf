@@ -14,7 +14,7 @@ func f(n, x, r=:floor) {
     (x * n!).(r) - n*((n-1)! * x).(r)
 }
 
-var x = Num.Y
+var x = Num.EulerGamma
 
 var a = 30.of { f(_, x) }
 var b = 30.of { f(_, x, :round) }

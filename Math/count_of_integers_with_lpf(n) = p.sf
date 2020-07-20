@@ -8,6 +8,11 @@
 #    lpf(k) = p
 # where `lpf(k)` is the least prime factor of k.
 
+# Equivalently, this is the number of p-rough numbers <= floor(n/p).
+
+# See also:
+#   https://en.wikipedia.org/wiki/Rough_number
+
 func count_with_lpf (n, p) {
 
     if (p > n.isqrt) {

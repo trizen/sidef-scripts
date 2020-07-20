@@ -26,5 +26,5 @@ while (p <= n) {
     p.next_prime!
 }
 
-var approx = exp(-Num.Y)/log(n)
+var approx = exp(-Num.EulerGamma)/log(n)
 say "#{prod.round(-10)} =~ #{approx.round(-10)}"
