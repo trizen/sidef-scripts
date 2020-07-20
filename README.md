@@ -149,6 +149,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Count of integers with lpf(n) = p](./Math/count_of_integers_with_lpf(n)%20=%20p.sf)
     * [Count of k-almost primes](./Math/count_of_k-almost_primes.sf)
     * [Count of k-powerful numbers](./Math/count_of_k-powerful_numbers.sf)
+    * [Count of rough numbers](./Math/count_of_rough_numbers.sf)
     * [Count of smooth numbers](./Math/count_of_smooth_numbers.sf)
     * [Count of square-full numbers](./Math/count_of_square-full_numbers.sf)
     * [Cousin mersenne primes lucas-lehmer](./Math/cousin_mersenne_primes_lucas-lehmer.sf)
