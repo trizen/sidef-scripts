@@ -1,0 +1,44 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 02 August 2020
+# https://github.com/trizen
+
+# A new factorization method for numbers that have prime factors close to each other.
+
+# Technically, the method is effective when the multiplicative order of the factors modulo 2, is close to each other.
+
+func order_factor(n, B = 1e6) {
+
+    var z = powmod(2, n, n)
+
+    for k in (1..B `by` 2) {
+        var t = z-powmod(2, k, n)
+        var g = gcd(t, n)
+        if (g.is_between(2, n-1)) {
+            return [k, g]
+        }
+    }
+
+    return 1
+}
+
+var p = 1e20.random_prime
+var n = (p * p.next_prime * p.next_prime.next_prime)
+
+say "Factoring: #{n}"
+say ("Found: ", order_factor(n))
+
+say ''
+
+say order_factor(1169586052690021349455126348204184925097724507)                    #=> 166585508879747
+say order_factor(61881629277526932459093227009982733523969186747)                   #=> 1233150073853267
+say order_factor(173315617708997561998574166143524347111328490824959334367069087)   #=> 173823271649325368927
+
+__END__
+Factoring: 1759590140239532167230871849749630652332178307219845847129
+Found: [295, 12072684186515582507]
+
+[945, 166585508879747]
+[105, 1233150073853267]
+[105, 173823271649325368927]

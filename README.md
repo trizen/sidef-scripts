@@ -341,6 +341,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
     * [Number to expression form](./Math/number_to_expression_form.sf)
     * [Numerical differentiation](./Math/numerical_differentiation.sf)
+    * [Order factorization method](./Math/order_factorization_method.sf)
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
     * [Partial sums of 2^bigomega(n)](./Math/partial_sums_of_2^bigomega(n).sf)
     * [Partial sums of dedekind psi function](./Math/partial_sums_of_dedekind_psi_function.sf)
