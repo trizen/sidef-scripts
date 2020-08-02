@@ -1,0 +1,95 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 02 August 2020
+# https://github.com/trizen
+
+# Compute the least Chinese signature of n with respect to the positive integers,
+# such that when the Chinese Remainder Theorem (CRT) is aplied, n is constructed.
+
+# Example:
+#   The Chinese signature of 53 is [0, 1, 2, 1, 3], which represents:
+#       53 == 0 (mod 1)
+#       53 == 1 (mod 2)
+#       53 == 2 (mod 3)
+#       53 == 1 (mod 4)
+#       53 == 3 (mod 5)
+
+# By applying the CRT, we have:
+#   chinese(Mod(0,1), Mod(1,2), Mod(2,3), Mod(1,4), Mod(3,5)) == 53
+
+func chinese_signature(n) {
+
+    var crt = Mod(0, 1)
+    var sgn = [crt.lift]
+
+    for k in (2..Inf) {
+
+        if (crt.lift == n) {
+            break
+        }
+
+        var r = Mod(n, k)
+        crt = chinese(crt, r)
+        sgn << r.lift
+    }
+
+    return sgn
+}
+
+for n in (0..50) {
+    say "#{n} = #{chinese_signature(n)}"
+}
+
+__END__
+0 = [0]
+1 = [0, 1]
+2 = [0, 0, 2]
+3 = [0, 1, 0]
+4 = [0, 0, 1]
+5 = [0, 1, 2]
+6 = [0, 0, 0, 2]
+7 = [0, 1, 1, 3]
+8 = [0, 0, 2, 0]
+9 = [0, 1, 0, 1]
+10 = [0, 0, 1, 2]
+11 = [0, 1, 2, 3]
+12 = [0, 0, 0, 0, 2]
+13 = [0, 1, 1, 1, 3]
+14 = [0, 0, 2, 2, 4]
+15 = [0, 1, 0, 3, 0]
+16 = [0, 0, 1, 0, 1]
+17 = [0, 1, 2, 1, 2]
+18 = [0, 0, 0, 2, 3]
+19 = [0, 1, 1, 3, 4]
+20 = [0, 0, 2, 0, 0]
+21 = [0, 1, 0, 1, 1]
+22 = [0, 0, 1, 2, 2]
+23 = [0, 1, 2, 3, 3]
+24 = [0, 0, 0, 0, 4]
+25 = [0, 1, 1, 1, 0]
+26 = [0, 0, 2, 2, 1]
+27 = [0, 1, 0, 3, 2]
+28 = [0, 0, 1, 0, 3]
+29 = [0, 1, 2, 1, 4]
+30 = [0, 0, 0, 2, 0]
+31 = [0, 1, 1, 3, 1]
+32 = [0, 0, 2, 0, 2]
+33 = [0, 1, 0, 1, 3]
+34 = [0, 0, 1, 2, 4]
+35 = [0, 1, 2, 3, 0]
+36 = [0, 0, 0, 0, 1]
+37 = [0, 1, 1, 1, 2]
+38 = [0, 0, 2, 2, 3]
+39 = [0, 1, 0, 3, 4]
+40 = [0, 0, 1, 0, 0]
+41 = [0, 1, 2, 1, 1]
+42 = [0, 0, 0, 2, 2]
+43 = [0, 1, 1, 3, 3]
+44 = [0, 0, 2, 0, 4]
+45 = [0, 1, 0, 1, 0]
+46 = [0, 0, 1, 2, 1]
+47 = [0, 1, 2, 3, 2]
+48 = [0, 0, 0, 0, 3]
+49 = [0, 1, 1, 1, 4]
+50 = [0, 0, 2, 2, 0]

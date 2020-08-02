@@ -123,6 +123,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Chinese factorization method](./Math/chinese_factorization_method.sf)
     * [Chinese modular exponentiation](./Math/chinese_modular_exponentiation.sf)
     * [Chinese remainder theorem](./Math/chinese_remainder_theorem.sf)
+    * [Chinese signature](./Math/chinese_signature.sf)
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Coin change](./Math/coin_change.sf)
     * [Complex modular exponentiation](./Math/complex_modular_exponentiation.sf)

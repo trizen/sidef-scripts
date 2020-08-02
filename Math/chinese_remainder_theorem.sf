@@ -11,7 +11,7 @@
 func CRT (*congruences) {
 
     var c = 0
-    var m = congruences.prod_by { _[1] }
+    var m = congruences.lcm { _[1] }
 
     for a,n in (congruences) {
 
