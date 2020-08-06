@@ -13,21 +13,28 @@
 #   https://en.wikipedia.org/wiki/Lucas_pseudoprime
 #   https://en.wikipedia.org/wiki/Miller-Rabin_primality_test
 
-func lucas_miller_factor(n, k=100) {
+func lucas_miller_factor(n, j=1, k=100) {
 
-    var D = n+1
+    var D = n+j
     var s = D.valuation(2)
     var r = s-1
     var d = D>>s
 
-    for P in (1..k) {
-        var Q = ([1,-1].rand * irand(min(1e7, n-1)))
+    for (1..k) {
+
+        var P = min(irand(1, 1e6), irand(1, n-1))
+        var Q = min(irand(1, 1e6), irand(1, n-1))*[1,-1].rand
+
+        next if is_square(P*P - 4*Q)
 
         for b in (0..r) {
-            var x = lucasUmod(P, Q, d << b, n)
-            var g = gcd(x, n)
-            if (g.is_between(2, n-1)) {
-                return g
+
+            var (U,V) = lucasUVmod(P, Q, d << b, n)
+
+            for g in (gcd(U,n), gcd(V,n), gcd(V-P,n)) {
+                if (g.is_between(2, n-1)) {
+                    return g
+                }
             }
         }
     }
@@ -38,5 +45,9 @@ func lucas_miller_factor(n, k=100) {
 say lucas_miller_factor(16641689036184776955112478816668559)
 say lucas_miller_factor(17350074279723825442829581112345759)
 say lucas_miller_factor(61881629277526932459093227009982733523969186747)
+say lucas_miller_factor(122738580838512721992324860157572874494433031849, -1)
+say lucas_miller_factor(181490268975016506576033519670430436718066889008242598463521)
 say lucas_miller_factor(173315617708997561998574166143524347111328490824959334367069087)
+say lucas_miller_factor(57981220983721718930050466285761618141354457135475808219583649146881)
 say lucas_miller_factor(2425361208749736840354501506901183117777758034612345610725789878400467)
+say lucas_miller_factor(131754870930495356465893439278330079857810087607720627102926770417203664110488210785830750894645370240615968198960237761)
