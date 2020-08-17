@@ -2,59 +2,65 @@
 
 # Author: Daniel "Trizen" Șuteu
 # Date: 21 September 2018
+# Edit: 17 August 2020
 # https://github.com/trizen
 
-# A new algorithm for generating strong Fibonacci pseudoprimes.
+# A new algorithm for generating Frobenius pseudoprimes to Fibonacci polynomial x^2 - x - 1.
 
-# See also:
+# OEIS:
 #   https://oeis.org/A081264 -- Odd Fibonacci pseudoprimes.
 #   https://oeis.org/A212424 -- Frobenius pseudoprimes with respect to Fibonacci polynomial x^2 - x - 1.
 
-func fibonacci_strong_pseudoprimes(limit) {
+# See also:
+#   https://trizenx.blogspot.com/2020/08/pseudoprimes-construction-methods-and.html
 
+func frobenius_pseudoprimes(limit, callback, P=1, Q=-1) {
+
+    var D = (P*P - 4*Q)
     var table = Hash()
 
-    for p in (limit.primes) {
-        table{ p - p.legendre(5) -> divisors.first_by {|d| fibmod(d, p) == 0 } } := [] << p
+    for p in (primes(3, limit)) {
+        table{ p - kronecker(D,p) -> divisors.first_by {|d| lucasUmod(P, Q, d, p) == 0 } } := [] << p
     }
 
-    gather {
-        table.each_v { |a|
+    table.each_v { |a|
 
-            var L = a.len
-            L > 1 || next
+        var len = a.len
+        len > 1 || next
 
-            for k in (2..L) {
-                a.subsets(k, {|*t|
-                    take(t.prod)
-                })
-            }
+        for k in (2..len) {
+            a.combinations(k, {|*t|
+                callback(t.prod)
+            })
         }
     }
 }
 
-func is_fibonacci_strong_pseudoprime(n) {
+func is_frobenius_pseudoprime(n, P=1, Q=-1) {
 
-    var l = n.legendre(5)
+    var D = (P*P - 4*Q)
+    var k = kronecker(D, n)
 
-    fibmod(n - l, n) == 0 || return false
-    fibmod(n + l, n) == 1 || return false
+    lucasUmod(P, Q, n - k, n) == 0 || return false
+    lucasUmod(P, Q, n + k, n) == 1 || return false
 
     return true
 }
 
-var pseudoprimes = fibonacci_strong_pseudoprimes(100000)
+var pseudoprimes = []
 
-pseudoprimes.each {|n|
+frobenius_pseudoprimes(10000, {|n|
 
-    assert(is_fibonacci_strong_pseudoprime(n))
+    assert(is_frobenius_pseudoprime(n))
 
-    if (n.legendre(5) == -1) {
+    if (kronecker(5, n) == -1){
         if (powmod(2, n-1, n) == 1) {
             die "Found a special pseudoprime: #{n}"
         }
     }
-}
+
+    pseudoprimes << n
+})
 
 say pseudoprimes.sort
 
