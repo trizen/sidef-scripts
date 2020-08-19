@@ -5,7 +5,7 @@
 # Edit: 17 August 2020
 # https://github.com/trizen
 
-# A new algorithm for generating Lucas pseudoprimes.
+# A new algorithm for generating super-Lucas pseudoprimes.
 
 # OEIS:
 #   https://oeis.org/A081264 -- Odd Fibonacci pseudoprimes.
@@ -40,7 +40,7 @@ func lucas_pseudoprimes(limit, callback, P=1, Q=-1) {
     }
 }
 
-func is_lucas_pseudoprime(n, P=1, Q=-1) {
+func is_weak_lucas_pseudoprime(n, P=1, Q=-1) {
 
     var D = (P*P - 4*Q)
     var k = kronecker(D, n)
@@ -52,7 +52,7 @@ var pseudoprimes = []
 
 lucas_pseudoprimes(10000, {|n|
 
-    assert(is_lucas_pseudoprime(n))
+    assert(is_weak_lucas_pseudoprime(n))
 
     if (kronecker(5,n) == -1) {
         if (powmod(2, n-1, n) == 1) {
