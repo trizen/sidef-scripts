@@ -4,15 +4,15 @@
 # Date: 31 March 2019
 # https://github.com/trizen
 
-# A new algorithm for generating Fermat pseudoprimes to base 2.
+# A new algorithm for generating Fermat super-pseudoprimes to base 2.
 
-# See also:
+# OEIS:
 #   https://oeis.org/A050217 -- Super-Poulet numbers: Poulet numbers whose divisors d all satisfy d|2^d-2.
 #   https://oeis.org/A214305 -- Fermat pseudoprimes to base 2 with two prime factors.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Fermat_pseudoprime
-#   https://trizenx.blogspot.com/2018/08/investigating-fibonacci-numbers-modulo-m.html
+#   https://trizenx.blogspot.com/2020/08/pseudoprimes-construction-methods-and.html
 
 func fermat_pseudoprimess(limit) {
 
