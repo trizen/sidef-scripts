@@ -7,24 +7,24 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Dirichlet_hyperbola_method
 
-func dirichlet_hyperbola_method(n, g = { _ }, h = { _ }) {
+func dirichlet_hyperbola_method(n,
+    g = { _ },
+    h = { _ },
+    G = {|n| sum(1..n, g) },
+    H = {|n| sum(1..n, h) }
+) {
+
     var s = n.isqrt
 
     var A = sum(1..s, {|a|
-        g(a) * sum(1..floor(n/a), {|b|
-            h(b)
-        })
+        g(a) * H(floor(n/a))
     })
 
     var B = sum(1..s, {|b|
-        h(b) * sum(1..floor(n/b), {|a|
-            g(a)
-        })
+        h(b) * G(floor(n/b))
     })
 
-    var C = (sum(1..s, {|a| g(a) }) * sum(1..s, {|b| h(b) }))
-
-    A + B - C
+    A + B - (G(s) * H(s))
 }
 
 func test_sum(n, g, h) {
