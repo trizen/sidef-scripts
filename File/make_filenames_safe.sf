@@ -24,6 +24,11 @@ f.find(
 
             if (file.is_file) {
 
+                # Ignore hidden files and directories
+                if (file.split.any { .begins_with('.') }) {
+                    return nil
+                }
+
                 # Get dirname and basename
                 var basename = file.basename
                 var dirname = file.dirname
