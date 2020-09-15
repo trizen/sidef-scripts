@@ -1,0 +1,55 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 15 September 2020
+# https://github.com/trizen
+
+# Generate "digit sum numbers" with n digits or less.
+
+# See also:
+#   https://oeis.org/A064544
+#   https://projecteuler.net/problem=725
+
+func DS(sum, arr, d, l, callback) {
+
+    if (arr.len >= l) {
+        return nil
+    }
+
+    if (sum > d) {
+        return nil
+    }
+
+    if (sum == d) {
+        for k in (0..arr.len) {
+            var copy = [arr...]
+            copy.insert(k, d)
+            callback(Num(copy.join))
+        }
+    }
+
+    for k in (0..9) {
+        if (sum + k <= d) {
+            DS(sum + k, [arr..., k], d, l, callback)
+        }
+    }
+}
+
+var DS_numbers = Set()
+
+func callback(n) {
+    DS_numbers << n
+}
+
+var n = 3       # n digits or less
+
+for k in (1..9) {
+    DS(0, [], k, n, callback)
+}
+
+say ("3DS: ", DS_numbers.sort)
+say ("Sum: ", DS_numbers.sum)
+
+__END__
+3DS: [11, 22, 33, 44, 55, 66, 77, 88, 99, 101, 110, 112, 121, 123, 132, 134, 143, 145, 154, 156, 165, 167, 176, 178, 187, 189, 198, 202, 211, 213, 220, 224, 231, 235, 242, 246, 253, 257, 264, 268, 275, 279, 286, 297, 303, 312, 314, 321, 325, 330, 336, 341, 347, 352, 358, 363, 369, 374, 385, 396, 404, 413, 415, 422, 426, 431, 437, 440, 448, 451, 459, 462, 473, 484, 495, 505, 514, 516, 523, 527, 532, 538, 541, 549, 550, 561, 572, 583, 594, 606, 615, 617, 624, 628, 633, 639, 642, 651, 660, 671, 682, 693, 707, 716, 718, 725, 729, 734, 743, 752, 761, 770, 781, 792, 808, 817, 819, 826, 835, 844, 853, 862, 871, 880, 891, 909, 918, 927, 936, 945, 954, 963, 972, 981, 990]
+Sum: 63270

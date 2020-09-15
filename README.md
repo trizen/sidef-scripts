@@ -164,6 +164,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Difference of two squares solutions](./Math/difference_of_two_squares_solutions.sf)
     * [Digamma function](./Math/digamma_function.sf)
     * [Digit-segmentation square root representation](./Math/digit-segmentation_square_root_representation.sf)
+    * [Digit-sum numbers](./Math/digit-sum_numbers.sf)
     * [Digits in base subquadratic algorithm](./Math/digits_in_base_subquadratic_algorithm.sf)
     * [Digits in base subquadratic algorithm 2](./Math/digits_in_base_subquadratic_algorithm_2.sf)
     * [Dirichlet convolution](./Math/dirichlet_convolution.sf)
