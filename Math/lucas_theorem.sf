@@ -1,0 +1,60 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date 19 September 2020
+# https://github.com/trizen
+
+# Simple implementation of Lucas's theorem, for computing binomial(n,k) mod p, for some prime p.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Lucas%27s_theorem
+
+func factorial_valuation (n,p) {
+    (n - n.digits_sum(p)) / (p-1)
+}
+
+func modular_binomial (n, k, m) {
+
+    var j    = n-k
+    var prod = 1
+
+    n.each_prime { |q|
+        var p = factorial_valuation(n, q)
+
+        if (q <= k) {
+            p -= factorial_valuation(k, q)
+        }
+
+        if (q <= j) {
+            p -= factorial_valuation(j, q)
+        }
+
+        if (p > 0) {
+            prod = mulmod(prod, powmod(q, p, m), m)
+        }
+    }
+
+    return prod
+}
+
+func lucas_theorem (n, k, p) {
+
+    return 0 if (n < k)
+
+    var Nd = n.digits(p)
+    var Kd = k.digits(p)
+
+    var prod = 1
+
+    [Nd, Kd].zip {|Nr, Kr|
+        if (Nr < Kr) {
+            return 0
+        }
+        prod = mulmod(prod, modular_binomial(Nr, Kr, p), p)
+    }
+
+    return prod
+}
+
+say lucas_theorem(1e10, 1e5, 1009)    #=> 559
+say lucas_theorem(1e18, 1e9, 2957)    #=> 2049
