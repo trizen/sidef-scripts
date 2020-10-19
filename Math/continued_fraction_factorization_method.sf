@@ -1,16 +1,21 @@
 #!/usr/bin/ruby
 
-# A simple implementation of the continued fraction factorization method.
-# (variation of the Brillhart-Morrison algorithm).
+# Daniel "Trizen" Șuteu
+# Date: 25 October 2018
+# https://github.com/trizen
+
+# Simple implementation of the continued fraction factorization method (CFRAC),
+# combined with modular arithmetic (variation of the Brillhart-Morrison algorithm).
 
 # See also:
 #   https://en.wikipedia.org/wiki/Pell%27s_equation
 #   https://en.wikipedia.org/wiki/Continued_fraction_factorization
+#   https://trizenx.blogspot.com/2018/10/continued-fraction-factorization-method.html
 
-# Parts of code inspired by:
+# "Gaussian elimination" algorithm from:
 #    https://github.com/martani/Quadratic-Sieve
 
-func gauss_elimination(A, n) {
+func gaussian_elimination(A, n) {
 
     var m = A.end
     var I = (m+1).of {|i| 1 << i }
@@ -164,18 +169,13 @@ func cffmm (n, multiplier=1) {
         A += (L - A.end + 1 -> of(0))
     }
 
-    var I  = gauss_elimination(A, L-1)
-    var LR = (A.end - A.rindex_by { !.is_zero })
-
     var rem     = n
     var factors = []
 
-    for solution in (I.last(LR)) {
+    func cfrac_find_factors(solution) {
 
         var X = 1
         var Y = 1
-
-        var done = false
 
         for i in (^Q) {
 
@@ -188,12 +188,19 @@ func cffmm (n, multiplier=1) {
 
                 if ((g > 1) && (g < rem)) {
                     rem = check_factor(rem, g, factors)
-                    if (rem == 1) { done = true; break }
+                    return true if (rem == 1)
                 }
             }
         }
 
-        break if done
+        return false
+    }
+
+    var I  = gaussian_elimination(A, L-1)
+    var LR = (A.end - A.rindex_by { !.is_zero })
+
+    for solution in (I.last(LR)) {
+        cfrac_find_factors(solution) && break
     }
 
     var final_factors = []
