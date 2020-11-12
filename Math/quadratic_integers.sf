@@ -5,7 +5,7 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Quadratic_integer
 
-class Quadratic(a, b, w = 2) {   # represents: a + b*sqrt(w), for w >= 0
+class Quadratic(a, b, w = 2) {   # represents: a + b*sqrt(w)
 
     method to_s {
         "Quadratic(#{a}, #{b}, #{w})"
@@ -78,6 +78,8 @@ class Quadratic(a, b, w = 2) {   # represents: a + b*sqrt(w), for w >= 0
     }
 }
 
+#---------------------------------------------------------------------
+
 # Determine if a given number is probably a prime number.
 func is_quadratic_pseudoprime (n, r=2) {
 
@@ -117,4 +119,42 @@ with (Quadratic(3, 4, 2)) {|q|
     var r = q.powmod(n, m)
     say gcd(r.a-1, m)       #=> 2741177
     say gcd(r.b, m)         #=> 2741177
+}
+
+#---------------------------------------------------------------------
+
+func is_gaussian_quadratic_pseudoprime(n) {
+
+    return false if (n <= 1)
+    return true  if (n <= 3)
+
+    static x = Quadratic(1, -1, -2)
+
+    given (n%8) {
+        when ([1,3]) {
+            var t = x.powmod(n-1, n)
+            (t.a==1 && t.b==0)
+        }
+        when ([5, 7]) {
+            var t = x.powmod(n+1, n)
+            (t.a==3 && t.b==0)
+        }
+        else {
+            false
+        }
+    }
+}
+
+assert([88561,107185,162401,221761,226801,334153,410041,665281,825265,1569457,1615681,2727649].all(is_gaussian_quadratic_pseudoprime))
+assert([80375707,154287451,267559627,326266051,478614067,573183451,643767931,2433943891,4297753027].all(is_gaussian_quadratic_pseudoprime))
+
+for n in (1..1e2) {
+    if (is_gaussian_quadratic_pseudoprime(n)) {
+        if (n.is_composite) {
+            say "Counter-example: #{n}"
+        }
+    }
+    elsif (n.is_prime) {
+        say "Missed prime: #{n}"
+    }
 }
