@@ -229,6 +229,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Gamma function](./Math/gamma_function.sf)
     * [Gauss logarithm approx](./Math/gauss_logarithm_approx.sf)
     * [Gaussian elimination GF2 matrix](./Math/gaussian_elimination_GF2_matrix.sf)
+    * [Gaussian integers](./Math/gaussian_integers.sf)
     * [Generalized continued fraction](./Math/generalized_continued_fraction.sf)
     * [Generalized continued fraction parts iter](./Math/generalized_continued_fraction_parts_iter.sf)
     * [Generalized expansion](./Math/generalized_expansion.sf)

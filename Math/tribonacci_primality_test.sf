@@ -32,6 +32,9 @@
 # Several counter-examples to the strong version (with possible gaps):
 #   29111881, 213035761, 1312332001, 1750412161, 8585937361, 9856290601, 19036199881, 26244842401, 35252113601, 39897898921, 58318467481, ...
 
+# See also:
+#   https://trizenx.blogspot.com/2020/01/primality-testing-algorithms.html
+
 # Matrix for p == {1,3} (mod 8)
 const A123 = Matrix(
                 [1, 0, 0],

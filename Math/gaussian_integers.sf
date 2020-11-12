@@ -1,0 +1,95 @@
+#!/usr/bin/ruby
+
+# Simple implementation of Gaussian integers.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Gaussian_integer
+
+class Gaussian(a, b) {   # represents: a + b*i
+
+    method to_s {
+        "Gaussian(#{a}, #{b})"
+    }
+
+    method reals {
+        (a,b)
+    }
+
+    method ==(Gaussian c) {
+        (a == c.a) && (b == c.b)
+    }
+
+    method conjugate {
+        Gaussian(a, -b)
+    }
+
+    method norm {
+        a*a + b*b
+    }
+
+    method add (Gaussian z) {
+        var (c,d) = (z.a, z.b)
+        Gaussian(a+c, b+d)
+    }
+
+    __CLASS__.alias_method(:add, '+')
+
+    method sub (Gaussian z) {
+        var (c,d) = (z.a, z.b)
+        Gaussian(a-c, b-d)
+    }
+
+    __CLASS__.alias_method(:sub, '-')
+
+    method mul (Gaussian z) {
+        var (c,d) = (z.a, z.b)
+        Gaussian(a*c - b*d, a*d + b*c)
+    }
+
+    __CLASS__.alias_method(:mul, '*')
+
+    method mod (Number m) {
+        Gaussian(a % m, b % m)
+    }
+
+    __CLASS__.alias_method(:mod, '%')
+
+    method pow(Number n) {
+        var x = self
+        var c = Gaussian(1, 0)
+
+        for bit in (n.digits(2)) {
+            c *= x if bit
+            x *= x
+        }
+
+        return c
+    }
+
+    __CLASS__.alias_method(:pow, '**')
+
+    method powmod(Number n, Number m) {
+
+        var x = self
+        var c = Gaussian(1, 0)
+
+        for bit in (n.digits(2)) {
+            (c *= x) %= m if bit        #=
+            (x *= x) %= m               #=
+        }
+
+        return c
+    }
+}
+
+var a = Gaussian(3,4)**10
+var b = Gaussian(3,4).powmod(97, 1234)
+
+say a
+say b
+
+# Run some tests
+assert_eq([a.reals], [reals(Gauss(3,4)**10)])
+assert_eq([b.reals], [reals(Gauss(3,4).powmod(97, 1234))])
+assert_eq([reals(a+b)], [reals(Gauss(reals(a)) + Gauss(reals(b)))])
+assert_eq([reals(a-b)], [reals(Gauss(reals(a)) - Gauss(reals(b)))])
