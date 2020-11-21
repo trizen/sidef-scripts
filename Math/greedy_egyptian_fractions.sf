@@ -1,0 +1,22 @@
+#!/usr/bin/ruby
+
+# Greedy algorithm for Egyptian fractions
+
+# See also:
+#   https://oeis.org/A001466
+#   https://en.wikipedia.org/wiki/Greedy_algorithm_for_Egyptian_fractions
+
+func egyptian_denominators(r, count=8) {
+    gather {
+        count.times {
+            r -= 1/take(ceil(1/r))
+        }
+    }
+}
+
+say egyptian_denominators(Num.pi)
+say egyptian_denominators(Num.pi).sum { 1/_ }
+
+__END__
+[1, 1, 1, 8, 61, 5020, 128541455, 162924332716605980]
+3.14159265358979323846264338327950284945450236218

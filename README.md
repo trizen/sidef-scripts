@@ -240,6 +240,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Generalized mean](./Math/generalized_mean.sf)
     * [Generalized partial sums of sigma function](./Math/generalized_partial_sums_of_sigma_function.sf)
     * [Geometric-harmonic mean](./Math/geometric-harmonic_mean.sf)
+    * [Greedy egyptian fractions](./Math/greedy_egyptian_fractions.sf)
     * [Gregory coefficients](./Math/gregory_coefficients.sf)
     * [Hamming numbers](./Math/hamming_numbers.sf)
     * [Harmonic numbers closed form](./Math/harmonic_numbers_closed_form.sf)
