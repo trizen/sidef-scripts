@@ -23,6 +23,10 @@ class Quadratic(a, b, w = 2) {   # represents: a + b*sqrt(w)
         a*a - w*b*b
     }
 
+    method add (Number c) {
+        Quadratic(a+c, b, w)
+    }
+
     method add (Quadratic z) {
         var (c,d) = (z.a, z.b)
         Quadratic(a+c, b+d, w)
@@ -30,12 +34,20 @@ class Quadratic(a, b, w = 2) {   # represents: a + b*sqrt(w)
 
     __CLASS__.alias_method(:add, '+')
 
+    method sub (Number c) {
+        Quadratic(a-c, b, w)
+    }
+
     method sub (Quadratic z) {
         var (c,d) = (z.a, z.b)
         Quadratic(a-c, b-d, w)
     }
 
     __CLASS__.alias_method(:sub, '-')
+
+    method mul (Number c) {
+        Quadratic(a*c, b*c, w)
+    }
 
     method mul (Quadratic z) {
         var (c,d) = (z.a, z.b)

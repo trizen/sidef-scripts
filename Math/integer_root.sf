@@ -8,7 +8,9 @@
 #           - by Richard P. Brent and Paul Zimmermann
 #
 
-func rootint(n, k) {
+func rootint(n, k) {        # Algorithm 1.14 RootInt
+
+    return 0 if (n == 0)
 
     var s = n
     var u = s

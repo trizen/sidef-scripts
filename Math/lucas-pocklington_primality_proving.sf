@@ -82,7 +82,7 @@ func lucas_pocklington_primality_proving(n, lim=2**64) is cached {
 
     func find_PQD() {
 
-       var l = min(1e9, n-1)
+       var l = min(1e6, n-1)
 
        loop {
             var P = (irand(1,l))
