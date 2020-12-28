@@ -1,0 +1,52 @@
+#!/usr/bin/ruby
+
+# Computing the inverse of the sigma_k(n) function, for any k >= 1.
+# Translation of invphi.gp ver. 2.1 by Max Alekseyev.
+
+# See also:
+#   https://home.gwu.edu/~maxal/gpscripts/
+
+func dynamicPreimage(N, L) {
+
+    var r = Hash(1 => [1])
+
+    L.each {|l|
+        var t = r.map {|k,v| (k, [v...]) }
+        l.each_2d {|a,b|
+            N/a -> divisors.each {|d|
+                t{a*d} := [] << (r{d} \\ [] ~S* b)...
+            }
+        }
+        r = t
+    }
+
+    r{N} \\ [] -> sort
+}
+
+func cook_sigma(N,k) {
+    var L = Hash()
+
+    N.divisors.each {|d|
+
+        next if (d == 1)
+
+        (d-1).factor_exp.map { .head }.each {|p|
+
+            var q = (d*(p**k - 1) + 1)
+            var t = valuation(q, p)
+
+            next if (t<=k || t%k || (q != p**t))
+
+            L{p} := [] << [d, p**(t/k - 1)]
+        }
+    }
+
+    L.values
+}
+
+func invsigma(N,k=1) {
+    (N == 1) ? [1] : dynamicPreimage(N, cook_sigma(N,k))
+}
+
+say invsigma(120)           #=> [54, 56, 87, 95]
+say invsigma(22100, 2)      #=> [120, 130, 141]
