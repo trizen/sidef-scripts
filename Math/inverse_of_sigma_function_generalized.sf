@@ -11,13 +11,15 @@ func dynamicPreimage(N, L) {
     var r = Hash(1 => [1])
 
     L.each {|l|
-        var t = r.map {|k,v| (k, [v...]) }
+        var t = Hash()
         l.each_2d {|a,b|
             N/a -> divisors.each {|d|
-                t{a*d} := [] << (r{d} \\ [] ~S* b)...
+                t{a*d} := [] << (r{d} ~S* b)... if r.has(d)
             }
         }
-        r = t
+        t.each {|k,v|
+            r{k} := [] << v...
+        }
     }
 
     r{N} \\ [] -> sort
