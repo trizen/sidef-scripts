@@ -261,6 +261,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Inverse of fibonacci](./Math/inverse_of_fibonacci.sf)
     * [Inverse of sigma function](./Math/inverse_of_sigma_function.sf)
     * [Inverse of sigma function generalized](./Math/inverse_of_sigma_function_generalized.sf)
+    * [Inverse of uphi function](./Math/inverse_of_uphi_function.sf)
     * [Inverse of usigma function](./Math/inverse_of_usigma_function.sf)
     * [Invmod of coprime factorials](./Math/invmod_of_coprime_factorials.sf)
     * [Is both truncatable prime](./Math/is_both_truncatable_prime.sf)

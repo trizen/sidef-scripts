@@ -1,0 +1,66 @@
+#!/usr/bin/ruby
+
+# Computing the inverse of the uphi(n) function.
+
+# See also:
+#   https://home.gwu.edu/~maxal/gpscripts/
+
+func inverse_uphi (n) {
+
+    var r = Hash(
+        1 => [1]
+    )
+
+    n.divisors.each { |d|
+
+        is_prime_power(d+1) || next
+
+        var t = Hash()
+        var v = d+1
+
+        (n/d).divisors.each {|f|
+            t{f*d} := [] << r{f}.grep { .is_coprime(v) }.map{ _ * v }... if r.has(f)
+        }
+
+        t.each { |i,v|
+            r{i} := [] << v...
+        }
+    }
+
+    return [] if !r.contains(n)
+    return r{n}.sort
+}
+
+for n in (1..50) {
+    var arr = inverse_uphi(n) || next
+    say "uphi−¹(#{n}) = [#{arr.join(', ')}]";
+}
+
+__END__
+uphi−¹(1) = [1, 2]
+uphi−¹(2) = [3, 6]
+uphi−¹(3) = [4]
+uphi−¹(4) = [5, 10]
+uphi−¹(6) = [7, 12, 14]
+uphi−¹(7) = [8]
+uphi−¹(8) = [9, 15, 18, 30]
+uphi−¹(10) = [11, 22]
+uphi−¹(12) = [13, 20, 21, 26, 42]
+uphi−¹(14) = [24]
+uphi−¹(15) = [16]
+uphi−¹(16) = [17, 34]
+uphi−¹(18) = [19, 28, 38]
+uphi−¹(20) = [33, 66]
+uphi−¹(22) = [23, 46]
+uphi−¹(24) = [25, 35, 36, 39, 50, 60, 70, 78]
+uphi−¹(26) = [27, 54]
+uphi−¹(28) = [29, 40, 58]
+uphi−¹(30) = [31, 44, 48, 62]
+uphi−¹(31) = [32]
+uphi−¹(32) = [45, 51, 90, 102]
+uphi−¹(36) = [37, 52, 57, 74, 84, 114]
+uphi−¹(40) = [41, 55, 82, 110]
+uphi−¹(42) = [43, 56, 86]
+uphi−¹(44) = [69, 138]
+uphi−¹(46) = [47, 94]
+uphi−¹(48) = [49, 63, 65, 68, 75, 98, 105, 126, 130, 150, 210]
