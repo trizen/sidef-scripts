@@ -1,0 +1,65 @@
+#!/usr/bin/ruby
+
+# Computing the inverse of the usigma(n) function.
+
+# See also:
+#   https://home.gwu.edu/~maxal/gpscripts/
+
+func inverse_usigma (n) {
+
+    var r = Hash(
+        1 => [1]
+    )
+
+    n.divisors.each { |d|
+
+        is_prime_power(d-1) || next
+
+        var t = Hash()
+        var v = d-1
+
+        (n/d).divisors.each {|f|
+            t{f*d} := [] << r{f}.grep { .is_coprime(v) }.map{ _ * v }... if r.has(f)
+        }
+
+        t.each { |i,v|
+            r{i} := [] << v...
+        }
+    }
+
+    return [] if !r.contains(n)
+    return r{n}.sort
+}
+
+for n in (1..50) {
+    var arr = inverse_usigma(n) || next
+    say "usigma−¹(#{n}) = [#{arr.join(', ')}]";
+}
+
+__END__
+usigma−¹(1) = [1]
+usigma−¹(3) = [2]
+usigma−¹(4) = [3]
+usigma−¹(5) = [4]
+usigma−¹(6) = [5]
+usigma−¹(8) = [7]
+usigma−¹(9) = [8]
+usigma−¹(10) = [9]
+usigma−¹(12) = [6, 11]
+usigma−¹(14) = [13]
+usigma−¹(17) = [16]
+usigma−¹(18) = [10, 17]
+usigma−¹(20) = [12, 19]
+usigma−¹(24) = [14, 15, 23]
+usigma−¹(26) = [25]
+usigma−¹(28) = [27]
+usigma−¹(30) = [18, 20, 29]
+usigma−¹(32) = [21, 31]
+usigma−¹(33) = [32]
+usigma−¹(36) = [22, 24]
+usigma−¹(38) = [37]
+usigma−¹(40) = [28]
+usigma−¹(42) = [26, 41]
+usigma−¹(44) = [43]
+usigma−¹(48) = [33, 35, 47]
+usigma−¹(50) = [36, 49]
