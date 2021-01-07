@@ -6,16 +6,25 @@
 
 # A new factorization method, inspired by Fermat's Little Theorem (FLT), for numbers that have prime factors close to each other.
 
-func FLT_factor(n, B = 1e6) {
+func FLT_factor(n, base = 2, tries = 1e4) {
 
-    var z = powmod(2, n, n)
+    var z = powmod(base, n, n)
+    var w = base
+    var u = base*base
 
-    for k in (1..B `by` 2) {
-        var t = z-powmod(2, k, n)
-        var g = gcd(t, n)
+    if (z == base) {    # can't factor Fermat pseudoprimes
+        return 1
+    }
+
+    tries.times {
+
+        var g = gcd(z - w, n)
+
         if (g.is_between(2, n-1)) {
             return g
         }
+
+        w.mulmod!(u, n)
     }
 
     return 1
@@ -29,6 +38,7 @@ say ("Factor found: ", FLT_factor(n))
 
 say ''
 
+say FLT_factor(2**64 + 1, 3)                                                      #=> 274177
 say FLT_factor(1169586052690021349455126348204184925097724507)                    #=> 166585508879747
 say FLT_factor(61881629277526932459093227009982733523969186747)                   #=> 1233150073853267
 say FLT_factor(173315617708997561998574166143524347111328490824959334367069087)   #=> 173823271649325368927
