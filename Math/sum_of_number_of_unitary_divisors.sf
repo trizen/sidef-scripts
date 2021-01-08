@@ -32,53 +32,52 @@ func asymptotic_formula(n) {
     (n/zeta(2)) * (log(n) + 2*Num.EulerGamma - 1 - c)
 }
 
-func unitary_divisors_partial_sum_1 (n) {      # O(sqrt(n)) complexity
+func usigma0_partial_sum_1 (n) {      # O(sqrt(n)) complexity
 
     var total = 0
 
     var s = n.isqrt
-    var u = int(n/(s+1))
+    var u = idiv(n, s+1)
 
     var prev = squarefree_count(n)
 
     for k in (1..s) {
-        var curr = squarefree_count(int(n/(k+1)))
+        var curr = squarefree_count(idiv(n, k+1))
         total += (prev - curr)*k
         prev = curr
     }
 
-    moebius(0, u).each_kv { |k,v|
-        total += int(n/k) if v
+    u.each_squarefree {|k|
+        total += idiv(n, k)
     }
 
     return total
 }
 
-func unitary_divisors_partial_sum_2 (n) {      # based on formula by Jerome Raulin (https://oeis.org/A064608)
+func usigma0_partial_sum_2 (n) {      # based on formula by Jerome Raulin (https://oeis.org/A064608)
 
     var total = 0
 
-    moebius(0, n.isqrt).each_kv { |k,v|
+    n.isqrt.each_squarefree {|k|
 
-        if (v) {
-            var t = 2*sum(1..isqrt(n/(k*k)), {|j|
-                int(n / (j*k*k))
-            })
+        var v = moebius(k)
+        var t = 2*sum(1..isqrt(idiv(n, k*k)), {|j|
+            idiv(n, j*k*k)
+        })
 
-            total += v*(t - isqrt(n/(k*k))**2)
-        }
+        total += v*(t - isqrt(idiv(n, k*k))**2)
     }
 
     return total
 }
 
-say 20.of(unitary_divisors_partial_sum_1)
-say 20.of(unitary_divisors_partial_sum_2)
+say 20.of(usigma0_partial_sum_1)
+say 20.of(usigma0_partial_sum_2)
 
 for k in (0..7) {
 
     var n = 10**k
-    var t = unitary_divisors_partial_sum_1(n)
+    var t = usigma0_partial_sum_1(n)
     var u = asymptotic_formula(n)
 
     printf("a(10^%s) = %10s ~ %-15s -> %s\n", k, t, u.round(-2), t/u)

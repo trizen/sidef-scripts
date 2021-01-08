@@ -362,6 +362,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Partial sums of inverse moebius transform of dedekind function](./Math/partial_sums_of_inverse_moebius_transform_of_dedekind_function.sf)
     * [Partial sums of jordan totient function](./Math/partial_sums_of_jordan_totient_function.sf)
     * [Partial sums of jordan totient function times k to the m](./Math/partial_sums_of_jordan_totient_function_times_k_to_the_m.sf)
+    * [Partial sums of lcm count function](./Math/partial_sums_of_lcm_count_function.sf)
     * [Partial sums of lpf](./Math/partial_sums_of_lpf.sf)
     * [Partial sums of prime bigomega function](./Math/partial_sums_of_prime_bigomega_function.sf)
     * [Partial sums of prime omega function](./Math/partial_sums_of_prime_omega_function.sf)

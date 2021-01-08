@@ -1,0 +1,64 @@
+#!/usr/bin/ruby
+
+# Let f(n) be the number of couples (x,y) with x and y positive integers, x ≤ y and the least common multiple of x and y equal to n.
+
+# Formula for f(n) = A007875(n), with f(1) = 1, for n > 1 (due to Vladeta Jovovic, Jan 25 2002):
+#   f(n) = (1/2)*Sum_{d|n} abs(mu(d))
+#        = 2^(omega(n)-1)
+#        = usigma_0(n)/2
+
+# This script implements a sub-linear algorithm for computing partial sums of f(n):
+#   S(n) = Sum_{k=1..n} f(k)
+
+# See also:
+#   https://oeis.org/A007875
+#   https://oeis.org/A064608
+
+# Problem from:
+#   https://projecteuler.net/problem=379
+
+# Several values for S(10^n):
+#   S(10^1) = 29
+#   S(10^2) = 647
+#   S(10^3) = 11751
+#   S(10^4) = 186991
+#   S(10^5) = 2725630
+#   S(10^6) = 37429395
+#   S(10^7) = 492143953
+#   S(10^8) = 6261116500
+#   S(10^9) = 77619512018
+
+func usigma0_partial_sum (n) {      # O(sqrt(n)) complexity
+
+    var total = 0
+
+    var s = n.isqrt
+    var u = idiv(n, s+1)
+
+    var prev = squarefree_count(n)
+
+    for k in (1..s) {
+        var curr = squarefree_count(idiv(n, k+1))
+        total += (prev - curr)*k
+        prev = curr
+    }
+
+    u.each_squarefree {|k|
+        total += idiv(n, k)
+    }
+
+    return total
+}
+
+func S(n) {
+    dirichlet_sum(n,
+        {|k| (k == 1) ? 1 : usigma0(k)/2  },        # f(n)
+        { 1 },
+        {|k| (usigma0_partial_sum(k)-1)/2 },        # partial sums of f(n)
+        { _ }
+    )
+}
+
+for k in (1..5) {
+    say "S(10^#{k}) = #{S(10**k)}"
+}
