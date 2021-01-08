@@ -2,13 +2,18 @@
 
 # Let f(n) be the number of couples (x,y) with x and y positive integers, x ≤ y and the least common multiple of x and y equal to n.
 
-# Formula for f(n) = A007875(n), with f(1) = 1, for n > 1 (due to Vladeta Jovovic, Jan 25 2002):
-#   f(n) = (1/2)*Sum_{d|n} abs(mu(d))
+# Let a(n) = A007875(n), with a(1) = 1, for n > 1 (due to Vladeta Jovovic, Jan 25 2002):
+#   a(n) = (1/2)*Sum_{d|n} abs(mu(d))
 #        = 2^(omega(n)-1)
 #        = usigma_0(n)/2
 
-# This script implements a sub-linear algorithm for computing partial sums of f(n):
+# This gives us f(n) as:
+#   f(n) = Sum_{d|n} a(d)
+
+# This script implements a sub-linear formula for computing partial sums of f(n):
 #   S(n) = Sum_{k=1..n} f(k)
+#        = Sum_{k=1..n} Sum_{d|k} a(d)
+#        = Sum_{k=1..n} a(k) * floor(n/k)
 
 # See also:
 #   https://oeis.org/A007875
@@ -52,9 +57,9 @@ func usigma0_partial_sum (n) {      # O(sqrt(n)) complexity
 
 func S(n) {
     dirichlet_sum(n,
-        {|k| (k == 1) ? 1 : usigma0(k)/2  },        # f(n)
+        {|k| (k == 1) ? 1 : usigma0(k)/2  },        # a(n)
         { 1 },
-        {|k| (usigma0_partial_sum(k)-1)/2 },        # partial sums of f(n)
+        {|k| (usigma0_partial_sum(k)-1)/2 },        # partial sums of a(n)
         { _ }
     )
 }
