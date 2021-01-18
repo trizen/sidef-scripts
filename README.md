@@ -372,6 +372,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Partial sums recursive sublinear formula](./Math/partial_sums_recursive_sublinear_formula.sf)
     * [Partial sums recursive sublinear formula general](./Math/partial_sums_recursive_sublinear_formula_general.sf)
     * [Partial sums sublinear formula](./Math/partial_sums_sublinear_formula.sf)
+    * [Partition function](./Math/partition_function.sf)
     * [Pell-holf factorization](./Math/pell-holf_factorization.sf)
     * [Pell factorization](./Math/pell_factorization.sf)
     * [Pell method for square roots](./Math/pell_method_for_square_roots.sf)
