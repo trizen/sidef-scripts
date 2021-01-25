@@ -4,6 +4,8 @@
 #   x^2 == n (mod p)
 # where p is an odd prime.
 
+# This implementation uses quadratic integers.
+
 # See also:
 #   https://en.wikipedia.org/wiki/Cipolla's_algorithm
 #   https://rosettacode.org/wiki/Cipolla%27s_algorithm
@@ -12,30 +14,17 @@ func cipolla(n, p) {
 
     legendre(n, p) == 1 || return nil
 
-    var (a = 0, ω2 = 0)
-    loop {
-        ω2 = ((a*a - n) % p)
-        if (kronecker(ω2, p) == -1) {
-            break
-        }
-        ++a
-    }
+    var (a, ω) = (
+        0..Inf -> lazy.map {|a|
+            [a, submod(a*a, n, p)]
+        }.first_by {|t|
+            kronecker(t[1], p) == -1
+        }...
+    )
 
-    struct point { x, y }
+    var r = lift(Mod(Quadratic(a, 1, ω), p)**((p+1)>>1))
 
-    func mul(a, b) {
-        point((a.x*b.x + a.y*b.y*ω2) % p, (a.x*b.y + b.x*a.y) % p)
-    }
-
-    var r = point(1, 0)
-    var s = point(a, 1)
-
-    for (var n = ((p+1) >> 1); n > 0; n >>= 1) {
-        r = mul(r, s) if n.is_odd
-        s = mul(s, s)
-    }
-
-    r.y == 0 ? r.x : nil
+    r.b == 0 ? r.a : nil
 }
 
 var tests = [
