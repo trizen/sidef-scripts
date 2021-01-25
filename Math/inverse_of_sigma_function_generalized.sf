@@ -34,13 +34,13 @@ func dynamicMin(N, L) {
             N/a -> divisors.each {|d|
                 if (r.has(d)) {
                     var k = a*d
-                    t{k} := k -> min!(r{d}*b)
+                    t{k} := Inf -> min!(r{d}*b)
                 }
             }
         }
 
         t.each {|k,v|
-            r{k} := v -> min!(v)
+            r{k} := Inf -> min!(v)
         }
     }
 
