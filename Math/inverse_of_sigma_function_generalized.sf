@@ -25,6 +25,50 @@ func dynamicPreimage(N, L) {
     r{N} \\ [] -> sort
 }
 
+func dynamicMin(N, L) {
+    var r = Hash(1 => 1)
+
+    L.each {|l|
+        var t = Hash()
+        l.each_2d {|a,b|
+            N/a -> divisors.each {|d|
+                if (r.has(d)) {
+                    var k = a*d
+                    t{k} := k -> min!(r{d}*b)
+                }
+            }
+        }
+
+        t.each {|k,v|
+            r{k} := v -> min!(v)
+        }
+    }
+
+    r{N}
+}
+
+func dynamicMax(N, L) {
+    var r = Hash(1 => 1)
+
+    L.each {|l|
+        var t = Hash()
+        l.each_2d {|a,b|
+            N/a -> divisors.each {|d|
+                if (r.has(d)) {
+                    var k = d*a
+                    t{k} := 0 -> max!(r{d}*b)
+                }
+            }
+        }
+
+        t.each {|k,v|
+            r{k} := 0 -> max!(v)
+        }
+    }
+
+    r{N}
+}
+
 func cook_sigma(N,k) {
     var L = Hash()
 
@@ -46,9 +90,20 @@ func cook_sigma(N,k) {
     L.values
 }
 
-func invsigma(N,k=1) {
-    (N == 1) ? [1] : dynamicPreimage(N, cook_sigma(N,k))
+func inverse_sigma(N,k=1) {
+    dynamicPreimage(N, cook_sigma(N,k))
 }
 
-say invsigma(120)           #=> [54, 56, 87, 95]
-say invsigma(22100, 2)      #=> [120, 130, 141]
+func inverse_sigma_min(N,k=1) {
+    dynamicMin(N, cook_sigma(N,k))
+}
+
+func inverse_sigma_max(N,k=1) {
+    dynamicMax(N, cook_sigma(N,k))
+}
+
+say inverse_sigma(120)           #=> [54, 56, 87, 95]
+say inverse_sigma(22100, 2)      #=> [120, 130, 141]
+
+say inverse_sigma_min(10!)      #=> 876960
+say inverse_sigma_max(10!)      #=> 3624941

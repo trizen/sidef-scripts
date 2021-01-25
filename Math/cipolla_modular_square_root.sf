@@ -89,3 +89,6 @@ assert_eq(cipolla_sqrtmod(436, 1752), 1010)
 
 say cipolla_sqrtmod(544, 800)       #=> Mod(512, 800)
 say cipolla_sqrtmod(436, 1752)      #=> Mod(1010, 1752)
+
+#~ say sqrtmod(17640, 48465)
+#~ say cipolla_sqrtmod(17640, 48465)
