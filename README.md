@@ -126,6 +126,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Chinese signature](./Math/chinese_signature.sf)
     * [Cipolla algorithm](./Math/cipolla_algorithm.sf)
     * [Cipolla algorithm simple](./Math/cipolla_algorithm_simple.sf)
+    * [Cipolla modular square root](./Math/cipolla_modular_square_root.sf)
     * [Coin change](./Math/coin_change.sf)
     * [Complex modular exponentiation](./Math/complex_modular_exponentiation.sf)
     * [Complex modular multiplicative inverse](./Math/complex_modular_multiplicative_inverse.sf)

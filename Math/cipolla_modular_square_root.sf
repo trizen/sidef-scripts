@@ -1,0 +1,91 @@
+#!/usr/bin/ruby
+
+# Cipolla's algorithm, for solving a congruence of the form:
+#   x^2 == n (mod m)
+
+# This implementation uses quadratic integers.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Cipolla's_algorithm
+#   https://rosettacode.org/wiki/Cipolla%27s_algorithm
+
+func cipolla(n, m) {  # m must be a prime power
+
+    var p = m.perfect_root
+    var k = m.perfect_power
+
+    n = (n % m)
+
+    if (n == 0) {
+        return Mod(0, m)
+    }
+
+    if (p == 2) {
+
+        if (k == 1) {
+            return Mod((n.is_odd ? 1 : 0), 2)
+        }
+
+        if (k == 2) {
+            return Mod((n.is_congruent(1, 4) ? 1 : 0), 4)
+        }
+
+        # n.is_congruent(1, 8) || return nil
+
+        var r = lift(__FUNC__(n, 1<<(k-1)))
+        var t = (((r*r - n) >> (k-1) % 2) << (k-2) + r)
+
+        return Mod(t, 1<<k)
+    }
+
+    p.is_prime && p.is_odd || return nil
+    legendre(n, p) == 1    || return nil
+
+    var (a, ω) = (
+        0..Inf -> lazy.map {|a|
+            [a, submod(a*a, n, p)]
+        }.first_by {|t|
+            kronecker(t[1], p) == -1
+        }...
+    )
+
+    var r = lift(Mod(Quadratic(a, 1, ω), p)**((p+1)>>1))
+
+    r.b == 0 || return nil
+    assert_eq(Mod(r.a, p)**2, n)
+
+    var a = Mod(r.a, m)
+
+    while (a**2 != n) {
+        a = (a/2 + n/(2*a))
+    }
+
+    return a
+}
+
+func cipolla_sqrtmod(a, m) {    # m can be any positive integer
+
+    return 0 if (m == 1)
+
+    var congruences = m.factor_map {|p,e|
+        cipolla(a, p**e) \\ return NaN
+    }
+
+    var r = chinese(congruences...)
+    r**2 == a || return NaN
+    return r
+}
+
+assert_eq(cipolla(10, 13), 6)
+assert_eq(cipolla(10, 13**2), 32)
+assert_eq(cipolla(10, 13**3), 1046)
+assert_eq(cipolla(10, 13**4), 9834)
+
+assert_eq(cipolla_sqrtmod(44, 43*97), 3224)
+assert_eq(cipolla_sqrtmod(938, 1771), 721)
+assert_eq(cipolla_sqrtmod(1313, 3808), 1409)
+assert_eq(cipolla_sqrtmod(544, 800), 512)
+assert_eq(cipolla_sqrtmod(436, 1752), 1010)
+
+say cipolla_sqrtmod(544, 800)       #=> Mod(512, 800)
+say cipolla_sqrtmod(436, 1752)      #=> Mod(1010, 1752)
