@@ -1,0 +1,211 @@
+#!/usr/bin/ruby
+
+# Computing the inverse of some multiplicative functions.
+# Translation of invphi.gp ver. 2.1 by Max Alekseyev.
+
+# See also:
+#   https://home.gwu.edu/~maxal/gpscripts/
+
+func dynamicPreimage(N, L, unitary = false) {
+
+    var r = Hash(1 => [1])
+
+    L.each {|l|
+        var t = Hash()
+        l.each_2d {|a,b|
+            N/a -> divisors.each {|d|
+                t{a*d} := [] << ((unitary ? r{d}.grep{.is_coprime(b)} : r{d}) ~S* b)... if r.has(d)
+            }
+        }
+        t.each {|k,v|
+            r{k} := [] << v...
+        }
+    }
+
+    r{N} \\ [] -> sort
+}
+
+func dynamicMin(N, L) {
+    var r = Hash(1 => 1)
+
+    L.each {|l|
+        var t = Hash()
+        l.each_2d {|a,b|
+            N/a -> divisors.each {|d|
+                if (r.has(d)) {
+                    var k = a*d
+                    t{k} := Inf -> min!(r{d}*b)
+                }
+            }
+        }
+        t.each {|k,v|
+            r{k} := Inf -> min!(v)
+        }
+    }
+
+    r{N}
+}
+
+func dynamicMax(N, L) {
+    var r = Hash(1 => 1)
+
+    L.each {|l|
+        var t = Hash()
+        l.each_2d {|a,b|
+            N/a -> divisors.each {|d|
+                if (r.has(d)) {
+                    var k = a*d
+                    t{k} := 0 -> max!(r{d}*b)
+                }
+            }
+        }
+        t.each {|k,v|
+            r{k} := 0 -> max!(v)
+        }
+    }
+
+    r{N}
+}
+
+func cook_sigma(N,k) {
+    var L = Hash()
+
+    N.divisors.each {|d|
+
+        next if (d == 1)
+
+        (d-1).factor_exp.map { .head }.each {|p|
+
+            var q = (d*(p**k - 1) + 1)
+            var t = valuation(q, p)
+
+            next if (t<=k || t%k || (q != p**t))
+
+            L{p} := [] << [d, p**(t/k - 1)]
+        }
+    }
+
+    L.values
+}
+
+func cook_phi(N) {
+    var L = Hash()
+
+    N.divisors.each {|d|
+
+        var p = d+1 -> is_prime || next
+        var v = N.valuation(p)
+
+        L{p} := [] << {|k| [d*(p**(k-1)), p**k] }.map(1 .. v+1)...
+    }
+
+    L.values
+}
+
+func cook_psi(N) {
+    var L = Hash()
+
+    N.divisors.each {|d|
+
+        var p = d-1 -> is_prime || next
+        var v = N.valuation(p)
+
+        L{p} := [] << {|k| [d*(p**(k-1)), p**k] }.map(1 .. v+1)...
+    }
+
+    L.values
+}
+
+func cook_usigma(N) {
+    gather {
+        N.divisors.each {|d|
+            take([[d, d-1]]) if is_prime_power(d-1)
+        }
+    }
+}
+
+func cook_uphi(N) {
+    gather {
+        N.divisors.each {|d|
+            take([[d, d+1]]) if is_prime_power(d+1)
+        }
+    }
+}
+
+# Inverse of sigma function
+
+func inverse_sigma(N,k=1) {
+    dynamicPreimage(N, cook_sigma(N,k))
+}
+
+func inverse_sigma_min(N,k=1) {
+    dynamicMin(N, cook_sigma(N,k))
+}
+
+func inverse_sigma_max(N,k=1) {
+    dynamicMax(N, cook_sigma(N,k))
+}
+
+# Inverse of Euler phi function
+
+func inverse_phi(N) {
+    dynamicPreimage(N, cook_phi(N))
+}
+
+func inverse_phi_min(N) {
+    dynamicMin(N, cook_phi(N))
+}
+
+func inverse_phi_max(N) {
+    dynamicMax(N, cook_phi(N))
+}
+
+# Inverse of Dedekind psi function
+
+func inverse_psi(N) {
+    dynamicPreimage(N, cook_psi(N))
+}
+
+func inverse_psi_min(N) {
+    dynamicMin(N, cook_psi(N))
+}
+
+func inverse_psi_max(N) {
+    dynamicMax(N, cook_psi(N))
+}
+
+# Inverse of unitary sigma function
+
+func inverse_usigma(N) {
+    dynamicPreimage(N, cook_usigma(N), unitary: true)
+}
+
+# Inverse of unitary phi function
+
+func inverse_uphi(N) {
+    dynamicPreimage(N, cook_uphi(N), unitary: true)
+}
+
+say inverse_sigma(120)           #=> [54, 56, 87, 95]
+say inverse_sigma(22100, 2)      #=> [120, 130, 141]
+
+say inverse_sigma_min(10!)      #=> 876960
+say inverse_sigma_max(10!)      #=> 3624941
+
+with (5040) {|n|
+    assert_eq(inverse_usigma(n), n.inverse_usigma)
+    assert_eq(inverse_uphi(n), n.inverse_uphi)
+    assert_eq(inverse_phi(n), n.inverse_phi)
+    assert_eq(inverse_psi(n), n.inverse_psi)
+}
+
+with (9!) {|n|
+    assert_eq(inverse_sigma(n).min, inverse_sigma_min(n))
+    assert_eq(inverse_sigma(n).max, inverse_sigma_max(n))
+
+    assert_eq(inverse_phi(n).min, inverse_phi_min(n))
+    assert_eq(inverse_phi(n).max, inverse_phi_max(n))
+
+    assert_eq(inverse_psi(n).min, inverse_psi_min(n))
+    assert_eq(inverse_psi(n).max, inverse_psi_max(n))
+}
