@@ -17,13 +17,13 @@ func cipolla(n, m) {  # m must be a prime power
 
     n = (n % m)
 
-    if (n == 0) {
+    if (n == 0) {   # p^k divides n
         #return Mod(0, m)
         return Mod(0, p**(k/2))          if k.is_even
         return Mod(0, p**((k-1)/2 + 1))
     }
 
-    if (n % p == 0) {
+    if (n % p == 0) {   # p divides n
         var r = gcd(n, p**k).valuation(p)
 
         return nil if r.is_odd
@@ -53,8 +53,7 @@ func cipolla(n, m) {  # m must be a prime power
 
         n.is_congruent(1, 8) || return nil
 
-        #return __FUNC__(n, 1 << (k-1))
-        return Mod(lift(__FUNC__(n, 1 << (k-1)) \\ return nil), m)
+        return __FUNC__(n, 1 << (k-1))
     }
 
     p.is_prime && p.is_odd || return nil
@@ -90,23 +89,49 @@ func cipolla_sqrtmod(a, m) {    # m can be any positive integer
         cipolla(a, p**e) \\ return NaN
     }
 
-    var r = Mod(lift(chinese(congruences...)), m)
+    var r = chinese(congruences...)
     r**2 == a || return NaN
+
+    with (Mod(r.lift, m)) {|r|
+        return r if (r**2 == a)
+    }
+
+    # TODO: lift solution to (mod m)
+
     return r
 }
+
+say cipolla_sqrtmod(544, 800)       #=> Mod(112, 800)
+say cipolla_sqrtmod(436, 1752)      #=> Mod(134, 1752)
+say cipolla_sqrtmod(17640, 48465)   #=> Mod(2865, 48465)
+
+# Run some tests
 
 assert_eq(cipolla(10, 13), 6)
 assert_eq(cipolla(10, 13**2), 32)
 assert_eq(cipolla(10, 13**3), 1046)
 assert_eq(cipolla(10, 13**4), 9834)
 
-assert_eq(cipolla_sqrtmod(44, 43*97), 3224)
-assert_eq(cipolla_sqrtmod(938, 1771), 721)
-assert_eq(cipolla_sqrtmod(1313, 3808), 1409)
-assert_eq(cipolla_sqrtmod(544, 800), 112)
-assert_eq(cipolla_sqrtmod(436, 1752), 134)
-assert_eq(cipolla_sqrtmod(17640, 48465), 2865)
+assert_eq(cipolla_sqrtmod(   44, 43*97)**2, 44)
+assert_eq(cipolla_sqrtmod(  938,  1771)**2, 938)
+assert_eq(cipolla_sqrtmod( 1313,  3808)**2, 1313)
+assert_eq(cipolla_sqrtmod(  544,   800)**2, 544)
+assert_eq(cipolla_sqrtmod(  436,  1752)**2, 436)
+assert_eq(cipolla_sqrtmod(17640, 48465)**2, 17640)
 
-say cipolla_sqrtmod(544, 800)       #=> Mod(112, 800)
-say cipolla_sqrtmod(436, 1752)      #=> Mod(134, 1752)
-say cipolla_sqrtmod(17640, 48465)   #=> Mod(2865, 48465)
+assert_eq(cipolla_sqrtmod(1386, 3942)**2, 1386)
+assert_eq(cipolla_sqrtmod(1548, 6669)**2, 1548)
+assert_eq(cipolla_sqrtmod(  25, 8375)**2, 25)
+
+assert_eq(cipolla_sqrtmod(969,  7024)**2, 969)
+assert_eq(cipolla_sqrtmod(2644, 7440)**2, 2644)
+assert_eq(cipolla_sqrtmod(2209, 7552)**2, 2209)
+assert_eq(cipolla_sqrtmod(6417, 7584)**2, 6417)
+assert_eq(cipolla_sqrtmod(1681, 7936)**2, 1681)
+assert_eq(cipolla_sqrtmod(4825, 8064)**2, 4825)
+assert_eq(cipolla_sqrtmod(1081, 8208)**2, 1081)
+assert_eq(cipolla_sqrtmod(1681, 8416)**2, 1681)
+assert_eq(cipolla_sqrtmod(3364, 8568)**2, 3364)
+assert_eq(cipolla_sqrtmod(2009, 9344)**2, 2009)
+assert_eq(cipolla_sqrtmod(2209, 9536)**2, 2209)
+assert_eq(cipolla_sqrtmod(7409, 9952)**2, 7409)
