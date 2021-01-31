@@ -28,15 +28,15 @@
 #   4765950001, 104510424961, 373523673601, 1240013784241, 4575844294561, 4866233601601
 
 # See also:
-#   https://en.wikipedia.org/wiki/Quaternion
+#   https://en.wikipedia.org/wiki/QuaternionInteger
 
-class Quaternion(a, b=0, c=0, d=0) {
+class QuaternionInteger(a, b=0, c=0, d=0) {
 
     method to_s {
-        "Quaternion(#{a}, #{b}, #{c}, #{d})"
+        "QuaternionInteger(#{a}, #{b}, #{c}, #{d})"
     }
 
-    method ==(Quaternion z) {
+    method ==(QuaternionInteger z) {
         (a == z.a) && (b == z.b) && (c == z.c) && (d == z.d)
     }
 
@@ -62,7 +62,7 @@ class Quaternion(a, b=0, c=0, d=0) {
             )
         }
 
-        return Quaternion(a2,b2,c2,d2)
+        return QuaternionInteger(a2,b2,c2,d2)
     }
 }
 
@@ -79,13 +79,13 @@ func quaternion_primality_test(n, tries = 3) {
         return n.is_prime
     }
 
-    var z = Quaternion(a,b,c,d)
+    var z = QuaternionInteger(a,b,c,d)
     var r = z.powmod(n,n)
 
     (
         (r == z) ||
-        (r == Quaternion(a)) ||
-        (r == Quaternion(a, n-b, n-c, n-d))
+        (r == QuaternionInteger(a)) ||
+        (r == QuaternionInteger(a, n-b, n-c, n-d))
     ) && (
         (tries > 0) ? __FUNC__(n, tries-1) : true
     )

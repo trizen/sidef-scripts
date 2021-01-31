@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+7#!/usr/bin/ruby
 
 # Simple implementation of quaternion integers.
 
@@ -88,7 +88,7 @@ var m = (2**64 + 1)
 
 with (Quaternion(2,3,4,5)) {|q|
     var r = q.powmod(n, m)
-    say gcd(r.b, m)         #=> 2741177
-    say gcd(r.c, m)         #=> 2741177
-    say gcd(r.d, m)         #=> 2741177
+    say gcd(r.b, m)         #=> 274177
+    say gcd(r.c, m)         #=> 274177
+    say gcd(r.d, m)         #=> 274177
 }

@@ -5,18 +5,18 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Quadratic_integer
 
-class Quadratic(a, b, w = 2) {   # represents: a + b*sqrt(w)
+class QuadraticInteger(a, b, w = 2) {   # represents: a + b*sqrt(w)
 
     method to_s {
-        "Quadratic(#{a}, #{b}, #{w})"
+        "QuadraticInteger(#{a}, #{b}, #{w})"
     }
 
-    method ==(Quadratic c) {
+    method ==(QuadraticInteger c) {
         (a == c.a) && (b == c.b) && (w == c.w)
     }
 
     method conjugate {
-        Quadratic(a, -b, w)
+        QuadraticInteger(a, -b, w)
     }
 
     method norm {
@@ -24,47 +24,47 @@ class Quadratic(a, b, w = 2) {   # represents: a + b*sqrt(w)
     }
 
     method add (Number c) {
-        Quadratic(a+c, b, w)
+        QuadraticInteger(a+c, b, w)
     }
 
-    method add (Quadratic z) {
+    method add (QuadraticInteger z) {
         var (c,d) = (z.a, z.b)
-        Quadratic(a+c, b+d, w)
+        QuadraticInteger(a+c, b+d, w)
     }
 
     __CLASS__.alias_method(:add, '+')
 
     method sub (Number c) {
-        Quadratic(a-c, b, w)
+        QuadraticInteger(a-c, b, w)
     }
 
-    method sub (Quadratic z) {
+    method sub (QuadraticInteger z) {
         var (c,d) = (z.a, z.b)
-        Quadratic(a-c, b-d, w)
+        QuadraticInteger(a-c, b-d, w)
     }
 
     __CLASS__.alias_method(:sub, '-')
 
     method mul (Number c) {
-        Quadratic(a*c, b*c, w)
+        QuadraticInteger(a*c, b*c, w)
     }
 
-    method mul (Quadratic z) {
+    method mul (QuadraticInteger z) {
         var (c,d) = (z.a, z.b)
-        Quadratic(a*c + b*d*w, a*d + b*c, w)
+        QuadraticInteger(a*c + b*d*w, a*d + b*c, w)
     }
 
     __CLASS__.alias_method(:mul, '*')
 
     method mod (Number m) {
-        Quadratic(a % m, b % m, w)
+        QuadraticInteger(a % m, b % m, w)
     }
 
     __CLASS__.alias_method(:mod, '%')
 
     method pow(Number n) {
         var x = self
-        var c = Quadratic(1, 0, w)
+        var c = QuadraticInteger(1, 0, w)
 
         for bit in (n.digits(2)) {
             c *= x if bit
@@ -79,7 +79,7 @@ class Quadratic(a, b, w = 2) {   # represents: a + b*sqrt(w)
     method powmod(Number n, Number m) {
 
         var x = self
-        var c = Quadratic(1, 0, w)
+        var c = QuadraticInteger(1, 0, w)
 
         for bit in (n.digits(2)) {
             (c *= x) %= m if bit        #=
@@ -100,11 +100,11 @@ func is_quadratic_pseudoprime (n, r=2) {
 
     return true if (r <= 0)
 
-    var x = Quadratic(r, 1, r+2).powmod(n, n)
+    var x = QuadraticInteger(r, 1, r+2).powmod(n, n)
 
     x.a == r || return false
 
-    var y = Quadratic(r, -1, r+2).powmod(n, n)
+    var y = QuadraticInteger(r, -1, r+2).powmod(n, n)
 
     y.a == r || return false
 
@@ -114,12 +114,12 @@ func is_quadratic_pseudoprime (n, r=2) {
 say is_quadratic_pseudoprime(43)    #=> true
 say is_quadratic_pseudoprime(97)    #=> true
 
-with (Quadratic(1, 1, 2)) {|q|
+with (QuadraticInteger(1, 1, 2)) {|q|
     say 15.of { q.pow(_).a }        #=> A001333
     say 15.of { q.pow(_).b }        #=> A000129
 }
 
-with (Quadratic(1, 1, 3)) {|q|
+with (QuadraticInteger(1, 1, 3)) {|q|
     say 15.of { q.pow(_).a }        #=> A026150
     say 15.of { q.pow(_).b }        #=> A002605
 }
@@ -127,7 +127,7 @@ with (Quadratic(1, 1, 3)) {|q|
 var n = (274177-1)
 var m = (2**64 + 1)
 
-with (Quadratic(3, 4, 2)) {|q|
+with (QuadraticInteger(3, 4, 2)) {|q|
     var r = q.powmod(n, m)
     say gcd(r.a-1, m)       #=> 2741177
     say gcd(r.b, m)         #=> 2741177
@@ -140,7 +140,7 @@ func is_gaussian_quadratic_pseudoprime(n) {
     return false if (n <= 1)
     return true  if (n <= 3)
 
-    static x = Quadratic(1, -1, -2)
+    static x = QuadraticInteger(1, -1, -2)
 
     given (n%8) {
         when ([1,3]) {

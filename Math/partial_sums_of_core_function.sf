@@ -1,0 +1,54 @@
+#!/usr/bin/ruby
+
+# Sub-linear algorithm for computing partial sums of the core(n) function.
+
+# OEIS sequence:
+#   https://oeis.org/A069891
+
+# Sequence A069891(10^n):
+#   S(10^1)  = 38
+#   S(10^2)  = 3233
+#   S(10^3)  = 328322
+#   S(10^4)  = 32926441
+#   S(10^5)  = 3289873890
+#   S(10^6)  = 328984021545
+#   S(10^7)  = 32898872196712
+#   S(10^8)  = 3289866649713946
+#   S(10^9)  = 328986818422458525
+#   S(10^10) = 32898680588469254505
+#   S(10^11) = 3289868138800129869623
+
+func squarefree_sum(n) {    # A066779
+    sum(1..n.isqrt, {|k|
+        moebius(k) * k*k * faulhaber(idiv(n, k*k), 1)
+    })
+}
+
+func core_partial_sum(n) {  # A069891
+    n.dirichlet_sum(
+        {|k| k.is_square ? 1 : 0 },
+        {|k| abs(k*mu(k)) },
+        {|k| k.isqrt },
+        {|k| squarefree_sum(k) },
+    )
+}
+
+func f(n) {     # A046970
+    n.factor_prod {|p|
+        1 - p*p
+    }
+}
+
+func core_partial_sum_faster(n) {   # A069891
+    sum(1..n.isqrt, {|k|
+        f(k) * faulhaber(idiv(n, k*k), 1)
+    })
+}
+
+say core_partial_sum(10**5)             #=> 3289873890
+say core_partial_sum_faster(10**5)      #=> 3289873890
+
+assert_eq(
+    100.of(core_partial_sum),
+    100.of(core_partial_sum_faster)
+)

@@ -15,6 +15,10 @@ class Eisenstein(a, b) {   # represents: a + b*w, where w = (-1 + i*sqrt(3))/2
         (a == c.a) && (b == c.b)
     }
 
+    method add (Number z) {
+        Eisenstein(a+z, b)
+    }
+
     method add (Eisenstein z) {
         var (c,d) = (z.a, z.b)
         Eisenstein(a+c, b+d)
@@ -31,6 +35,10 @@ class Eisenstein(a, b) {   # represents: a + b*w, where w = (-1 + i*sqrt(3))/2
 
     method norm {
         a*a - a*b + b*b
+    }
+
+    method mul (Number z) {
+        Eisenstein(a*z, b*z)
     }
 
     method mul (Eisenstein z) {

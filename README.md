@@ -355,6 +355,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Order factorization method](./Math/order_factorization_method.sf)
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
     * [Partial sums of 2 to the bigomega of n](./Math/partial_sums_of_2_to_the_bigomega_of_n.sf)
+    * [Partial sums of core function](./Math/partial_sums_of_core_function.sf)
     * [Partial sums of dedekind psi function](./Math/partial_sums_of_dedekind_psi_function.sf)
     * [Partial sums of dedekind psi function recursive](./Math/partial_sums_of_dedekind_psi_function_recursive.sf)
     * [Partial sums of euler totient function](./Math/partial_sums_of_euler_totient_function.sf)
