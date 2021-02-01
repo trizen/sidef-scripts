@@ -1,0 +1,33 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 01 February 2021
+# https://github.com/trizen
+
+# Sub-linear formula for computing the sum of the squarefree numbers <= n.
+
+# See also:
+#   https://oeis.org/A066779
+
+func squarefree_sum(n) {    # A066779
+    gather {
+        n.isqrt.each_squarefree {|k|
+            take(moebius(k) * k*k * faulhaber(idiv(n, k*k), 1))
+        }
+    }.sum
+}
+
+for k in (1..9) {
+    say "S(10^#{k}) = #{squarefree_sum(10**k)}"
+}
+
+__END__
+S(10^1) = 34
+S(10^2) = 2967
+S(10^3) = 303076
+S(10^4) = 30420034
+S(10^5) = 3039711199
+S(10^6) = 303961062910
+S(10^7) = 30396557311887
+S(10^8) = 3039633904822886
+S(10^9) = 303963567619632057

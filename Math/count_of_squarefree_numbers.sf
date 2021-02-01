@@ -1,0 +1,33 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 01 February 2021
+# https://github.com/trizen
+
+# Sub-linear formula for counting the number of squarefree numbers <= n.
+
+# See also:
+#   https://oeis.org/A013928
+
+func squarefree_count(n) {
+    gather {
+        n.isqrt.each_squarefree {|k|
+            take(moebius(k) * idiv(n, k*k))
+        }
+    }.sum
+}
+
+for k in (1..9) {
+    say "S(10^#{k}) = #{squarefree_count(10**k)}"
+}
+
+__END__
+S(10^1) = 7
+S(10^2) = 61
+S(10^3) = 608
+S(10^4) = 6083
+S(10^5) = 60794
+S(10^6) = 607926
+S(10^7) = 6079291
+S(10^8) = 60792694
+S(10^9) = 607927124
