@@ -1,0 +1,50 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 14 February 2021
+# https://github.com/trizen
+
+# Generate k-almost prime numbers <= n. (not in sorted order)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+
+func almost_prime_numbers(n, k, callback) {
+
+    if (k == 1) {
+        return n.each_prime(callback)
+    }
+
+    func (m, p, r) {
+
+        if (r == 2) {
+            var t = p
+
+            each_prime(p, idiv(n, m).isqrt, {|r|
+                var u = m*r
+                each_prime(t, idiv(n, m*r), {|q|
+                    callback(u*q)
+                })
+                t.next_prime!
+            })
+
+            return nil
+        }
+
+        each_prime(p, idiv(n,m).iroot(r), {|q|
+            __FUNC__(m*q, q, r-1)
+        })
+    }(1, 2, k)
+
+    return callback
+}
+
+var n = 100
+var k = 4
+
+say gather {
+    almost_prime_numbers(n, k, { take(_) })
+}
+
+__END__
+[16, 24, 40, 56, 88, 36, 60, 84, 100, 54, 90, 81]

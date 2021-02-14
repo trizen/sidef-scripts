@@ -77,6 +77,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Aitken's array](./Math/aitken_s_array.sf)
     * [Akiyama-tanigawa numerators](./Math/akiyama-tanigawa_numerators.sf)
     * [Almost divisors](./Math/almost_divisors.sf)
+    * [Almost prime numbers](./Math/almost_prime_numbers.sf)
     * [Archimedes's cattle problem](./Math/archimedes_s_cattle_problem.sf)
     * [Arithmetic-geometric-harmonic mean](./Math/arithmetic-geometric-harmonic_mean.sf)
     * [Arithmetic-geometric mean](./Math/arithmetic-geometric_mean.sf)
