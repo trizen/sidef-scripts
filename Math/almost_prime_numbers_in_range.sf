@@ -1,0 +1,59 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 15 February 2021
+# https://github.com/trizen
+
+# Generate k-almost prime numbers in range [a,b]. (not in sorted order)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+
+func almost_prime_numbers(a, b, k, callback) {
+
+    if (k == 1) {
+        return each_prime(a, b, callback)
+    }
+
+    a = max(2**k, a)
+
+    func (m, p, r) {
+
+        var s = idiv(b,m).iroot(r)
+
+        if (r == 2) {
+
+            each_prime(p, s, {|r|
+                var u = m*r
+                each_prime(max(r, ceil(a/u)), idiv(b, u), {|q|
+                    callback(u*q)
+                })
+            })
+
+            return nil
+        }
+
+        each_prime(p, s, {|q|
+            __FUNC__(m*q, q, r-1)
+        })
+    }(1, 2, k)
+
+    return callback
+}
+
+# Generate 5-almost primes in the range [50, 1000]
+
+var k    = 5
+var from = 50
+var upto = 1000
+
+var arr = gather {
+    almost_prime_numbers(from, upto, k, { take(_) })
+}.sort
+
+assert_eq(arr, from..upto -> grep{.is_almost_prime(k)})     # just for testing
+
+say arr
+
+__END__
+[72, 80, 108, 112, 120, 162, 168, 176, 180, 200, 208, 243, 252, 264, 270, 272, 280, 300, 304, 312, 368, 378, 392, 396, 405, 408, 420, 440, 450, 456, 464, 468, 496, 500, 520, 552, 567, 588, 592, 594, 612, 616, 630, 656, 660, 675, 680, 684, 688, 696, 700, 702, 728, 744, 750, 752, 760, 780, 828, 848, 882, 888, 891, 918, 920, 924, 944, 945, 952, 968, 976, 980, 984, 990]
