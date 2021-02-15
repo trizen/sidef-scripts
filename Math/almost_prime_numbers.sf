@@ -17,21 +17,21 @@ func almost_prime_numbers(n, k, callback) {
 
     func (m, p, r) {
 
-        if (r == 2) {
-            var t = p
+        var s = idiv(n,m).iroot(r)
 
-            each_prime(p, idiv(n, m).isqrt, {|r|
+        if (r == 2) {
+
+            each_prime(p, s, {|r|
                 var u = m*r
-                each_prime(t, idiv(n, m*r), {|q|
+                each_prime(r, idiv(n, u), {|q|
                     callback(u*q)
                 })
-                t.next_prime!
             })
 
             return nil
         }
 
-        each_prime(p, idiv(n,m).iroot(r), {|q|
+        each_prime(p, s, {|q|
             __FUNC__(m*q, q, r-1)
         })
     }(1, 2, k)
