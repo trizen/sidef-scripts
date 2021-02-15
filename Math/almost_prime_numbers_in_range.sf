@@ -17,25 +17,30 @@ func almost_prime_numbers(a, b, k, callback) {
 
     a = max(2**k, a)
 
-    func (m, p, r) {
+    func (m, p, k) {
 
-        var s = idiv(b,m).iroot(r)
+        var s = idiv(b,m).iroot(k)
 
-        if (r == 2) {
+        if (k == 1) {
 
-            each_prime(p, s, {|r|
-                var u = m*r
-                each_prime(max(r, ceil(a/u)), idiv(b, u), {|q|
-                    callback(u*q)
-                })
+            each_prime(max(p, ceil(a/m)), idiv(b, m), {|q|
+                callback(m*q)
             })
 
             return nil
         }
 
-        each_prime(p, s, {|q|
-            __FUNC__(m*q, q, r-1)
-        })
+        while (p <= s) {
+
+            # Optional optimization
+            if (max(p, ceil(a / m*p)) > idiv(b, m*p)) {
+                p.next_prime!
+                next
+            }
+
+            __FUNC__(m*p, p, k-1)
+            p.next_prime!
+        }
     }(1, 2, k)
 
     return callback
@@ -54,6 +59,3 @@ var arr = gather {
 assert_eq(arr, from..upto -> grep{.is_almost_prime(k)})     # just for testing
 
 say arr
-
-__END__
-[72, 80, 108, 112, 120, 162, 168, 176, 180, 200, 208, 243, 252, 264, 270, 272, 280, 300, 304, 312, 368, 378, 392, 396, 405, 408, 420, 440, 450, 456, 464, 468, 496, 500, 520, 552, 567, 588, 592, 594, 612, 616, 630, 656, 660, 675, 680, 684, 688, 696, 700, 702, 728, 744, 750, 752, 760, 780, 828, 848, 882, 888, 891, 918, 920, 924, 944, 945, 952, 968, 976, 980, 984, 990]
