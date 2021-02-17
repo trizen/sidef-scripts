@@ -39,7 +39,7 @@ func S(n) {
 }
 
 func T(n) {
-    n.powerful.sum {|k|
+    2.powerful(n).sum {|k|
         2**(bigomega(k) - 2*omega(k)) * dirichlet_hyperbola(
             floor(n/k), { 1 }, { 1 }, { _ }, { _ }
         )

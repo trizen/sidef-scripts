@@ -32,13 +32,15 @@ func almost_prime_numbers(a, b, k, callback) {
 
         while (p <= s) {
 
-            # Optional optimization
-            if (max(p, ceil(a / m*p)) > idiv(b, m*p)) {
+            var t = m*p
+
+            # Optional optimization for tight ranges
+            if (ceil(a/t) > idiv(b, t)) {
                 p.next_prime!
                 next
             }
 
-            __FUNC__(m*p, p, k-1)
+            __FUNC__(t, p, k-1)
             p.next_prime!
         }
     }(1, 2, k)
