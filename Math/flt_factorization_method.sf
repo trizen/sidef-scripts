@@ -6,6 +6,12 @@
 
 # A new factorization method, inspired by Fermat's Little Theorem (FLT), for numbers that have prime factors close to each other.
 
+# The idea is to try to find a non-trivial factor of `n` by checking:
+#     gcd(f(n) - f(k), n)
+# for several small k >= 1, where f(n) is a C-finite sequence.
+
+# In this method, we use f(n) = b^n, for some fixed base `b`.
+
 func FLT_factor(n, base = 2, tries = 1e4) {
 
     var z = powmod(base, n, n)
