@@ -318,6 +318,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Lucas-pratt primality proving](./Math/lucas-pratt_primality_proving.sf)
     * [Lucas factorization method](./Math/lucas_factorization_method.sf)
     * [Lucas factorization method generalized](./Math/lucas_factorization_method_generalized.sf)
+    * [Lucas flt factorization method](./Math/lucas_flt_factorization_method.sf)
     * [Lucas primality test](./Math/lucas_primality_test.sf)
     * [Lucas pseudoprimes generation](./Math/lucas_pseudoprimes_generation.sf)
     * [Lucas pseudoprimes generation erdos method](./Math/lucas_pseudoprimes_generation_erdos_method.sf)

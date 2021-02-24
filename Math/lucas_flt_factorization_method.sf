@@ -1,0 +1,72 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 24 February 2021
+# https://github.com/trizen
+
+# A new factorization method, inspired by Fermat's Little Theorem (FLT), implemented
+# using Lucas sequences, for numbers that have prime factors close to each other.
+
+# The idea is to try to find a non-trivial factor of `n` by checking:
+#     gcd(V_n(P, Q) - V_k(P, Q), n)
+# for several small k >= 1, where V_n(P,Q) is the Lucas V sequence.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Lucas_sequence
+
+func lucas_FLT_factor(n, P = 3, Q = -1, tries = 1e4) {
+
+    var (a, b, z) = (2, P, lucasVmod(P, Q, n, n))
+    #var (a, b, z) = (0, 1, lucasUmod(P, Q, n, n))
+
+    if (z == P) {    # can't factor Lucas pseudoprimes
+        return 1
+    }
+
+    tries.times {
+
+        var g = gcd(z - b, n)
+
+        if (g.is_between(2, n-1)) {
+            return g
+        }
+
+        (a, b) = (b, (P*b - Q*a) % n)
+        (a, b) = (b, (P*b - Q*a) % n)
+    }
+
+    return 1
+}
+
+var p = 1e20.random_prime
+var n = (p * p.next_prime * p.next_prime.next_prime)
+
+say "Factoring: #{n}"
+say ("Factor found: ", lucas_FLT_factor(n))
+
+say ''
+
+say lucas_FLT_factor(1169586052690021349455126348204184925097724507);                              #=> 166585508879747
+say lucas_FLT_factor(61881629277526932459093227009982733523969186747);                             #=> 1233150073853267
+say lucas_FLT_factor(57981220983721718930050466285761618141354457135475808219583649146881, 8, -7); #=> 213745738248483841
+say lucas_FLT_factor(random_prime(1e30) * (2**128 + 1), 3, -4);                                    #=> 340282366920938463463374607431768211457
+
+say ''
+
+say lucas_FLT_factor(335603208601);
+say lucas_FLT_factor(30459888232201);
+say lucas_FLT_factor(162021627721801);
+say lucas_FLT_factor(1372144392322327801);
+say lucas_FLT_factor(7520940423059310542039581);
+say lucas_FLT_factor(8325544586081174440728309072452661246289);
+say lucas_FLT_factor(181490268975016506576033519670430436718066889008242598463521);
+say lucas_FLT_factor(57981220983721718930050466285761618141354457135475808219583649146881, 8, -7);
+say lucas_FLT_factor(131754870930495356465893439278330079857810087607720627102926770417203664110488210785830750894645370240615968198960237761, 8, -7);
+
+say ''
+
+say lucas_FLT_factor(16641689036184776955112478816668559);                                      #=> 140501852609
+say lucas_FLT_factor(17350074279723825442829581112345759);                                      #=> 142467792809
+say lucas_FLT_factor(61881629277526932459093227009982733523969186747);                          #=> 1233150073853267
+say lucas_FLT_factor(173315617708997561998574166143524347111328490824959334367069087);          #=> 173823271649325368927
+say lucas_FLT_factor(2425361208749736840354501506901183117777758034612345610725789878400467);   #=> 19760381716819645293083
