@@ -1,0 +1,171 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 27 February 2021
+# https://github.com/trizen
+
+# Algorithm for finding primitve solutions (x,y,z) with 1 <= x,y,z <= N and x <= y, to the Diophantine reciprocal equation:
+#   1/x^2 + 1/y^2 = k/z^2
+
+# A solution (x,y,z) is a primitive solution if gcd(x,y,z) = 1.
+
+# It is easy to see that:
+#   (x^2 + y^2)/k = v^4, for some integer v.
+
+# Multiplying both sides by k, we have:
+#   x^2 + y^2 = k * v^4
+
+# By finding integer solutions (x,y) to the above Diophantine equation, we can then compute `z` as:
+#   z = sqrt((x^2 * y^2 * k)/(x^2 + y^2))
+#     = sqrt((x^2 * y^2) / v^4)
+
+# We need to iterate over 1 <= v <= sqrt(N).
+
+# See also:
+#   https://projecteuler.net/problem=748
+
+func sum_of_two_squares_solutions(n) is cached {
+
+    n == 0 && return [[0, 0]]
+
+    var prod1 = 1
+    var prod2 = 1
+
+    var prime_powers = []
+
+    for p,e in (n.factor_exp) {
+        if (p % 4 == 3) {                  # p = 3 (mod 4)
+            e.is_even || return []         # power must be even
+            prod2 *= p**(e >> 1)
+        }
+        elsif (p == 2) {                   # p = 2
+            if (e.is_even) {               # power is even
+                prod2 *= p**(e >> 1)
+            }
+            else {                         # power is odd
+                prod1 *= p
+                prod2 *= p**((e - 1) >> 1)
+                prime_powers.append([p, 1])
+            }
+        }
+        else {                             # p = 1 (mod 4)
+            prod1 *= p**e
+            prime_powers.append([p, e])
+        }
+    }
+
+    prod1 == 1 && return [[prod2, 0]]
+    prod1 == 2 && return [[prod2, prod2]]
+
+    # All the solutions to the congruence: x^2 = -1 (mod prod1)
+    var square_roots = gather {
+        gather {
+            for p,e in (prime_powers) {
+                var pp = p**e
+                var r = sqrtmod(-1, pp)
+                take([[r, pp], [pp - r, pp]])
+            }
+        }.cartesian { |*a|
+            take(Math.chinese(a...))
+        }
+    }
+
+    var solutions = []
+
+    for r in (square_roots) {
+
+        var s = r
+        var q = prod1
+
+        while (s*s > prod1) {
+            (s, q) = (q % s, s)
+        }
+
+        solutions.append([prod2 * s, prod2 * (q % s)])
+    }
+
+    for p,e in (prime_powers) {
+        for (var i = e%2; i < e; i += 2) {
+
+            var sq = p**((e - i) >> 1)
+            var pp = p**(e - i)
+
+            solutions += (
+                __FUNC__(prod1 / pp).map { |pair|
+                    pair.map {|r| sq * prod2 * r }
+                }
+            )
+        }
+    }
+
+    solutions.map     {|pair| pair.sort } \
+             .uniq_by {|pair| pair[0]   } \
+             .sort_by {|pair| pair[0]   }
+}
+
+func S(N, k) {
+
+    var solutions = []
+
+    for v in (1 .. N.isqrt) {
+        for x,y in (sum_of_two_squares_solutions(k * v**4)) {
+
+            y <= N || next
+
+            var z = (x*x * y*y)/(v**4)
+
+            if (z.is_square) {
+
+                z = z.isqrt
+                z <= N || next
+
+                if (gcd(x,y,z) == 1) {
+                    assert_eq(1/x**2 + 1/y**2, k/z**2)
+                    solutions << [x,y,z]
+                }
+            }
+        }
+    }
+
+    solutions.sort
+}
+
+var N = 10000
+var k = 5
+
+say <<"EOT"
+
+:: Primitve solutions (x,y,z) with 1 <= x,y,z <= #{N} and x <= y, to equation:
+
+    1/x^2 + 1/y^2 = #{k}/z^2
+EOT
+
+for x,y,z in (S(N,k)) {
+    say "(#{x}, #{y}, #{z})"
+}
+
+__END__
+
+:: Primitve solutions (x,y,z) with 1 <= x,y,z <= 10000 and x <= y, to equation:
+
+    1/x^2 + 1/y^2 = 5/z^2
+
+(1, 2, 2)
+(10, 55, 22)
+(17, 646, 38)
+(26, 377, 58)
+(247, 286, 418)
+(374, 527, 682)
+(407, 3034, 902)
+(551, 1798, 1178)
+(583, 6254, 1298)
+(638, 1769, 1342)
+(902, 3649, 1958)
+(950, 1025, 1558)
+(2015, 9230, 4402)
+(2146, 2183, 3422)
+(2318, 7991, 4978)
+(2378, 2911, 4118)
+(3286, 5353, 6262)
+(5002, 6649, 8938)
+(5135, 7930, 9638)

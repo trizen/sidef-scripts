@@ -455,6 +455,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Solve cubic equation real](./Math/solve_cubic_equation_real.sf)
     * [Solve linear congruence equation](./Math/solve_linear_congruence_equation.sf)
     * [Solve pell equation](./Math/solve_pell_equation.sf)
+    * [Solve quadratic diophantine reciprocals](./Math/solve_quadratic_diophantine_reciprocals.sf)
     * [Sophie germain factorization method](./Math/sophie_germain_factorization_method.sf)
     * [Special factorization identity](./Math/special_factorization_identity.sf)
     * [Split summation](./Math/split_summation.sf)
