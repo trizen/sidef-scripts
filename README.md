@@ -285,6 +285,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Julia set](./Math/julia_set.sf)
     * [K-imperfect numbers](./Math/k-imperfect_numbers.sf)
     * [K-powerful numbers](./Math/k-powerful_numbers.sf)
+    * [K-powerful numbers in range](./Math/k-powerful_numbers_in_range.sf)
     * [Karatsuba multiplication](./Math/karatsuba_multiplication.sf)
     * [Kempner binomial numbers](./Math/kempner_binomial_numbers.sf)
     * [Knapsack problem 0 1](./Math/knapsack_problem_0_1.sf)

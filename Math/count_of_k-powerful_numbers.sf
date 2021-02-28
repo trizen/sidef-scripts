@@ -22,7 +22,7 @@
 # See also:
 #   https://oeis.org/A118896 -- Number of powerful numbers <= 10^n.
 
-func k_powerful_count(n, k=2) {
+func powerful_count(n, k=2) {
 
     var count = 0
 
@@ -46,7 +46,8 @@ func k_powerful_count(n, k=2) {
 }
 
 for k in (2..10) {
-    printf("number of %2d-powerful <= 10^j: {%s}\n", k, (8+k).of {|j| k_powerful_count(10**j, k) }.join(', '))
+    assert_eq(powerful_count(10**k, k), k.powerful_count(10**k))
+    printf("number of %2d-powerful <= 10^j: {%s}\n", k, (8+k).of {|j| powerful_count(10**j, k) }.join(', '))
 }
 
 __END__
