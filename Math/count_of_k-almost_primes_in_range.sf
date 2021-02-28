@@ -1,0 +1,66 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 28 February 2021
+# https://github.com/trizen
+
+# Count the number of k-almost primes in range [a,b].
+
+# Definition:
+#   A number is k-almost prime if it is the product of k prime numbers (not necessarily distinct).
+#   In other works, a number n is k-almost prime iff: bigomega(n) = k.
+
+# See also:
+#   https://mathworld.wolfram.com/AlmostPrime.html
+
+# OEIS:
+#   https://oeis.org/A072000 -- count of 2-almost primes
+#   https://oeis.org/A072114 -- count of 3-almost primes
+#   https://oeis.org/A082996 -- count of 4-almost primes
+
+func almost_prime_count(a,b,k) {
+
+    if (k == 1) {
+        return pi(a,b)
+    }
+
+    a = max(2**k, a)
+
+    var count = 0
+
+    func (m, p, k) {
+
+        var s = idiv(b,m).iroot(k)
+
+        if (k == 2) {
+
+            each_prime(p, s, {|r|
+                count += pi(max(r, ceil(a/(m*r))), idiv(b, m*r))
+            })
+
+            return nil
+        }
+
+        each_prime(p, s, {|q|
+            __FUNC__(m*q, q, k-1)
+        })
+    }(1, 2, k)
+
+    return count
+}
+
+var a = 1e5
+var b = 1e7
+
+for k in (1..5) {
+    var v = almost_prime_count(a, b, k)
+    say "pi_#{k}(#{a}, #{b}) = #{v}"
+    assert_eq(k.almost_primepi(a, b), v)
+}
+
+__END__
+pi_1(100000, 10000000) = 654987
+pi_2(100000, 10000000) = 1880946
+pi_3(100000, 10000000) = 2418803
+pi_4(100000, 10000000) = 2031952
+pi_5(100000, 10000000) = 1338594

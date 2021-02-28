@@ -26,20 +26,22 @@ func almost_prime_count(n,k) {
 
     var count = 0
 
-    func (m, p, r) {
+    func (m, p, k) {
 
-        if (r == 2) {
+        var s = idiv(n,m).iroot(k)
+
+        if (k == 2) {
             var j = pi(p)-2
 
-            each_prime(p, idiv(n, m).isqrt, {|r|
+            each_prime(p, s, {|r|
                 count += (pi(idiv(n, m*r)) - ++j)
             })
 
             return nil
         }
 
-        each_prime(p, idiv(n,m).iroot(r), {|q|
-            __FUNC__(m*q, q, r-1)
+        each_prime(p, s, {|q|
+            __FUNC__(m*q, q, k-1)
         })
     }(1, 2, k)
 

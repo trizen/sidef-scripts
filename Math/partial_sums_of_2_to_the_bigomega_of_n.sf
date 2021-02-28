@@ -34,7 +34,7 @@
 
 func S(n) {
     1 + sum(1..n.ilog2, {|k|
-        2**k * almost_prime_count(n,k)
+        2**k * k.almost_primepi(n)
     })
 }
 
