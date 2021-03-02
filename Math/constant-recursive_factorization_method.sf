@@ -1,0 +1,57 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 02 March 2021
+# https://github.com/trizen
+
+# A new factorization method for numbers that have prime factors close to each other, using a modular constant-recursive sequence.
+
+# The idea is to try to find a non-trivial factor of `n` by checking:
+#
+#     gcd(f(n) - f(k), n)
+#
+# for several small k >= 1, where f(n) is a C-finite sequence.
+
+func f(n, m) {
+    powmod(2, n, m)
+    #Quadratic(5, 3, 2).powmod(n, m) -> a
+    #Gauss(3, 5).powmod(n, m) -> real
+    #fibmod(n, m)
+    #lucasUmod(4, 3, n, m)
+    #lucasVmod(8, -2, n, m)
+}
+
+func constant_recursive_factor(n, tries = 1e4) {
+
+    var z = f(n, n) || return 1
+
+    if (z == 1) {
+        return 1
+    }
+
+    tries.times { |k|
+
+        var t = f(k, n) || next
+        var g = gcd(z-t, n)
+
+        if (g.is_between(2, n-1)) {
+            return g
+        }
+    }
+
+    return 1
+}
+
+var p = 1e20.random_prime
+var n = (p * p.next_prime * p.next_prime.next_prime)
+
+say "Factoring: #{n}"
+say ("Factor found: ", constant_recursive_factor(n))
+
+say ''
+
+say constant_recursive_factor(777154480374632653)                                                #=> 919447
+say constant_recursive_factor(1169586052690021349455126348204184925097724507)                    #=> 166585508879747
+say constant_recursive_factor(61881629277526932459093227009982733523969186747)                   #=> 1233150073853267
+say constant_recursive_factor(173315617708997561998574166143524347111328490824959334367069087)   #=> 173823271649325368927
+say constant_recursive_factor(random_prime(1e30) * (2**128 + 1))                                 #=> 340282366920938463463374607431768211457

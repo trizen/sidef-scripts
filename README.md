@@ -140,6 +140,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Congruence solution inverse of x minus n mod x equals n](./Math/congruence_solution_inverse_of_x_minus_n_mod_x_equals_n.sf)
     * [Congruence solution inverse of x plus n mod x equals n](./Math/congruence_solution_inverse_of_x_plus_n_mod_x_equals_n.sf)
     * [Consecutive partitions](./Math/consecutive_partitions.sf)
+    * [Constant-recursive factorization method](./Math/constant-recursive_factorization_method.sf)
     * [Constant e to n decimal places](./Math/constant_e_to_n_decimal_places.sf)
     * [Continued fraction](./Math/continued_fraction.sf)
     * [Continued fraction factorization method](./Math/continued_fraction_factorization_method.sf)
