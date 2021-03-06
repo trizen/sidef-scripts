@@ -1,0 +1,74 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 06 March 2021
+# https://github.com/trizen
+
+# Generate k-squarefree omega numbers in range [a,b]. (not in sorted order)
+
+# Definition:
+#   k-squarefree omega numbers are squarefree k-almost primes.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+
+func squarefree_omega_numbers(a, b, k, callback) {
+
+    if (k == 1) {
+        return each_prime(a, b, callback)
+    }
+
+    a = max(k.pn_primorial, a)
+
+    func (m, p, k, u=nil, v=nil) {
+
+        var s = idiv(b,m).iroot(k)
+
+        if (k == 1) {
+
+            each_prime(u, v, {|q|
+                callback(m*q) if !(q `divides` m)
+            })
+
+            return nil
+        }
+
+        while (p <= s) {
+
+            if (p `divides` m) {
+                p.next_prime!
+                next
+            }
+
+            var t = m*p
+            var u = ceil(a/t)
+            var v = idiv(b,t)
+
+            if (u > v) {       # optional optimization for tight ranges
+                p.next_prime!
+                next
+            }
+
+            u = p if (k==2 && p>u)
+
+            __FUNC__(t, p, k-1, u, v)
+            p.next_prime!
+        }
+    }(1, 2, k)
+
+    return callback
+}
+
+# Generate 5-omega prime numbers in the range [3000, 10000]
+
+var k    = 5
+var from = 3000
+var upto = 10000
+
+var arr = gather {
+    squarefree_omega_numbers(from, upto, k, { take(_) })
+}.sort
+
+assert_eq(arr, max(from, k.pn_primorial)..upto -> grep{.is_squarefree && .is_almost_prime(k)})     # just for testing
+
+say arr
