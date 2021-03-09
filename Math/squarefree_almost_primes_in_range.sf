@@ -12,7 +12,7 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Almost_prime
 
-func squarefree_omega_numbers(a, b, k, callback) {
+func squarefree_almost_primes(a, b, k, callback) {
 
     if (k == 1) {
         return each_prime(a, b, callback)
@@ -66,7 +66,7 @@ var from = 3000
 var upto = 10000
 
 var arr = gather {
-    squarefree_omega_numbers(from, upto, k, { take(_) })
+    squarefree_almost_primes(from, upto, k, { take(_) })
 }.sort
 
 assert_eq(arr, max(from, k.pn_primorial)..upto -> grep{.is_squarefree && .is_almost_prime(k)})     # just for testing

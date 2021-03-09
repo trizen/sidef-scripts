@@ -472,7 +472,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Square root good rational approximations](./Math/square_root_good_rational_approximations.sf)
     * [Square root modulo n](./Math/square_root_modulo_n.sf)
     * [Square root modulo n tonelli-shanks](./Math/square_root_modulo_n_tonelli-shanks.sf)
-    * [Squarefree omega numbers in range](./Math/squarefree_omega_numbers_in_range.sf)
+    * [Squarefree almost primes in range](./Math/squarefree_almost_primes_in_range.sf)
     * [Stable marriage problem](./Math/stable_marriage_problem.sf)
     * [Stern brocot continued fraction](./Math/stern_brocot_continued_fraction.sf)
     * [Stern brocot encoding](./Math/stern_brocot_encoding.sf)
