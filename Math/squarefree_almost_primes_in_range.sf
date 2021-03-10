@@ -4,10 +4,7 @@
 # Date: 06 March 2021
 # https://github.com/trizen
 
-# Generate k-squarefree omega numbers in range [a,b]. (not in sorted order)
-
-# Definition:
-#   k-squarefree omega numbers are squarefree k-almost primes.
+# Generate squarefree k-almost primes in range [a,b]. (not in sorted order)
 
 # See also:
 #   https://en.wikipedia.org/wiki/Almost_prime

@@ -28,8 +28,6 @@ func almost_prime_divisors(n, k) {
 
     func (m, p, k) {
 
-        var s = idiv(n,m).iroot(k)
-
         if (k == 1) {
 
             var L = idiv(n,m)
@@ -44,6 +42,8 @@ func almost_prime_divisors(n, k) {
 
             return nil
         }
+
+        var s = idiv(n,m).iroot(k)
 
         for q in (factors) {
 
