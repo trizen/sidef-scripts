@@ -19,8 +19,6 @@ func almost_prime_numbers(a, b, k, callback) {
 
     func (m, p, k) {
 
-        var s = idiv(b,m).iroot(k)
-
         if (k == 1) {
 
             each_prime(max(p, ceil(a/m)), idiv(b, m), {|q|
@@ -29,6 +27,8 @@ func almost_prime_numbers(a, b, k, callback) {
 
             return nil
         }
+
+        var s = idiv(b,m).iroot(k)
 
         while (p <= s) {
 
