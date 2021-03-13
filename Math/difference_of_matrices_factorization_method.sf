@@ -1,0 +1,58 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 13 March 2021
+# https://github.com/trizen
+
+# A new factorization method, using Fibonacci-like matrices.
+
+# The idea is to try to find a non-trivial factor of `n` by checking:
+#
+#     gcd(f(n) - f(k), n)
+#
+# for several small k >= 1, where f(n) is a C-finite sequence.
+
+# In this method, we take f(n) to be a constant square matrix raised to power n.
+
+# However, this method is too slow in practice for large n.
+
+func fibonacci_matrix(k) is cached {
+    Matrix.build(k, { |i,j|
+        #((i == k-1) || (i == j-1)) ? (i - j + 1) : (i + j + 1)
+        ((i == k-1) || (i == j-1)) ? (i - j - 1) : (i + j + 1)
+        #((i == k-1) || (i == j-1)) ? (i - j) : (i + j + 1)
+        #((i == k-1) || (i == j-1)) ? -1 : 1
+        #((i == k-1) || (i == j-1)) ? 1 : 0
+    })
+}
+
+func f(n, m, k) {
+    fibonacci_matrix(k).powmod(n,m)
+}
+
+func fibonacci_matrix_factor(n, tries = 1e2) {
+
+    say "Factoring: #{n}"
+
+    var order = n.ilog(2)
+    var z = f(n, n, order)
+
+    tries.times { |k|
+
+        say "Testing: #{k}"
+
+        for v in (z - f(k, n, order) -> flat) {
+            var g = gcd(v, n)
+            return g if (g.is_between(2, n-1))
+        }
+    }
+
+    return 1
+}
+
+say fibonacci_matrix_factor(101*503)
+say fibonacci_matrix_factor(503*863)
+#say fibonacci_matrix_factor(2**32 + 1)
+#say fibonacci_matrix_factor(2695409723)
+#say fibonacci_matrix_factor(1489390523)
+#say fibonacci_matrix_factor(1e5.random_prime * 1e5.random_prime)

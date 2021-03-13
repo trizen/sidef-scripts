@@ -168,6 +168,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Cyclotomic polynomial](./Math/cyclotomic_polynomial.sf)
     * [Cyclotomic polynomials expansion](./Math/cyclotomic_polynomials_expansion.sf)
     * [Derivative numerical approximation](./Math/derivative_numerical_approximation.sf)
+    * [Difference of matrices factorization method](./Math/difference_of_matrices_factorization_method.sf)
     * [Difference of powers factorization method](./Math/difference_of_powers_factorization_method.sf)
     * [Difference of two squares solutions](./Math/difference_of_two_squares_solutions.sf)
     * [Digamma function](./Math/digamma_function.sf)
