@@ -2,6 +2,7 @@
 
 # Daniel "Trizen" Șuteu
 # Date: 06 March 2021
+# Edit: 13 March 2021
 # https://github.com/trizen
 
 # Generate squarefree k-almost primes in range [a,b]. (not in sorted order)
@@ -11,52 +12,39 @@
 
 func squarefree_almost_primes(a, b, k, callback) {
 
-    if (k == 1) {
-        return each_prime(a, b, callback)
-    }
-
     a = max(k.pn_primorial, a)
 
-    func (m, p, k, u=nil, v=nil) {
+    func (m, p, k) {
 
-        var s = idiv(b,m).iroot(k)
+        var y = idiv(b,m).iroot(k)
 
         if (k == 1) {
 
-            each_prime(u, v, {|q|
-                callback(m*q) if !(q `divides` m)
+            var x = max(p, idiv_ceil(a, m))
+
+            each_prime(x, y, {|p|
+                callback(m*p) if !(p `divides` m)
             })
 
             return nil
         }
 
-        while (p <= s) {
-
-            if (p `divides` m) {
-                p.next_prime!
-                next
-            }
+        each_prime(p, y, {|p|
 
             var t = m*p
-            var u = ceil(a/t)
-            var v = idiv(b,t)
+            var u = idiv_ceil(a, t)
+            var v = idiv(b, t)
 
-            if (u > v) {       # optional optimization for tight ranges
-                p.next_prime!
-                next
-            }
+            next if (u > v)    # optimization for tight ranges
 
-            u = p if (k==2 && p>u)
-
-            __FUNC__(t, p, k-1, u, v)
-            p.next_prime!
-        }
+            __FUNC__(t, p, k-1) if !(p `divides` m)
+        })
     }(1, 2, k)
 
     return callback
 }
 
-# Generate 5-omega prime numbers in the range [3000, 10000]
+# Generate squarefree 5-almost in the range [3000, 10000]
 
 var k    = 5
 var from = 3000
@@ -67,5 +55,20 @@ var arr = gather {
 }.sort
 
 assert_eq(arr, max(from, k.pn_primorial)..upto -> grep{.is_squarefree && .is_almost_prime(k)})     # just for testing
-
 say arr
+
+# Run some more tests
+
+for k in (1..10) {
+
+    var from = k.pn_primorial
+    var upto = from+1e4.irand
+
+    say "Testing: k = #{k} with #{from} .. #{upto}"
+
+    var arr = gather {
+        squarefree_almost_primes(from, upto, k, { take(_) })
+    }.sort
+
+    assert_eq(arr, max(from, k.pn_primorial)..upto -> grep{.is_squarefree && .is_almost_prime(k)})
+}

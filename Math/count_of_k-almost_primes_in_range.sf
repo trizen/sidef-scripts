@@ -35,22 +35,29 @@ func almost_prime_count(a,b,k) {
         if (k == 2) {
 
             each_prime(p, s, {|r|
-                count += pi(max(r, ceil(a/(m*r))), idiv(b, m*r))
+                count += pi(max(r, idiv_ceil(a, m*r)), idiv(b, m*r))
             })
 
             return nil
         }
 
-        each_prime(p, s, {|q|
-            __FUNC__(m*q, q, k-1)
+        each_prime(p, s, {|p|
+
+            var t = m*p
+            var u = idiv_ceil(a, t)
+            var v = idiv(b, t)
+
+            next if (u > v)    # optimization for tight ranges
+
+            __FUNC__(t, p, k-1)
         })
     }(1, 2, k)
 
     return count
 }
 
-var a = 1e5
-var b = 1e7
+var a = 1e5.irand
+var b = 1e7.irand
 
 for k in (1..5) {
     var v = almost_prime_count(a, b, k)

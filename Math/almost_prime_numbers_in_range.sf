@@ -2,6 +2,7 @@
 
 # Daniel "Trizen" Șuteu
 # Date: 15 February 2021
+# Edit: 13 March 2021
 # https://github.com/trizen
 
 # Generate k-almost prime numbers in range [a,b]. (not in sorted order)
@@ -11,38 +12,33 @@
 
 func almost_prime_numbers(a, b, k, callback) {
 
-    if (k == 1) {
-        return each_prime(a, b, callback)
-    }
-
     a = max(2**k, a)
 
     func (m, p, k) {
 
+        var y = idiv(b,m).iroot(k)
+
         if (k == 1) {
 
-            each_prime(max(p, ceil(a/m)), idiv(b, m), {|q|
-                callback(m*q)
+            var x = max(p, idiv_ceil(a, m))
+
+            each_prime(x, y, {|p|
+                callback(m*p)
             })
 
             return nil
         }
 
-        var s = idiv(b,m).iroot(k)
-
-        while (p <= s) {
+        each_prime(p, y, {|p|
 
             var t = m*p
+            var u = idiv_ceil(a, t)
+            var v = idiv(b, t)
 
-            # Optional optimization for tight ranges
-            if (ceil(a/t) > idiv(b, t)) {
-                p.next_prime!
-                next
-            }
+            next if (u > v)    # optimization for tight ranges
 
             __FUNC__(t, p, k-1)
-            p.next_prime!
-        }
+        })
     }(1, 2, k)
 
     return callback
@@ -58,6 +54,21 @@ var arr = gather {
     almost_prime_numbers(from, upto, k, { take(_) })
 }.sort
 
-assert_eq(arr, from..upto -> grep{.is_almost_prime(k)})     # just for testing
-
+assert_eq(arr, from..upto -> grep{.is_almost_prime(k)})
 say arr
+
+# Run some more tests
+
+for k in (1..10) {
+
+    var from = k.pn_primorial.irand+1e3.irand
+    var upto = from+1e3.irand
+
+    say "Testing: k = #{k} with #{from} .. #{upto}"
+
+    var arr = gather {
+        almost_prime_numbers(from, upto, k, { take(_) })
+    }.sort
+
+    assert_eq(arr, max(from, 2**k)..upto -> grep{.is_almost_prime(k)})
+}
