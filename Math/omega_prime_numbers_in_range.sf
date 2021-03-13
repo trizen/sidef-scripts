@@ -1,0 +1,70 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 13 March 2021
+# https://github.com/trizen
+
+# Generate k-omega primes in range [a,b]. (not in sorted order)
+
+# Definition:
+#   k-omega primes are numbers n such that omega(n) = k.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+#   https://en.wikipedia.org/wiki/Prime_omega_function
+
+func omega_prime_numbers(a, b, k, callback) {
+
+    a = max(k.pn_primorial, a)
+
+    func (m, p, k) {
+
+        each_prime(p, idiv(b,m).iroot(k), {|p|
+
+            if (p `divides` m) {
+                next
+            }
+
+            for (var t = m*p ; t <= b; t *= p) {
+                if (k == 1) {
+                    callback(t) if (t >= a)
+                }
+                else {
+                    __FUNC__(t, p, k-1)
+                }
+            }
+        })
+    }(1, 2, k)
+
+    return callback
+}
+
+# Generate 5-omega primes in the range [3000, 10000]
+
+var k    = 5
+var from = 3000
+var upto = 10000
+
+var arr = gather {
+    omega_prime_numbers(from, upto, k, { take(_) })
+}.sort
+
+assert_eq(arr, max(from, k.pn_primorial)..upto -> grep{ .omega == k })
+say arr
+
+
+# Run some tests
+
+for k in (1..6) {
+
+    var from = k.pn_primorial+1e3.irand
+    var upto = from+1e4.irand
+
+    say "Testing: #{k} with #{from} .. #{upto}"
+
+    var arr = gather {
+        omega_prime_numbers(from, upto, k, { take(_) })
+    }.sort
+
+    assert_eq(arr, max(from, k.pn_primorial)..upto -> grep{ .omega == k })
+}
