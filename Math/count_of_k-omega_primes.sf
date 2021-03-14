@@ -1,0 +1,113 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 14 March 2021
+# https://github.com/trizen
+
+# Count the number of k-omega primes <= n.
+
+# Definition:
+#   k-omega primes are numbers n such that omega(n) = k.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+#   https://en.wikipedia.org/wiki/Prime_omega_function
+
+func omega_prime_count(n, k=1) {
+
+    if (k == 1) {
+        return prime_power_count(n)
+    }
+
+    var count = 0
+
+    func (m, p, k) {
+
+        var s = idiv(n,m).iroot(k)
+
+        if (k == 2) {
+
+            var j = prime_count(p)-1
+
+            each_prime(p, s, {|q|
+
+                ++j
+
+                if (q `divides` m) {
+                    next
+                }
+
+                for (var t = m*q ; t <= n; t *= q) {
+
+                    var w = idiv(n, t)
+
+                    if (q > w) {
+                        break
+                    }
+
+                    count += (prime_count(w) - j)
+
+                    for(var r = q; r <= w; r.next_prime!) {
+
+                        if (r `divides` t) {
+                            next
+                        }
+
+                        var u = t*r*r
+
+                        if (u > n) {
+                            break
+                        }
+
+                        for (true; u <= n; u *= r) {
+                            ++count
+                        }
+                    }
+                }
+            })
+
+            return nil
+        }
+
+        each_prime(p, s, {|p|
+
+            if (p `divides` m) {
+                next
+            }
+
+            for (var t = m*p ; t <= n; t *= p) {
+                __FUNC__(t, p, k-1) if (t*p <= n)
+            }
+        })
+    }(1, 2, k)
+
+    return count
+}
+
+# Run some tests
+
+for k in (1..10) {
+
+    var upto = k.pn_primorial+1e5.irand
+
+    var x = omega_prime_count(upto, k)
+    var y = k.omega_primes(upto).len
+
+    say "Testing: #{k} with n = #{upto} -> #{x}"
+
+    assert_eq(x, y)
+}
+
+say ''
+
+for k in (1..6) {
+    say ("Count of #{'%2d' % k}-omega primes for 10^n: ", 7.of {|n| omega_prime_count(10**n, k) })
+}
+
+__END__
+Count of  1-omega primes for 10^n: [0, 7, 35, 193, 1280, 9700, 78734]
+Count of  2-omega primes for 10^n: [0, 2, 56, 508, 4097, 33759, 288726]
+Count of  3-omega primes for 10^n: [0, 0, 8, 275, 3695, 38844, 379720]
+Count of  4-omega primes for 10^n: [0, 0, 0, 23, 894, 15855, 208034]
+Count of  5-omega primes for 10^n: [0, 0, 0, 0, 33, 1816, 42492]
+Count of  6-omega primes for 10^n: [0, 0, 0, 0, 0, 25, 2285]

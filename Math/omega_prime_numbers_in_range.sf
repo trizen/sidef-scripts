@@ -30,7 +30,7 @@ func omega_prime_numbers(a, b, k, callback) {
                     callback(t) if (t >= a)
                 }
                 else {
-                    __FUNC__(t, p, k-1)
+                    __FUNC__(t, p, k-1) if (t*p <= b)
                 }
             }
         })
