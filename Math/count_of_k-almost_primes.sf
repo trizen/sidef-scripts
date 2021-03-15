@@ -21,32 +21,47 @@
 func almost_prime_count(n,k) {
 
     if (k == 1) {
-        return pi(n)
+        return prime_count(n)
     }
 
     var count = 0
 
-    func (m, p, k) {
+    func (m, p, k, j = 0) {
 
         var s = idiv(n,m).iroot(k)
 
         if (k == 2) {
-            var j = pi(p)-2
 
             each_prime(p, s, {|r|
-                count += (pi(idiv(n, m*r)) - ++j)
+                count += (prime_count(idiv(n, m*r)) - j++)
             })
 
             return nil
         }
 
         each_prime(p, s, {|q|
-            __FUNC__(m*q, q, k-1)
+            __FUNC__(m*q, q, k-1, j++)
         })
     }(1, 2, k)
 
     return count
 }
+
+# Run some tests
+
+for k in (1..7) {
+
+    var upto = k.pn_primorial+1e5.irand
+
+    var x = almost_prime_count(upto, k)
+    var y = k.almost_primes(upto).len
+
+    say "Testing: #{k} with n = #{upto} -> #{x}"
+
+    assert_eq(x, y)
+}
+
+say ''
 
 for k in (1..10) {
     say ("Count of #{'%2d' % k}-almost primes for 10^n: ", 7.of { almost_prime_count(10**_, k) })

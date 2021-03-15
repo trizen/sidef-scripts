@@ -17,7 +17,7 @@ func squarefree_almost_prime_count(n, k) {
 
     var count = 0
 
-    func (m, p, k) {
+    func (m, p, k, j = 0) {
 
         var s = idiv(n,m).iroot(k)
 
@@ -27,24 +27,21 @@ func squarefree_almost_prime_count(n, k) {
                 return nil
             }
 
-            var j = prime_count(p)-1
-
             each_prime(p, s, {|q|
 
                 ++j
 
-                if (q `divides` m) {
-                    next
+                if (!(q `divides` m)) {
+                    count += (prime_count(idiv(n, m*q)) - j)
                 }
-
-                count += (prime_count(idiv(n, m*q)) - j)
             })
 
             return nil
         }
 
         each_prime(p, s, {|p|
-            __FUNC__(m*p, p, k-1) if !(p `divides` m)
+            __FUNC__(m*p, p, k-1, j) if !(p `divides` m)
+            ++j
         })
     }(1, 2, k)
 

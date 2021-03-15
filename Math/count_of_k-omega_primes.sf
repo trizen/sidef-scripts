@@ -21,15 +21,13 @@ func omega_prime_count(n, k=1) {
 
     var count = 0
 
-    func (m, p, k, s = idiv(n,m).iroot(k)) {
+    func (m, p, k, j = 0, s = idiv(n,m).iroot(k)) {
 
         if (k == 2) {
 
             if (p > s) {
                 return nil
             }
-
-            var j = prime_count(p)-1
 
             each_prime(p, s, {|q|
 
@@ -73,15 +71,15 @@ func omega_prime_count(n, k=1) {
 
         each_prime(p, s, {|p|
 
-            if (p `divides` m) {
-                next
+            if (!(p `divides` m)) {
+                for (var t = m*p ; t <= n; t *= p) {
+                    var s = idiv(n,t).iroot(k-1)
+                    break if (s < p)
+                    __FUNC__(t, p, k-1, j, s)
+                }
             }
 
-            for (var t = m*p ; t <= n; t *= p) {
-                var s = idiv(n,t).iroot(k-1)
-                break if (s < p)
-                __FUNC__(t, p, k-1, s)
-            }
+            ++j
         })
     }(1, 2, k)
 
