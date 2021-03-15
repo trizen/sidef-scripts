@@ -161,6 +161,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Count of rough numbers](./Math/count_of_rough_numbers.sf)
     * [Count of smooth numbers](./Math/count_of_smooth_numbers.sf)
     * [Count of square-full numbers](./Math/count_of_square-full_numbers.sf)
+    * [Count of squarefree k-almost primes](./Math/count_of_squarefree_k-almost_primes.sf)
     * [Count of squarefree numbers](./Math/count_of_squarefree_numbers.sf)
     * [Cousin mersenne primes lucas-lehmer](./Math/cousin_mersenne_primes_lucas-lehmer.sf)
     * [Cuban primes](./Math/cuban_primes.sf)
