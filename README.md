@@ -364,6 +364,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
     * [Number to expression form](./Math/number_to_expression_form.sf)
     * [Numerical differentiation](./Math/numerical_differentiation.sf)
+    * [Omega prime divisors](./Math/omega_prime_divisors.sf)
     * [Omega prime numbers in range](./Math/omega_prime_numbers_in_range.sf)
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
     * [Partial sums of 2 to the bigomega of n](./Math/partial_sums_of_2_to_the_bigomega_of_n.sf)
