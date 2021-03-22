@@ -19,9 +19,10 @@ func omega_prime_divisors(n, k) {
         return [1]
     }
 
-    var factor_exp = n.factor_exp
-    var factors    = factor_exp.map{.head}
-    var valuations = Hash(factor_exp.flat...)
+    var factor_exp  = n.factor_exp
+    var factors     = factor_exp.map{.head}
+    var valuations  = Hash(factor_exp.flat...)
+    var factors_end = factors.end
 
     var list = []
 
@@ -29,31 +30,32 @@ func omega_prime_divisors(n, k) {
         return list
     }
 
-    func (m, p, k) {
+    func (m, k, i=0) {
 
-        var s = idiv(n,m).iroot(k)
+        var L = idiv(n,m).iroot(k)
 
-        factors.each {|q|
+        for j in (i..factors_end) {
 
-            q >= p || next
-            q <= s || break
-            m %% q && next  #%
+            with (factors[j]) { |q|
 
-            var t = m*q
+                q > L && break
 
-            valuations{q}.times {
+                var t = m*q
 
-                if (k == 1) {
-                    list << t
+                valuations{q}.times {
+
+                    if (k == 1) {
+                        list << t
+                    }
+                    else {
+                        __FUNC__(t, k-1, j+1)
+                    }
+
+                    t *= q
                 }
-                else {
-                    __FUNC__(t, q, k-1)
-                }
-
-                t *= q
             }
         }
-    }(1, factors[0], k)
+    }(1, k)
 
     return list.sort
 }

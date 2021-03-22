@@ -15,6 +15,7 @@ func almost_prime_divisors(n, k) {
     var valuations = Hash(factor_exp.map{_...}...)
 
     var factors = factor_exp.map{.head}
+    var factors_end = factors.end
 
     if (k == 0) {
         return [1]
@@ -26,35 +27,31 @@ func almost_prime_divisors(n, k) {
 
     var list = []
 
-    func (m, p, k) {
+    func (m, k, i=0) {
 
         if (k == 1) {
 
             var L = idiv(n,m)
 
-            for q in (factors) {
-
-                q < p && next
-                q > L && break
-
-                list << m*q if (m.valuation(q) < valuations{q})
+            for j in (i..factors_end) {
+                with (factors[j]) {|q|
+                    q > L && break
+                    list << m*q if (m.valuation(q) < valuations{q})
+                }
             }
 
             return nil
         }
 
-        var s = idiv(n,m).iroot(k)
+        var L = idiv(n,m).iroot(k)
 
-        for q in (factors) {
-
-            q < p && next
-            q > s && break
-
-            m.valuation(q) < valuations{q} || next
-
-            __FUNC__(m*q, q, k-1)
+        for j in (i..factors_end) {
+            with (factors[j]) { |q|
+                q > L && break
+                __FUNC__(m*q, k-1, j) if (m.valuation(q) < valuations{q})
+            }
         }
-    }(1, factors[0], k)
+    }(1, k)
 
     return list.sort
 }
