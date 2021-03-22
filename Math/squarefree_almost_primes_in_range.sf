@@ -23,22 +23,25 @@ func squarefree_almost_primes(a, b, k, callback) {
             var x = max(p, idiv_ceil(a, m))
 
             each_prime(x, y, {|p|
-                callback(m*p) if !(p `divides` m)
+                callback(m*p)
             })
 
             return nil
         }
 
-        each_prime(p, y, {|p|
+        while (p <= y) {
 
+            var r = p.next_prime
             var t = m*p
             var u = idiv_ceil(a, t)
             var v = idiv(b, t)
 
-            next if (u > v)    # optimization for tight ranges
+            if (u <= v) {
+                __FUNC__(t, r, k-1)
+            }
 
-            __FUNC__(t, p, k-1) if !(p `divides` m)
-        })
+            p = r
+        }
     }(1, 2, k)
 
     return callback
