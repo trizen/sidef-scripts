@@ -21,66 +21,57 @@ func omega_prime_count(n, k=1) {
 
     var count = 0
 
-    func (m, p, k, j = 0, s = idiv(n,m).iroot(k)) {
+    func (m, p, k, j = 1, s = idiv(n,m).iroot(k)) {
 
         if (k == 2) {
 
-            if (p > s) {
-                return nil
-            }
+            for (true; p <= s; ++j) {
 
-            each_prime(p, s, {|q|
+                var r = p.next_prime
 
-                ++j
-
-                if (q `divides` m) {
-                    next
-                }
-
-                for (var t = m*q ; t <= n; t *= q) {
+                for (var t = m*p ; t <= n; t *= p) {
 
                     var w = idiv(n, t)
 
-                    if (q > w) {
+                    if (p > w) {
                         break
                     }
 
                     count += (prime_count(w) - j)
 
-                    for(var r = q; r <= w; r.next_prime!) {
+                    for(var r2 = r; r2 <= w; r2.next_prime!) {
 
-                        if (r `divides` t) {
-                            next
-                        }
-
-                        var u = t*r*r
+                        var u = t*r2*r2
 
                         if (u > n) {
                             break
                         }
 
-                        for (true; u <= n; u *= r) {
+                        for (true; u <= n; u *= r2) {
                             ++count
                         }
                     }
                 }
-            })
+
+                p = r
+            }
 
             return nil
         }
 
-        each_prime(p, s, {|p|
+        for(true; p <= s; ++j) {
 
-            if (!(p `divides` m)) {
-                for (var t = m*p ; t <= n; t *= p) {
-                    var s = idiv(n,t).iroot(k-1)
-                    break if (s < p)
-                    __FUNC__(t, p, k-1, j, s)
-                }
+            var r = p.next_prime
+
+            for (var t = m*p ; t <= n; t *= p) {
+                var s = idiv(n,t).iroot(k-1)
+                break if (s < r)
+                __FUNC__(t, r, k-1, j+1, s)
             }
 
-            ++j
-        })
+            p = r
+        }
+
     }(1, 2, k)
 
     return count

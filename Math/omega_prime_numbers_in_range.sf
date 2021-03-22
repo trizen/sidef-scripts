@@ -19,21 +19,21 @@ func omega_prime_numbers(a, b, k, callback) {
 
     func (m, p, k) {
 
-        each_prime(p, idiv(b,m).iroot(k), {|p|
+        for (var s = idiv(b,m).iroot(k); p <= s; true) {
 
-            if (p `divides` m) {
-                next
-            }
+            var r = p.next_prime
 
             for (var t = m*p ; t <= b; t *= p) {
                 if (k == 1) {
                     callback(t) if (t >= a)
                 }
                 else {
-                    __FUNC__(t, p, k-1) if (t*p <= b)
+                    __FUNC__(t, r, k-1) if (t*r <= b)
                 }
             }
-        })
+
+            p = r
+        }
     }(1, 2, k)
 
     return callback
