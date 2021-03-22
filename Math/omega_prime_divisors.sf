@@ -47,8 +47,11 @@ func omega_prime_divisors(n, k) {
                     if (k == 1) {
                         list << t
                     }
-                    else {
+                    elsif (j < factors_end) {
                         __FUNC__(t, k-1, j+1)
+                    }
+                    else {
+                        break
                     }
 
                     t *= q
