@@ -15,6 +15,11 @@
 # "Gaussian elimination" algorithm from:
 #    https://github.com/martani/Quadratic-Sieve
 
+define(
+    B_SMOOTH_METHOD = false,    # true to use the B-smooth formula for the factor base
+    ROUND_DIVISION  = true,     # true to use round division instead of floor division
+)
+
 func gaussian_elimination(A, n) {
 
     var m = A.end
@@ -113,11 +118,15 @@ func cffmm (n, multiplier=1) {
     var w = x+x
     var r = w
 
-    #var B = int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
+    var B  = int(exp(sqrt(log(n) * log(log(n))) / 2))        # B-smooth limit
     var nf = int(exp(sqrt(log(n) * log(log(n))))**(sqrt(2) / 4) / 1.25)
 
-    #var factor_base  = B.primes.grep {|p| (p <= 2) || (kronecker(N, p) >= 0) }
-    var factor_base = (1..Inf -> lazy.map { .prime }.grep {|p| (p <= 2) || (kronecker(N, p) >= 0) }.first(nf))
+    var factor_base = if (B_SMOOTH_METHOD) {
+        B.primes.grep {|p| (p <= 2) || (kronecker(N, p) >= 0) }
+    }
+    else {
+        1..Inf -> lazy.map { .prime }.grep {|p| (p <= 2) || (kronecker(N, p) >= 0) }.first(nf)
+    }
 
     var factor_prod  = factor_base.prod
     var factor_index = Hash(factor_base ~Z ^factor_base -> flat...)
@@ -143,7 +152,7 @@ func cffmm (n, multiplier=1) {
 
         y = (r*z - y)
         z = ((N - y*y) / z)         # exact division
-        r = idiv((x + y), z)
+        r = (ROUND_DIVISION ? idiv_round(x+y, z) : idiv(x+y, z))
 
         (f1, f2) = (f2, (r*f2 + f1) % n)
 
@@ -151,16 +160,16 @@ func cffmm (n, multiplier=1) {
             resolve_factor(f1, z)
         }
 
-        if (z.is_smooth_over_prod(factor_prod)) {
-            var c_factors = z.factor_exp
+        if (z.abs.is_smooth_over_prod(factor_prod)) {
+            var c_factors = z.abs.factor_exp
 
             if (c_factors) {
                 A << exponent_signature(c_factors)
-                Q << [f1, z]
+                Q << [f1, z.abs]
             }
         }
 
-        if (z == 1) {
+        if (z.abs == 1) {
             return __FUNC__(n, next_multiplier(multiplier))
         }
     }
