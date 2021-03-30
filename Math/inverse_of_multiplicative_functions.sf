@@ -25,6 +25,26 @@ func dynamicPreimage(N, L, unitary = false) {
     r{N} \\ [] -> sort
 }
 
+func dynamicLen(N, L) {
+    var r = Hash(1 => 1)
+
+    L.each {|l|
+        var t = Hash()
+        l.each_2d {|a|
+            N/a -> divisors.each {|d|
+                if (r.has(d)) {
+                    t{a*d} := 0 += r{d}
+                }
+            }
+        }
+        t.each {|k,v|
+            r{k} := 0 += v
+        }
+    }
+
+    r{N} \\ 0
+}
+
 func dynamicMin(N, L) {
     var r = Hash(1 => 1)
 
@@ -32,10 +52,7 @@ func dynamicMin(N, L) {
         var t = Hash()
         l.each_2d {|a,b|
             N/a -> divisors.each {|d|
-                if (r.has(d)) {
-                    var k = a*d
-                    t{k} := Inf -> min!(r{d}*b)
-                }
+                t{a*d} := Inf -> min!(r{d}*b) if r.has(d)
             }
         }
         t.each {|k,v|
@@ -53,10 +70,7 @@ func dynamicMax(N, L) {
         var t = Hash()
         l.each_2d {|a,b|
             N/a -> divisors.each {|d|
-                if (r.has(d)) {
-                    var k = a*d
-                    t{k} := 0 -> max!(r{d}*b)
-                }
+                t{a*d} := 0 -> max!(r{d}*b) if r.has(d)
             }
         }
         t.each {|k,v|
@@ -146,6 +160,10 @@ func inverse_sigma_max(N,k=1) {
     dynamicMax(N, cook_sigma(N,k))
 }
 
+func inverse_sigma_len(N,k=1) {
+    dynamicLen(N, cook_sigma(N,k))
+}
+
 # Inverse of Euler phi function
 
 func inverse_phi(N) {
@@ -160,6 +178,10 @@ func inverse_phi_max(N) {
     dynamicMax(N, cook_phi(N))
 }
 
+func inverse_phi_len(N) {
+    dynamicLen(N, cook_phi(N))
+}
+
 # Inverse of Dedekind psi function
 
 func inverse_psi(N) {
@@ -172,6 +194,10 @@ func inverse_psi_min(N) {
 
 func inverse_psi_max(N) {
     dynamicMax(N, cook_psi(N))
+}
+
+func inverse_psi_len(N) {
+    dynamicLen(N, cook_psi(N))
 }
 
 # Inverse of unitary sigma function
@@ -192,6 +218,10 @@ say inverse_sigma(22100, 2)      #=> [120, 130, 141]
 say inverse_sigma_min(10!)      #=> 876960
 say inverse_sigma_max(10!)      #=> 3624941
 
+assert_eq({ .inverse_psi.len }.map(1..20), { inverse_psi_len(_) }.map(1..20))
+assert_eq({ .inverse_phi.len }.map(1..20), { inverse_phi_len(_) }.map(1..20))
+assert_eq({ .inverse_sigma.len }.map(1..20), { inverse_sigma_len(_) }.map(1..20))
+
 with (5040) {|n|
     assert_eq(inverse_usigma(n), n.inverse_usigma)
     assert_eq(inverse_uphi(n), n.inverse_uphi)
@@ -202,10 +232,13 @@ with (5040) {|n|
 with (9!) {|n|
     assert_eq(inverse_sigma(n).min, inverse_sigma_min(n))
     assert_eq(inverse_sigma(n).max, inverse_sigma_max(n))
+    assert_eq(inverse_sigma(n).len, inverse_sigma_len(n))
 
     assert_eq(inverse_phi(n).min, inverse_phi_min(n))
     assert_eq(inverse_phi(n).max, inverse_phi_max(n))
+    assert_eq(inverse_phi(n).len, inverse_phi_len(n))
 
     assert_eq(inverse_psi(n).min, inverse_psi_min(n))
     assert_eq(inverse_psi(n).max, inverse_psi_max(n))
+    assert_eq(inverse_psi(n).len, inverse_psi_len(n))
 }
