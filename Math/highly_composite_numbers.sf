@@ -1,0 +1,67 @@
+#!/usr/bin/ruby
+
+# Translation of:
+#   https://gist.github.com/dario2994/fb4713f252ca86c1254d
+
+# Generate all the highly composite numbers <= LIMIT.
+
+const LIMIT = (ARGV ? ARGV[0].to_i : 10**8)
+
+# Generates a list of the first primes (with product > LIMIT).
+func gen_primes() {
+
+    var primes = []
+    var primes_product = 1
+
+    for (var p = 2; primes_product <= LIMIT; p.next_prime!) {
+        primes << p
+        primes_product *= p
+    }
+
+    return primes
+}
+
+# Generates a list of the hcn <= LIMIT.
+func gen_hcn() {
+
+    var primes = gen_primes()
+    var hcn = [[1, 1, []]]
+
+    primes.each_kv {|i,p|
+
+        var new_hcn = []
+
+        hcn.each {|el|
+
+            new_hcn << el
+
+            next if (el[2].len < i)
+
+            for e in (1 .. (p==2 ? LIMIT.ilog2 : el[2][i-1])) {
+
+                var (n, sigma0, exps) = el...
+                var new_exps = [exps...]
+
+                n *= p**e
+                sigma0 *= e+1
+                new_exps << e
+
+                break if (n > LIMIT)
+
+                new_hcn << [n, sigma0, new_exps]
+            }
+        }
+
+        hcn = [[1, 1, []]]
+
+        new_hcn.sort.each {|el|
+            if (el[1] > hcn[-1][1]) {
+                hcn << el
+            }
+        }
+    }
+
+    return hcn.map{ .head }
+}
+
+say gen_hcn().join(', ')

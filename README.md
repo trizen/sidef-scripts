@@ -261,6 +261,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Harmonic numbers of k-th order](./Math/harmonic_numbers_of_k-th_order.sf)
     * [Harmonic prime powers](./Math/harmonic_prime_powers.sf)
     * [Haversine formula](./Math/haversine_formula.sf)
+    * [Highly composite numbers](./Math/highly_composite_numbers.sf)
     * [Holf-pell factorization](./Math/holf-pell_factorization.sf)
     * [Holf factorization](./Math/holf_factorization.sf)
     * [Integer root](./Math/integer_root.sf)

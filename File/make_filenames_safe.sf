@@ -20,7 +20,12 @@ var dir = ARGV[0] \\ "usage: #{__MAIN__} [-r] [dir]\n".die
 f.find(
     Hash(
         wanted => func(arg) {
-            var file = File(arg.decode_utf8)
+
+            var file = File(arg)
+
+            if (!file.exists) {
+                file = File(arg.decode_utf8)
+            }
 
             if (file.is_file) {
 

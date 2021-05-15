@@ -15,7 +15,7 @@ usage:
       #{name} [options] [input files]
 
 options:
-       -b  --bitrate=i   : MP3 bitrate (default: 192)
+       -b  --bitrate=i   : MP3 bitrate (default: 192K)
        -t  --threads=i   : use this many threads (default: 2)
        -o  --outdir=s    : output directory (default: .)
 
