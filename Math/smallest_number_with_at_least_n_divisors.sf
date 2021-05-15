@@ -1,0 +1,30 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 15 Mai 2021
+# https://github.com/trizen
+
+# Generate the smallest number that has at least n divisors.
+
+# See also:
+#   https://oeis.org/A061799 -- Smallest number with at least n divisors.
+
+func smallest_number_with_at_least_n_divisors(threshold, least_solution = Inf, k = 1, max_a = Inf, solutions = 1, n = 1){
+
+    if (solutions >= threshold) {
+        return n
+    }
+
+    var p = k.prime
+
+    for a in (1 .. max_a) {
+        n *= p
+        break if (n > least_solution)
+        least_solution = __FUNC__(threshold, least_solution, k+1, a, solutions * (a + 1), n)
+    }
+
+    return least_solution
+}
+
+say smallest_number_with_at_least_n_divisors(60)     #=> 5040
+say smallest_number_with_at_least_n_divisors(1000)   #=> 245044800

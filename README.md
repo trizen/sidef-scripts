@@ -462,6 +462,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Sigma of product of binomials](./Math/sigma_of_product_of_binomials.sf)
     * [Siqs factorization](./Math/siqs_factorization.sf)
     * [Smallest k-gonal inverse](./Math/smallest_k-gonal_inverse.sf)
+    * [Smallest number with at least n divisors](./Math/smallest_number_with_at_least_n_divisors.sf)
     * [Solovay-strassen primality test](./Math/solovay-strassen_primality_test.sf)
     * [Solve cubic equation real](./Math/solve_cubic_equation_real.sf)
     * [Solve linear congruence equation](./Math/solve_linear_congruence_equation.sf)
