@@ -20,7 +20,7 @@ func partial_sums_of_gpf(n) {
     var s = n.isqrt
 
     s.each_prime {|p|
-        t += p*smooth_count(idiv(n,p), p)
+        t += p*p.smooth_count(idiv(n,p))
     }
 
     for (var p = s.next_prime; p <= n; p.next_prime!) {

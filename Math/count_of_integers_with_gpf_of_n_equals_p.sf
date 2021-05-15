@@ -14,7 +14,7 @@
 #   https://en.wikipedia.org/wiki/Smooth_number
 
 func count_with_gpf (n, p) {
-    smooth_count(idiv(n,p), p)
+    p.smooth_count(idiv(n,p))
 }
 
 for p in (primes(23)) {

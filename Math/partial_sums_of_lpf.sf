@@ -20,7 +20,7 @@ func partial_sums_of_lpf(n) {
     var s = n.isqrt
 
     s.each_prime {|p|
-        t += p*rough_count(idiv(n,p), p)
+        t += p*p.rough_count(idiv(n,p))
     }
 
     t + sum_primes(s.next_prime, n)
@@ -42,3 +42,5 @@ S(10^8)  = 279218813374515
 S(10^9)  = 24739731010688477
 S(10^10) = 2220827932427240957
 S(10^11) = 201467219561892846337
+S(10^12) = 18435592284459044389811
+S(10^13) = 1699246543196666002725979
