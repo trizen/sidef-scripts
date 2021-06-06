@@ -1,0 +1,79 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 06 June 2021
+# https://github.com/trizen
+
+# Generate all the k-almost prime numbers <= n, using a given set of primes.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+
+func almost_prime_numbers(n, k, primes, callback, squarefree = false) {
+
+    var sqf = (squarefree ? 1 : 0)
+
+    var factors = primes.sort.uniq
+    var factors_end = factors.end
+
+    if (k == 0) {
+        callback(1)
+        return nil
+    }
+
+    func (m, k, i=0) {
+
+        if (k == 1) {
+
+            var L = idiv(n,m)
+
+            for j in (i..factors_end) {
+                with (factors[j]) {|q|
+                    q > L && break
+                    callback(m*q)
+                }
+            }
+
+            return nil
+        }
+
+        var L = idiv(n,m).iroot(k)
+
+        for j in (i..factors_end) {
+            with (factors[j]) { |q|
+                q > L && break
+                __FUNC__(m*q, k-1, j + sqf)
+            }
+        }
+    }(1, k)
+
+    return nil
+}
+
+var limit = 1e4
+var primes = [2,3,5]
+
+say "\n:: Generating k-almost primes <= #{limit} using P = #{primes}:\n"
+
+for k in (0 .. limit.ilog2) {
+    say ("#{'%2d' % k}: ", gather { almost_prime_numbers(limit, k, primes, {|n| take(n) }) }.sort)
+}
+
+__END__
+
+:: Generating k-almost primes <= 10000 using P = [2, 3, 5]:
+
+ 0: [1]
+ 1: [2, 3, 5]
+ 2: [4, 6, 9, 10, 15, 25]
+ 3: [8, 12, 18, 20, 27, 30, 45, 50, 75, 125]
+ 4: [16, 24, 36, 40, 54, 60, 81, 90, 100, 135, 150, 225, 250, 375, 625]
+ 5: [32, 48, 72, 80, 108, 120, 162, 180, 200, 243, 270, 300, 405, 450, 500, 675, 750, 1125, 1250, 1875, 3125]
+ 6: [64, 96, 144, 160, 216, 240, 324, 360, 400, 486, 540, 600, 729, 810, 900, 1000, 1215, 1350, 1500, 2025, 2250, 2500, 3375, 3750, 5625, 6250, 9375]
+ 7: [128, 192, 288, 320, 432, 480, 648, 720, 800, 972, 1080, 1200, 1458, 1620, 1800, 2000, 2187, 2430, 2700, 3000, 3645, 4050, 4500, 5000, 6075, 6750, 7500]
+ 8: [256, 384, 576, 640, 864, 960, 1296, 1440, 1600, 1944, 2160, 2400, 2916, 3240, 3600, 4000, 4374, 4860, 5400, 6000, 6561, 7290, 8100, 9000, 10000]
+ 9: [512, 768, 1152, 1280, 1728, 1920, 2592, 2880, 3200, 3888, 4320, 4800, 5832, 6480, 7200, 8000, 8748, 9720]
+10: [1024, 1536, 2304, 2560, 3456, 3840, 5184, 5760, 6400, 7776, 8640, 9600]
+11: [2048, 3072, 4608, 5120, 6912, 7680]
+12: [4096, 6144, 9216]
+13: [8192]
