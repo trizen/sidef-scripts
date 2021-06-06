@@ -21,6 +21,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Lzw compression](./Encoding/lzw_compression.sf)
     * [Lzw file compression](./Encoding/lzw_file_compression.sf)
     * [Run length encoding](./Encoding/run_length_encoding.sf)
+    * [Substitution cipher](./Encoding/substitution_cipher.sf)
 * Encryption
     * [One-time pad](./Encryption/one-time_pad.sf)
 * File
@@ -373,6 +374,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Partial sums of dedekind psi function](./Math/partial_sums_of_dedekind_psi_function.sf)
     * [Partial sums of dedekind psi function recursive](./Math/partial_sums_of_dedekind_psi_function_recursive.sf)
     * [Partial sums of euler totient function](./Math/partial_sums_of_euler_totient_function.sf)
+    * [Partial sums of euler totient function recursive](./Math/partial_sums_of_euler_totient_function_recursive.sf)
     * [Partial sums of exponential prime omega functions](./Math/partial_sums_of_exponential_prime_omega_functions.sf)
     * [Partial sums of gcd-sum function](./Math/partial_sums_of_gcd-sum_function.sf)
     * [Partial sums of gcd-sum function fast](./Math/partial_sums_of_gcd-sum_function_fast.sf)

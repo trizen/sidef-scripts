@@ -39,20 +39,22 @@ func euler_totient_partial_sum (n) {
     var total = 0
 
     var s = n.isqrt
-    var u = floor(n / (s + 1))
+    var u = idiv(n, s+1)
+
+    var prev = mertens(n)
 
     for k in (1..s) {
-        total += (mertens(floor(n/(k+1)) + 1, floor(n/k)) * k * (k+1))
-    }
-
-    for k in (1..u) {
-        if (var m = k.moebius) {
-            var t = floor(n / k)
-            total += (m * t * (t + 1))
+        with (mertens(idiv(n, k+1))) {|curr|
+            total += ((prev - curr) * faulhaber(k, 1))
+            prev = curr
         }
     }
 
-    return (total / 2)
+    u.each_squarefree {|k|
+        total += (moebius(k) * faulhaber(idiv(n,k), 1))
+    }
+
+    return total
 }
 
 func euler_totient_partial_sum_test (n) {    # just for testing

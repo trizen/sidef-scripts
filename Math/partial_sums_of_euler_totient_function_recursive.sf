@@ -1,0 +1,90 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 06 June 2021
+# https://github.com/trizen
+
+# A new algorithm for computing the partial-sums of `ϕ(k)`, for `1 <= k <= n`:
+#
+#   R(n) = Sum_{k=1..n} phi(k)
+#
+# where phi(k) is the Euler totient function.
+
+# Based on the following identity:
+#   Sum_{d|n} phi(d) = n
+
+# we have:
+#   Sum_{k=1..n} Sum_{d|k} phi(d) = Sum_{k=1..n} Sum_{j=1..floor(n/k)} phi(j) = Sum_{k=1..n} R(floor(n/k)) = n*(n+1)/2
+
+# which allows us to create the following recursive formula:
+#   R(n) = n*(n+1)/2 - Sum_{k=2..floor(n / (1+floor(sqrt(n))))} R(floor(n/k)) - Sum_{k=1..floor(sqrt(n))} R(k) * (floor(n/k) - floor(n/(k+1)))
+
+# Example:
+#   a(10^1) = 32
+#   a(10^2) = 3044
+#   a(10^3) = 304192
+#   a(10^4) = 30397486
+#   a(10^5) = 3039650754
+#   a(10^6) = 303963552392
+#   a(10^7) = 30396356427242
+#   a(10^8) = 3039635516365908
+#   a(10^9) = 303963551173008414
+
+# See also:
+#   https://oeis.org/A002088
+#   https://oeis.org/A064018
+#   https://en.wikipedia.org/wiki/Euler%27s_totient_function
+#   https://trizenx.blogspot.com/2018/08/interesting-formulas-and-exercises-in.html
+
+func euler_totient_partial_sum(n) {
+
+    var lookup_size = (2 * n.iroot(3)**2)
+
+    var liouville_sum_lookup = [0]
+
+    for k in (1..lookup_size) {
+        liouville_sum_lookup[k] = (liouville_sum_lookup[k-1] + phi(k))
+    }
+
+    var cache = Hash()
+
+    func (n) {
+
+        if (n <= lookup_size) {
+            return liouville_sum_lookup[n]
+        }
+
+        if (cache.has(n)) {
+            return cache{n}
+        }
+
+        var s = n.isqrt
+        var L = n.faulhaber(1)
+
+        for k in (2 .. idiv(n, s+1)) {
+            L -= __FUNC__(idiv(n, k))
+        }
+
+        for k in (1..s) {
+            L -= (liouville_sum_lookup[k] * (idiv(n, k) - idiv(n, k+1)))
+        }
+
+        cache{n} = L
+    }(n)
+}
+
+func euler_totient_partial_sum_test (n) {    # just for testing
+    1..n -> sum { .euler_phi }
+}
+
+for m in (0 .. 10) {
+
+    var n = 10000.irand
+
+    var t1 = euler_totient_partial_sum(n)
+    var t2 = euler_totient_partial_sum_test(n)
+
+    assert_eq(t1, t2)
+
+    say "Sum_{k=1..#{n}} phi(k) = #{t1}"
+}

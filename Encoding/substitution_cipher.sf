@@ -1,0 +1,56 @@
+#!/usr/bin/ruby
+
+# A simple substitution cipher, given a key that maps each letter to a different letter.
+# The position of the letters in the key are used for mapping.
+# And also the letters in the key are the letters allowed in the message.
+
+# See also:
+#   https://rosettacode.org/wiki/Substitution_cipher
+
+class SubstitutionCipher(Array key) {
+
+    has keylookup = Hash(key.kv.map{.flip}.flat...)
+    has num2alpha = Hash(key.sort.kv.flat...)
+    has alpha2num = num2alpha.flip
+
+    method encode(String s) {
+        var r = ""
+        s.each {|c|
+            r += (alpha2num.has(c) ? key[alpha2num{c}] : " ")
+        }
+        return r
+    }
+
+    method decode(String s) {
+        var r = ""
+        s.each {|c|
+            r += (keylookup.has(c) ? num2alpha{keylookup{c}} : " ")
+        }
+        return r
+    }
+}
+
+# Allow only lowercase a..z
+var alpha = ['a'..'z'].map{.to_a}.flat
+
+# Allow digits, lower/upper case a..z and space
+# var alpha = [0..9, 'A'..'Z', 'a'..'z', ' '].map{.to_a}.flat
+
+var key = alpha.shuffle
+var obj = SubstitutionCipher(key)
+
+say "Encoding with key: #{key.join.dump}"
+
+with ("the quick brown fox jumps over the lazy dog who barks very loudly") { |s|
+
+    var enc = obj.encode(s)
+    var dec = obj.decode(enc)
+
+    print <<-EOT
+    Original: #{s.dump}
+      -> Encoded: #{enc.dump}
+      -> Decoded: #{dec.dump}
+    EOT
+
+    assert_eq(dec, s)
+}

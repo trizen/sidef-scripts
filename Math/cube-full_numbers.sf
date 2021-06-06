@@ -12,12 +12,15 @@
 
 func cubefull_numbers (n) {    # cubefull numbers <= n
 
-    var cubefull = Set()
+    var cubefull = []
 
-    for a in (1..iroot(n,5)), b in (1..iroot(idiv(n, a**5), 4)) {
-        var v = (a**5 * b**4)
-        for c in (1..iroot(idiv(n, v), 3)) {
-            cubefull << (v * c**3)
+    n.iroot(5).each_squarefree {|a|
+        idiv(n, a**5).iroot(4).each_squarefree {|b|
+            gcd(a,b) == 1 || next
+            var v = (a**5 * b**4)
+            for c in (1..iroot(idiv(n, v), 3)) {
+                cubefull << (v * c**3)
+            }
         }
     }
 

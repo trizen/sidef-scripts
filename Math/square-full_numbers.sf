@@ -13,9 +13,9 @@
 
 func squarefull_numbers(n) {        # square-full numbers <= n
 
-    var squarefull = Set()
+    var squarefull = []
 
-    for b in (1 .. iroot(n,3)) {
+    n.iroot(3).each_squarefree {|b|
         var t = b**3
         for a in (1 .. isqrt(idiv(n, t))) {
             squarefull << (t*a*a)
