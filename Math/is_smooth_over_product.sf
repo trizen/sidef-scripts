@@ -22,7 +22,7 @@ func is_smooth_over_prod(n, k) {
     return true  if (n == 1)
     return false if (n <= 0)
 
-    for (var g = gcd(n,k); g > 1; g = gcd(n,k)) {
+    for (var g = gcd(n,k); g > 1; g = gcd(n,g)) {
         n.remdiv!(g)                # remove any divisibility by g
         return true if (n == 1)     # smooth if n == 1
     }

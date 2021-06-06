@@ -159,6 +159,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Count of k-almost primes in range](./Math/count_of_k-almost_primes_in_range.sf)
     * [Count of k-omega primes](./Math/count_of_k-omega_primes.sf)
     * [Count of k-powerful numbers](./Math/count_of_k-powerful_numbers.sf)
+    * [Count of palindromic numbers](./Math/count_of_palindromic_numbers.sf)
     * [Count of rough numbers](./Math/count_of_rough_numbers.sf)
     * [Count of smooth numbers](./Math/count_of_smooth_numbers.sf)
     * [Count of square-full numbers](./Math/count_of_square-full_numbers.sf)

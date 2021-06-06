@@ -1,0 +1,47 @@
+#!/usr/bin/ruby
+
+# Algorithm from https://oeis.org/A137180
+# Based on work by Eric A. Schmidt and Robert G. Wilson v.
+# Extended to any base >= 2 by Daniel Șuteu (June 06 2021).
+
+# See also:
+#   https://oeis.org/A002113 -- Palindromes to base 10.
+#   https://oeis.org/A050250 -- Number of nonzero palindromes less than 10^n.
+#   https://oeis.org/A027383 -- Number of palindromes (in base 2) below 2^n.
+#   https://oeis.org/A117862 -- Number of palindromes (in base 3) below 3^n.
+#   https://oeis.org/A117863 -- Number of palindromes (in base 4) below 4^n.
+#   https://oeis.org/A117864 -- Number of palindromes (in base 5) below 5^n.
+
+# Explicit formula for the number of palindromes <= 10^n for base = 10 (due to Bruno Berselli, Feb 15 2011):
+#   (1/2)*10^((2*n + (-1)^n - 1)/4)*(13 - 9*(-1)^n) - 2
+
+func nth_palindrome(n, b=10) {
+    var p = 1
+    (n-1).times { p.next_palindrome!(b) }
+    return p
+}
+
+func palindrome_count(n, b=10) {
+
+    return 0 if (n < 1)
+
+    var q = floor(n * b**-(idiv(1+n.ilog(b), 2)))
+    var r = (q + b**(q.ilog(b) + (n.ilog(b)%2)) - 1)
+
+    r + floor(tanh(n - nth_palindrome(r, b)))
+}
+
+for b in (2..10) {
+    say ("Number of base-#{b} palindromes <= 10^n: ", 7.of {|n| palindrome_count(10**n, b) })
+}
+
+__END__
+Number of base-2 palindromes <= 10^n: [1, 5, 19, 61, 204, 644, 2000, 6535, 20397, 63283]
+Number of base-3 palindromes <= 10^n: [1, 5, 19, 62, 202, 652, 2099, 6759, 21802, 70488]
+Number of base-4 palindromes <= 10^n: [1, 5, 20, 76, 218, 646, 2000, 6537, 22485, 77417]
+Number of base-5 palindromes <= 10^n: [1, 5, 23, 63, 203, 783, 2223, 6323, 22023, 79623]
+Number of base-6 palindromes <= 10^n: [1, 6, 21, 62, 260, 677, 2066, 9010, 20634, 68089]
+Number of base-7 palindromes <= 10^n: [1, 7, 20, 67, 251, 632, 2816, 6565, 22754, 76304]
+Number of base-8 palindromes <= 10^n: [1, 8, 19, 77, 218, 705, 2463, 6537, 28508, 63283]
+Number of base-9 palindromes <= 10^n: [1, 9, 19, 92, 203, 864, 2098, 8083, 21802, 75982]
+Number of base-10 palindromes <= 10^n: [1, 9, 18, 108, 198, 1098, 1998, 10998, 19998, 109998]

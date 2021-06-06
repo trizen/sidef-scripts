@@ -65,7 +65,7 @@ func euler_totient_partial_sum_2 (n) {      # using Dirichlet's hyperbola method
     var s = n.isqrt
 
     for k in (1..s) {
-        total += k*mertens(floor(n/k))
+        total += k*mertens(idiv(n,k))
     }
 
     s.each_squarefree {|k|
