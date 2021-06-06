@@ -1,0 +1,17 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 06 June 2021
+# https://github.com/trizen
+
+# Count the number of composite numbers <= n.
+
+# See also:
+#   https://oeis.org/A065855
+
+func composite_count(n) {
+    n >= 4 || return 0
+    n - prime_count(n) - 1
+}
+
+say 30.of(composite_count)
