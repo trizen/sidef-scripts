@@ -280,6 +280,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Inverse of sigma function](./Math/inverse_of_sigma_function.sf)
     * [Inverse of uphi function](./Math/inverse_of_uphi_function.sf)
     * [Inverse of usigma function](./Math/inverse_of_usigma_function.sf)
+    * [Inverse znorder](./Math/inverse_znorder.sf)
     * [Invmod of coprime factorials](./Math/invmod_of_coprime_factorials.sf)
     * [Is both truncatable prime](./Math/is_both_truncatable_prime.sf)
     * [Is carmichael number](./Math/is_carmichael_number.sf)
