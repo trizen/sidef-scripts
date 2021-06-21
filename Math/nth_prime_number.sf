@@ -9,18 +9,16 @@
 # See also:
 #   https://oeis.org/A002808
 
-require('ntheory')
-
 func nth_prime(n) {
 
     n == 0 && return 1      # not composite, but...
     n <= 0 && return NaN
     n == 1 && return 2
 
-    var min = %S<ntheory>.nth_prime_lower(n)
-    var max = %S<ntheory>.nth_prime_upper(n)
+    var min = n.prime_lower
+    var max = n.prime_upper
 
-    var k = bsearch_le(min, max, {|k|
+    var k = bsearch(min, max, {|k|
         prime_count(k) <=> n
     })
 
