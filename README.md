@@ -355,6 +355,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Modular lucas sequence V](./Math/modular_lucas_sequence_V.sf)
     * [Modular lucas sequences U V](./Math/modular_lucas_sequences_U_V.sf)
     * [Modular multiplicative inverse](./Math/modular_multiplicative_inverse.sf)
+    * [Modular square root all solutions](./Math/modular_square_root_all_solutions.sf)
     * [Modular tetration](./Math/modular_tetration.sf)
     * [Moebius transform](./Math/moebius_transform.sf)
     * [Motzkin numbers](./Math/motzkin_numbers.sf)

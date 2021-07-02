@@ -10,16 +10,16 @@ func karatsuba_multiplication(x, y, n=8) {
         x * y
     }
     else {
-        var m = ceil(n/2)
+        var m = (n.is_even ? (n >> 1) : ((n >> 1) + 1))
 
-        var (a, b) = divmod(x, ipow2(m))
-        var (c, d) = divmod(y, ipow2(m))
+        var (a, b) = divmod(x, 1 << m)
+        var (c, d) = divmod(y, 1 << m)
 
-        var e = karatsuba_multiplication(a, c, m)
-        var f = karatsuba_multiplication(b, d, m)
-        var g = karatsuba_multiplication(a - b, c - d, m)
+        var e = __FUNC__(a, c, m)
+        var f = __FUNC__(b, d, m)
+        var g = __FUNC__(a - b, c - d, m)
 
-        (ipow2(2*m) * e) + (ipow2(m) * (e + f - g)) + f
+        (e << (2*m)) + ((e + f - g) << m) + f
     }
 }
 
