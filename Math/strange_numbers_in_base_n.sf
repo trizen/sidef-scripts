@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 05 July 2021
+# https://github.com/trizen
+
+# Generate "strange numbers": numbers such that the absolute difference of any two adjacent digits (in a given base) is prime.
+
+# See also:
+#   https://oeis.org/A219248
+#   https://rosettacode.org/wiki/Strange_numbers
+
+func generate_from_prefix(limit, p, base) {
+
+    var seq = [p]
+
+    for d in (base-1 -> primes) {
+        for k in ([1, -1]) {
+            var r = p[0]+(k*d)
+            next if (r < 0)
+            next if (r >= base)
+            var t = [r, p...]
+            if (t.digits2num(base) <= limit) {
+                seq << __FUNC__(limit, t, base)...
+            }
+        }
+    }
+
+    return seq
+}
+
+func strange_numbers(limit, base = 10, digits = @(^base)) {
+    digits.map {|p| generate_from_prefix(limit, [p], base)... }\
+          .map {|t| t.digits2num(base) }\
+          .sort.uniq
+}
+
+say strange_numbers(500)
+
+__END__
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 16, 18, 20, 24, 25, 27, 29, 30, 31, 35, 36, 38, 41, 42, 46, 47, 49, 50, 52, 53, 57, 58, 61, 63, 64, 68, 69, 70, 72, 74, 75, 79, 81, 83, 85, 86, 92, 94, 96, 97, 130, 131, 135, 136, 138, 141, 142, 146, 147, 149, 161, 163, 164, 168, 169, 181, 183, 185, 186, 202, 203, 205, 207, 241, 242, 246, 247, 249, 250, 252, 253, 257, 258, 270, 272, 274, 275, 279, 292, 294, 296, 297, 302, 303, 305, 307, 313, 314, 316, 318, 350, 352, 353, 357, 358, 361, 363, 364, 368, 369, 381, 383, 385, 386, 413, 414, 416, 418, 420, 424, 425, 427, 429, 461, 463, 464, 468, 469, 470, 472, 474, 475, 479, 492, 494, 496, 497]
