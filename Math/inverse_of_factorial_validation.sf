@@ -1,0 +1,50 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 29 April 2018
+# https://github.com/trizen
+
+# Compute the inverse of n-factorial.
+# The function is defined only for factorial numbers.
+
+func factorial_valuation(n,p) {
+    (n - n.sumdigits(p)) / (p-1)
+}
+
+func inverse_factorial_lgrt(n) {
+
+    define τ = Num.tau
+    define e = Num.e
+    define T = τ.root(-2*e)
+
+    lgrt(T * n.root(e)) * e - 1/2
+}
+
+func inverse_factorial(f) {
+
+    return nil if (f < 0)
+    return 0   if (f <= 1)
+    return nil if (f.is_odd)
+
+    var n = inverse_factorial_lgrt(f).ceil
+
+    for p in (primes(2, n)) {
+        var v = factorial_valuation(n, p)
+        f.valuation(p) == v || return nil
+        f /= p**v
+    }
+
+    (f == 1) ? n : nil
+}
+
+say 7.by { defined(inverse_factorial(_)) }   #=> [0, 1, 2, 6, 24, 120, 720]
+
+for n in (2..30) {
+
+    var f = n!
+    var i = inverse_factorial(f)
+
+    say "#{i}! = #{f}"
+
+    assert_eq(i, n)
+}

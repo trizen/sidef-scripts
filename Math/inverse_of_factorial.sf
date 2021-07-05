@@ -5,7 +5,7 @@
 # https://github.com/trizen
 
 # Compute the inverse of n-factorial.
-# The function is defined only for factorial numbers.
+# Returns correct values only for factorial numbers.
 
 func p_adic_inverse (p, k) {
 

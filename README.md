@@ -275,6 +275,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Inverse of euler totient](./Math/inverse_of_euler_totient.sf)
     * [Inverse of factorial](./Math/inverse_of_factorial.sf)
     * [Inverse of factorial stirling](./Math/inverse_of_factorial_stirling.sf)
+    * [Inverse of factorial validation](./Math/inverse_of_factorial_validation.sf)
     * [Inverse of fibonacci](./Math/inverse_of_fibonacci.sf)
     * [Inverse of multiplicative functions](./Math/inverse_of_multiplicative_functions.sf)
     * [Inverse of sigma function](./Math/inverse_of_sigma_function.sf)
