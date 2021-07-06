@@ -374,6 +374,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
     * [Number to expression form](./Math/number_to_expression_form.sf)
     * [Numbers with digitsum](./Math/numbers_with_digitsum.sf)
+    * [Numbers with non decimal digits](./Math/numbers_with_non_decimal_digits.sf)
     * [Numerical differentiation](./Math/numerical_differentiation.sf)
     * [Omega prime divisors](./Math/omega_prime_divisors.sf)
     * [Omega prime numbers in range](./Math/omega_prime_numbers_in_range.sf)
