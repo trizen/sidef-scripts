@@ -11,7 +11,7 @@
 
 func nth_prime(n) {
 
-    n == 0 && return 1      # not composite, but...
+    n == 0 && return 1      # not prime, but...
     n <= 0 && return NaN
     n == 1 && return 2
 

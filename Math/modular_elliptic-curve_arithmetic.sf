@@ -1,0 +1,106 @@
+#!/usr/bin/ruby
+
+# Modular Elliptic curve arithmetic (without validation).
+
+# See also:
+#   https://rosettacode.org/wiki/Elliptic_curve_arithmetic
+
+class EllipticCurveMod(x, y, N, A = 0) {
+
+    method to_s {
+        "EC Point at x=#{x}, y=#{y}"
+    }
+
+    method is_zero {
+        x == 0
+    }
+
+    method neg {
+        EllipticCurveMod(x, -y)
+    }
+
+    method -(EllipticCurveMod p) {
+        self + -p
+    }
+
+    method +(EllipticCurveMod p) {
+
+        if (p.is_zero) {
+            return self
+        }
+
+        if (x == p.x) {
+            return self*2 if (y == p.y)
+            return EllipticCurveMod(0, 0, N, A)
+        }
+        else {
+            var u = invmod(p.x - x, N) || die gcd(p.x - x, N)
+            var slope = mulmod(p.y - y, u, N)
+            var x2 = (slope*slope - x - p.x)%N
+            var y2 = (slope * (x - x2) - y)%N
+            EllipticCurveMod(x2, y2, N, A)
+        }
+    }
+
+    method *((0)) {
+        EllipticCurveMod(0, 0, N, A)
+    }
+
+    method *((1)) {
+        self
+    }
+
+    method *((2)) {
+        var l = divmod(3 * x*x + A, 2 * y, N)
+        var x2 = (l*l - 2*x)%N
+        var y2 = (l * (x - x2) - y)%N
+        EllipticCurveMod(x2, y2, N, A)
+    }
+
+    method *(Number n) {
+        2*(self * (n>>1)) + self*(n % 2)
+    }
+}
+
+class Number {
+    method +(EllipticCurveMod p) {
+        p + self
+    }
+    method -(EllipticCurveMod p) {
+        -p + self
+    }
+    method *(EllipticCurveMod p) {
+        p * self
+    }
+}
+
+func elliptic_curve_factorization(N, alimit = 100, B = 10000) {
+
+    var primes = B.primes
+
+    for a in (-alimit .. alimit) {
+        say "Testing: #{a}"
+
+        var curve = EllipticCurveMod(0, 1, N, a)
+
+        primes.each {|p|
+            var pp = p**B.ilog(p)
+            try {
+                curve *= pp
+            }
+            catch { |v|
+                if (v =~ /^(\d+)/) {|m|
+                    return Num(m[0])
+                }
+            }
+        }
+    }
+
+    return 1
+}
+
+say ("Found factor: ", elliptic_curve_factorization(14304849576137459))     #=> 16100431
+say ("Found factor: ", elliptic_curve_factorization(314159265358979323))    #=> 990371647
+
+#say ("Found factor: ", elliptic_curve_factorization(2**64 + 1))         # takes ~2 seconds
+#say ("Found factor: ", elliptic_curve_factorization(2**128 + 1))        # takes ~1 minute
