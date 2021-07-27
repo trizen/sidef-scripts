@@ -12,7 +12,7 @@
 #
 # for some k >= 2, then gcd(a-b, n) may be a non-trivial factor of n.
 
-const MIN_FACTOR = 1e6  # ignore small factors
+define MIN_FACTOR = 1e6  # ignore small factors
 
 func cgpow_factor (n) {
 
@@ -88,7 +88,7 @@ func cgpow_factor (n) {
     }
 
     factors << (orig / factors.prod)
-    return factors.sort
+    factors.sort
 }
 
 if (ARGV) {
