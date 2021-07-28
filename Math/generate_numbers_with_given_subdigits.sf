@@ -1,0 +1,51 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 28 July 2021
+# https://github.com/trizen
+
+# Generate numbers that contain a given string of digits.
+
+# See also:
+#   https://rosettacode.org/wiki/Prime_numbers_which_contain_123
+
+func numbers_with_subdigits(upto, base = 10, s = 123.digits(base)) {
+    Enumerator({|callback|
+        for k in (0 .. idiv(upto, base**s.len)) {
+
+            var d = k.digits(base)
+
+            for i in (0 .. d.len) {
+                var n = d.clone.insert(i, s...).digits2num(base)
+                callback(n) if (n <= upto)
+            }
+
+            var z = d.clone.insert(d.len, s...)
+            loop {
+                var n = z.insert(d.len, 0).digits2num(base)
+                (n <= upto) ? callback(n) : break
+            }
+        }
+    })
+}
+
+# Exmple for numbers that contain '123'
+
+say "Numbers under 10^4 which contain '123':"
+say numbers_with_subdigits(1e4).to_a.sort.join(' ')
+
+say "\nDecimal primes under 10^5 which contain '123':"
+numbers_with_subdigits(1e5).grep { .is_prime }.sort.each_slice(10, {|*a|
+    say a.map { '%6s' % _ }.join(' ')
+})
+
+__END__
+Numbers under 10^4 which contain '123':
+123 1123 1230 1231 1232 1233 1234 1235 1236 1237 1238 1239 2123 3123 4123 5123 6123 7123 8123 9123
+
+Decimal primes under 10^5 which contain '123':
+  1123   1231   1237   8123  11239  12301  12323  12329  12343  12347
+ 12373  12377  12379  12391  17123  20123  22123  28123  29123  31123
+ 31231  31237  34123  37123  40123  41231  41233  44123  47123  49123
+ 50123  51239  56123  59123  61231  64123  65123  70123  71233  71237
+ 76123  81233  81239  89123  91237  98123
