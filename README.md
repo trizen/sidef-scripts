@@ -258,6 +258,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Generalized partial sums of sigma function](./Math/generalized_partial_sums_of_sigma_function.sf)
     * [Generate numbers with given edges](./Math/generate_numbers_with_given_edges.sf)
     * [Generate numbers with given subdigits](./Math/generate_numbers_with_given_subdigits.sf)
+    * [Generate primes with only one odd digit](./Math/generate_primes_with_only_one_odd_digit.sf)
     * [Geometric-harmonic mean](./Math/geometric-harmonic_mean.sf)
     * [Greedy egyptian fractions](./Math/greedy_egyptian_fractions.sf)
     * [Gregory coefficients](./Math/gregory_coefficients.sf)
