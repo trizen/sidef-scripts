@@ -170,6 +170,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Cousin mersenne primes lucas-lehmer](./Math/cousin_mersenne_primes_lucas-lehmer.sf)
     * [Cuban primes](./Math/cuban_primes.sf)
     * [Cube-full numbers](./Math/cube-full_numbers.sf)
+    * [Cyclops numbers](./Math/cyclops_numbers.sf)
     * [Cyclotomic factorization method](./Math/cyclotomic_factorization_method.sf)
     * [Cyclotomic polynomial](./Math/cyclotomic_polynomial.sf)
     * [Cyclotomic polynomials expansion](./Math/cyclotomic_polynomials_expansion.sf)
