@@ -11,7 +11,7 @@
 
 func numbers_with_subdigits(upto, base = 10, s = 123.digits(base)) {
     Enumerator({|callback|
-        for k in (0 .. idiv(upto, base**s.len)) {
+        for k in (0 .. base**(upto.len(base) - s.len)) {
 
             var d = k.digits(base)
 

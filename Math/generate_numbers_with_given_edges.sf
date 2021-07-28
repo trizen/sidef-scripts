@@ -1,0 +1,62 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 28 July 2021
+# https://github.com/trizen
+
+# Generate numbers that begin and end with a given list of digits.
+
+# See also:
+#   https://rosettacode.org/wiki/Primes_whose_first_and_last_number_is_3
+
+func numbers_with_edges(upto, base = 10, s = [3]) {
+    Enumerator({|callback|
+        callback(s.digits2num(base))
+        for k in (0 .. base**(upto.len(base) - 2*s.len)) {
+
+            break if (s + k.digits(base) + s -> digits2num(base) > upto)
+
+            Inf.times { |j|
+
+                var d = (s + k.digits(base) + j.of(0) + s)
+                var n = d.digits2num(base)
+
+                (n <= upto) ? callback(n) : break
+            }
+        }
+    })
+}
+
+# Example for numbers which begin and end in 3
+
+with (1e4) { |n|
+    var list = numbers_with_edges(n).to_a.sort
+    say "There are #{list.len} integers <= #{n.commify} which begin and end in 3:"
+    list.each_slice(10, {|*a| say a.map { '%5s' % _ }.join(' ') })
+
+    list.grep! { .is_prime }
+
+    say "\nThere are #{list.len} primes <= #{n.commify} which begin and end in 3:"
+    list.each_slice(10, {|*a| say a.map { '%5s' % _ }.join(' ') })
+}
+
+__END__
+There are 111 integers <= 10,000 which begin and end in 3:
+    3   303   313   323   333   343   353   363   373   383
+  393  3003  3013  3023  3033  3043  3053  3063  3073  3083
+ 3093  3103  3113  3123  3133  3143  3153  3163  3173  3183
+ 3193  3203  3213  3223  3233  3243  3253  3263  3273  3283
+ 3293  3303  3313  3323  3333  3343  3353  3363  3373  3383
+ 3393  3403  3413  3423  3433  3443  3453  3463  3473  3483
+ 3493  3503  3513  3523  3533  3543  3553  3563  3573  3583
+ 3593  3603  3613  3623  3633  3643  3653  3663  3673  3683
+ 3693  3703  3713  3723  3733  3743  3753  3763  3773  3783
+ 3793  3803  3813  3823  3833  3843  3853  3863  3873  3883
+ 3893  3903  3913  3923  3933  3943  3953  3963  3973  3983
+ 3993
+
+There are 33 primes <= 4,000 which begin and end in 3:
+    3   313   353   373   383  3023  3083  3163  3203  3253
+ 3313  3323  3343  3373  3413  3433  3463  3533  3583  3593
+ 3613  3623  3643  3673  3733  3793  3803  3823  3833  3853
+ 3863  3923  3943
