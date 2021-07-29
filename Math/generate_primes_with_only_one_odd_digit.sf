@@ -7,6 +7,7 @@
 # Generate primes that have only one odd digit (at the end).
 
 # See also:
+#   https://oeis.org/A068690
 #   https://rosettacode.org/wiki/Primes_which_contain_only_one_odd_number
 
 func primes_with_one_odd_digit(upto, base = 10) {
@@ -15,11 +16,13 @@ func primes_with_one_odd_digit(upto, base = 10) {
     var digits = @(^base)
 
     var even_digits = digits.grep { .is_even }
-    var odd_digits  = digits.grep { .is_odd }
+    var odd_digits  = digits.grep { .is_odd && .is_coprime(base) }
+
+    list << digits.grep { .is_odd && .is_prime && !.is_coprime(base) }...
 
     for k in (0 .. upto.len(base)-1) {
         even_digits.variations_with_repetition(k, {|*a|
-            next  if (a.last == 0)
+            next if (a.last == 0)
             break if ([1, a...].digits2num(base) > upto)
             odd_digits.each {|d|
                 var n = [d, a...].digits2num(base)

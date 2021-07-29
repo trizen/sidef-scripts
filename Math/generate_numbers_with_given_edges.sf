@@ -55,7 +55,7 @@ There are 111 integers <= 10,000 which begin and end in 3:
  3893  3903  3913  3923  3933  3943  3953  3963  3973  3983
  3993
 
-There are 33 primes <= 4,000 which begin and end in 3:
+There are 33 primes <= 10,000 which begin and end in 3:
     3   313   353   373   383  3023  3083  3163  3203  3253
  3313  3323  3343  3373  3413  3433  3463  3533  3583  3593
  3613  3623  3643  3673  3733  3793  3803  3823  3833  3853
