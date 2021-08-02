@@ -243,6 +243,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Frobenius pseudoprimes generation](./Math/frobenius_pseudoprimes_generation.sf)
     * [Function inverse binary search](./Math/function_inverse_binary_search.sf)
     * [Function inverse mediant inequality](./Math/function_inverse_mediant_inequality.sf)
+    * [Fusc function](./Math/fusc_function.sf)
     * [Gamma function](./Math/gamma_function.sf)
     * [Gauss logarithm approx](./Math/gauss_logarithm_approx.sf)
     * [Gaussian elimination GF2 matrix](./Math/gaussian_elimination_GF2_matrix.sf)

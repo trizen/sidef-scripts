@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+
+# Simple (and efficient) implementation of the "fusc" function.
+
+# See also:
+#   https://oeis.org/A002487
+#   https://en.wikipedia.org/wiki/Calkin–Wilf_tree
+
+func fusc(n) {
+
+     var (a=1, b=0)
+
+     if (n.is_even) {
+        n.remove!(2)
+     }
+
+     for bit in (n.as_bin.chars) {
+        if (bit) {
+            b += a
+        }
+        else {
+            a += b
+        }
+     }
+
+     return b
+}
+
+say 30.of(fusc)
+
+__END__
+[0, 1, 1, 2, 1, 3, 2, 3, 1, 4, 3, 5, 2, 5, 3, 4, 1, 5, 4, 7, 3, 8, 5, 7, 2, 7, 5, 8, 3, 7]
