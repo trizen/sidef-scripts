@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 08 August 2021
+# https://github.com/trizen
+
+# Generate prime numbers that have only prime digits (in a given base).
+
+# See also:
+#   https://oeis.org/A019546
+#   https://rosettacode.org/wiki/Extra_primes
+
+func primes_with_prime_digits(upto, base = 10) {
+
+    upto = prev_prime(upto+1)
+
+    var list = []
+    var digits = @(^base)
+
+    var prime_digits = digits.grep { .is_prime }
+    var end_digits   = prime_digits.grep { .is_coprime(base) }
+
+    list << prime_digits.grep { !.is_coprime(base) }...
+
+    for k in (0 .. upto.ilog(base)) {
+        prime_digits.variations_with_repetition(k, {|*a|
+            next if ([end_digits[0], a...].digits2num(base) > upto)
+            end_digits.each {|d|
+                var n = [d, a...].digits2num(base)
+                list << n if n.is_prime
+            }
+        })
+    }
+
+    list.sort
+}
+
+say primes_with_prime_digits(1e4)
+
+__END__
+[2, 3, 5, 7, 23, 37, 53, 73, 223, 227, 233, 257, 277, 337, 353, 373, 523, 557, 577, 727, 733, 757, 773, 2237, 2273, 2333, 2357, 2377, 2557, 2753, 2777, 3253, 3257, 3323, 3373, 3527, 3533, 3557, 3727, 3733, 5227, 5233, 5237, 5273, 5323, 5333, 5527, 5557, 5573, 5737, 7237, 7253, 7333, 7523, 7537, 7573, 7577, 7723, 7727, 7753, 7757]

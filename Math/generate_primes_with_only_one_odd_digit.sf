@@ -12,6 +12,8 @@
 
 func primes_with_one_odd_digit(upto, base = 10) {
 
+    upto = prev_prime(upto+1)
+
     var list = []
     var digits = @(^base)
 
@@ -20,10 +22,10 @@ func primes_with_one_odd_digit(upto, base = 10) {
 
     list << digits.grep { .is_odd && .is_prime && !.is_coprime(base) }...
 
-    for k in (0 .. upto.len(base)-1) {
+    for k in (0 .. upto.ilog(base)) {
         even_digits.variations_with_repetition(k, {|*a|
             next if (a.last == 0)
-            break if ([1, a...].digits2num(base) > upto)
+            next if ([1, a...].digits2num(base) > upto)
             odd_digits.each {|d|
                 var n = [d, a...].digits2num(base)
                 list << n if n.is_prime
