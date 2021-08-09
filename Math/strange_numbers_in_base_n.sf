@@ -10,18 +10,18 @@
 #   https://oeis.org/A219248
 #   https://rosettacode.org/wiki/Strange_numbers
 
-func generate_from_prefix(limit, p, base) {
+func generate_from_prefix(limit, p, base, digits) {
 
     var seq = [p]
 
-    for d in (base-1 -> primes) {
+    digits.each {|d|
         for k in ([1, -1]) {
-            var r = p[0]+(k*d)
+            var r = (p%base)+(k*d)
             next if (r < 0)
             next if (r >= base)
-            var t = [r, p...]
-            if (t.digits2num(base) <= limit) {
-                seq << __FUNC__(limit, t, base)...
+            var num = (p*base + r)
+            if (num <= limit) {
+                seq << __FUNC__(limit, num, base, digits)...
             }
         }
     }
@@ -30,8 +30,8 @@ func generate_from_prefix(limit, p, base) {
 }
 
 func strange_numbers(limit, base = 10, digits = @(^base)) {
-    digits.map {|p| generate_from_prefix(limit, [p], base)... }\
-          .map {|t| t.digits2num(base) }\
+    var prime_digits = @(^base).grep { .is_prime }
+    digits.map {|p| generate_from_prefix(limit, p, base, prime_digits)... }\
           .sort.uniq
 }
 

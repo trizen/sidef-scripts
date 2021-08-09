@@ -23,23 +23,23 @@
 #  https://oeis.org/A323390 - Total number of primes that are both left-truncatable and right-truncatable in base n.
 #  https://oeis.org/A323396 - Irregular array read by rows, where T(n, k) is the k-th prime that is both left-truncatable and right-truncatable in base n.
 
-func is_left_truncatable_prime(digits, base) {
+func is_left_truncatable_prime(num, base) {
 
-    for k in (^digits) {
-        base.digits2num(digits.first(k+1)).is_prime || return false
+    for k in (1 .. num.len(base)-1) {
+        num - (idiv(num, base**k) * base**k) -> is_prime || return false
     }
 
     return true
 }
 
-func generate_from_prefix(p, base) {
+func generate_from_prefix(p, base, digits) {
 
     var seq = [p]
 
-    for n in (1 ..^ base) {
-        var t = [n, p...]
-        if (is_prime(digits2num(t, base))) {
-            seq << __FUNC__(t, base).grep { is_left_truncatable_prime(_, base) }...
+    digits.each {|d|
+        var num = (p*base + d)
+        if (num.is_prime) {
+            seq << __FUNC__(num, base, digits).grep { is_left_truncatable_prime(_, base) }...
         }
     }
 
@@ -49,9 +49,9 @@ func generate_from_prefix(p, base) {
 func both_truncatable_primes(base) {     # finite sequence for each base
 
     var prime_digits = (base-1 -> primes)   # prime digits < base
+    var digits = @(1 ..^ base)
 
-    prime_digits.map  {|p| generate_from_prefix([p], base)... }\
-                .map  {|t| digits2num(t, base) }\
+    prime_digits.map  {|p| generate_from_prefix(p, base, digits)... }\
                 .sort
 }
 

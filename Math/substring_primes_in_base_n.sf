@@ -51,10 +51,10 @@ func generate_from_prefix(p, base, digits) {
 
     var seq = [p]
 
-    for d in (digits) {
-        var t = [d, p...]
-        if (is_prime(t.digits2num(base)) && is_substring_prime(t, base)) {
-            seq << __FUNC__(t, base, digits)...
+    digits.each {|d|
+        var num = (p*base + d)
+        if (is_prime(num) && is_substring_prime(num.digits(base), base)) {
+            seq << __FUNC__(num, base, digits)...
         }
     }
 
@@ -65,8 +65,7 @@ func substring_primes(base) {     # finite sequence for each base
 
     var prime_digits = (base-1 -> primes)   # prime digits < base
 
-    prime_digits.map  {|p| generate_from_prefix([p], base, prime_digits)... }\
-                .map  {|t| t.digits2num(base) }\
+    prime_digits.map  {|p| generate_from_prefix(p, base, prime_digits)... }\
                 .sort
 }
 

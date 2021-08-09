@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 06 July 2021
+# https://github.com/trizen
+
+# Generate prime numbers that have a given digit sum (in a given base) below a given bound.
+
+# See also:
+#   https://oeis.org/A106763 -- Primes with digit sum = 25.
+#   https://rosettacode.org/wiki/Primes_which_sum_of_digits_is_25
+
+func generate_from_prefix(limit, digitsum, p, base, digits, t=p) {
+
+    var seq = [p]
+
+    digits.each {|d|
+        var num = (p*base + d)
+        num <= limit    || return seq
+
+        var sum = (t + d)
+        sum <= digitsum || return seq
+
+        seq << __FUNC__(limit, digitsum, num, base, digits, sum)\
+               .grep { .is_prime }...
+    }
+
+    return seq
+}
+
+func primes_with_digit_sum(limit, digitsum = 25, base = 10, digits = @(^base)) {
+    digits.grep { _ > 0 }\
+          .map  { generate_from_prefix(limit, digitsum, _, base, digits)... }\
+          .grep { .sumdigits(base) == digitsum }\
+          .sort
+}
+
+say primes_with_digit_sum(5000)
+
+__END__
+[997, 1699, 1789, 1879, 1987, 2689, 2797, 2887, 3499, 3697, 3769, 3877, 3967, 4597, 4759, 4957, 4993]

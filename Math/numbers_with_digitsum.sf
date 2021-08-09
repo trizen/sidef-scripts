@@ -9,22 +9,22 @@
 # See also:
 #   https://rosettacode.org/wiki/Numbers_with_prime_digits_whose_sum_is_13
 
-func generate_from_prefix(sum, p, base, digits) {
+func generate_from_prefix(digitsum, p, base, digits, t=p) {
 
     var seq = [p]
 
     for d in (digits) {
-        seq << __FUNC__(sum, [d, p...], base, digits)... if (p.sum+d <= sum)
+        t+d <= digitsum || return seq
+        seq << __FUNC__(digitsum, p*base + d, base, digits, t+d)...
     }
 
     return seq
 }
 
-func numbers_with_digitsum(sum, base = 10, digits = (base-1 -> primes)) {
+func numbers_with_digitsum(digitsum, base = 10, digits = (base-1 -> primes)) {
 
-    digits.map  {|p| generate_from_prefix(sum, [p], base, digits)... }\
-          .grep {|t| t.sum == sum }\
-          .map  {|t| digits2num(t, base) }\
+    digits.map  { generate_from_prefix(digitsum, _, base, digits)... }\
+          .grep { .sumdigits(base) == digitsum }\
           .sort
 }
 

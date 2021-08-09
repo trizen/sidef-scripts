@@ -8,26 +8,26 @@
 #   https://www.youtube.com/watch?v=azL5ehbw_24
 #   https://en.wikipedia.org/wiki/Truncatable_prime
 
-func generate_from_prefix(p, base) {
+func generate_from_prefix(p, base, digits) {
 
     var seq = [p]
 
-    for n in (1 ..^ base) {
-        var t = [n, p...]
-        if (is_prime(digits2num(t, base))) {
-            seq << __FUNC__(t, base)...
+    digits.each {|d|
+        var num = (base*p + d)
+        if (num.is_prime) {
+            seq << __FUNC__(num, base, digits)...
         }
     }
 
     return seq
 }
 
-func right_truncatable_primes(base) {     # finite sequence for each base
+func right_truncatable_primes(base) {       # finite sequence for each base
 
     var prime_digits = (base-1 -> primes)   # prime digits < base
+    var end_digits   = (1 ..^ base -> grep { .is_coprime(base) })
 
-    prime_digits.map  {|p| generate_from_prefix([p], base)... }\
-                .map  {|t| digits2num(t, base) }\
+    prime_digits.map  {|p| generate_from_prefix(p, base, end_digits)... }\
                 .sort
 }
 
