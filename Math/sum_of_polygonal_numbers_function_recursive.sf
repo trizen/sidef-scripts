@@ -1,0 +1,60 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 12 August 2021
+# https://github.com/trizen
+
+# Count the number of ways of writing n as the sum of k m-polygonal numbers.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Polygonal_number
+#   https://en.wikipedia.org/wiki/Sum_of_squares_function
+
+# OEIS sequences:
+#   https://oeis.org/A008441 -- Number of ways of writing n as the sum of 2 triangular numbers.
+#   https://oeis.org/A008443 -- Number of ordered ways of writing n as the sum of 3 triangular numbers.
+#   https://oeis.org/A008438 -- Number of ways of writing n as the sum of 4 triangular numbers.
+#   https://oeis.org/A008439 -- Number of ways of writing n as the sum of 5 triangular numbers.
+#   https://oeis.org/A008440 -- Number of representations of n as sum of 6 triangular numbers.
+
+func sum_of_polygonals_count(n, k, f, g, h) is cached {
+
+    return 1 if (n == 0)
+    return 0 if (k <= 0)
+
+    return (g(n) ? 1 : 0) if (k == 1)
+
+    var count = 0
+
+    for a in (0 .. h(n)) {
+        if (k > 2) {
+            count += __FUNC__(n - f(a), k-1, f, g, h)
+        }
+        elsif (g(n - f(a))) {
+            ++count
+        }
+    }
+
+    return count
+}
+
+var v = 3    # 3 = triangular numbers
+
+var f = { .polygonal(v) }
+var g = { .is_polygonal(v) }
+var h = { .ipolygonal_root(v) }
+
+for k in (1..9) {
+    say ("k = #{k}: ", 15.of {|n| sum_of_polygonals_count(n, k, f, g, h) })
+}
+
+__END__
+k = 1: [1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0]
+k = 2: [1, 2, 1, 2, 2, 0, 3, 2, 0, 2, 2, 2, 1, 2, 0]
+k = 3: [1, 3, 3, 4, 6, 3, 6, 9, 3, 7, 9, 6, 9, 9, 6]
+k = 4: [1, 4, 6, 8, 13, 12, 14, 24, 18, 20, 32, 24, 31, 40, 30]
+k = 5: [1, 5, 10, 15, 25, 31, 35, 55, 60, 60, 90, 90, 95, 135, 125]
+k = 6: [1, 6, 15, 26, 45, 66, 82, 120, 156, 170, 231, 276, 290, 390, 435]
+k = 7: [1, 7, 21, 42, 77, 126, 175, 253, 357, 434, 567, 735, 833, 1057, 1302]
+k = 8: [1, 8, 28, 64, 126, 224, 344, 512, 757, 1008, 1332, 1792, 2198, 2752, 3528]
+k = 9: [1, 9, 36, 93, 198, 378, 633, 990, 1521, 2173, 2979, 4113, 5370, 6858, 8955]
