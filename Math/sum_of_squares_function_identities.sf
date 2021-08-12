@@ -1,0 +1,203 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 12 August 2021
+# https://github.com/trizen
+
+# Count the number of ways or representing n as a sum of k squares (function known as: r_k(n)).
+
+# See also:
+#   https://en.wikipedia.org/wiki/Sum_of_squares_function
+
+# OEIS sequences:
+#   https://oeis.org/A004018 -- Theta series of square lattice (or number of ways of writing n as a sum of 2 squares). Often denoted by r(n) or r_2(n).
+#   https://oeis.org/A005875 -- Theta series of simple cubic lattice; also number of ways of writing a nonnegative integer n as a sum of 3 squares (zero being allowed).
+#   https://oeis.org/A000118 -- Number of ways of writing n as a sum of 4 squares; also theta series of lattice Z^4.
+#   https://oeis.org/A000132 -- Number of ways of writing n as a sum of 5 squares.
+#   https://oeis.org/A000141 -- Number of ways of writing n as a sum of 6 squares.
+#   https://oeis.org/A008451 -- Number of ways of writing n as a sum of 7 squares.
+
+func r2(n) {    # n must be odd
+    4*n.factor_prod {|p,e|
+        p.is_congruent(3, 4) ? (e.is_even ? 1 : return 0) : (e+1)
+    }
+}
+
+func r6_a(f) {
+    f.prod_2d {|p,e|
+        ((p**2)**(e+1) * ((p.is_congruent(1,4) || e.is_odd) ? 1 : -1) - 1) / (p**2 * (p.is_congruent(1,4) ? 1 : -1) - 1)
+    }
+}
+
+func r6_b(f) {
+    f.prod_2d {|p,e|
+        ((p**2)**(e+1) - ((p.is_congruent(1,4) || e.is_odd) ? 1 : -1)) / (p**2 - (p.is_congruent(1,4) ? 1 : -1))
+    }
+}
+
+func r10_a(f) {
+
+    # a(2^e) = 1
+    # a(p^e) = ((p^4)^(e+1) - 1) / (p^4 - 1)   if p == 1 (mod 4)
+    # a(p^e) = (1 - (-p^4)^(e+1)) / (1 + p^4)  if p == 3 (mod 4)
+
+    f.prod_2d {|p,e|
+        p.is_congruent(1,4) ? (((p**4)**(e+1) - 1) / (p**4 - 1)) : ((1 - (-p**4)**(e+1)) / (1 + p**4))
+    }
+}
+
+func r10_b(f) {
+
+    # a(2^e) = 16^e
+    # a(p^e) = ((p^4)^(e+1) - 1) / (p^4 - 1)            for p == 1 (mod 4)
+    # a(p^e) = ((p^4)^(e+1) - (-1)^(e+1)) / (p^4 + 1)   for p == 3 (mod 4)
+
+    f.prod_2d {|p,e|
+        p.is_congruent(1,4) ? (((p**4)**(e+1) - 1) / (p**4 - 1)) : (((p**4)**(e+1) - (-1)**(e+1)) / (p**4 + 1))
+    }
+}
+
+func r10_d(p) {
+    # 2 * Re( (x + i*y)^4 ) and p = x^2 + y^2 with even x
+
+    var u = p
+    var s = sqrtmod(-1, u) || return NaN
+    var q = u
+
+    while (s*s > u) {
+        (s, q) = (q % s, s)
+    }
+
+    var (x, y) = (s, q % s)
+    assert_eq(x**2 + y**2, p)
+    return 2*(Gauss(x, y)**4 -> re)
+
+    #~ for x in (0 .. Inf `by` 2) {
+        #~ if (p - x*x -> is_square) {
+            #~ var y = isqrt(p - x*x)
+            #~ assert_eq(x**2 + y**2, p)
+            #~ return 2*(Gauss(x, y)**4 -> re)
+        #~ }
+    #~ }
+}
+
+func r10_c(f) is cached {
+
+    # a(2^e) = (-4)^e
+    # a(p^e) = p^(2*e) * (1 + (-1)^e)/2               for p == 3 (mod 4)
+    # a(p^e) = a(p) * a(p^(e-1)) - p^4 * a(p^(e-2))   for p == 1 (mod 4)
+
+    # where a(p) = 2 * Re( (x + i*y)^4 ) and p = x^2 + y^2 with even x
+
+    var n = f.prod_2d {|p,e| ipow(p, e) }
+
+    return 0 if n.is_congruent(3, 4)
+    return 1 if (n == 1)
+    return 0 if (n <= 0)
+
+    return r10_d(n) if n.is_prime
+
+    f.prod_2d {|p,e|
+        p.is_congruent(1,4) ? (r10_d(p) * __FUNC__([[p, e-1]]) - (p**4 * __FUNC__([[p, e-2]]))) : (p**(2*e) * (1 + (-1)**e) / 2)
+    }
+}
+
+func r(n, k=2) is cached {
+
+    return 1 if (n == 0)
+    return 0 if (k <= 0)
+
+    return (n.is_square ? 2 : 0) if (k == 1)
+
+    var v = n.valuation(2)
+    var t = (n >> v)
+
+    if (k == 2) {   # OEIS: A004018
+        t.is_congruent(3, 4) && return 0
+        return r2(t)
+    }
+
+    # r_3(4*n) = r_3(n)
+    if ((k == 3) && (n%4 == 0)) {
+        n >>= 2
+    }
+
+    if (k == 4) {   # OEIS: A000118
+        # Let n = 2^k * m, with m odd, then r_4(n) = 8 * sigma(2^min(k, 1) * m)
+        return (sigma(v >= 1 ? (t<<1) : t) << 3)
+    }
+
+    if (k == 6) {   # OEIS: A000141
+        # r_6(n) = 16*A050470(n) - 4*A002173(n)
+        var f = t.factor_exp
+        var a = r6_a(f)
+        var b = r6_b(f)
+        return ((b << (4 + 2*v)) - (a << 2))
+    }
+
+    if (k == 8) {   # OEIS: A000143
+        # Let n = 2^k * m, with m odd, then r_8(n) = (-1)^n * 16 * (8^(k+1) - 15)/7 * sigma_3(m)
+        var u = (((1 << (3*(v+1))) - 15)/7 * sigma(t, 3))
+        return ((-1)**n * (u << 4))
+    }
+
+    if (k == 10) {  # OEIS: A000144
+        # r_10(n) = 4/5 * (A050456(n) + 16*A050468(n) + 8*A030212(n))
+        var f = t.factor_exp
+        var a = r10_a(f)
+        var b = (r10_b(f) * 16**v)
+        var c = ((-4)**v * r10_c(f))
+        return (4/5 * (a + 16*b + 8*c))
+    }
+
+    var count = 0
+    var upto = n.isqrt
+    var n_is_square = n.is_square
+
+    for a in (0 .. upto) {
+        if (k > 2) {
+            count += (a.is_zero ? 1 : 2)*__FUNC__(n - a*a, k-1)
+        }
+        elsif (n - a*a -> is_square) {
+            count += (a.is_zero ? 1 : 2)*((n_is_square && (a == upto)) ? 1 : 2)
+        }
+    }
+
+    return count
+}
+
+for k in (0..20) {
+    say ("k = #{'%2d' % k}: ", 15.of { r(_, k) })
+
+    assert_eq(
+        30.of { r(_, k) },
+        30.of { ::squares_r(_, k) },
+    )
+
+    with (irand(30, 100)) {|n|
+        assert_eq(r(n, k), ::squares_r(n, k))
+    }
+}
+
+__END__
+k =  0: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+k =  1: [1, 2, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0]
+k =  2: [1, 4, 4, 0, 4, 8, 0, 0, 4, 4, 8, 0, 0, 8, 0]
+k =  3: [1, 6, 12, 8, 6, 24, 24, 0, 12, 30, 24, 24, 8, 24, 48]
+k =  4: [1, 8, 24, 32, 24, 48, 96, 64, 24, 104, 144, 96, 96, 112, 192]
+k =  5: [1, 10, 40, 80, 90, 112, 240, 320, 200, 250, 560, 560, 400, 560, 800]
+k =  6: [1, 12, 60, 160, 252, 312, 544, 960, 1020, 876, 1560, 2400, 2080, 2040, 3264]
+k =  7: [1, 14, 84, 280, 574, 840, 1288, 2368, 3444, 3542, 4424, 7560, 9240, 8456, 11088]
+k =  8: [1, 16, 112, 448, 1136, 2016, 3136, 5504, 9328, 12112, 14112, 21312, 31808, 35168, 38528]
+k =  9: [1, 18, 144, 672, 2034, 4320, 7392, 12672, 22608, 34802, 44640, 60768, 93984, 125280, 141120]
+k = 10: [1, 20, 180, 960, 3380, 8424, 16320, 28800, 52020, 88660, 129064, 175680, 262080, 386920, 489600]
+k = 11: [1, 22, 220, 1320, 5302, 15224, 33528, 63360, 116380, 209550, 339064, 491768, 719400, 1095160, 1538416]
+k = 12: [1, 24, 264, 1760, 7944, 25872, 64416, 133056, 253704, 472760, 825264, 1297056, 1938336, 2963664, 4437312]
+k = 13: [1, 26, 312, 2288, 11466, 41808, 116688, 265408, 535704, 1031914, 1899664, 3214224, 5043376, 7801744, 12066912]
+k = 14: [1, 28, 364, 2912, 16044, 64792, 200928, 503360, 1089452, 2186940, 4196920, 7544992, 12547808, 19975256, 31553344]
+k = 15: [1, 30, 420, 3640, 21870, 96936, 331240, 911040, 2128260, 4495430, 8972712, 16946280, 29822520, 49476840, 80027280]
+k = 16: [1, 32, 480, 4480, 29152, 140736, 525952, 1580800, 3994080, 8945824, 18626112, 36714624, 67978880, 118156480, 197120256]
+k = 17: [1, 34, 544, 5440, 38114, 199104, 808384, 2641664, 7213984, 17215458, 37569728, 77129408, 149405248, 272064192, 470966912]
+k = 18: [1, 36, 612, 6528, 48996, 275400, 1207680, 4269312, 12573540, 32041636, 73617480, 157553280, 318102912, 605381832, 1090632960]
+k = 19: [1, 38, 684, 7752, 62054, 373464, 1759704, 6697728, 21210156, 57739518, 140116184, 313328088, 658369608, 1305768920, 2449182384]
+k = 20: [1, 40, 760, 9120, 77560, 497648, 2508000, 10232640, 34729720, 100906760, 259114704, 606957280, 1327461600, 2738111280, 5341699520]
