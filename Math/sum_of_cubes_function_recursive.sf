@@ -1,0 +1,78 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 12 August 2021
+# https://github.com/trizen
+
+# Count the number of ways or representing n as a sum of k cubes.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Sum_of_squares_function
+
+# OEIS sequences:
+#   https://oeis.org/A173677 -- Number of ways of writing n as a sum of 2 nonnegative cubes
+#   https://oeis.org/A051343 -- Number of ways of writing n as a sum of 3 nonnegative cubes
+#   https://oeis.org/A173678 -- Number of ways of writing n as a sum of 4 nonnegative cubes
+#   https://oeis.org/A173679 -- Number of ways of writing n as a sum of 5 nonnegative cubes
+#   https://oeis.org/A173680 -- Number of ways of writing n as a sum of 6 nonnegative cubes
+#   https://oeis.org/A173676 -- Number of ways of writing n as a sum of 7 nonnegative cubes
+#   https://oeis.org/A173681 -- Number of ways of writing n as a sum of 8 nonnegative cubes
+#   https://oeis.org/A173682 -- Number of ways of writing n as a sum of 9 nonnegative cubes
+
+func is_sum_of_two_cubes(n) {   # OEIS: A004999
+
+    var L = iroot(n-1, 3)+1
+    var U = iroot(4*n, 3)
+
+    n.divisors.each {|m|
+        if ((L <= m) && (m <= U)) {
+            var l = (m*m - n/m)
+            l.is_div(3) || next
+            l = idiv(l, 3)
+            is_square(m*m - 4*l) && return true
+        }
+    }
+
+    return false
+}
+
+func cubes_r(n, k=2) is cached {
+
+    return 1 if (n == 0)
+    return 0 if (k <= 0)
+
+    return (n.is_cube ? 1 : 0) if (k == 1)
+
+    if (k == 2) {
+        is_sum_of_two_cubes(n) || return 0
+    }
+
+    var count = 0
+
+    for a in (0 ..  n.iroot(3)) {
+        if (k > 2) {
+            count += __FUNC__(n - a**3, k-1)
+        }
+        elsif (n - a**3 -> is_cube) {
+            ++count
+        }
+    }
+
+    return count
+}
+
+for k in (0..9) {
+    say ("k = #{k}: ", 20.of { cubes_r(_, k) })
+}
+
+__END__
+k = 0: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+k = 1: [1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+k = 2: [1, 2, 1, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+k = 3: [1, 3, 3, 1, 0, 0, 0, 0, 3, 6, 3, 0, 0, 0, 0, 0, 3, 3, 0, 0]
+k = 4: [1, 4, 6, 4, 1, 0, 0, 0, 4, 12, 12, 4, 0, 0, 0, 0, 6, 12, 6, 0]
+k = 5: [1, 5, 10, 10, 5, 1, 0, 0, 5, 20, 30, 20, 5, 0, 0, 0, 10, 30, 30, 10]
+k = 6: [1, 6, 15, 20, 15, 6, 1, 0, 6, 30, 60, 60, 30, 6, 0, 0, 15, 60, 90, 60]
+k = 7: [1, 7, 21, 35, 35, 21, 7, 1, 7, 42, 105, 140, 105, 42, 7, 0, 21, 105, 210, 210]
+k = 8: [1, 8, 28, 56, 70, 56, 28, 8, 9, 56, 168, 280, 280, 168, 56, 8, 28, 168, 420, 560]
+k = 9: [1, 9, 36, 84, 126, 126, 84, 36, 18, 73, 252, 504, 630, 504, 252, 72, 45, 252, 756, 1260]

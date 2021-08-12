@@ -102,6 +102,29 @@ func r10_c(f) is cached {
     }
 }
 
+func r12_a(n) {
+    (-1)**(n-1) * 8 * n.divisors.sum {|d| (-1)**(n + n/d) * d**5 }
+}
+
+func r12_b(f) {
+    # A000735(n) = b(2*n + 1) where b(n) is multiplicative with:
+
+    # b(2^e) = 0^e
+    # b(p^e) = b(p) * b(p^(e-1)) - p^5 * b(p^(e-2))
+
+    var n = f.prod_2d {|p,e| ipow(p, e) }
+
+    return 0 if (n < 0)
+    return 1 if (n == 0)
+
+    # TODO: handle base case when n is prime.
+    return ... if n.is_prime
+
+    f.prod_2d {|p,e|
+        r12_b([[p, 1]]) * r12_b([[p, e-1]]) - (p**5 * r12_b([[p, e-2]]))
+    }
+}
+
 func r(n, k=2) is cached {
 
     return 1 if (n == 0)
@@ -148,6 +171,14 @@ func r(n, k=2) is cached {
         var b = (r10_b(f) * 16**v)
         var c = ((-4)**v * r10_c(f))
         return (4/5 * (a + 16*b + 8*c))
+    }
+
+    if (k == 12) {
+        # r_12(n) = A029751(n) + 16*A000735(n)
+        # But, I don't know how to compute A000735 efficiently...
+        #~ var a = r12_a(n)
+        #~ var b = r12_b(2*n + 1 -> factor_exp)
+        #~ return (a + 16*b)
     }
 
     var count = 0

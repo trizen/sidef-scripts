@@ -514,6 +514,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Stirling factorial correction terms](./Math/stirling_factorial_correction_terms.sf)
     * [Strange numbers in base n](./Math/strange_numbers_in_base_n.sf)
     * [Substring primes in base n](./Math/substring_primes_in_base_n.sf)
+    * [Sum of cubes function recursive](./Math/sum_of_cubes_function_recursive.sf)
     * [Sum of digits in base subquadratic algorithm](./Math/sum_of_digits_in_base_subquadratic_algorithm.sf)
     * [Sum of number of divisors of gcd x y](./Math/sum_of_number_of_divisors_of_gcd_x_y.sf)
     * [Sum of number of unitary divisors](./Math/sum_of_number_of_unitary_divisors.sf)
