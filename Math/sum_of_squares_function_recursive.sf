@@ -1,0 +1,52 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 12 August 2021
+# https://github.com/trizen
+
+# Count the number of ways or representing n as a sum of k squares (function known as: r_k(n)).
+
+# See also:
+#   https://en.wikipedia.org/wiki/Sum_of_squares_function
+
+# OEIS sequences:
+#   https://oeis.org/A004018 -- Theta series of square lattice (or number of ways of writing n as a sum of 2 squares). Often denoted by r(n) or r_2(n).
+#   https://oeis.org/A005875 -- Theta series of simple cubic lattice; also number of ways of writing a nonnegative integer n as a sum of 3 squares (zero being allowed).
+#   https://oeis.org/A000118 -- Number of ways of writing n as a sum of 4 squares; also theta series of lattice Z^4.
+#   https://oeis.org/A000132 -- Number of ways of writing n as a sum of 5 squares.
+#   https://oeis.org/A000141 -- Number of ways of writing n as a sum of 6 squares.
+#   https://oeis.org/A008451 -- Number of ways of writing n as a sum of 7 squares.
+
+func r(n, k=2) is cached {
+
+    return 1 if (n == 0)
+    return 0 if (k <= 0)
+
+    return (n.is_square ? 2 : 0) if (k == 1)
+
+    var count = 0
+
+    for a in (0 ..  n.isqrt) {
+        if (k > 2) {
+            count += (a.is_zero ? 1 : 2)*__FUNC__(n - a**2, k-1)
+        }
+        elsif (n - a**2 -> is_square) {
+            count += (a.is_zero ? 1 : 2)*(n - a**2 -> is_zero ? 1 : 2)
+        }
+    }
+
+    return count
+}
+
+for k in (1..7) {
+    say ("k = #{k}: ", 15.of { r(_, k) })
+}
+
+__END__
+k = 1: [1, 2, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0]
+k = 2: [1, 4, 4, 0, 4, 8, 0, 0, 4, 4, 8, 0, 0, 8, 0]
+k = 3: [1, 6, 12, 8, 6, 24, 24, 0, 12, 30, 24, 24, 8, 24, 48]
+k = 4: [1, 8, 24, 32, 24, 48, 96, 64, 24, 104, 144, 96, 96, 112, 192]
+k = 5: [1, 10, 40, 80, 90, 112, 240, 320, 200, 250, 560, 560, 400, 560, 800]
+k = 6: [1, 12, 60, 160, 252, 312, 544, 960, 1020, 876, 1560, 2400, 2080, 2040, 3264]
+k = 7: [1, 14, 84, 280, 574, 840, 1288, 2368, 3444, 3542, 4424, 7560, 9240, 8456, 11088]

@@ -520,6 +520,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Sum of prime-power exponents of factorial](./Math/sum_of_prime-power_exponents_of_factorial.sf)
     * [Sum of prime-power exponents of product of binomials](./Math/sum_of_prime-power_exponents_of_product_of_binomials.sf)
     * [Sum of remainders](./Math/sum_of_remainders.sf)
+    * [Sum of squares function recursive](./Math/sum_of_squares_function_recursive.sf)
     * [Sum of two squares solutions](./Math/sum_of_two_squares_solutions.sf)
     * [Sum of two squares solutions tonelli-shanks](./Math/sum_of_two_squares_solutions_tonelli-shanks.sf)
     * [Sums of power sums formula](./Math/sums_of_power_sums_formula.sf)
