@@ -27,15 +27,21 @@ func lucas_miller_factor(n, j=1, k=100) {
 
         next if is_square(P*P - 4*Q)
 
-        for b in (0..r) {
+        var T     = powmod(Q, d, n)
+        var (U,V) = lucasUVmod(P, Q, d, n)
 
-            var (U,V) = lucasUVmod(P, Q, d << b, n)
+        for b in (0..r) {
 
             for g in (gcd(U,n), gcd(V,n), gcd(V-P,n)) {
                 if (g.is_between(2, n-1)) {
                     return g
                 }
             }
+
+            U = mulmod(U, V, n)
+            V = mulmod(V, V, n)
+            V = submod(V, 2*T, n)
+            T = mulmod(T, T, n)
         }
     }
 
