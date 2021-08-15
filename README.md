@@ -260,6 +260,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Generate numbers with given edges](./Math/generate_numbers_with_given_edges.sf)
     * [Generate numbers with given subdigits](./Math/generate_numbers_with_given_subdigits.sf)
     * [Generate primes with a given digit sum](./Math/generate_primes_with_a_given_digit_sum.sf)
+    * [Generate primes with digits in nondecreasing order](./Math/generate_primes_with_digits_in_nondecreasing_order.sf)
     * [Generate primes with only one odd digit](./Math/generate_primes_with_only_one_odd_digit.sf)
     * [Generate primes with prime digits](./Math/generate_primes_with_prime_digits.sf)
     * [Geometric-harmonic mean](./Math/geometric-harmonic_mean.sf)

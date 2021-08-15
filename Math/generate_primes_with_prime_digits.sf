@@ -24,10 +24,10 @@ func primes_with_prime_digits(upto, base = 10) {
 
     for k in (0 .. upto.ilog(base)) {
         prime_digits.variations_with_repetition(k, {|*a|
-            next if ([end_digits[0], a...].digits2num(base) > upto)
+            var v = a.digits2num(base)
             end_digits.each {|d|
-                var n = [d, a...].digits2num(base)
-                list << n if n.is_prime
+                var n = (v*base + d)
+                list << n if (n.is_prime && (n <= upto))
             }
         })
     }

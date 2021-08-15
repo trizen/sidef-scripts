@@ -25,10 +25,10 @@ func primes_with_one_odd_digit(upto, base = 10) {
     for k in (0 .. upto.ilog(base)) {
         even_digits.variations_with_repetition(k, {|*a|
             next if (a.last == 0)
-            next if ([1, a...].digits2num(base) > upto)
+            var v = a.digits2num(base)
             odd_digits.each {|d|
-                var n = [d, a...].digits2num(base)
-                list << n if n.is_prime
+                var n = (v*base + d)
+                list << n if (n.is_prime && (n <= upto))
             }
         })
     }

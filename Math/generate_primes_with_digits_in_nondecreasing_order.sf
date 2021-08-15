@@ -1,0 +1,62 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 15 August 2021
+# https://github.com/trizen
+
+# Generate prime numbers that have digits in nondecreasing order.
+
+# See also:
+#   https://rosettacode.org/wiki/Primes_with_digits_in_nondecreasing_order
+
+# OEIS sequences:
+#   https://oeis.org/A028864 -- Primes with digits in nondecreasing order.
+#   https://oeis.org/A345325 -- Number of primes less than 10^n with digits in nondecreasing order.
+
+func primes_with_nondecreasing_digits(upto, base = 10) {
+
+    upto = prev_prime(upto+1)
+
+    var list = []
+    var digits = @(1..^base -> flip)
+
+    var end_digits = digits.grep { .is_coprime(base) }
+    list << digits.grep { .is_prime && !.is_coprime(base) }...
+
+    for k in (0 .. upto.ilog(base)) {
+        digits.combinations_with_repetition(k, {|*a|
+            var v = a.digits2num(base)
+            end_digits.each {|d|
+                var n = (v*base + d)
+                next if ((n >= base) && (a[0] > d))
+                list << n if (n.is_prime && (n <= upto))
+            }
+        })
+    }
+
+    list.sort
+}
+
+say primes_with_nondecreasing_digits(1000)
+
+for k in (1..6) {
+    var arr = primes_with_nondecreasing_digits(10**k)
+    say "There are #{arr.len} primes with digits in nondecreasing order <= 10^#{k}"
+}
+
+__END__
+[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 37, 47, 59, 67, 79, 89, 113, 127, 137, 139, 149, 157, 167, 179, 199, 223, 227, 229, 233, 239, 257, 269, 277, 337, 347, 349, 359, 367, 379, 389, 449, 457, 467, 479, 499, 557, 569, 577, 599, 677]
+
+There are 4 primes with digits in nondecreasing order <= 10^1
+There are 16 primes with digits in nondecreasing order <= 10^2
+There are 50 primes with digits in nondecreasing order <= 10^3
+There are 132 primes with digits in nondecreasing order <= 10^4
+There are 315 primes with digits in nondecreasing order <= 10^5
+There are 689 primes with digits in nondecreasing order <= 10^6
+There are 1413 primes with digits in nondecreasing order <= 10^7
+There are 2636 primes with digits in nondecreasing order <= 10^8
+There are 4967 primes with digits in nondecreasing order <= 10^9
+There are 8563 primes with digits in nondecreasing order <= 10^10
+There are 14481 primes with digits in nondecreasing order <= 10^11
+There are 23593 primes with digits in nondecreasing order <= 10^12
+There are 37127 primes with digits in nondecreasing order <= 10^13
