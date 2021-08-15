@@ -1,0 +1,73 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 15 August 2021
+# https://github.com/trizen
+
+# Count the number of ways or representing n as a sum of k absolute cubes.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Sum_of_squares_function
+
+# OEIS sequences:
+#   https://oeis.org/A175362 -- Number of integer pairs (x,y) satisfying |x|^3 + |y|^3 = n, -n <= x,y <= n.
+#   https://oeis.org/A175365 -- Number of integer triples (x,y,z) satisfying |x|^3+|y|^3+|z|^3 = n, -n <= x,y,z <= n.
+#   https://oeis.org/A175368 -- Number of integer 4-tuples (x,y,z,u) satisfying |x|^3+|y|^3+|z|^3+|u|^3 = n, -n <= x,y,z,u <= n.
+
+func is_sum_of_two_cubes(n) {   # OEIS: A004999
+
+    var L = iroot(n-1, 3)+1
+    var U = iroot(4*n, 3)
+
+    n.divisors.each {|m|
+        if ((L <= m) && (m <= U)) {
+            var l = (m*m - n/m)
+            l.is_div(3) || next
+            l = idiv(l, 3)
+            is_square(m*m - 4*l) && return true
+        }
+    }
+
+    return false
+}
+
+func cubes_r(n, k=2) is cached {
+
+    return 1 if (n == 0)
+    return 0 if (k <= 0)
+
+    return (n.is_cube ? 1 : 0) if (k == 1)
+
+    if (k == 2) {
+        is_sum_of_two_cubes(n) || return 0
+    }
+
+    var count = 0
+
+    for a in (0 ..  n.iroot(3)) {
+        if (k > 2) {
+            count += (a.is_zero ? 1 : 2)*__FUNC__(n - a**3, k-1)
+        }
+        elsif (n - a**3 -> is_cube) {
+            count += (a.is_zero ? 1 : 2)*(n - a**3 -> is_zero ? 1 : 2)
+        }
+    }
+
+    return count
+}
+
+for k in (0..9) {
+    say ("k = #{k}: ", 20.of { cubes_r(_, k) })
+}
+
+__END__
+k = 0: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+k = 1: [1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+k = 2: [1, 4, 4, 0, 0, 0, 0, 0, 4, 8, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0]
+k = 3: [1, 6, 12, 8, 0, 0, 0, 0, 6, 24, 24, 0, 0, 0, 0, 0, 12, 24, 0, 0]
+k = 4: [1, 8, 24, 32, 16, 0, 0, 0, 8, 48, 96, 64, 0, 0, 0, 0, 24, 96, 96, 0]
+k = 5: [1, 10, 40, 80, 80, 32, 0, 0, 10, 80, 240, 320, 160, 0, 0, 0, 40, 240, 480, 320]
+k = 6: [1, 12, 60, 160, 240, 192, 64, 0, 12, 120, 480, 960, 960, 384, 0, 0, 60, 480, 1440, 1920]
+k = 7: [1, 14, 84, 280, 560, 672, 448, 128, 14, 168, 840, 2240, 3360, 2688, 896, 0, 84, 840, 3360, 6720]
+k = 8: [1, 16, 112, 448, 1120, 1792, 1792, 1024, 272, 224, 1344, 4480, 8960, 10752, 7168, 2048, 112, 1344, 6720, 17920]
+k = 9: [1, 18, 144, 672, 2016, 4032, 5376, 4608, 2322, 800, 2016, 8064, 20160, 32256, 32256, 18432, 4752, 2016, 12096, 40320]
