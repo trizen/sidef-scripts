@@ -10,11 +10,11 @@
 #   https://oeis.org/A013928
 
 func squarefree_count(n) {
-    gather {
-        n.isqrt.each_squarefree {|k|
-            take(moebius(k) * idiv(n, k*k))
-        }
-    }.sum
+    var sum = 0
+    n.isqrt.each_squarefree {|k|
+        sum += (moebius(k) * idiv(n, k*k))
+    }
+    return sum
 }
 
 for k in (1..9) {

@@ -19,9 +19,11 @@
 #   S(10^11) = 3289868138800129869623
 
 func squarefree_sum(n) {    # A066779
-    sum(1..n.isqrt, {|k|
-        moebius(k) * k*k * faulhaber(idiv(n, k*k), 1)
-    })
+    var sum = 0
+    n.isqrt.each_squarefree {|k|
+        sum += (moebius(k) * k*k * faulhaber(idiv(n, k*k), 1))
+    }
+    return sum
 }
 
 func core_partial_sum(n) {  # A069891

@@ -1,0 +1,36 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 20 August 2021
+# https://github.com/trizen
+
+# Sub-linear formula for computing the count of k-powerfree numbers <= n.
+
+# See also:
+#   https://oeis.org/A013928 -- Number of (positive) squarefree numbers < n.
+#   https://oeis.org/A060431 -- Number of cubefree numbers <= n.
+#   https://oeis.org/A071172 -- Number of squarefree integers <= 10^n.
+#   https://oeis.org/A160112 -- Number of cubefree integers not exceeding 10^n.
+
+func powerfree_count(n, k=2) {
+    var sum = 0
+    n.iroot(k).each_squarefree {|v|
+        sum += (moebius(v) * idiv(n, v**k))
+    }
+    return sum
+}
+
+for k in (2..10) {
+    printf("Number of %2d-powerfree numbers <= 10^j: {%s}\n", k, 8.of {|j| powerfree_count(10**j, k) }.join(', '))
+}
+
+__END__
+Number of  2-powerfree numbers <= 10^j: {1, 7, 61, 608, 6083, 60794, 607926, 6079291, 60792694, 607927124}
+Number of  3-powerfree numbers <= 10^j: {1, 9, 85, 833, 8319, 83190, 831910, 8319081, 83190727, 831907372}
+Number of  4-powerfree numbers <= 10^j: {1, 10, 93, 925, 9240, 92395, 923939, 9239385, 92393839, 923938406}
+Number of  5-powerfree numbers <= 10^j: {1, 10, 97, 965, 9645, 96440, 964388, 9643874, 96438737, 964387341}
+Number of  6-powerfree numbers <= 10^j: {1, 10, 99, 984, 9831, 98297, 982954, 9829527, 98295260, 982952591}
+Number of  7-powerfree numbers <= 10^j: {1, 10, 100, 993, 9918, 99173, 991721, 9917199, 99171986, 991719856}
+Number of  8-powerfree numbers <= 10^j: {1, 10, 100, 997, 9960, 99595, 995940, 9959393, 99593921, 995939202}
+Number of  9-powerfree numbers <= 10^j: {1, 10, 100, 999, 9981, 99800, 997997, 9979956, 99799564, 997995634}
+Number of 10-powerfree numbers <= 10^j: {1, 10, 100, 1000, 9991, 99902, 999008, 9990065, 99900642, 999006414}

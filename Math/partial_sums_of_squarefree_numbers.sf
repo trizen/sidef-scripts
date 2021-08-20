@@ -10,11 +10,11 @@
 #   https://oeis.org/A066779
 
 func squarefree_sum(n) {    # A066779
-    gather {
-        n.isqrt.each_squarefree {|k|
-            take(moebius(k) * k*k * faulhaber(idiv(n, k*k), 1))
-        }
-    }.sum
+    var sum = 0
+    n.isqrt.each_squarefree {|k|
+        sum += (moebius(k) * k*k * faulhaber(idiv(n, k*k), 1))
+    }
+    return sum
 }
 
 for k in (1..9) {
