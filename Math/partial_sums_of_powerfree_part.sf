@@ -10,7 +10,6 @@
 #   https://oeis.org/A007913 -- Squarefree part of n: a(n) is the smallest positive number m such that n/m is a square.
 #   https://oeis.org/A050985 -- Cubefree part of n.
 #   https://oeis.org/A069891 -- a(n) = Sum_{k=1..n} A007913(k), the squarefree part of k.
-#
 
 func f(n, r) {
     n.factor_prod {|p|
