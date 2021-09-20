@@ -9,7 +9,7 @@
 
 class Base()            {}
 class Power()    < Base {}
-class Fraction() < Base {}
+class main::Fraction() < Base {}
 class Sum()      < Base {}
 class Product()  < Base {}
 class Log()      < Base {}
@@ -17,15 +17,15 @@ class Exp()      < Base {}
 class Symbol()   < Base {}
 
 class Base {
-    #const I = Exp(Fraction(1, 2) * Log(-1))
-    has I = Power(-1, Fraction(1, 2))
+    #const I = Exp(main::Fraction(1, 2) * Log(-1))
+    has I = Power(-1, main::Fraction(1, 2))
 
     method sin {
-        Fraction(Exp(I * self) - Exp(-I * self), (2*I))
+        main::Fraction(Exp(I * self) - Exp(-I * self), (2*I))
     }
 
     method cos {
-        Fraction(Exp(-I * self) + Exp(I * self), 2)
+        main::Fraction(Exp(-I * self) + Exp(I * self), 2)
     }
 
     method i {
@@ -59,7 +59,7 @@ class Symbol(name) {
     }
 
     method inv {
-        Fraction(1, self)
+        main::Fraction(1, self)
     }
 
     method simplify {
@@ -79,14 +79,14 @@ class Symbol(name) {
     }
 }
 
-class Fraction(num, den) {
+class main::Fraction(num, den) {
 
     method +(Number o) {
-        self + Fraction(o, 1)
+        self + main::Fraction(o, 1)
     }
 
-    method +(Fraction o) {
-        Fraction(
+    method +(main::Fraction o) {
+        main::Fraction(
             num*o.den + o.num*den,
             den*o.den
         )
@@ -100,7 +100,7 @@ class Fraction(num, den) {
         self + o.neg
     }
 
-    method -(Fraction o) {
+    method -(main::Fraction o) {
         self + o.neg
     }
 
@@ -109,11 +109,11 @@ class Fraction(num, den) {
     }
 
     method *(Number o) {
-        Fraction(num*o, den)
+        main::Fraction(num*o, den)
     }
 
-    method *(Fraction o) {
-        Fraction(num*o.num, den*o.den)
+    method *(main::Fraction o) {
+        main::Fraction(num*o.num, den*o.den)
     }
 
     method *(Object o) {
@@ -121,14 +121,14 @@ class Fraction(num, den) {
     }
 
     method /(Number o) {
-        Fraction(
+        main::Fraction(
             num,
             den * o
         )
     }
 
-    method /(Fraction o) {
-        Fraction(
+    method /(main::Fraction o) {
+        main::Fraction(
             num * o.den,
             den * o.num,
         )
@@ -141,14 +141,14 @@ class Fraction(num, den) {
     method **(Number o) {
         if (o < 0) {
             var a = o.abs
-            Fraction(den**a, num**a)
+            main::Fraction(den**a, num**a)
         }
         else {
-            Fraction(num**o, den**o)
+            main::Fraction(num**o, den**o)
         }
     }
 
-    method ==(Fraction o) {
+    method ==(main::Fraction o) {
         (o.num == num) &&
         (o.den == den)
     }
@@ -158,15 +158,15 @@ class Fraction(num, den) {
     }
 
     method inv {
-        Fraction(den, num)
+        main::Fraction(den, num)
     }
 
     method neg {
-        Fraction(num.neg, den)
+        main::Fraction(num.neg, den)
     }
 
     method simplify {
-        Fraction(num.simplify, den.simplify)
+        main::Fraction(num.simplify, den.simplify)
     }
 
     method numeric {
@@ -174,7 +174,7 @@ class Fraction(num, den) {
     }
 
     method to_s {
-        "Fraction(#{num}, #{den})"
+        "main::Fraction(#{num}, #{den})"
     }
 }
 
@@ -237,7 +237,7 @@ class Sum(*values) {
     }
 
     method inv {
-        Fraction(1, self)
+        main::Fraction(1, self)
     }
 
     method neg {
@@ -397,14 +397,14 @@ class Exp(v) {
 
 class Log(v) {
     method *(Object o) {
-        #Fraction(self, o.inv)
+        #main::Fraction(self, o.inv)
         Product(self, o)
         #Log(Power(v, o))
         #o * self
     }
 
     method /(Object o) {
-        #Fraction(self, o)
+        #main::Fraction(self, o)
         o.inv * self
         #Product(self, o.inv)
         #Log(Power(v, o.inv))
@@ -427,7 +427,7 @@ class Log(v) {
     }
 
     method inv {
-        Fraction(1, self)
+        main::Fraction(1, self)
     }
 
     method neg {
@@ -468,7 +468,7 @@ class Power(v, n) {
         Power(v, n * o)
     }
 
-    method **(Fraction o) {
+    method **(main::Fraction o) {
         Power(v, n * o)
     }
 
@@ -551,7 +551,7 @@ class Number {
         o + self
     }
 
-    method +(Fraction o) {
+    method +(main::Fraction o) {
         o + self
     }
 
@@ -560,7 +560,7 @@ class Number {
     }
 
     # Subtraction
-    method -(Fraction o) {
+    method -(main::Fraction o) {
         o.neg + self
     }
 
@@ -589,7 +589,7 @@ class Number {
     }
 
     # Multiplication
-    method *(Fraction o) {
+    method *(main::Fraction o) {
         o * self
     }
 
@@ -626,7 +626,7 @@ class Number {
         o.inv * self
     }
 
-    method /(Fraction o) {
+    method /(main::Fraction o) {
         o.inv * self
     }
 
@@ -648,7 +648,7 @@ class Number {
 
     # Other
     method inv {
-        Fraction(1, self)
+        main::Fraction(1, self)
     }
 
     method simplify {
@@ -662,30 +662,30 @@ class Number {
 
 if (__MAIN__ == __FILE__) {
 
-    var n = Power(5, Fraction(1,2))
+    var n = Power(5, main::Fraction(1,2))
     say n
     say n**2
     say n**3
-    say n**Fraction(2, 1)
+    say n**main::Fraction(2, 1)
 
     say Exp(Log(5) * 3).simplify
     say Power(3, Log(Exp(Sum(3, 4)))).simplify
 
     say Log(42)-Log(6)
-    say Product(3, 4, 5)*Fraction(1, 3)
+    say Product(3, 4, 5)*main::Fraction(1, 3)
     say Log(42)/Log(6)
     say Log(Symbol(:x))
     say Log(Symbol(:x))+Log(Symbol(:y))
-    say Fraction(Symbol(:a), Symbol(:b))+Fraction(Symbol(:c), Symbol(:d))
+    say main::Fraction(Symbol(:a), Symbol(:b))+main::Fraction(Symbol(:c), Symbol(:d))
 
     say "\n=> Summing..."
 
-    var sum = Fraction(0, 1)
+    var sum = main::Fraction(0, 1)
 
     for n in (0..10) {
-        sum += Fraction(1, n!)
-        #sum += Fraction(Symbol(:x), n!)
-        #sum += Power(n!, Fraction(1, 2)).inv
+        sum += main::Fraction(1, n!)
+        #sum += main::Fraction(Symbol(:x), n!)
+        #sum += Power(n!, main::Fraction(1, 2)).inv
         say sum
     }
 
