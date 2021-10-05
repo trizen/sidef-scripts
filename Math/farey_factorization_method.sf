@@ -65,7 +65,7 @@ func check_factor (n, g, factors) {
 func next_multiplier (k) {
     k += 2
 
-    while (!k.is_square_free) {
+    while (!k.is_squarefree) {
         ++k
     }
 

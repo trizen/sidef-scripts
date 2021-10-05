@@ -54,7 +54,7 @@ func find_random_factor(n, small=true, trial=false) {
 func is_prob_squarefree(r, tries=50) {
 
     if (r.len <= 50) {
-        return r.is_square_free
+        return r.is_squarefree
     }
 
     return false if r.is_power
@@ -79,7 +79,7 @@ func is_prob_squarefree(r, tries=50) {
         var len = r.len
 
         if (len <= 50) {
-            return r.is_square_free
+            return r.is_squarefree
         }
 
         if (len <= 10_000) {
@@ -97,7 +97,7 @@ func is_prob_squarefree(r, tries=50) {
                 return false
             }
 
-            p.is_square_free || return false
+            p.is_squarefree || return false
 
             p.factor.each { |z|
                 if (z*z `divides` r) {
