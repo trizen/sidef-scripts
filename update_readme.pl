@@ -64,7 +64,7 @@ my $main_dir     = File::Spec->curdir;
             my $title = $file->{name} =~ tr/_/ /r =~ s/ s /'s /gr;
 
             if ($file->{name} =~ /\.(\w{2,3})\z/) {
-                next if $1 !~ /^sf\z/i;
+                next if $1 !~ /^(?:sf|sm)\z/i;
             }
 
             if (-d $file->{path}) {
@@ -74,7 +74,7 @@ my $main_dir     = File::Spec->curdir;
             }
             else {
                 next if $dir eq $main_dir;
-                my $naked_title = $title =~ s/\.sf\z//ri;
+                my $naked_title = $title =~ s/\.(?:sf|sm)\z//ri;
                 my $url_path    = uri_escape($make_section_url->($file->{name}), ' ');
                 $section .= (' ' x $spaces) . "* [\u$naked_title]($url_path)\n";
             }

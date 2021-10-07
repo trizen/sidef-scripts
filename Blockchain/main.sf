@@ -1,0 +1,59 @@
+#!/usr/bin/ruby
+
+include Blockchain
+include SigningKey
+
+import Blockchain::Blockchain
+import Blockchain::Transaction
+import SigningKey::SigningKey
+
+# Your private key goes here
+var myKey = SigningKey()
+
+# Another key
+var evilKey = SigningKey()
+
+STDERR.printf("Your private key: %s\n", myKey.getPrivate)
+
+# From that we can calculate your public key (which doubles as your wallet address)
+var myWalletAddress = myKey.getPublic
+
+# Create new instance of Blockchain class
+var sidefCoin = Blockchain(difficulty: 2)
+
+# Mine first block
+sidefCoin.minePendingTransactions(myWalletAddress)
+
+# Create a transaction & sign it with your key
+const tx1 = Transaction(myWalletAddress, evilKey.getPublic, 100)
+tx1.signTransaction(myKey)
+#tx1.signTransaction(evilKey)
+sidefCoin.addTransaction(tx1)
+
+# Mine block
+sidefCoin.minePendingTransactions(myWalletAddress)
+
+# Create second transaction
+const tx2 = Transaction(myWalletAddress, evilKey.getPublic, 50)
+tx2.signTransaction(myKey)
+sidefCoin.addTransaction(tx2)
+
+# Mine block
+sidefCoin.minePendingTransactions(evilKey.getPublic)
+
+# Create third transaction
+const tx3 = Transaction(evilKey.getPublic, myWalletAddress, 10)
+tx3.signTransaction(evilKey)
+sidefCoin.addTransaction(tx3)
+
+# Mine block
+sidefCoin.minePendingTransactions(myWalletAddress)
+
+STDERR.say("\nMy balance is: #{sidefCoin.getBalanceOfAddress(myWalletAddress)}")
+STDERR.say("Evil balance is: #{sidefCoin.getBalanceOfAddress(evilKey.getPublic)}")
+
+# Uncomment this line if you want to test tampering with the chain
+#sidefCoin.chain[1].transactions[0].amount = 10;
+
+# Check if the chain is valid
+STDERR.say("\nBlockchain valid? ", sidefCoin.isChainValid() ? 'Yes' : 'No')

@@ -1,0 +1,46 @@
+#!/usr/bin/ruby
+
+var Ed25519 = require('Crypt::PK::Ed25519')
+
+class SigningKey() {
+
+    has key = Ed25519.new.generate_key
+
+    method keyFromPublic(String public) {
+        key = Ed25519.new
+        key.import_key_raw(pack('H*', public), 'public')
+        self
+    }
+
+    method keyFromPrivate(String private) {
+        key = Ed25519.new
+        key.import_key_raw(pack('H*', private), 'private')
+        self
+    }
+
+    method load(String file) {
+        var private = File(file).read
+        self.keyFromPrivate(private)
+    }
+
+    method store(String file) {
+        File(file).write(self.getPrivate)
+        self
+    }
+
+    method getPublic() {
+        unpack('H*', key.export_key_raw('public'))
+    }
+
+    method getPrivate() {
+        unpack('H*', key.export_key_raw('private'))
+    }
+
+    method sign(String message) {
+        unpack('H*', key.sign_message(message))
+    }
+
+    method verify(String sig, String message) {
+        key.verify_message(pack('H*', sig), message) ? true : false
+    }
+}

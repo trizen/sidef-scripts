@@ -1,0 +1,238 @@
+#!/usr/bin/ruby
+
+# Code translated from:
+#   https://github.com/Savjee/SavjeeCoin
+
+include SigningKey
+import SigningKey::SigningKey
+
+class Transaction(fromAddress, String toAddress, Number amount) {
+
+    has timestamp = Date()
+    has signature = nil
+
+    # Creates a SHA256 hash of the transaction
+    -> calculateHash() -> String {
+        [fromAddress, toAddress, amount, timestamp].dump.sha256
+    }
+
+    /*
+     * Signs a transaction with the given signingKey (which is an Elliptic keypair
+     * object that contains a private key). The signature is then stored inside the
+     * transaction object and later stored on the blockchain.
+    */
+    -> signTransaction(SigningKey signingKey) {
+
+        # You can only send a transaction from the wallet that is linked to your
+        # key. So here we check if the fromAddress matches your publicKey
+        if (signingKey.getPublic != fromAddress) {
+            die('You cannot sign transactions for other wallets!')
+        }
+
+        # Calculate the hash of this transaction, sign it with the key
+        # and store it inside the transaction obect
+        const hashTx = self.calculateHash
+        const sig = signingKey.sign(hashTx)
+
+        signature = sig
+    }
+
+    /**
+    * Checks if the signature is valid (transaction has not been tampered with).
+    * It uses the fromAddress as the public key.
+    */
+    -> isValid() -> Bool {
+        # If the transaction doesn't have a from address we assume it's a
+        # mining reward and that it's valid. You could verify this in a
+        # different way (special field for instance)
+        if (fromAddress == nil) {
+            return true
+        }
+
+        if (signature == nil) {
+            die ('No signature in this transaction');
+        }
+
+        SigningKey().keyFromPublic(fromAddress).verify(signature, self.calculateHash)
+    }
+}
+
+class Blockchain::Block (Date timestamp, Array transactions, String previousHash = '') {
+
+    has nonce = 0
+    has hash = nil
+
+    method init {
+        hash = self.calculateHash
+    }
+
+    /**
+    * Returns the SHA256 of this block (by processing all the data stored
+    * inside this block)
+    */
+    -> calculateHash() -> String {
+        [previousHash, timestamp, transactions, nonce].dump.sha256
+    }
+
+    /**
+    * Starts the mining process on the block. It changes the 'nonce' until the hash
+    * of the block starts with enough zeros (= difficulty)
+    */
+    -> mineBlock(Number difficulty) {
+        var target_prefix = "0"*difficulty
+
+        while (hash.first(difficulty) != target_prefix) {
+            ++nonce
+            hash = self.calculateHash
+        }
+
+        STDERR.say("Block mined: #{hash}")
+    }
+
+    /**
+    * Validates all the transactions inside this block (signature + hash) and
+    * returns true if everything checks out. False if the block is invalid.
+    */
+    -> hasValidTransactions() -> Bool {
+        transactions.all { .isValid }
+    }
+}
+
+class Blockchain (Number difficulty = 2, Array pendingTransactions = [], Number miningReward = 100) {
+
+    has chain = []
+
+    method init {
+        chain = [self.createGenesisBlock]
+    }
+
+    -> createGenesisBlock() -> Blockchain::Block {
+        Blockchain::Block(Date.parse('2021-10-07', '%Y-%m-%d'), [], '0')
+    }
+
+    /**
+    * Returns the latest block on our chain. Useful when you want to create a
+    * new Block and you need the hash of the previous Block.
+    */
+    -> getLatestBlock() -> Blockchain::Block {
+        chain.last
+    }
+
+    /**
+    * Takes all the pending transactions, puts them in a Block and starts the
+    * mining process. It also adds a transaction to send the mining reward to
+    * the given address.
+    */
+    -> minePendingTransactions(String miningRewardAddress) {
+        const rewardTx = Transaction(nil, miningRewardAddress, miningReward)
+        pendingTransactions.push(rewardTx)
+
+        const block = Blockchain::Block(Date.now, pendingTransactions, self.getLatestBlock.hash)
+        block.mineBlock(difficulty)
+
+        STDERR.say('Block successfully mined!')
+        chain.push(block)
+        pendingTransactions = []
+    }
+
+    /**
+    * Add a new transaction to the list of pending transactions (to be added
+    * next time the mining process starts). This verifies that the given
+    * transaction is properly signed.
+    */
+    -> addTransaction(Transaction transaction) {
+        if (!transaction.fromAddress || !transaction.toAddress) {
+            die('Transaction must include from and to address')
+        }
+
+        # Verify the transaction
+        if (!transaction.isValid()) {
+            die('Cannot add invalid transaction to chain')
+        }
+
+        if (transaction.amount <= 0) {
+            die('Transaction amount should be higher than 0')
+        }
+
+        # Making sure that the amount sent is not greater than existing balance
+        if (self.getBalanceOfAddress(transaction.fromAddress) < transaction.amount) {
+            die('Not enough balance')
+        }
+
+        pendingTransactions.push(transaction)
+        self
+    }
+
+    /**
+    * Returns the balance of a given wallet address.
+    */
+    -> getBalanceOfAddress(String address) -> Number {
+        var balance = 0;
+
+        chain.each {|block|
+            block.transactions.each {|trans|
+                if (trans.fromAddress == address) {
+                    balance -= trans.amount
+                }
+
+                if (trans.toAddress == address) {
+                    balance += trans.amount
+                }
+            }
+        }
+
+        return balance
+    }
+
+    /**
+    * Returns a list of all transactions that happened
+    * to and from the given wallet address.
+    */
+    -> getAllTransactionsForWallet(String address) -> Array {
+        var txs = []
+
+        chain.each {|block|
+            block.transactions.each {|tx|
+                if ((tx.fromAddress == address) || (tx.toAddress == address)) {
+                    txs.push(tx)
+                }
+            }
+        }
+
+        STDERR.printf("get transactions for wallet count: %s\n", txs.length)
+        return txs
+    }
+
+    /**
+    * Loops over all the blocks in the chain and verify if they are properly
+    * linked together and nobody has tampered with the hashes. By checking
+    * the blocks it also verifies the (signed) transactions inside of them.
+    */
+    -> isChainValid() -> Bool {
+
+        # Check if the Genesis block hasn't been tampered with by comparing
+        # the output of createGenesisBlock with the first block on our chain
+        if (self.createGenesisBlock.dump != chain.first.dump) {
+            return false
+        }
+
+        # Check the remaining blocks on the chain to see if there hashes and
+        # signatures are correct
+        chain.each_cons(2, {|previousBlock, currentBlock|
+
+            if (previousBlock.hash != currentBlock.previousHash) {
+                return false
+            }
+
+            if (!currentBlock.hasValidTransactions) {
+                return false
+            }
+
+            if (currentBlock.hash != currentBlock.calculateHash) {
+                return false
+            }
+        })
+
+        return true
+    }
+}
