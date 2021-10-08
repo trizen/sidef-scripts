@@ -467,6 +467,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Quadratic-integer factorization method](./Math/quadratic-integer_factorization_method.sf)
     * [Quadratic formula solution approx](./Math/quadratic_formula_solution_approx.sf)
     * [Quadratic frobenius primality test](./Math/quadratic_frobenius_primality_test.sf)
+    * [Quadratic frobenius primality test explicit](./Math/quadratic_frobenius_primality_test_explicit.sf)
     * [Quadratic integers](./Math/quadratic_integers.sf)
     * [Quaternion integer primality test](./Math/quaternion_integer_primality_test.sf)
     * [Quaternion integers](./Math/quaternion_integers.sf)
