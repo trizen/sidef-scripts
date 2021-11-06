@@ -1,0 +1,24 @@
+#!/usr/bin/ruby
+
+# Encode a sequence of n numbers into a polynomial of, at most, degree n-1.
+
+# See also:
+#   https://yewtu.be/watch?v=4AuV93LOPcE
+#   https://en.wikipedia.org/wiki/Polynomial_interpolation
+
+func solve_seq(arr) {
+
+    var poly = Poly()
+    var x    = Poly(1)
+
+    Inf.times {|k|
+        poly += (arr[0] * binomial(x, k))
+        arr = arr.diffs
+        break if arr.all { .is_zero }
+    }
+
+    poly
+}
+
+say solve_seq(20.of { _**2 })           # x^2
+say solve_seq(20.of { _**2 }.acc)       # 1/3*x^3 + 1/2*x^2 + 1/6*x
