@@ -6,10 +6,10 @@
 #   https://yewtu.be/watch?v=4AuV93LOPcE
 #   https://en.wikipedia.org/wiki/Polynomial_interpolation
 
-func solve_seq(arr) {
+func solve_seq(arr, offset=0) {
 
     var poly = Poly()
-    var x    = Poly(1)
+    var x    = Poly(1)-offset
 
     Inf.times {|k|
         poly += (arr[0] * binomial(x, k))

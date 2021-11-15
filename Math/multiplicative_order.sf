@@ -1,0 +1,50 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 15 November 2021
+# https://github.com/trizen
+
+# Compute the multiplicative order of a modulo n: znorder(a, n).
+# This is the smallest positive integer k such that a^k == 1 (mod n).
+
+# Another approach would be to compute the Carmichael lambda function of n and
+# then find the smallest divisor d of this value that satisfy a^d == 1 (mod n).
+
+func my_znorder(a, n) is cached {
+
+    if (n.is_prime) {
+        return (n.dec.divisors.first {|d| powmod(a, d, n) == 1 })
+    }
+
+    if (n.is_prime_power) {
+        var p = n.prime_root
+        var z = __FUNC__(a, p)
+
+        while (powmod(a, z, n) != 1) {
+            z *= p
+        }
+
+        return z
+    }
+
+    n.factor_map {|p,e| __FUNC__(a, p**e) }.lcm
+}
+
+## Run some tests
+
+for a in ([2, 3, 6, 10]) {
+    var t = 1e7.irand
+    for n in (t .. t+1e3) {
+        next if (gcd(a, n) != 1)
+        assert_eq(my_znorder(a, n), znorder(a, n))
+    }
+}
+
+## Example
+
+for n in (2..20) {
+    var a = (20 + 1e2.irand -> next_prime)
+    var z = my_znorder(a, n!)
+    assert_eq(z, znorder(a, n!))
+    say "znorder(#{a}, #{n}!) = #{z}"
+}
