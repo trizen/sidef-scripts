@@ -381,6 +381,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Motzkin triangle](./Math/motzkin_triangle.sf)
     * [Multiple modular multiplicative inversions](./Math/multiple_modular_multiplicative_inversions.sf)
     * [Multiplicative order](./Math/multiplicative_order.sf)
+    * [Multiplicative order from phi](./Math/multiplicative_order_from_phi.sf)
     * [N-bit random prime](./Math/n-bit_random_prime.sf)
     * [Near-power factorization method](./Math/near-power_factorization_method.sf)
     * [Next palindrome in base](./Math/next_palindrome_in_base.sf)
