@@ -1,0 +1,74 @@
+#!/usr/bin/ruby
+
+# Generate the bi-unitary divisors of n.
+
+# See also:
+#   https://oeis.org/A188999
+#   https://oeis.org/A222266
+
+func gcud(n, m) {   # greatest common unitary divisor of n and m
+
+    # Equivalent with:
+    # return (udivisors(n) & udivisors(m) -> max)
+
+    var g = gcd(n, m)
+
+    while ((var t = gcd(g, n/g)) != 1) {
+        g /= t
+    }
+
+    while ((var t = gcd(g, m/g)) != 1) {
+        g /= t
+    }
+
+    return g
+}
+
+func bi_unitary_divisors(n) is cached {
+
+    var d = [1]
+
+    for p,e in (n.factor_exp) {
+        var r = 1
+        d << gather {
+            e.times {
+                r *= p
+                d.each { |u|
+                    var t = u*r
+                    take(t) if (gcud(t, n/t) == 1)
+                }
+            }
+        }...
+    }
+
+    return d.sort
+}
+
+for n in (1..20) {
+    say "bi-divisors of #{n} = #{bi_unitary_divisors(n)}"
+
+    assert_eq(bi_unitary_divisors(n).len, n.bsigma0)
+    assert_eq(bi_unitary_divisors(n).sum, n.bsigma)
+}
+
+__END__
+bi-divisors of 1 = [1]
+bi-divisors of 2 = [1, 2]
+bi-divisors of 3 = [1, 3]
+bi-divisors of 4 = [1, 4]
+bi-divisors of 5 = [1, 5]
+bi-divisors of 6 = [1, 2, 3, 6]
+bi-divisors of 7 = [1, 7]
+bi-divisors of 8 = [1, 2, 4, 8]
+bi-divisors of 9 = [1, 9]
+bi-divisors of 10 = [1, 2, 5, 10]
+bi-divisors of 11 = [1, 11]
+bi-divisors of 12 = [1, 3, 4, 12]
+bi-divisors of 13 = [1, 13]
+bi-divisors of 14 = [1, 2, 7, 14]
+bi-divisors of 15 = [1, 3, 5, 15]
+bi-divisors of 16 = [1, 2, 8, 16]
+bi-divisors of 17 = [1, 17]
+bi-divisors of 18 = [1, 2, 9, 18]
+bi-divisors of 19 = [1, 19]
+bi-divisors of 20 = [1, 4, 5, 20]

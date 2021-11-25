@@ -109,6 +109,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Bernoulli numbers recurrence](./Math/bernoulli_numbers_recurrence.sf)
     * [Bernoulli numbers recurrence 2](./Math/bernoulli_numbers_recurrence_2.sf)
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)
+    * [Bi-unitary divisors](./Math/bi-unitary_divisors.sf)
     * [Binary exponentiation](./Math/binary_exponentiation.sf)
     * [Binary gcd algorithm](./Math/binary_gcd_algorithm.sf)
     * [Binomial theorem](./Math/binomial_theorem.sf)
