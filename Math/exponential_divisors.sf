@@ -1,0 +1,52 @@
+#!/usr/bin/ruby
+
+# Generate the exponential divisors (or e-divisors) of n.
+
+# See also:
+#   https://oeis.org/A051377
+
+func e_divisors(n) {
+
+    return [1] if (n == 1)
+
+    var f = n.factor_exp
+    var D = f.map {.tail.divisors}
+
+    var L = []
+
+    D.map {|d| ^d }.cartesian {|*a|
+        L << f.prod_kv {|j,pp|
+            pp[0]**D[j][a[j]]
+        }
+    }
+
+    return L
+}
+
+for n in (1..20) {
+    say "e-divisors of #{n} = #{e_divisors(n)}"
+    assert_eq(e_divisors(n).len, n.esigma0)
+    assert_eq(e_divisors(n).sum, n.esigma)
+}
+
+__END__
+e-divisors of 1 = [1]
+e-divisors of 2 = [2]
+e-divisors of 3 = [3]
+e-divisors of 4 = [2, 4]
+e-divisors of 5 = [5]
+e-divisors of 6 = [6]
+e-divisors of 7 = [7]
+e-divisors of 8 = [2, 8]
+e-divisors of 9 = [3, 9]
+e-divisors of 10 = [10]
+e-divisors of 11 = [11]
+e-divisors of 12 = [6, 12]
+e-divisors of 13 = [13]
+e-divisors of 14 = [14]
+e-divisors of 15 = [15]
+e-divisors of 16 = [2, 4, 16]
+e-divisors of 17 = [17]
+e-divisors of 18 = [6, 18]
+e-divisors of 19 = [19]
+e-divisors of 20 = [10, 20]

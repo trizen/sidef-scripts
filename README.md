@@ -207,6 +207,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Euler's totient theorem expmod](./Math/euler_s_totient_theorem_expmod.sf)
     * [Exact division](./Math/exact_division.sf)
     * [Exact division 2](./Math/exact_division_2.sf)
+    * [Exponential divisors](./Math/exponential_divisors.sf)
     * [Extended greatest common divisor](./Math/extended_greatest_common_divisor.sf)
     * [Factorial approximation from incomplete gamma](./Math/factorial_approximation_from_incomplete_gamma.sf)
     * [Factorial approximations](./Math/factorial_approximations.sf)
