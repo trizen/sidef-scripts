@@ -15,7 +15,7 @@
 
 STDOUT.autoflush(true)
 
-class Polynomial (coeff, a=nil, b=nil) {
+class SIQSPolynomial (coeff, a=nil, b=nil) {
 
     method eval (x) {
         var res = 0
@@ -188,8 +188,8 @@ class SIQS (
             b = (a - b)
         }
 
-        var g = Polynomial([a*a, 2*a*b, b*b - n], a, b_orig)
-        var h = Polynomial([a, b])
+        var g = SIQSPolynomial([a*a, 2*a*b, b*b - n], a, b_orig)
+        var h = SIQSPolynomial([a, b])
 
         for fb in (factor_base) {
 
