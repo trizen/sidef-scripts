@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+# A simple algorithm for generating the unitary divisors of a given number.
+
+# See also:
+#   https://oeis.org/A034448
+#   https://oeis.org/A077610
+#   https://en.wikipedia.org/wiki/Unitary_divisor
+
+func unitary_divisors(n) {
+
+    var d  = [1]
+    var pp = n.factor_map {|p,e| p**e }
+
+    pp.each {|p|
+        d << d.map {|t| t*p }...
+    }
+
+    return d.sort
+}
+
+for n in (1..20) {
+    say "unitary-divisors of #{n} = #{unitary_divisors(n)}"
+    assert_eq(unitary_divisors(n).len, n.usigma0)
+    assert_eq(unitary_divisors(n).sum, n.usigma)
+}

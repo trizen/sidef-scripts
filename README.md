@@ -559,6 +559,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Tribonacci numbers](./Math/tribonacci_numbers.sf)
     * [Tribonacci primality test](./Math/tribonacci_primality_test.sf)
     * [Twin primes from partial products](./Math/twin_primes_from_partial_products.sf)
+    * [Unitary divisors](./Math/unitary_divisors.sf)
     * [Unreduced continued fractions](./Math/unreduced_continued_fractions.sf)
     * [Unreduced fractions](./Math/unreduced_fractions.sf)
     * [Vampire numbers](./Math/vampire_numbers.sf)

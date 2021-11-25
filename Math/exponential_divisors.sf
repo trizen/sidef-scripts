@@ -4,6 +4,7 @@
 
 # See also:
 #   https://oeis.org/A051377
+#   https://oeis.org/A322791
 
 func exponential_divisors(n) {
 
