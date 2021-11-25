@@ -21,13 +21,34 @@ func exponential_divisors(n) {
         }
     }
 
-    return L
+    return L.sort
+}
+
+func exponential_divisors_2(n) {     # faster algorithm
+
+    var d = [1]
+
+    for p,e in (n.factor_exp) {
+        d = gather {
+            for k in (e.divisors) {
+                d.each { |u|
+                    take(u * p**k)
+                }
+            }
+        }
+    }
+
+    return d.sort
 }
 
 for n in (1..20) {
     say "e-divisors of #{n} = #{exponential_divisors(n)}"
+
     assert_eq(exponential_divisors(n).len, n.esigma0)
     assert_eq(exponential_divisors(n).sum, n.esigma)
+
+    assert_eq(exponential_divisors_2(n).len, n.esigma0)
+    assert_eq(exponential_divisors_2(n).sum, n.esigma)
 }
 
 __END__
