@@ -284,6 +284,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Holf-pell factorization](./Math/holf-pell_factorization.sf)
     * [Holf factorization](./Math/holf_factorization.sf)
     * [Home primes](./Math/home_primes.sf)
+    * [Infinitary divisors](./Math/infinitary_divisors.sf)
     * [Integer root](./Math/integer_root.sf)
     * [Integer root binary search](./Math/integer_root_binary_search.sf)
     * [Integer square root](./Math/integer_square_root.sf)

@@ -5,7 +5,7 @@
 # See also:
 #   https://oeis.org/A051377
 
-func e_divisors(n) {
+func exponential_divisors(n) {
 
     return [1] if (n == 1)
 
@@ -24,9 +24,9 @@ func e_divisors(n) {
 }
 
 for n in (1..20) {
-    say "e-divisors of #{n} = #{e_divisors(n)}"
-    assert_eq(e_divisors(n).len, n.esigma0)
-    assert_eq(e_divisors(n).sum, n.esigma)
+    say "e-divisors of #{n} = #{exponential_divisors(n)}"
+    assert_eq(exponential_divisors(n).len, n.esigma0)
+    assert_eq(exponential_divisors(n).sum, n.esigma)
 }
 
 __END__
