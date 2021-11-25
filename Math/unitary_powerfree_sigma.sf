@@ -1,0 +1,57 @@
+#!/usr/bin/ruby
+
+# Sum of the unitary k-powerfree divisors of n.
+
+# See also:
+#   https://oeis.org/A092261
+
+func unitary_powerfree_sigma(n, k=2, j=1) {
+
+    var prod = 1
+
+    for p,e in (n.factor_exp) {
+        e < k || next
+        #prod *= usigma(p**e, j)
+        prod *= (p**(e*j) + 1)
+    }
+
+    return prod
+}
+
+for n in (1..20) {
+    say "sum of unitary squarefree divisors of #{n} is #{unitary_powerfree_sigma(n, 2)}"
+
+    assert_eq(unitary_powerfree_sigma(n, 2), n.udivisors.grep { .is_powerfree(2) }.sum)
+    assert_eq(unitary_powerfree_sigma(n, 3), n.udivisors.grep { .is_powerfree(3) }.sum)
+    assert_eq(unitary_powerfree_sigma(n, 4), n.udivisors.grep { .is_powerfree(4) }.sum)
+
+    assert_eq(unitary_powerfree_sigma(n, 2, 2), n.udivisors.grep { .is_powerfree(2) }.sum { _**2 })
+    assert_eq(unitary_powerfree_sigma(n, 3, 2), n.udivisors.grep { .is_powerfree(3) }.sum { _**2 })
+    assert_eq(unitary_powerfree_sigma(n, 4, 2), n.udivisors.grep { .is_powerfree(4) }.sum { _**2 })
+
+    assert_eq(unitary_powerfree_sigma(n, 2, 3), n.udivisors.grep { .is_powerfree(2) }.sum { _**3 })
+    assert_eq(unitary_powerfree_sigma(n, 3, 3), n.udivisors.grep { .is_powerfree(3) }.sum { _**3 })
+    assert_eq(unitary_powerfree_sigma(n, 4, 3), n.udivisors.grep { .is_powerfree(4) }.sum { _**3 })
+}
+
+__END__
+sum of unitary squarefree divisors of 1 is 1
+sum of unitary squarefree divisors of 2 is 3
+sum of unitary squarefree divisors of 3 is 4
+sum of unitary squarefree divisors of 4 is 1
+sum of unitary squarefree divisors of 5 is 6
+sum of unitary squarefree divisors of 6 is 12
+sum of unitary squarefree divisors of 7 is 8
+sum of unitary squarefree divisors of 8 is 1
+sum of unitary squarefree divisors of 9 is 1
+sum of unitary squarefree divisors of 10 is 18
+sum of unitary squarefree divisors of 11 is 12
+sum of unitary squarefree divisors of 12 is 4
+sum of unitary squarefree divisors of 13 is 14
+sum of unitary squarefree divisors of 14 is 24
+sum of unitary squarefree divisors of 15 is 24
+sum of unitary squarefree divisors of 16 is 1
+sum of unitary squarefree divisors of 17 is 18
+sum of unitary squarefree divisors of 18 is 3
+sum of unitary squarefree divisors of 19 is 20
+sum of unitary squarefree divisors of 20 is 6

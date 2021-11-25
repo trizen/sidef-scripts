@@ -1,0 +1,58 @@
+#!/usr/bin/ruby
+
+# Sum of the k-powerfree divisors of n.
+
+# See also:
+#   https://oeis.org/A048250
+#   https://oeis.org/A073185
+
+func powerfree_sigma(n, k=2, j=1) {
+
+    var prod = 1
+
+    for p,e in (n.factor_exp) {
+        e = min(e, k-1)
+        #prod *= sigma(p**e, j)
+        prod *= (p**(j*(e+1)) - 1)/(p**j - 1)
+    }
+
+    return prod
+}
+
+for n in (1..20) {
+    say "sum of squarefree divisors of #{n} is #{powerfree_sigma(n, 2)}"
+
+    assert_eq(powerfree_sigma(n, 2), 2.powerfree_divisors(n).sum)
+    assert_eq(powerfree_sigma(n, 3), 3.powerfree_divisors(n).sum)
+    assert_eq(powerfree_sigma(n, 4), 4.powerfree_divisors(n).sum)
+
+    assert_eq(powerfree_sigma(n, 2, 2), 2.powerfree_divisors(n).sum { _**2 })
+    assert_eq(powerfree_sigma(n, 3, 2), 3.powerfree_divisors(n).sum { _**2 })
+    assert_eq(powerfree_sigma(n, 4, 2), 4.powerfree_divisors(n).sum { _**2 })
+
+    assert_eq(powerfree_sigma(n, 2, 3), 2.powerfree_divisors(n).sum { _**3 })
+    assert_eq(powerfree_sigma(n, 3, 3), 3.powerfree_divisors(n).sum { _**3 })
+    assert_eq(powerfree_sigma(n, 4, 3), 4.powerfree_divisors(n).sum { _**3 })
+}
+
+__END__
+sum of squarefree divisors of 1 is 1
+sum of squarefree divisors of 2 is 3
+sum of squarefree divisors of 3 is 4
+sum of squarefree divisors of 4 is 3
+sum of squarefree divisors of 5 is 6
+sum of squarefree divisors of 6 is 12
+sum of squarefree divisors of 7 is 8
+sum of squarefree divisors of 8 is 3
+sum of squarefree divisors of 9 is 4
+sum of squarefree divisors of 10 is 18
+sum of squarefree divisors of 11 is 12
+sum of squarefree divisors of 12 is 12
+sum of squarefree divisors of 13 is 14
+sum of squarefree divisors of 14 is 24
+sum of squarefree divisors of 15 is 24
+sum of squarefree divisors of 16 is 3
+sum of squarefree divisors of 17 is 18
+sum of squarefree divisors of 18 is 12
+sum of squarefree divisors of 19 is 20
+sum of squarefree divisors of 20 is 18

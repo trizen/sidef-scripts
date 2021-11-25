@@ -1,0 +1,51 @@
+#!/usr/bin/ruby
+
+# A simple algorithm for generating the unitary k-powerfree divisors of a given number n.
+
+# See also:
+#   https://oeis.org/A092261
+#   https://mathworld.wolfram.com/Powerfree.html
+#   https://en.wikipedia.org/wiki/Unitary_divisor
+
+func unitary_powerfree_divisors(n, k=2) {
+
+    var d  = [1]
+
+    for p,e in (n.factor_exp) {
+        e < k || next
+        var r = p**e
+        d << d.map {|t| t*r }...
+    }
+
+    return d.sort
+}
+
+for n in (1..20) {
+    say "unitary squarefree divisors of #{n} = #{unitary_powerfree_divisors(n, 2)}"
+
+    assert_eq(unitary_powerfree_divisors(n, 2), n.udivisors.grep { .is_powerfree(2) })
+    assert_eq(unitary_powerfree_divisors(n, 3), n.udivisors.grep { .is_powerfree(3) })
+    assert_eq(unitary_powerfree_divisors(n, 4), n.udivisors.grep { .is_powerfree(4) })
+}
+
+__END__
+unitary squarefree divisors of 1 = [1]
+unitary squarefree divisors of 2 = [1, 2]
+unitary squarefree divisors of 3 = [1, 3]
+unitary squarefree divisors of 4 = [1]
+unitary squarefree divisors of 5 = [1, 5]
+unitary squarefree divisors of 6 = [1, 2, 3, 6]
+unitary squarefree divisors of 7 = [1, 7]
+unitary squarefree divisors of 8 = [1]
+unitary squarefree divisors of 9 = [1]
+unitary squarefree divisors of 10 = [1, 2, 5, 10]
+unitary squarefree divisors of 11 = [1, 11]
+unitary squarefree divisors of 12 = [1, 3]
+unitary squarefree divisors of 13 = [1, 13]
+unitary squarefree divisors of 14 = [1, 2, 7, 14]
+unitary squarefree divisors of 15 = [1, 3, 5, 15]
+unitary squarefree divisors of 16 = [1]
+unitary squarefree divisors of 17 = [1, 17]
+unitary squarefree divisors of 18 = [1, 2]
+unitary squarefree divisors of 19 = [1, 19]
+unitary squarefree divisors of 20 = [1, 5]
