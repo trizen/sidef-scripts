@@ -304,6 +304,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Is carmichael number](./Math/is_carmichael_number.sf)
     * [Is even perfect](./Math/is_even_perfect.sf)
     * [Is even perfect 2](./Math/is_even_perfect_2.sf)
+    * [Is infinitary divisor](./Math/is_infinitary_divisor.sf)
     * [Is lucas-carmichael number](./Math/is_lucas-carmichael_number.sf)
     * [Is perfect power](./Math/is_perfect_power.sf)
     * [Is perfect power fast](./Math/is_perfect_power_fast.sf)
