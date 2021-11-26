@@ -4,11 +4,10 @@
 
 func gcud(*list) {
 
-    list || return 0
-
-    var g = gcd(list...)
+    var g = list.gcd
 
     list.each {|n|
+        next if (n == 0)
         while ((var t = gcd(g, n/g)) != 1) {
             g /= t
         }
@@ -23,4 +22,5 @@ say gcud(2)                     #=> 2
 say gcud(10, 20)                #=> 5
 say gcud(9!, 5040)              #=> 35
 say gcud(9!, 5040, 120)         #=> 5
+say gcud(9!, 5040, 0, 120)      #=> 5
 say gcud(9!, 5040, 1234)        #=> 1
