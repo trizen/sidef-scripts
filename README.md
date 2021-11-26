@@ -301,6 +301,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Inverse of usigma function](./Math/inverse_of_usigma_function.sf)
     * [Inverse znorder](./Math/inverse_znorder.sf)
     * [Invmod of coprime factorials](./Math/invmod_of_coprime_factorials.sf)
+    * [Irregular triangle of n AND k](./Math/irregular_triangle_of_n_AND_k.sf)
     * [Is both truncatable prime](./Math/is_both_truncatable_prime.sf)
     * [Is carmichael number](./Math/is_carmichael_number.sf)
     * [Is even perfect](./Math/is_even_perfect.sf)

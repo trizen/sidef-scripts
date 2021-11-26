@@ -17,9 +17,7 @@ func infinitary_divisors(n) {
         d << gather {
             for j in (1..e) {
                 r *= p
-                d.each { |u|
-                    take(u*r) if (e&j == j)
-                }
+                take(d.map {|u| u*r }...) if (e&j == j)
             }
         }...
     }

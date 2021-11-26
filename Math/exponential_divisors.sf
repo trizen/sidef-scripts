@@ -31,9 +31,7 @@ func exponential_divisors_2(n) {     # faster algorithm
     for p,e in (n.factor_exp) {
         d = gather {
             for k in (e.divisors) {
-                d.each { |u|
-                    take(u * p**k)
-                }
+                take({|r| d.map {|u| u*r }...}(p**k))
             }
         }
     }
