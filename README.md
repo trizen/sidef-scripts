@@ -272,6 +272,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Generate primes with only one odd digit](./Math/generate_primes_with_only_one_odd_digit.sf)
     * [Generate primes with prime digits](./Math/generate_primes_with_prime_digits.sf)
     * [Geometric-harmonic mean](./Math/geometric-harmonic_mean.sf)
+    * [Greatest common unitary divisor](./Math/greatest_common_unitary_divisor.sf)
     * [Greedy egyptian fractions](./Math/greedy_egyptian_fractions.sf)
     * [Gregory coefficients](./Math/gregory_coefficients.sf)
     * [Hamming numbers](./Math/hamming_numbers.sf)

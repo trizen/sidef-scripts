@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+# Efficient algorithm for finding the greatest common unitary divisor of a list of integers.
+
+func gcud(*list) {
+
+    list || return 0
+
+    var g = gcd(list...)
+
+    list.each {|n|
+        while ((var t = gcd(g, n/g)) != 1) {
+            g /= t
+        }
+        break if (g == 1)
+    }
+
+    return g
+}
+
+say gcud()                      #=> 0
+say gcud(2)                     #=> 2
+say gcud(10, 20)                #=> 5
+say gcud(9!, 5040)              #=> 35
+say gcud(9!, 5040, 120)         #=> 5
+say gcud(9!, 5040, 1234)        #=> 1
