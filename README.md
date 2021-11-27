@@ -456,6 +456,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Pomerance condition for bpsw counter-example](./Math/pomerance_condition_for_bpsw_counter-example.sf)
     * [Power of 2 plus 3 primes lucas-lehmer](./Math/power_of_2_plus_3_primes_lucas-lehmer.sf)
     * [Power of 2 plus 5 primes lucas-lehmer](./Math/power_of_2_plus_5_primes_lucas-lehmer.sf)
+    * [Power sigma](./Math/power_sigma.sf)
     * [Powerfree divisors](./Math/powerfree_divisors.sf)
     * [Powerfree sigma](./Math/powerfree_sigma.sf)
     * [Primality precheck](./Math/primality_precheck.sf)

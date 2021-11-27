@@ -33,10 +33,7 @@ func bi_unitary_divisors(n) is cached {
         d << gather {
             e.times {
                 r *= p
-                d.each { |u|
-                    var t = u*r
-                    take(t) if (gcud(t, n/t) == 1)
-                }
+                take(d.map {|u| u*r }...) if (gcud(r, n/r) == 1)
             }
         }...
     }
