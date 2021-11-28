@@ -462,6 +462,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Power usigma](./Math/power_usigma.sf)
     * [Powerfree divisors](./Math/powerfree_divisors.sf)
     * [Powerfree sigma](./Math/powerfree_sigma.sf)
+    * [Powerfree usigma](./Math/powerfree_usigma.sf)
     * [Primality precheck](./Math/primality_precheck.sf)
     * [Primality testing fermat fourier](./Math/primality_testing_fermat_fourier.sf)
     * [Primality testing wilson fourier](./Math/primality_testing_wilson_fourier.sf)
