@@ -1,0 +1,52 @@
+#!/usr/bin/ruby
+
+# Generate the k-th power unitary divisors of n.
+
+# See also:
+#   https://oeis.org/A056624
+
+func power_udivisors(n, k) {
+
+    var d = [1]
+
+    for p,e in (n.factor_exp) {
+        d << {|r| d.map {|u| u*r }...}(p**e) if (e % k == 0)
+    }
+
+    return d.sort
+}
+
+for n in (1..20) {
+    say "2-power unitary divisors of #{n} = #{power_udivisors(n, 2)}"
+
+    #~ assert_eq(power_udivisors(n, 2).len, 2.power_usigma0(n))
+    #~ assert_eq(power_udivisors(n, 2).sum, 2.power_usigma(n))
+
+    #~ assert_eq(power_udivisors(n, 3).len, 3.power_usigma0(n))
+    #~ assert_eq(power_udivisors(n, 3).sum, 3.power_usigma(n))
+
+    assert_eq(power_udivisors(n, 2), 2.power_udivisors(n))
+    assert_eq(power_udivisors(n, 3), 3.power_udivisors(n))
+}
+
+__END__
+2-power unitary divisors of 1 = [1]
+2-power unitary divisors of 2 = [1]
+2-power unitary divisors of 3 = [1]
+2-power unitary divisors of 4 = [1, 4]
+2-power unitary divisors of 5 = [1]
+2-power unitary divisors of 6 = [1]
+2-power unitary divisors of 7 = [1]
+2-power unitary divisors of 8 = [1]
+2-power unitary divisors of 9 = [1, 9]
+2-power unitary divisors of 10 = [1]
+2-power unitary divisors of 11 = [1]
+2-power unitary divisors of 12 = [1, 4]
+2-power unitary divisors of 13 = [1]
+2-power unitary divisors of 14 = [1]
+2-power unitary divisors of 15 = [1]
+2-power unitary divisors of 16 = [1, 16]
+2-power unitary divisors of 17 = [1]
+2-power unitary divisors of 18 = [1, 9]
+2-power unitary divisors of 19 = [1]
+2-power unitary divisors of 20 = [1, 4]
