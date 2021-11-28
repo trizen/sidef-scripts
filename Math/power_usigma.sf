@@ -1,0 +1,66 @@
+#!/usr/bin/ruby
+
+# Sum and count of the k-th power unitary divisors of n.
+
+# See also:
+#   https://oeis.org/A056624
+
+func power_usigma0(n, k) {
+    n.factor_prod {|_,e|
+        (e % k == 0) ? 2 : 1
+    }
+}
+
+func power_usigma(n, k=2, j=1) {
+
+    return power_usigma0(n, k) if (j == 0)
+
+    var prod = 1
+
+    for p,e in (n.factor_exp) {
+        if (e % k == 0) {
+            #prod *= usigma(p**e, j)
+            prod *= (p**(e*j) + 1)
+        }
+    }
+
+    return prod
+}
+
+for n in (1..20) {
+    say "sum of square unitary divisors of #{n} is #{power_usigma(n, 2)}"
+
+    assert_eq(power_usigma(n, 2), 2.power_udivisors(n).sum)
+    assert_eq(power_usigma(n, 3), 3.power_udivisors(n).sum)
+    assert_eq(power_usigma(n, 4), 4.power_udivisors(n).sum)
+
+    assert_eq(power_usigma(n, 2, 2), 2.power_udivisors(n).sum { _**2 })
+    assert_eq(power_usigma(n, 3, 2), 3.power_udivisors(n).sum { _**2 })
+    assert_eq(power_usigma(n, 4, 2), 4.power_udivisors(n).sum { _**2 })
+
+    assert_eq(power_usigma(n, 2, 3), 2.power_udivisors(n).sum { _**3 })
+    assert_eq(power_usigma(n, 3, 3), 3.power_udivisors(n).sum { _**3 })
+    assert_eq(power_usigma(n, 4, 3), 4.power_udivisors(n).sum { _**3 })
+}
+
+__END__
+sum of square unitary divisors of 1 is 1
+sum of square unitary divisors of 2 is 1
+sum of square unitary divisors of 3 is 1
+sum of square unitary divisors of 4 is 5
+sum of square unitary divisors of 5 is 1
+sum of square unitary divisors of 6 is 1
+sum of square unitary divisors of 7 is 1
+sum of square unitary divisors of 8 is 1
+sum of square unitary divisors of 9 is 10
+sum of square unitary divisors of 10 is 1
+sum of square unitary divisors of 11 is 1
+sum of square unitary divisors of 12 is 5
+sum of square unitary divisors of 13 is 1
+sum of square unitary divisors of 14 is 1
+sum of square unitary divisors of 15 is 1
+sum of square unitary divisors of 16 is 17
+sum of square unitary divisors of 17 is 1
+sum of square unitary divisors of 18 is 10
+sum of square unitary divisors of 19 is 1
+sum of square unitary divisors of 20 is 5
