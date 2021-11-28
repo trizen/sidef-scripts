@@ -6,7 +6,15 @@
 #   https://oeis.org/A048250
 #   https://oeis.org/A073185
 
+func powerfree_sigma0(n, k=2) {
+    n.factor_prod {|_,e|
+        min(e, k-1) + 1
+    }
+}
+
 func powerfree_sigma(n, k=2, j=1) {
+
+    return powerfree_sigma0(n, k) if (j == 0)
 
     var prod = 1
 
@@ -25,6 +33,10 @@ for n in (1..20) {
     assert_eq(powerfree_sigma(n, 2), 2.powerfree_divisors(n).sum)
     assert_eq(powerfree_sigma(n, 3), 3.powerfree_divisors(n).sum)
     assert_eq(powerfree_sigma(n, 4), 4.powerfree_divisors(n).sum)
+
+    assert_eq(powerfree_sigma(n, 2, 0), 2.powerfree_divisors(n).len)
+    assert_eq(powerfree_sigma(n, 3, 0), 3.powerfree_divisors(n).len)
+    assert_eq(powerfree_sigma(n, 4, 0), 4.powerfree_divisors(n).len)
 
     assert_eq(powerfree_sigma(n, 2, 2), 2.powerfree_divisors(n).sum { _**2 })
     assert_eq(powerfree_sigma(n, 3, 2), 3.powerfree_divisors(n).sum { _**2 })
