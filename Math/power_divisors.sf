@@ -1,0 +1,57 @@
+#!/usr/bin/ruby
+
+# Generate the k-th power divisors of n.
+
+# See also:
+#   https://oeis.org/A035316
+#   https://oeis.org/A113061
+
+func power_divisors(n, k) {
+
+    var d = [1]
+
+    for p,e in (n.factor_exp) {
+
+        e >= k || next
+
+        d << gather {
+            for j in (k..e `by` k) {
+                take({|r| d.map {|u| u*r }...}(p**j))
+            }
+        }...
+    }
+
+    return d.sort
+}
+
+for n in (1..20) {
+    say "2-power divisors of #{n} = #{power_divisors(n, 2)}"
+
+    assert_eq(power_divisors(n, 2).len, 2.power_sigma0(n))
+    assert_eq(power_divisors(n, 2).sum, 2.power_sigma(n))
+
+    assert_eq(power_divisors(n, 3).len, 3.power_sigma0(n))
+    assert_eq(power_divisors(n, 3).sum, 3.power_sigma(n))
+}
+
+__END__
+2-power divisors of 1 = [1]
+2-power divisors of 2 = [1]
+2-power divisors of 3 = [1]
+2-power divisors of 4 = [1, 4]
+2-power divisors of 5 = [1]
+2-power divisors of 6 = [1]
+2-power divisors of 7 = [1]
+2-power divisors of 8 = [1, 4]
+2-power divisors of 9 = [1, 9]
+2-power divisors of 10 = [1]
+2-power divisors of 11 = [1]
+2-power divisors of 12 = [1, 4]
+2-power divisors of 13 = [1]
+2-power divisors of 14 = [1]
+2-power divisors of 15 = [1]
+2-power divisors of 16 = [1, 4, 16]
+2-power divisors of 17 = [1]
+2-power divisors of 18 = [1, 9]
+2-power divisors of 19 = [1]
+2-power divisors of 20 = [1, 4]

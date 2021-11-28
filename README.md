@@ -454,6 +454,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Polynomial interpolation](./Math/polynomial_interpolation.sf)
     * [Polynomial regression](./Math/polynomial_regression.sf)
     * [Pomerance condition for bpsw counter-example](./Math/pomerance_condition_for_bpsw_counter-example.sf)
+    * [Power divisors](./Math/power_divisors.sf)
     * [Power of 2 plus 3 primes lucas-lehmer](./Math/power_of_2_plus_3_primes_lucas-lehmer.sf)
     * [Power of 2 plus 5 primes lucas-lehmer](./Math/power_of_2_plus_5_primes_lucas-lehmer.sf)
     * [Power sigma](./Math/power_sigma.sf)
