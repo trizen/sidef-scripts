@@ -1,0 +1,35 @@
+#!/usr/bin/ruby
+
+# Fast formulas for computing the following sums:
+#   f(n) = Sum_{k=1..n} gcd(n,k)
+#   g(n) = Sum_{k=1..n} F(gcd(n,k))
+
+# See also:
+#   https://oeis.org/A018804
+#   https://en.wikipedia.org/wiki/Greatest_common_divisor
+#   https://en.wikipedia.org/wiki/Pillai's_arithmetical_function
+
+func f(n) {
+    n * n.factor_prod {|p,e|
+        1 + e*(1 - 1/p)
+    }
+}
+
+func g(n, F={_}) {
+    n.divisors.sum {|d|
+        F(d) * phi(n/d)
+    }
+}
+
+func g_slow(n, F={_}) {
+    sum(1..n, {|k|
+        F(gcd(n,k))
+    })
+}
+
+say f(5040)          #=> 117936
+say g(5040)          #=> 117936
+say g_slow(5040)     #=> 117936
+
+say g(5040, { .sigma })         #=> 302400
+say g_slow(5040, { .sigma })    #=> 302400

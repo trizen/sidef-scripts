@@ -442,6 +442,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Permutations rec](./Math/permutations_rec.sf)
     * [Phi finder factorization algorithm](./Math/phi_finder_factorization_algorithm.sf)
     * [Pi from perimeters of polygons](./Math/pi_from_perimeters_of_polygons.sf)
+    * [Pillai arithmetical function](./Math/pillai_arithmetical_function.sf)
     * [Pisano periods](./Math/pisano_periods.sf)
     * [Pisano periods efficient algorithm](./Math/pisano_periods_efficient_algorithm.sf)
     * [Pisano periods of lucas U sequence](./Math/pisano_periods_of_lucas_U_sequence.sf)
