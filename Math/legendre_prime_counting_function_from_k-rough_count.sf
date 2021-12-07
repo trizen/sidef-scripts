@@ -1,0 +1,29 @@
+#!/usr/bin/ruby
+
+# The Legendre prime counting function, defined in terms of the k-rough counting function.
+
+# Using the Legendre phi function, π(n), can be defined as:
+#   π(n) = 0 when n < 2
+#   π(n) = φ(n, a) + a - 1, where a = π(√n), n ≥ 2
+
+# See also:
+#   https://rosettacode.org/wiki/Legendre_prime_counting_function
+
+func legendre_phi(n, a) {
+     prime(a+1).rough_count(n)
+}
+
+func legendre_prime_count(n) is cached {
+    return 0 if (n < 2)
+    var a = __FUNC__(n.isqrt)
+    legendre_phi(n, a) + a - 1
+}
+
+print("e             n   Legendre    builtin\n",
+      "-             -   --------    -------\n")
+
+for n in (1 .. 9) {
+    printf("%d  %12d %10d %10d\n", n, 10**n,
+        legendre_prime_count(10**n), prime_count(10**n))
+    assert_eq(legendre_prime_count(10**n), prime_count(10**n))
+}
