@@ -15,41 +15,52 @@ func check(i, j) is cached {
     (jm//3 == im//3)
 }
 
-func solve(grid) {
+var lookup = []
+for i in (^81), j in (^81) {
+    lookup[i][j] = check(i, j)
+}
+
+func solve(callback, grid) {
+
     for i in ^grid {
+
         grid[i] && next
-        var t = [grid[^grid->grep{|j| check(i, j) }]].freq
+        var t = Set(grid.grep_kv {|j| lookup[i][j] }...)
 
         for k in (1..9) {
-            t.has_key(k) && next
+            t.has(k) && next
             grid[i] = k
-            solve(grid)
+            __FUNC__(callback, grid)
+            grid[i] = 0
         }
 
-        grid[i] = 0
         return nil
     }
 
+    callback(grid)
+}
+
+func display_grid(grid) {
     for i in ^grid {
         print "#{grid[i]} "
-        print " "  if (3  -> divides(i+1))
-        print "\n" if (9  -> divides(i+1))
+        print " "  if ( 3 -> divides(i+1))
+        print "\n" if ( 9 -> divides(i+1))
         print "\n" if (27 -> divides(i+1))
     }
 }
 
 var grid = %i(
-    5 3 0  0 2 4  7 0 0
-    0 0 2  0 0 0  8 0 0
-    1 0 0  7 0 3  9 0 2
+  5 3 0  0 2 4  7 0 0
+  0 0 2  0 0 0  8 0 0
+  1 0 0  7 0 3  9 0 2
 
-    0 0 8  0 7 2  0 4 9
-    0 2 0  9 8 0  0 7 0
-    7 9 0  0 0 0  0 8 0
+  0 0 8  0 7 2  0 4 9
+  0 2 0  9 8 0  0 7 0
+  7 9 0  0 0 0  0 8 0
 
-    0 0 0  0 3 0  5 0 6
-    9 6 0  0 1 0  3 0 0
-    0 5 0  6 9 0  0 1 0
+  0 0 0  0 3 0  5 0 6
+  9 6 0  0 1 0  3 0 0
+  0 5 0  6 9 0  0 1 0
 )
 
-solve(grid)
+solve(display_grid, grid)
