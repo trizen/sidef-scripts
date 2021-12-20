@@ -1,0 +1,118 @@
+#!/usr/bin/ruby
+
+# Recursive brute-force Sudoku solver.
+
+# See also:
+#   https://rosettacode.org/wiki/Sudoku
+#   https://en.wikipedia.org/wiki/Sudoku
+
+func check(i, j) is cached {
+    var (id, im) = i.divmod(9)
+    var (jd, jm) = j.divmod(9)
+
+    jd == id && return true
+    jm == im && return true
+
+    (id//3 == jd//3) &&
+    (jm//3 == im//3)
+}
+
+var lookup = []
+for i in (^81), j in (^81) {
+    lookup[i][j] = check(i, j)
+}
+
+func solve_sudoku(callback, grid) {
+
+    for i in ^grid {
+
+        grid[i] && next
+        var t = Set(grid.grep_kv {|j| lookup[i][j] }...)
+
+        for k in (1..9 -> shuffle) {
+            t.has(k) && next
+            grid[i] = k
+            __FUNC__(callback, grid)
+            grid[i] = 0
+        }
+
+        return nil
+    }
+
+    callback(grid)
+}
+
+func generate_sudoku (known, solution_count = 1) {
+
+    var grid = 81.of(0)
+
+    solve_sudoku(
+        {|solution|
+
+            var picked    = Set(solution.indices.pick(known)...)
+            var candidate = solution.map_kv {|k,v| picked.has(k) ? v : 0 }
+
+            var res = func {
+                var count = 0
+                solve_sudoku({ return -1 if (++count > solution_count) }, candidate)
+                count
+            }()
+
+            if (res == solution_count) {
+                return candidate
+            }
+        }, grid
+    )
+
+    return nil
+}
+
+func display_grid(grid) {
+    for i in ^grid {
+        print "#{grid[i]} "
+        print " "  if ( 3 -> divides(i+1))
+        print "\n" if ( 9 -> divides(i+1))
+        print "\n" if (27 -> divides(i+1))
+    }
+}
+
+var known          = 35    # number of known entries
+var solution_count = 1     # number of solutions the puzzle must have
+
+var sudoku = generate_sudoku(known, solution_count)
+
+say "\n:: Random Sudoku with #{known} known entries and #{solution_count} solutions:\n"
+display_grid(sudoku)
+
+say "\n:: Solution(s):\n";
+solve_sudoku({|solution| display_grid(solution) }, sudoku)
+
+__END__
+:: Random Sudoku with 35 known entries and 1 solutions:
+
+0 0 9  0 0 0  0 0 0
+4 0 7  0 0 0  2 0 0
+3 0 0  1 8 0  6 9 0
+
+0 5 3  0 9 0  1 0 2
+2 0 4  6 0 3  0 0 9
+0 0 0  5 0 7  0 0 0
+
+0 3 6  7 0 5  8 2 0
+5 0 0  0 3 0  9 0 0
+0 0 8  2 6 0  5 7 0
+
+
+:: Solution(s):
+
+8 6 9  3 7 2  4 1 5
+4 1 7  9 5 6  2 3 8
+3 2 5  1 8 4  6 9 7
+
+7 5 3  4 9 8  1 6 2
+2 8 4  6 1 3  7 5 9
+6 9 1  5 2 7  3 8 4
+
+9 3 6  7 4 5  8 2 1
+5 7 2  8 3 1  9 4 6
+1 4 8  2 6 9  5 7 3

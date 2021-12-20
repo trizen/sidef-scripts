@@ -33,7 +33,8 @@ A nice collection of day-to-day Sidef scripts.
     * [Make filenames safe](./File/make_filenames_safe.sf)
 * Game solvers
     * [Chess960 initial positions](./Game%20solvers/chess960_initial_positions.sf)
-    * [Sudoku](./Game%20solvers/sudoku.sf)
+    * [Generate sudoku](./Game%20solvers/generate_sudoku.sf)
+    * [Solve sudoku](./Game%20solvers/solve_sudoku.sf)
 * Games
     * [Asciiplanes](./Games/asciiplanes.sf)
     * [Bulls and cows](./Games/bulls_and_cows.sf)

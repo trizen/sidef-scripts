@@ -1,8 +1,10 @@
 #!/usr/bin/ruby
 
-#
-## http://rosettacode.org/wiki/Sudoku
-#
+# Recursive brute-force Sudoku solver.
+
+# See also:
+#   https://rosettacode.org/wiki/Sudoku
+#   https://en.wikipedia.org/wiki/Sudoku
 
 func check(i, j) is cached {
     var (id, im) = i.divmod(9)
@@ -20,7 +22,7 @@ for i in (^81), j in (^81) {
     lookup[i][j] = check(i, j)
 }
 
-func solve(callback, grid) {
+func solve_sudoku(callback, grid) {
 
     for i in ^grid {
 
@@ -63,4 +65,4 @@ var grid = %i(
   0 5 0  6 9 0  0 1 0
 )
 
-solve(display_grid, grid)
+solve_sudoku(display_grid, grid)
