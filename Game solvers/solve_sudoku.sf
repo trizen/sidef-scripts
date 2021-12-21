@@ -24,22 +24,26 @@ for i in (^81), j in (^81) {
 
 func solve_sudoku(callback, grid) {
 
-    for i in ^grid {
+    var digits = @(1..9)
 
-        grid[i] && next
-        var t = Set(grid.grep_kv {|j| lookup[i][j] }...)
+    func {
+        grid.each_kv {|i,v|
 
-        for k in (1..9) {
-            t.has(k) && next
-            grid[i] = k
-            __FUNC__(callback, grid)
-            grid[i] = 0
+            v && next
+            var t = Set(grid.grep_kv {|j| lookup[i][j] }...)
+
+            digits.each {|d|
+                t.has(d) && next
+                grid[i] = d
+                __FUNC__()
+                grid[i] = 0
+            }
+
+            return nil
         }
 
-        return nil
-    }
-
-    callback(grid)
+        callback(grid)
+    }()
 }
 
 func display_grid(grid) {
