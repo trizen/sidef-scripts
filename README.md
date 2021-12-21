@@ -30,6 +30,7 @@ A nice collection of day-to-day Sidef scripts.
     * [One-time pad](./Encryption/one-time_pad.sf)
 * File
     * [Fdf](./File/fdf.sf)
+    * [File difference](./File/file_difference.sf)
     * [Make filenames safe](./File/make_filenames_safe.sf)
 * Game solvers
     * [Chess960 initial positions](./Game%20solvers/chess960_initial_positions.sf)
