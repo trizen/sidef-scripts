@@ -16,7 +16,8 @@ func is_valid_960 (backrank) {
 }
 
 func random_960_position {
-    pieces.shuffle.permutations {|*a|
+    loop {
+        var a = pieces.random_permutation
         return a if is_valid_960(a)
     }
 }
@@ -24,12 +25,14 @@ func random_960_position {
 say "Here's a random 960 position: #{random_960_position().join(' ')}"
 
 var chess960 = gather {
-    pieces.permutations {|*a|
-        take(a) if is_valid_960(a)
+
+    var arr = pieces.clone
+
+    loop {
+        take(arr.clone) if is_valid_960(arr)
+        arr.next_permutation || break
     }
 }
-
-chess960.uniq!      # remove duplicates
 
 say "There are #{chess960.len} initial positions."
 
