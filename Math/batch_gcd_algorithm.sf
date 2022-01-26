@@ -1,0 +1,38 @@
+#!/usr/bin/ruby
+
+# Batch greatest common divisor algorithm.
+
+# Algorithm from:
+#   https://web.archive.org/web/20220116042107/http://cr.yp.to/talks/2012.12.28/slides.pdf
+
+func batch_gcd(X) {
+
+    var prods = gather {
+        take(X)
+        while (X.len > 1) {
+            X = range((X.len+1)>>1).map{|i| X.ft(i<<1, ((i+1)<<1)-1).prod }
+            take(X)
+        }
+    }
+
+    var R = prods.pop
+
+    while (prods) {
+        X = prods.pop
+        R = X.map_kv {|k,v| R[k>>1] % v.sqr }
+    }
+
+    R ~Z X -> map_2d {|r,n| gcd(r/n, n) }
+}
+
+func batch_gcd_naive(X) {    # a simpler approach (much slower)
+    X.map_reduce {|a,b| a*b } ~Z X -> map_2d {|r,n| gcd(r/n, n) }
+}
+
+var arr = [43*97, 41*29, 43*503, 503*863]
+
+say batch_gcd(arr)          #=> [43, 1, 21629, 503]
+say batch_gcd_naive(arr)    #=> [1, 1, 43, 503]
+
+assert(batch_gcd(1000.of { irand(2**1024) }).len, 1000)
+assert(batch_gcd(1001.of { irand(2**1024) }).len, 1001)

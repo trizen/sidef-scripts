@@ -95,6 +95,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Arithmetic convolution](./Math/arithmetic_convolution.sf)
     * [Arithmetic derivative](./Math/arithmetic_derivative.sf)
     * [Baillie-PSW high-level](./Math/Baillie-PSW_high-level.sf)
+    * [Batch gcd algorithm](./Math/batch_gcd_algorithm.sf)
     * [BBP-type formulae](./Math/BBP-type_formulae.sf)
     * [Bell numbers](./Math/bell_numbers.sf)
     * [Bernoulli approx](./Math/bernoulli_approx.sf)
