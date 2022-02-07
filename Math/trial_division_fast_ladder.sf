@@ -14,13 +14,18 @@ func fast_trial_factor(n, L = 1e4, R = 1e7) {
     var P = L.primes
 
     func range_trial_factor(n) {
+
         var arr = []
+        var prod = 1
+
         P.each {|p|
             if (p `divides` n) {
-                #n //= p
                 arr << p
+                prod *= p
+                break if (prod == n)
             }
         }
+
         return arr
     }
 

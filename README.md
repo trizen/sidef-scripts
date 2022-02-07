@@ -589,6 +589,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Zeta 3 fast convergence](./Math/zeta_3_fast_convergence.sf)
     * [Zeta derivative at trivial zeros](./Math/zeta_derivative_at_trivial_zeros.sf)
 * Other
+    * [Hex randomness info](./Other/hex_randomness_info.sf)
     * [Prime birthday](./Other/prime_birthday.sf)
 * PL
     * [Brainf compiler](./PL/brainf_compiler.sf)

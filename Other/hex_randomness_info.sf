@@ -1,0 +1,85 @@
+#!/usr/bin/ruby
+
+# Show some information about the randomness of a given hex-encoded string.
+
+# See also:
+#   https://rosettacode.org/wiki/Entropy
+
+func entropy(bytes) {
+  var counts = bytes.freq
+  var len = bytes.len
+  [0, counts.values.map {|count|
+    var freq = count/len; freq * freq.log2 }...
+  ]«-»
+}
+
+func arithmetic_mean(bytes) {
+    Math.arithmetic_mean(bytes.map {_+1}...)
+}
+
+func geometric_mean(bytes) {
+    Math.geometric_mean(bytes.map {_+1}...)
+}
+
+func harmonic_mean(bytes) {
+    Math.harmonic_mean(bytes.map {_+1}...)
+}
+
+var hex = ARGV[0] \\ die "usage: #{__MAIN__} [hex string]\n"
+
+if (hex !~ /^[[:xdigit:]]+\z/) {
+    die "The input must be a hexadecimal string!\n"
+}
+
+var ascii = hex.hex2ascii
+var bytes = ascii.bytes
+var bits  = ascii.ascii2hex.hex.bits
+
+var rand_bytes = bytes.len.random_bytes
+var rand_bits  = bits.len.of { [0,1].rand }
+
+printf(<<-"EOT",
+        BYTE TESTS      |       VALUE
+    ---------------------------------------------
+    Entropy(bytes)      : %8.4g (rand: %6.4g)
+    A(bytes)            : %8.4g (rand: %6.4g)
+    G(bytes)            : %8.4g (rand: %6.4g)
+    H(bytes)            : %8.4g (rand: %6.4g)
+
+        BIT TESTS       |       VALUE
+    ---------------------------------------------
+    Entropy(bits)       : %8.4g (rand: %6.4g)
+    A(bits)             : %8.4g (rand: %6.4g)
+    G(bits)             : %8.4g (rand: %6.4g)
+    H(bits)             : %8.4g (rand: %6.4g)
+    EOT
+
+    entropy(bytes), entropy(rand_bytes),
+    arithmetic_mean(bytes), arithmetic_mean(rand_bytes),
+    geometric_mean(bytes), geometric_mean(rand_bytes),
+    harmonic_mean(bytes), harmonic_mean(rand_bytes),
+
+    entropy(bits), entropy(rand_bits),
+    arithmetic_mean(bits), arithmetic_mean(rand_bits),
+    geometric_mean(bits), geometric_mean(rand_bits),
+    harmonic_mean(bits), harmonic_mean(rand_bits)
+)
+
+__END__
+
+# Example:
+$ sidef hex_randomness_info.sf $(sidef -E 'File("/usr/bin/perl").read(:raw).ascii2hex.say')
+
+    BYTE TESTS      |       VALUE
+---------------------------------------------
+Entropy(bytes)      :    1.947 (rand:  7.987)
+A(bytes)            :    17.18 (rand:  129.2)
+G(bytes)            :    2.083 (rand:   96.3)
+H(bytes)            :    1.212 (rand:  42.71)
+
+    BIT TESTS       |       VALUE
+---------------------------------------------
+Entropy(bits)       :   0.4062 (rand:      1)
+A(bits)             :    1.081 (rand:  1.501)
+G(bits)             :    1.058 (rand:  1.415)
+H(bits)             :    1.042 (rand:  1.334)
