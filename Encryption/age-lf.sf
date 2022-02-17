@@ -1,0 +1,274 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 02 February 2022
+# Edit: 17 February 2022
+# https://github.com/trizen
+
+# A large file encryption tool, inspired by Age, using Curve25519 and CBC+Serpent for encrypting data.
+
+# See also:
+#   https://github.com/FiloSottile/age
+#   https://metacpan.org/pod/Crypt::CBC
+#   https://metacpan.org/pod/Crypt::PK::X25519
+
+# This is a simplified version of `plage`, optimized for large files:
+#   https://github.com/trizen/perl-scripts/blob/master/Encryption/plage.pl
+
+require('Crypt::CBC')
+require('Crypt::PK::X25519')
+require('JSON::PP')
+
+STDIN.binmode(:raw)
+STDOUT.binmode(:raw)
+
+define {
+         SHORT_APPNAME   = "age-lf",
+         BUFFER_SIZE     = (1024 * 1024),
+         EXPORT_KEY_BASE = 62,
+         VERSION         = '0.01',
+       }
+
+var :CONFIG = (
+               cipher     => 'Serpent',
+               chain_mode => 'CBC',
+              )
+
+func create_cipher (
+    pass,
+    cipher = CONFIG{:cipher},
+    chain_mode = CONFIG{:chain_mode}
+) {
+    %O<Crypt::CBC>.new(
+                    '-pass'       => $pass,
+                    '-cipher'     => "Cipher::#{cipher}",
+                    '-chain_mode' => chain_mode.lc,
+                    '-pbkdf'      => 'pbkdf2',
+                   )
+}
+
+func x25519_from_public (hex_key) {
+    %O<Crypt::PK::X25519>.new.import_key(
+                                       Hash(
+                                        curve => "x25519",
+                                        pub   => hex_key,
+                                       )
+                                      )
+}
+
+func x25519_from_private (hex_key) {
+    %O<Crypt::PK::X25519>.new.import_key(
+                                       Hash(
+                                        curve => "x25519",
+                                        priv  => hex_key,
+                                       )
+                                      )
+}
+
+func x25519_random_key {
+    while (1) {
+        var key  = %O<Crypt::PK::X25519>.new.generate_key
+        var hash = key.key2hash
+
+        next if hash{:pub}.starts_with('0')
+        next if hash{:priv}.starts_with('0')
+
+        next if hash{:pub}.ends_with('0')
+        next if hash{:priv}.ends_with('0')
+
+        return key
+    }
+}
+
+func encrypt (fh, public_key) {
+
+    # Generate a random ephemeral key-pair.
+    var random_ephem_key = x25519_random_key()
+
+    # Create a shared secret, using the random key and the reciever's public key
+    var shared_secret = random_ephem_key.shared_secret(public_key)
+
+    var cipher    = create_cipher(shared_secret)
+    var ephem_pub = random_ephem_key.key2hash(){:pub}
+    var dest_pub  = public_key.key2hash(){:pub}
+
+    var :info = (
+                dest       => dest_pub,
+                cipher     => CONFIG{:cipher},
+                chain_mode => CONFIG{:chain_mode},
+                ephem_pub  => ephem_pub,
+               )
+
+    var json = %S<JSON::PP>.encode_json(info)
+    STDOUT.syswrite(pack("N*", json.len))
+    STDOUT.syswrite(json)
+
+    cipher.start('encrypting')
+
+    while (fh.sysread(\(var buffer), BUFFER_SIZE)) {
+        STDOUT.syswrite(cipher.crypt(buffer) \\ '')
+    }
+
+    STDOUT.syswrite(cipher.finish)
+}
+
+func decrypt (fh, private_key) {
+
+    if (!defined(private_key)) {
+        die "No private key provided!\n"
+    }
+
+    fh.sysread(\(var json_length), 32 >> 3)
+    fh.sysread(\(var json),        unpack("N*", json_length))
+
+    var enc = %S<JSON::PP>.decode_json(json)
+
+    # Make sure the private key is correct
+    if (enc{:dest} != private_key.key2hash(){:pub}) {
+        die "Incorrect private key!\n"
+    }
+
+    # The ephemeral public key
+    var ephem_pub = enc{:ephem_pub}
+
+    # Import the public key
+    var ephem_pub_key = x25519_from_public(ephem_pub);
+
+    # Recover the shared secret
+    var shared_secret = private_key.shared_secret(ephem_pub_key)
+
+    # Create the cipher
+    var cipher = create_cipher(shared_secret, enc{:cipher}, enc{:chain_mode})
+
+    cipher.start('decrypting')
+
+    while (fh.sysread(\(var buffer), BUFFER_SIZE)) {
+        STDOUT.syswrite(cipher.crypt(buffer) \\ '')
+    }
+
+    STDOUT.syswrite(cipher.finish)
+}
+
+func export_key (x_public_key) {
+    Num(x_public_key, 16).base(EXPORT_KEY_BASE)
+}
+
+func decode_exported_key (public_key) {
+    Num(public_key, EXPORT_KEY_BASE).as_hex
+}
+
+func decode_public_key (key) {
+    x25519_from_public(decode_exported_key(key))
+}
+
+func decode_private_key (file) {
+
+    file = File(file)
+
+    if (!file.is_text) {
+        die "Invalid key file!\n"
+    }
+
+    var key = %S<JSON::PP>.decode_json(file.read(:utf8))
+    x25519_from_private(decode_exported_key(key{:x_priv}))
+}
+
+func generate_new_key {
+
+    var x25519_key = x25519_random_key()
+    var x_key      = x25519_key.key2hash
+
+    var x_public_key  = x_key{:pub}
+    var x_private_key = x_key{:priv}
+
+    var :info = (
+                x_pub  => export_key(x_public_key),
+                x_priv => export_key(x_private_key),
+               )
+
+    say %S<JSON::PP>.encode_json(info)
+    STDERR.printf("Public key: %s\n", info{:x_pub})
+    return 1;
+}
+
+func help (exit_code) {
+
+    var chaining_modes = %w(cbc pcbc cfb ofb ctr).sort.map{.uc}
+
+    var valid_ciphers = %w(
+      AES Anubis Twofish Camellia Serpent SAFERP
+    ).sort
+
+    print <<"EOT"
+usage: #{__MAIN__} [options] [<input] [>output]
+
+Encryption and signing:
+
+    -g --generate-key   : Generate a new key-pair
+    -e --encrypt=key    : Encrypt data with a given public key
+    -d --decrypt=key    : Decrypt data with a given private key file
+       --cipher=s       : Change the symmetric cipher (default: #{CONFIG{:cipher}})
+                          valid: #{valid_ciphers.join(' ')}
+       --chain-mode=s   : Change the chaining mode (default: #{CONFIG{:chain_mode}})
+                          valid: #{chaining_modes.join(' ')}
+
+Examples:
+
+    # Generate a key-pair
+    #{__MAIN__} -g > key.txt
+
+    # Encrypt a message for Alice
+    #{__MAIN__} -e=RBZ17knALkL5N1AWYjAgBwZDpQpQmvLbuTphVAx7XQC < message.txt > message.enc
+
+    # Decrypt a received message
+    #{__MAIN__} -d=key.txt < message.enc > message.txt
+EOT
+
+    Sys.exit(exit_code)
+}
+
+func version {
+    printf("%s %s\n", SHORT_APPNAME, VERSION);
+    Sys.exit(0)
+}
+
+ARGV.getopt!(
+           'cipher=s'          => \CONFIG{:cipher},
+           'chain-mode|mode=s' => \CONFIG{:chain_mode},
+           'g|generate-key!'   => \CONFIG{:generate_key},
+           'e|encrypt=s'       => \CONFIG{:encrypt},
+           'd|decrypt=s'       => \CONFIG{:decrypt},
+           'v|version'         => version,
+           'h|help'            => func { help(0) },
+          )
+
+if (CONFIG{:generate_key}) {
+    generate_new_key()
+    Sys.exit(0)
+}
+
+func get_input_fh {
+    var fh = STDIN
+
+    if (ARGV and fh.is_on_tty) {
+        File(ARGV[0]).sysopen(\(var file_fh), 0) ||
+           die "Can't open file <<#{ARGV[0]}>> for reading: $!"
+        return file_fh
+    }
+
+    return fh
+}
+
+if (defined(CONFIG{:encrypt})) {
+    var x_pub = decode_public_key(CONFIG{:encrypt})
+    encrypt(get_input_fh(), x_pub)
+    Sys.exit(0)
+}
+
+if (defined(CONFIG{:decrypt})) {
+    var x_priv = decode_private_key(CONFIG{:decrypt})
+    decrypt(get_input_fh(), x_priv)
+    Sys.exit(0)
+}
+
+help(1)

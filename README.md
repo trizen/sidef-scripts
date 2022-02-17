@@ -27,6 +27,8 @@ A nice collection of day-to-day Sidef scripts.
     * [Run length encoding](./Encoding/run_length_encoding.sf)
     * [Substitution cipher](./Encoding/substitution_cipher.sf)
 * Encryption
+    * [Age-lf](./Encryption/age-lf.sf)
+    * [Insecurity of XOR](./Encryption/insecurity_of_XOR.sf)
     * [One-time pad](./Encryption/one-time_pad.sf)
 * File
     * [Fdf](./File/fdf.sf)

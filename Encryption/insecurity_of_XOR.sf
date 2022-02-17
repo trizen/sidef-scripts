@@ -1,0 +1,21 @@
+#!/usr/bin/ruby
+
+# XOR can be insecure!
+
+var key1 = "a"*64       # Alice key
+var key2 = "z"*64       # Bob key
+
+var msg = "Hello world! How are you doing?"
+
+var c1 = (msg ^ key1)       # Alice encrypts the message with her private key and sends it to Bob
+var c2 = ( c1 ^ key2)       # Bob encrypts the encrypted message with his private key and sends the message back to Alice
+var c3 = ( c2 ^ key1)       # Alice removes her encryption layer and sends the message back to Bob
+
+say (c3 ^ key2)             # Bob can now remove his layer of encryption and read the message
+
+# However, this is insecure!
+# Someone that intercepts the encrypted messages, can decrypt them!
+
+say (c2 ^ c3)               # Alice's private key
+say (c1 ^ c2)               # Bob's private key
+say (c1 ^ c2 ^ c3)          # The original message decrypted from the encrypted messages
