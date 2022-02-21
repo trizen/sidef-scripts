@@ -571,7 +571,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Tower of distinct powers](./Math/tower_of_distinct_powers.sf)
     * [Tower of powers inverse](./Math/tower_of_powers_inverse.sf)
     * [Towers of hanoi](./Math/towers_of_hanoi.sf)
-    * [Trial division fast ladder](./Math/trial_division_fast_ladder.sf)
+    * [Trial division fast](./Math/trial_division_fast.sf)
     * [Trial division with primorials](./Math/trial_division_with_primorials.sf)
     * [Tribonacci closed form](./Math/tribonacci_closed_form.sf)
     * [Tribonacci numbers](./Math/tribonacci_numbers.sf)

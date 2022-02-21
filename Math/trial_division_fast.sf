@@ -2,32 +2,15 @@
 
 # Author: Trizen
 # Date: 31 January 2022
+# Edit: 21 February 2022
 # https://github.com/trizen
 
 # Fast trial division, using an adaptive stepping-ladder algorithm.
 
-func fast_trial_factor(n, L = 1e4, R = 1e7) {
+func fast_trial_factor(n, F = 2, L = 1e4, R = 1e6) {
 
     var factors = []
-    var remainder = 1
-
-    var P = L.primes
-
-    func range_trial_factor(n) {
-
-        var arr = []
-        var prod = 1
-
-        P.each {|p|
-            if (p `divides` n) {
-                arr << p
-                prod *= p
-                break if (prod == n)
-            }
-        }
-
-        return arr
-    }
+    var P = ::primes(F, L)
 
     loop {
 
@@ -37,32 +20,28 @@ func fast_trial_factor(n, L = 1e4, R = 1e7) {
 
         # Early stop when n seems to no longer have small factors
         if (g == 1) {
-            remainder = n
             break
         }
 
-        var f = range_trial_factor(g).map {|p| [p, n.valuation(p)] }
-        var r = idiv(n, f.prod_2d {|p,e| ipow(p,e) })
+        # Factorize n over primes in P
+        P.each {|p|
+            if (p `divides` g) {
+                var v = n.valuation(p)
+                n.remdiv!(p)
+                factors << [p, v]
+            }
+        }
 
-        factors << f...
-
-        # Early stop when n has been fully factored
-        if (r == 1) {
+        # Early stop when n has been fully factored or the trial range has been exhausted
+        if ((L >= R) || (n == 1)) {
             break
         }
 
-        # Early stop when the trial range has been exhausted
-        if (L > R) {
-            remainder = r
-            break
-        }
-
-        n = r
         P = primes(L+1, L<<1)
         L <<= 1
     }
 
-    return (factors, remainder)
+    return (factors, n)
 }
 
 #var n = 402641493904540800.primorial_inflation*1e9.random_prime*1e10.random_prime
