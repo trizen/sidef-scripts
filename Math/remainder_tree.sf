@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+# Remainder tree algorithm.
+
+# Algorithm from:
+#   https://facthacks.cr.yp.to/remainder.html
+
+func product_tree(X) {
+    gather {
+        take(X)
+        while (X.len > 1) {
+            X = range((X.len+1)>>1).map{|i| X.ft(i<<1, ((i+1)<<1)-1).prod }
+            take(X)
+        }
+    }
+}
+
+func remainders(n,X) {
+    var result = [n]
+    product_tree(X).flip.each {|t|
+        result = t.map_kv {|k,v| result[k>>1] % v }
+    }
+    return result
+}
+
+say remainders(8675309, [11,13,17,19,23])    #=> [5, 6, 5, 4, 8]
