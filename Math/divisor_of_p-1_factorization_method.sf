@@ -1,0 +1,50 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 27 February 2022
+# https://github.com/trizen
+
+# A new special-purpose integer factorization method, finding a factor of n
+# if a large enough divisor of p-1 is known, where p is a prime dividing n.
+
+func dpm1_factor(n, pm1_divisor = 1, reps = 1e3) {
+
+    for k in (1..reps) {
+
+        var a = pm1_divisor*k
+        var u = idiv(n, a)
+
+        break if (u <= 1)
+
+        bsearch_le(2, u, {|b|
+
+            #var x = idiv(isqrt(a*a + 4*a*b*n - 2*a*b + b*b) - a - b, 2*a*b)
+            var (x) = iquadratic_formula(a*b, a+b, 1-n)
+
+            var t = ((x*a + 1) * (x*b + 1))
+            var g = gcd(t, n)
+
+            if (g.is_between(2, n-1)) {
+                say "[#{k} tries] Found factor: #{g} with a,b = [#{a}, #{b}] and x = #{x}"
+                return g
+            }
+
+            break if (n/t < 1.001)     # optimization
+
+            n <=> t
+        })
+    }
+
+    return 1
+}
+
+dpm1_factor(503*863, 2)                                                  #=> 503
+dpm1_factor(2**64 + 1, 256)                                              #=> 274177
+dpm1_factor(2**128 + 1, 116503103764643)                                 #=> 59649589127497217
+dpm1_factor((114*(2**127 - 1) + 1) * random_prime(1e50), 2**127 - 1)     #=> 19396094914493492417412352623610788052879
+
+__END__
+[36 tries] Found factor: 503 with a,b = [72, 1508] and x = 1
+[17 tries] Found factor: 274177 with a,b = [4352, 1034834473201] and x = 63
+[256 tries] Found factor: 59649589127497217 with a,b = [29824794563748608, 1426172300171282287590] and x = 2
+[38 tries] Found factor: 19396094914493492417412352623610788052879 with a,b = [6465364971497830805804117541203596017626, 4102844459326514132014637137633862970170675382519] and x = 3

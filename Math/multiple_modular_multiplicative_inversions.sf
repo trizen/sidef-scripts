@@ -6,7 +6,7 @@
 # Output:
 #   y_1 = 1/x_1 mod n, ..., y_k = 1/x_k mod n
 
-# Algorithm presented in the book:
+# Algorithm 2.11 "MultipleInversion" presented in the book:
 #
 #   Modern Computer Arithmetic
 #           - by Richard P. Brent and Paul Zimmermann
