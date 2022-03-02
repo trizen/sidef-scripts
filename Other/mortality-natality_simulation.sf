@@ -1,0 +1,25 @@
+#!/usr/bin/ruby
+
+# Naive simulation of world population decrease when the mortality rate is greater than the natality rate.
+
+var population = 7.7e9      # world population
+
+var deaths = 61e6           # deaths per year
+var births = deaths/5       # births per year
+var target = 500_000_000    # target population
+
+var death_rate = deaths/population
+var birth_rate = births/population
+
+var years  = 0
+
+while (population > target) {
+    population -= population*death_rate
+    population += population*birth_rate
+    ++years
+}
+
+say "It took #{years} years to reach a population of #{target.commify}."
+
+__END__
+It took 430 years to reach a population of 500,000,000.

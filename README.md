@@ -595,6 +595,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Zeta derivative at trivial zeros](./Math/zeta_derivative_at_trivial_zeros.sf)
 * Other
     * [Hex randomness info](./Other/hex_randomness_info.sf)
+    * [Mortality-natality simulation](./Other/mortality-natality_simulation.sf)
     * [Prime birthday](./Other/prime_birthday.sf)
 * PL
     * [Brainf compiler](./PL/brainf_compiler.sf)
