@@ -373,6 +373,7 @@ A nice collection of day-to-day Sidef scripts.
     * [LUP decomposition](./Math/LUP_decomposition.sf)
     * [Mandelbrot set](./Math/mandelbrot_set.sf)
     * [Mathematical formulas](./Math/mathematical_formulas.sf)
+    * [MBE factorization method](./Math/MBE_factorization_method.sf)
     * [Mertens function](./Math/mertens_function.sf)
     * [Miller-rabin factorization method](./Math/miller-rabin_factorization_method.sf)
     * [Miller-rabin primality test](./Math/miller-rabin_primality_test.sf)

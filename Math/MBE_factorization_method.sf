@@ -1,0 +1,59 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 12 March 2022
+# https://github.com/trizen
+
+# A new integer factorization method, using the binary exponentiation algorithm with modular exponentiation.
+
+# We call it the "Modular Binary Exponentiation" (MBE) factorization method.
+
+# Similar in flavor to the Pollard's p-1 method.
+
+func f(a,b,n) {
+
+    var c = 1
+
+    b.bits.flip.each {|x|
+        c = powmod(a, c, n) if x
+        a = powmod(a, a, n)
+    }
+
+    return c
+}
+
+func MBE_factor(n, max_k = 1000, max_i = 10) {
+
+    say "[*] Factoring #{n}"
+
+    for k in (1..max_k) {
+
+        var t = idiv(n, k)
+
+        for i in (^max_i) {
+
+            var v = f(t+i, t+i, n)
+            var g = gcd(v-1, n)
+
+            if (g.is_between(2, n-1)) {
+                say "[#{i}] Found factor #{g} with k=#{k} -- took O(n^(1/#{n.log((i+1)+k + (k-1)*max_i).round(-4)}))"
+                return g
+            }
+        }
+    }
+
+    return 1
+}
+
+for n in (1..5) {
+    var n = 2.of { 1e7.random_prime }.prod
+    MBE_factor(n)
+    say ''
+}
+
+__END__
+[*] Factoring 3034271543203
+[4] Found factor 5017589 with k=2 -- took O(n^(1/10.3661))
+
+[*] Factoring 43120971427631
+[2] Found factor 7838351 with k=1 -- took O(n^(1/28.577))
