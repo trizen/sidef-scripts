@@ -2,6 +2,7 @@
 
 # Author: Trizen
 # Date: 12 March 2022
+# Edit: 15 March 2022
 # https://github.com/trizen
 
 # A new integer factorization method, using the binary exponentiation algorithm with modular exponentiation.
@@ -22,23 +23,29 @@ func f(a,b,n) {
     return c
 }
 
-func MBE_factor(n, max_k = 1000, max_i = 10) {
+func MBE_factor(n, max_k = 10000) {
 
     say "[*] Factoring #{n}"
 
     for k in (1..max_k) {
 
-        var t = idiv(n, k)
+        #var a = idiv(n, k)
+        var a = irand(2,n)         # randomised version
+        var c = 1
 
-        for i in (^max_i) {
+        a.bits.flip.each {|x|
+            c = powmod(a, c, n) if x
+            a = powmod(a, a, n)
+        }
 
-            var v = f(t+i, t+i, n)
-            var g = gcd(v-1, n)
+        # Equivalently:
+        # c = f(a, a, n)
 
-            if (g.is_between(2, n-1)) {
-                say "[#{i}] Found factor #{g} with k=#{k} -- took O(n^(1/#{n.log((i+1)+k + (k-1)*max_i).round(-4)}))"
-                return g
-            }
+        var g = gcd(c-1, n)
+
+        if (g.is_between(2, n-1)) {
+            say "[*] Found factor #{g} with k=#{k} -- took O(n^(1/#{n.log(1+k).round(-4)}))"
+            return g
         }
     }
 
@@ -53,7 +60,7 @@ for n in (1..5) {
 
 __END__
 [*] Factoring 3034271543203
-[4] Found factor 5017589 with k=2 -- took O(n^(1/10.3661))
+[*] Found factor 604727 with k=177 -- took O(n^(1/5.5526))
 
 [*] Factoring 43120971427631
-[2] Found factor 7838351 with k=1 -- took O(n^(1/28.577))
+[*] Found factor 5501281 with k=2 -- took O(n^(1/45.2935))

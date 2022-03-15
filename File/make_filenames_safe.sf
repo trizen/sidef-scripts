@@ -15,7 +15,7 @@ if (ARGV[0] == '-r') {
     rename = true
 }
 
-var dir = ARGV[0] \\ "usage: #{__MAIN__} [-r] [dir]\n".die
+var dirs = ARGV || die "usage: #{__MAIN__} [-r] [dirs|files]\n"
 
 f.find(
     Hash(
@@ -82,5 +82,5 @@ f.find(
             }
         },
         no_chdir => 1,
-    ) => Dir(dir).rel2abs
+    ), dirs.map { File(_).is_dir ? Dir(_) : File(_) }.map { .rel2abs }...
 )
