@@ -1,0 +1,76 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 18 March 2022
+# https://github.com/trizen
+
+# Represent an integer as a sum of two rectangles:
+#
+#   n = a*b + c*d
+#
+# with a,b,c,d > 1 and a != b and c != d.
+
+func difference_of_two_squares_solutions(n) {
+
+    n.divisors.map {|d|
+
+        break if (d*d >= n)
+
+        var a = d
+        var b = n/d
+
+        (a+b).is_even || next
+
+        var x = (a + b)/2
+        var y = (b - a)/2
+
+        [x, y]
+    }
+}
+
+func sum_of_two_rectangles_solutions(n) {
+
+    var solutions = []
+
+    for x in (1 .. (n>>1)) {
+
+        var y = (n - x)
+
+        var ab = []
+        var cd = []
+
+        difference_of_two_squares_solutions(x).each_2d {|a,b|
+            ab << [a+b, a-b] if (a-b > 1)
+        }
+
+        difference_of_two_squares_solutions(y).each_2d {|c,d|
+            cd << [c+d, c-d] if (c-d > 1)
+        }
+
+        [ab,cd].cartesian {|x,y|
+            solutions << [x..., y...]
+        }
+    }
+
+    return solutions.sort
+}
+
+var n = 48
+
+sum_of_two_rectangles_solutions(n).each_2d {|a,b,c,d|
+    say "#{a*b + c*d} = #{a}*#{b} + #{c}*#{d}"
+}
+
+__END__
+48 = 4*2 + 10*4
+48 = 4*2 + 20*2
+48 = 5*3 + 11*3
+48 = 6*2 + 18*2
+48 = 6*4 + 6*4
+48 = 6*4 + 12*2
+48 = 7*3 + 9*3
+48 = 8*2 + 8*4
+48 = 8*2 + 16*2
+48 = 10*2 + 14*2
+48 = 12*2 + 6*4
+48 = 12*2 + 12*2

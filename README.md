@@ -565,6 +565,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Sum of remainders](./Math/sum_of_remainders.sf)
     * [Sum of squares function identities](./Math/sum_of_squares_function_identities.sf)
     * [Sum of squares function recursive](./Math/sum_of_squares_function_recursive.sf)
+    * [Sum of two rectangles solutions](./Math/sum_of_two_rectangles_solutions.sf)
     * [Sum of two squares solutions](./Math/sum_of_two_squares_solutions.sf)
     * [Sum of two squares solutions tonelli-shanks](./Math/sum_of_two_squares_solutions_tonelli-shanks.sf)
     * [Sums of power sums formula](./Math/sums_of_power_sums_formula.sf)
