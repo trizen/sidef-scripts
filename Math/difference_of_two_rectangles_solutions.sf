@@ -1,0 +1,58 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 18 March 2022
+# https://github.com/trizen
+
+# Represent an integer as a difference of two rectangles:
+#   n = a*b - c*d
+
+# This algorithm works only for integers that can also be represented as a difference of two squares.
+
+func difference_of_two_squares_solutions(n) {
+
+    n.divisors.map {|d|
+
+        break if (d*d > n)
+
+        var a = d
+        var b = n/d
+
+        (a+b).is_even || next
+
+        var x = (a + b)/2
+        var y = (b - a)/2
+
+        [x, y]
+    }
+}
+
+func difference_of_two_rectangles_solutions(n) {
+
+    var solutions = []
+
+    difference_of_two_squares_solutions(n).each_2d {|x,y|
+
+        var ab = []
+        var cd = []
+
+        difference_of_two_squares_solutions(x**2).each_2d {|a,b|
+            ab << [a+b, a-b]
+        }
+
+        difference_of_two_squares_solutions(y**2).each_2d {|c,d|
+            cd << [c+d, c-d]
+        }
+
+        [ab,cd].cartesian {|x,y|
+            solutions << [x..., y...]
+        }
+    }
+
+    return solutions.sort
+}
+
+say difference_of_two_rectangles_solutions(420)
+
+__END__
+[[22, 22, 8, 8], [22, 22, 16, 4], [22, 22, 32, 2], [242, 2, 8, 8], [242, 2, 16, 4], [242, 2, 32, 2], [26, 26, 16, 16], [26, 26, 32, 8], [26, 26, 64, 4], [26, 26, 128, 2], [338, 2, 16, 16], [338, 2, 32, 8], [338, 2, 64, 4], [338, 2, 128, 2], [38, 38, 32, 32], [38, 38, 64, 16], [38, 38, 128, 8], [38, 38, 256, 4], [38, 38, 512, 2], [722, 2, 32, 32], [722, 2, 64, 16], [722, 2, 128, 8], [722, 2, 256, 4], [722, 2, 512, 2], [106, 106, 104, 104], [106, 106, 208, 52], [106, 106, 338, 32], [106, 106, 416, 26], [106, 106, 676, 16], [106, 106, 1352, 8], [106, 106, 2704, 4], [106, 106, 5408, 2], [5618, 2, 104, 104], [5618, 2, 208, 52], [5618, 2, 338, 32], [5618, 2, 416, 26], [5618, 2, 676, 16], [5618, 2, 1352, 8], [5618, 2, 2704, 4], [5618, 2, 5408, 2]]

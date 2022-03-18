@@ -189,6 +189,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Derivative numerical approximation](./Math/derivative_numerical_approximation.sf)
     * [Difference of matrices factorization method](./Math/difference_of_matrices_factorization_method.sf)
     * [Difference of powers factorization method](./Math/difference_of_powers_factorization_method.sf)
+    * [Difference of two rectangles solutions](./Math/difference_of_two_rectangles_solutions.sf)
     * [Difference of two squares solutions](./Math/difference_of_two_squares_solutions.sf)
     * [Digamma function](./Math/digamma_function.sf)
     * [Digit-segmentation square root representation](./Math/digit-segmentation_square_root_representation.sf)

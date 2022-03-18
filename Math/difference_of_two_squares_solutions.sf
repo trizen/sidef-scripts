@@ -17,7 +17,7 @@ func difference_of_two_squares_solutions(n) {
 
     n.divisors.map {|d|
 
-        break if (d > n.isqrt)
+        break if (d*d > n)
 
         var a = d
         var b = n/d
