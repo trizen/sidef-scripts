@@ -1,0 +1,42 @@
+#!/usr/bin/ruby
+
+# Pollard-Strassen O(n^(1/4)) factorization algorithm.
+
+# Illustrated by David Harvey in the following video:
+#   https://yewtu.be/watch?v=_53s-0ZLxbQ
+
+func pollard_strassen_factorization(n, d = min(200, 1+n.ilog2), tries = min(1000, 10*d)) {
+
+    # In the original algorithm, d = ceil(n^(1/4))
+    # d = 1+n.iroot(4)
+
+    # However, the polynomial evaluation is very slow when d is too large.
+
+    var a = random_prime(n)
+
+    var baby_steps = @(1..d).map_reduce {|b|
+        mulmod(b, a, n)
+    }
+
+    var x = Poly(1)
+    var f = baby_steps.map {|k| (x-k) % n }.binsplit {|a,b| a * b }
+    var b = powmod(a, d, n)
+
+    for k in (2 .. tries) {
+
+        #b = powmod(a, k*d, n)      # original operation
+        b = powmod(b, k, n)         # p-1 smooth approach
+
+        var g = gcd(lift(f(Mod(b, n))), n)
+
+        if (g.is_between(2, n-1)) {
+            return g
+        }
+    }
+
+    return 1
+}
+
+say pollard_strassen_factorization(503*863)
+say pollard_strassen_factorization(2**64 + 1)
+say pollard_strassen_factorization(2.of { 1e7.random_prime }.prod)

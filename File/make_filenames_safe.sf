@@ -50,8 +50,8 @@ f.find(
                     basename.substr!(0, -ext.len)
                 }
 
-                # Replace any dot sequence with a space
-                basename.gsub!(/\./, ' ')
+                # Replace any dot with a space
+                basename.gsub!(/\.+/, ' ')
 
                 # Squeeze more spaces into one space char
                 basename = basename.words.join(' ')
