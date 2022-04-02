@@ -1,0 +1,57 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 02 April 2022
+# https://github.com/trizen
+
+# Encode data, using logarithms of integers.
+
+# Example:
+#   Let's say we want to encode the bytes "abc" == [97, 98, 99]
+#   We try to find an integer n such that log(n) contains '097098099' after the decimal point.
+#   One such integer is 1453293358, which gives log(1453293358) = 21.097098099...
+
+# Usage:
+#   sidef script.sf [input_file]
+
+# The script generates a valid Sidef script as output, such that, when executed, it will produce the input data.
+
+define (
+    PERL_CODE = false        # true to generate Perl code
+    SLICE_SIZE = 1           # how many bytes to encode into an integer
+)
+
+func log_encode(bytes) {
+    var v = bytes.map { '%03d' % _ }.join
+    for n in (10 .. 99) {
+        var t = Num("#{n}.#{v}").exp.round
+        if (t.log.to_s.substr(3).begins_with(v)) {
+            return t
+        }
+    }
+    return nil
+}
+
+var text = File(ARGV[0] \\ __FILE__).read
+
+var values = []
+
+text.bytes.each_slice(SLICE_SIZE, {|*slice|
+
+    while (slice.len != SLICE_SIZE) {
+        slice += ' '.ord
+    }
+
+    values << log_encode(slice)
+})
+
+if (PERL_CODE) {
+    print %Q'print pack("C#{SLICE_SIZE}", unpack("x3(a3)#{SLICE_SIZE}", log)) for qw('
+    print values.join(' ')
+    say ')'
+}
+else {
+    print 'STDOUT.binmode(":raw");%n['
+    print values.join(' ')
+    say %Q'].each { pack("C#{SLICE_SIZE}", unpack("x3(a3)#{SLICE_SIZE}", .log)).print }'
+}
