@@ -1,0 +1,116 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 05 April 2022
+# https://github.com/trizen
+
+# A new algorithm for computing the partial-sums of `ϕ(k) * k^m`, for `1 <= k <= n`:
+#
+#   R(n) = Sum_{k=1..n} k^m * phi(k)
+#
+# where phi(k) is the Euler totient function.
+
+# Based on the following identity:
+#   Sum_{d|n} phi(d) = n
+
+# we have:
+#   Sum_{k=1..n} Sum_{d|k} phi(d) = Sum_{k=1..n} Sum_{j=1..floor(n/k)} phi(j) = Sum_{k=1..n} R(floor(n/k)) = n*(n+1)/2
+
+# which allows us to create the following recursive formula:
+#   R(n) = n*(n+1)/2 - Sum_{k=2..floor(n / (1+floor(sqrt(n))))} R(floor(n/k)) - Sum_{k=1..floor(sqrt(n))} R(k) * (floor(n/k) - floor(n/(k+1)))
+
+# which can be generalized as:
+#   R(n) = F_(m+1)(n) - Sum_{k=2..floor(n / (1+floor(sqrt(n))))} k^m * R(floor(n/k)) - Sum_{k=1..floor(sqrt(n))} R(k) * (F_m(floor(n/k)) - F_m(floor(n/(k+1))))
+
+# General asymptotic formula:
+#
+#   Sum_{k=1..n} k^m * phi(k)  ~  F_(m+1)(n) / zeta(2).
+#
+# where F_m(n) are the Faulhaber polynomials.
+
+# Example:
+#   a(10^1,  0) = 32
+#   a(10^2,  0) = 3044
+#   a(10^3,  0) = 304192
+#   a(10^4,  0) = 30397486
+#   a(10^5,  0) = 3039650754
+#   a(10^6,  0) = 303963552392
+#   a(10^7,  0) = 30396356427242
+#   a(10^8,  0) = 3039635516365908
+#   a(10^9,  0) = 303963551173008414
+#   a(10^10, 0) = 30396355092886216366
+
+# Example:
+#    a(10^1,  1) = 217
+#    a(10^2,  1) = 203085
+#    a(10^3,  1) = 202870719
+#    a(10^4,  1) = 202653667159
+#    a(10^5,  1) = 202643891472849
+#    a(10^6,  1) = 202642368741515819
+#    a(10^7,  1) = 202642380629476099463
+#    a(10^8,  1) = 202642367994273571457613
+#    a(10^9,  1) = 202642367530671221417109931
+#    a(10^10, 1) = 202642367286524384080814204093
+
+# OEIS sequences:
+#   https://oeis.org/A011755 -- Sum_{k=1..n} k*phi(k).
+#   https://oeis.org/A002088 -- Sum of totient function: a(n) = Sum_{k=1..n} phi(k).
+#   https://oeis.org/A064018 -- Sum of the Euler totients phi for 10^n.
+#   https://oeis.org/A272718 -- Partial sums of gcd-sum sequence A018804.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Euler%27s_totient_function
+#   https://trizenx.blogspot.com/2018/08/interesting-formulas-and-exercises-in.html
+
+func euler_totient_partial_sum(n, m) {
+
+    var lookup_size = (2 * n.iroot(3)**2)
+
+    var euler_sum_lookup = [0]
+
+    for k in (1..lookup_size) {
+        euler_sum_lookup[k] = (euler_sum_lookup[k-1] + (k**m * phi(k)))
+    }
+
+    var cache = Hash()
+
+    func (n) {
+
+        if (n <= lookup_size) {
+            return euler_sum_lookup[n]
+        }
+
+        if (cache.has(n)) {
+            return cache{n}
+        }
+
+        var s = n.isqrt
+        var L = n.faulhaber(m+1)
+
+        for k in (2 .. idiv(n, s+1)) {
+            L -= (k**m * __FUNC__(idiv(n, k)))
+        }
+
+        for k in (1..s) {
+            L -= (euler_sum_lookup[k] * (faulhaber(idiv(n, k), m) - faulhaber(idiv(n, k+1), m)))
+        }
+
+        cache{n} = L
+    }(n)
+}
+
+func euler_totient_partial_sum_test (n, m) {    # just for testing
+    1..n -> sum {|k| euler_phi(k) * k**m }
+}
+
+for m in (0 .. 10) {
+
+    var n = 10000.irand
+
+    var t1 = euler_totient_partial_sum(n, m)
+    var t2 = euler_totient_partial_sum_test(n, m)
+
+    assert_eq(t1, t2)
+
+    say "Sum_{k=1..#{n}} k^#{m} * phi(k) = #{t1}"
+}
