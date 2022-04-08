@@ -13,7 +13,7 @@
 # Generate the factors of a Chernick number, given m and k,
 # where k is the number of distinct prime factors.
 func chernick_carmichael_factors (n, m) {
-    [6*m + 1, 12*m + 1, {|i| 2**i * 9*m + 1 }.map(1 .. n-2)...]
+    [6*m + 1, 12*m + 1, {|k| 2**k * 9*m + 1 }.map(1 .. n-2)...]
 }
 
 func is_chernick_carmichael (n, m) {
@@ -46,10 +46,13 @@ func chernick_carmichael_numbers(limit) {
             var m = (k * multiplier)
 
             # All factors must be prime
-            is_chernick_carmichael(n, m) || next
+            #is_chernick_carmichael(n, m) || next
 
             # Generate the n-distinct factors
             var f = chernick_carmichael_factors(n, m)
+
+            # All factors must be prime
+            f.all_prime || next
 
             # The product of these primes is Carmichael number
             var c = f.prod

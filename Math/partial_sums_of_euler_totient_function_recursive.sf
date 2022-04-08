@@ -40,10 +40,10 @@ func euler_totient_partial_sum(n) {
 
     var lookup_size = (2 * n.iroot(3)**2)
 
-    var liouville_sum_lookup = [0]
+    var euler_sum_lookup = [0]
 
     for k in (1..lookup_size) {
-        liouville_sum_lookup[k] = (liouville_sum_lookup[k-1] + phi(k))
+        euler_sum_lookup[k] = (euler_sum_lookup[k-1] + phi(k))
     }
 
     var cache = Hash()
@@ -51,7 +51,7 @@ func euler_totient_partial_sum(n) {
     func (n) {
 
         if (n <= lookup_size) {
-            return liouville_sum_lookup[n]
+            return euler_sum_lookup[n]
         }
 
         if (cache.has(n)) {
@@ -66,7 +66,7 @@ func euler_totient_partial_sum(n) {
         }
 
         for k in (1..s) {
-            L -= (liouville_sum_lookup[k] * (idiv(n, k) - idiv(n, k+1)))
+            L -= (euler_sum_lookup[k] * (idiv(n, k) - idiv(n, k+1)))
         }
 
         cache{n} = L
