@@ -1,0 +1,45 @@
+#!/usr/bin/ruby
+
+# Count the number of Brilliant numbers < 10^n.
+
+# Brilliant numbers are semiprimes such that both prime factors have the same number of digits in base 10.
+
+# OEIS sequence:
+#   https://oeis.org/A086846 --  Number of brilliant numbers < 10^n.
+
+# See also:
+#   https://rosettacode.org/wiki/Brilliant_numbers
+
+func brilliant_numbers_count(n) {
+
+    var count = 0
+
+    for k in (1 .. n.isqrt.len) {
+
+        var P = primes(10**(k-1), 10**k - 1)
+
+        for i in (0..P.end) {
+            for j in (i..P.end) {
+                P[i]*P[j] > n ? break : ++count
+            }
+        }
+    }
+
+    return count
+}
+
+for n in (1..6) {
+    printf("Less than 10^%s, there are %s brilliant numbers\n", n, brilliant_numbers_count(10**n - 1))
+}
+
+
+__END__
+Less than 10^1, there are 3 brilliant numbers
+Less than 10^2, there are 10 brilliant numbers
+Less than 10^3, there are 73 brilliant numbers
+Less than 10^4, there are 241 brilliant numbers
+Less than 10^5, there are 2504 brilliant numbers
+Less than 10^6, there are 10537 brilliant numbers
+Less than 10^7, there are 124363 brilliant numbers
+Less than 10^8, there are 573928 brilliant numbers
+Less than 10^9, there are 7407840 brilliant numbers
