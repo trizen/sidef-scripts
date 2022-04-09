@@ -2,13 +2,14 @@
 
 # Daniel "Trizen" Șuteu
 # Date: 09 January 2017
+# Edit: 09 April 2022
 # https://github.com/trizen
 
-# Two limits for Pi/4: an upper and a lower limit.
+# Two limits for Pi: an upper and a lower limit.
 
 # The following two inequalities hold:
 #
-#   lower(n) < Pi/4 < upper(n)
+#   lower(n) < Pi < upper(n)
 #
 # for n < Infinity.
 
@@ -22,8 +23,8 @@
 ## (4^n * n * (n!)^2) / ((2*n + 1)!!)^2
 #
 func lower(n) {
-    (16**n * n * n!**4) / (2*n + 1)!**2
-    #(4**n * n * (n!)**2) / ((2*n + 1)!!)**2
+    4 * (16**n * n * n!**4) / (2*n + 1)!**2
+    #(4**(n+1) * n * (n!)**2) / ((2*n + 1)!!)**2
 }
 
 #
@@ -31,9 +32,34 @@ func lower(n) {
 ## (4^n * (n+1) * (n!)^2) / ((2*n + 1)!!)^2
 #
 func upper(n) {
-    (16**n * (n+1)! * n!**3) / (2*n + 1)!**2
+    4 * (16**n * (n+1)! * n!**3) / (2*n + 1)!**2
     #(4**n * (n+1) * (n!)**2) / ((2*n + 1)!!)**2
 }
 
-say lower(1e3)
-say upper(1e3)
+#
+## 16^n * (n!)^4 / (n * ((2*n)!)^2)
+## (2^n * n!)^4 / (n *  ((2*n)!)^2)
+## 4^n * (n!)^2 / (n * ((2*n - 1)!!)^2)
+#
+func upper2(n) {
+    #16**n * n!**4 / (n * (2*n)!**2)
+    #4**n * (n!)**2 / (n * ((2*n - 1)!!)**2)
+    (2**n * n!)**4 / (n * (2*n)!**2)
+}
+
+define LIMIT = 1e3
+
+say "Lower bounds:"
+say lower(LIMIT)
+
+say "\nUpper bounds:"
+say upper(LIMIT)
+say upper2(LIMIT)
+
+__END__
+Lower bounds:
+3.13923812696691110493340150080310032881057733291
+
+Upper bounds:
+3.14237736509387801603833490230390342913938791024
+3.14237814990340975776611113565427862991447011289
