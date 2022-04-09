@@ -10,7 +10,7 @@
 # See also:
 #   https://rosettacode.org/wiki/Brilliant_numbers
 
-func brilliant_numbers_count(n) {
+func brilliant_numbers_count_fast(n) {
 
     var count = 0
     var len = n.isqrt.len
@@ -25,6 +25,32 @@ func brilliant_numbers_count(n) {
 
     each_prime(min, max, {|p|
         count += prime_count(p, max `min` idiv(n, p))
+    })
+
+    return count
+}
+
+func brilliant_numbers_count_faster(n) {
+
+    var count = 0
+    var len = n.isqrt.len
+
+    for k in (1 .. len-1) {
+        var pi = (prime_count(10**k) - prime_count(10**(k-1)))
+        count += binomial(pi, 2)+pi
+    }
+
+    var min = (10**(len - 1))
+    var max = (10**len - 1)
+
+    var pi_min = prime_count(min)
+    var pi_max = prime_count(max)
+
+    var j = -1
+
+    each_prime(min, max, {|p|
+        p*p <= n || break
+        count += (((n >= max*p) ? pi_max : prime_count(idiv(n, p))) - pi_min - ++j)
     })
 
     return count
@@ -47,7 +73,7 @@ func brilliant_numbers_count_slow(n) {
 }
 
 for n in (1..9) {
-    printf("Less than 10^%s, there are %s brilliant numbers\n", n, brilliant_numbers_count(10**n - 1))
+    printf("Less than 10^%s, there are %s brilliant numbers\n", n, brilliant_numbers_count_faster(10**n - 1))
 }
 
 
