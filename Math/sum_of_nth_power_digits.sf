@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+
+# Generate all the numbers that can be written as the sum of n-th powers of their digits.
+
+# OEIS sequences:
+#   https://oeis.org/A005188 -- Armstrong (or pluperfect, or Plus Perfect, or narcissistic) numbers: m-digit positive numbers equal to sum of the m-th powers of their digits.
+#   https://oeis.org/A252648 -- Irregular table of perfect digital invariants for n > 1, i.e., numbers equal to the sum of n-th powers of their digits, read by rows.
+
+# See also:
+#   https://projecteuler.net/problem=30
+#   https://rosettacode.org/wiki/Digit_fifth_powers
+
+func digit_nth_powers(n, base=10) {
+
+    var D = @(^base)
+    var P = D.map {|d| d**n }
+    var A = []
+    var m = (base-1)**n
+
+    for(var (k, t) = (1, 1); k*m >= t; (++k, t*=base)) {
+        D.combinations_with_repetition(k, {|*c|
+            var v = c.sum {|d| P[d] }
+            A.push(v) if (v.digits(base).sort == c)
+        })
+    }
+
+    A.sort.grep { _ > 1 }
+}
+
+for n in (3..5) {
+    var a = digit_nth_powers(n)
+    say "Sum of #{n}-th powers of their digits: #{a}"
+}
+
+__END__
+Sum of 3-th powers of their digits: [153, 370, 371, 407]
+Sum of 4-th powers of their digits: [1634, 8208, 9474]
+Sum of 5-th powers of their digits: [4150, 4151, 54748, 92727, 93084, 194979]
+Sum of 6-th powers of their digits: [548834]
+Sum of 7-th powers of their digits: [1741725, 4210818, 9800817, 9926315, 14459929]
+Sum of 8-th powers of their digits: [24678050, 24678051, 88593477]
