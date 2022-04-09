@@ -13,11 +13,29 @@
 func brilliant_numbers_count(n) {
 
     var count = 0
+    var len = n.isqrt.len
+
+    for k in (1 .. len-1) {
+        var pi = prime_count(10**(k-1), 10**k - 1)
+        count += binomial(pi, 2)+pi
+    }
+
+    var min = (10**(len - 1))
+    var max = (10**len - 1)
+
+    each_prime(min, max, {|p|
+        count += prime_count(p, max `min` idiv(n, p))
+    })
+
+    return count
+}
+
+func brilliant_numbers_count_slow(n) {
+
+    var count = 0
 
     for k in (1 .. n.isqrt.len) {
-
         var P = primes(10**(k-1), 10**k - 1)
-
         for i in (0..P.end) {
             for j in (i..P.end) {
                 P[i]*P[j] > n ? break : ++count
@@ -28,7 +46,7 @@ func brilliant_numbers_count(n) {
     return count
 }
 
-for n in (1..6) {
+for n in (1..9) {
     printf("Less than 10^%s, there are %s brilliant numbers\n", n, brilliant_numbers_count(10**n - 1))
 }
 
@@ -43,3 +61,6 @@ Less than 10^6, there are 10537 brilliant numbers
 Less than 10^7, there are 124363 brilliant numbers
 Less than 10^8, there are 573928 brilliant numbers
 Less than 10^9, there are 7407840 brilliant numbers
+Less than 10^10, there are 35547994 brilliant numbers
+Less than 10^11, there are 491316166 brilliant numbers
+Less than 10^12, there are 2409600865 brilliant numbers
