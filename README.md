@@ -97,6 +97,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Arithmetic-harmonic mean](./Math/arithmetic-harmonic_mean.sf)
     * [Arithmetic convolution](./Math/arithmetic_convolution.sf)
     * [Arithmetic derivative](./Math/arithmetic_derivative.sf)
+    * [Armstrong numbers](./Math/armstrong_numbers.sf)
     * [Baillie-PSW high-level](./Math/Baillie-PSW_high-level.sf)
     * [Batch gcd algorithm](./Math/batch_gcd_algorithm.sf)
     * [BBP-type formulae](./Math/BBP-type_formulae.sf)

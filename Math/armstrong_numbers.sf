@@ -1,0 +1,40 @@
+#!/usr/bin/ruby
+
+# Generate Armstrong numbers.
+
+# Armstrong (or pluperfect, or Plus Perfect, or narcissistic) numbers: m-digit positive numbers equal to sum of the m-th powers of their digits.
+#   https://oeis.org/A005188
+
+# See also:
+#   https://rosettacode.org/wiki/Own_digits_power_sum
+
+func armstrong_numbers(n, base=10) {
+
+    var D = @(^base)
+    var P = D.map {|d| d**n }
+
+    var list = []
+
+    D.combinations_with_repetition(n, {|*c|
+        var v = c.sum {|d| P[d] }
+        if (v.digits(base).sort == c) {
+            list.push(v)
+        }
+    })
+
+    list.sort
+}
+
+for n in (3..6) {
+    say ("For n = #{'%2d' % n}: ", armstrong_numbers(n))
+}
+
+__END__
+For n =  3: [153, 370, 371, 407]
+For n =  4: [1634, 8208, 9474]
+For n =  5: [54748, 92727, 93084]
+For n =  6: [548834]
+For n =  7: [1741725, 4210818, 9800817, 9926315]
+For n =  8: [24678050, 24678051, 88593477]
+For n =  9: [146511208, 472335975, 534494836, 912985153]
+For n = 10: [4679307774]
