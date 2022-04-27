@@ -15,14 +15,37 @@
 # See also:
 #   https://home.gwu.edu/~maxal/gpscripts/
 
-func factorial_without_prime(n,p,pk) {
-    return 1 if (n<=1)
+func factorial_without_prime(n,p,pk,from,res) {
+    return 1 if (n <= 1)
 
     if (p > n) {
         return factorialmod(n, pk)
     }
 
-    1..n -> reduce {|a,b| (p `divides` b) ? a : mulmod(a, b, pk) }
+    # Simple implementation:
+    # return (1..n -> reduce {|a,b| (p `divides` b) ? a : mulmod(a, b, pk) })
+
+    if (*from == n) {
+        return *res
+    }
+
+    if (*from > n) {
+        *from = 0
+        *res  = 1
+    }
+
+    var r = *res;
+
+    for v in ((*from + 1) .. n) {
+        (p `divides` v) || do {
+            r = mulmod(r, v, pk)
+        }
+    }
+
+    *res   = r
+    *from  = n
+
+    return r
 }
 
 func lucas_theorem(n,k,p) {     # p is prime
@@ -37,9 +60,9 @@ func lucas_theorem(n,k,p) {     # p is prime
         if (kp > np) { return 0 }
 
         r = mulmod(r, divmod(
-            factorialmod(np, p, 1),
-            factorialmod(kp, p, 1) *
-            factorialmod(np-kp, p, 1), p),
+            factorialmod(np, p),
+            factorialmod(kp, p) *
+            factorialmod(np-kp, p), p),
         p)
 
         (n,k) = (nqp,kqp)
@@ -58,7 +81,7 @@ func modular_binomial(n,k,m) {
 
     var F = []
 
-    for p,q in (m.factor_exp) {
+    for p,q in (m.abs.factor_exp) {
 
         if (q == 1) {
             F << Mod(lucas_theorem(n,k,p), p)
@@ -94,9 +117,17 @@ func modular_binomial(n,k,m) {
         var K = {|i| idiv(k,   p**i) % prq }.map(0 .. d)
         var R = {|i| idiv(n-k, p**i) % prq }.map(0 .. d)
 
+        var NKR = N.range.map {|i|
+            [N[i], K[i], R[i], N[i]+K[i]+R[i]]
+        }.sort_by { .tail }
+
+        N = NKR.map{ _[0] }
+        K = NKR.map{ _[1] }
+        R = NKR.map{ _[2] }
+
         var acc = [1]
 
-        for k in (1 .. min(max(N+K+R), 1e4)) {
+        for k in (1 .. min(max(N+K+R), 1e3)) {
             if (p `divides` k) {
                 acc.push(acc[-1])
             } else {
@@ -104,11 +135,20 @@ func modular_binomial(n,k,m) {
             }
         }
 
+        var from = 0
+        var res  = 1
+
         var v = (p**e[0] * prod(0 .. d, {|j|
 
-            var a = (acc[N[j]] \\ factorial_without_prime(N[j], p, prq))
-            var b = (acc[K[j]] \\ factorial_without_prime(K[j], p, prq))
-            var c = (acc[R[j]] \\ factorial_without_prime(R[j], p, prq))
+            var pairs = []
+
+            var a = (acc[N[j]] \\ pairs.push([\a, N[j]]))
+            var b = (acc[K[j]] \\ pairs.push([\b, K[j]]))
+            var c = (acc[R[j]] \\ pairs.push([\c, R[j]]))
+
+            pairs.sort_by { .tail }.each_2d {|x,y|
+                *x = factorial_without_prime(y, p, prq, \from, \res)
+            }
 
             Mod(a, pq) / (b * c)
         }))
@@ -120,7 +160,7 @@ func modular_binomial(n,k,m) {
         F << v
     }
 
-    return chinese(F...).lift
+    chinese(F...).lift % m
 }
 
 say ("binomial(10^10, 10^5) mod 13! = ", modular_binomial(1e10, 1e5, 13!))
@@ -134,6 +174,8 @@ assert_eq(modular_binomial(10, 8, 43), 2)
 
 assert_eq(modular_binomial(10, 2, 24), 21)
 assert_eq(modular_binomial(10, 8, 24), 21)
+
+assert_eq(modular_binomial(100, 42, -127), binomial(100, 42) % -127)
 
 assert_eq(modular_binomial(12,    5,   100000),      792)
 assert_eq(modular_binomial(16,    4,   100000),      1820)
