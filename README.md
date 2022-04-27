@@ -386,6 +386,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Miller-rabin primality test](./Math/miller-rabin_primality_test.sf)
     * [Mills constant](./Math/mills_constant.sf)
     * [Modular bell numbers recurrence](./Math/modular_bell_numbers_recurrence.sf)
+    * [Modular binomial fast](./Math/modular_binomial_fast.sf)
     * [Modular cyclotomic polynomial](./Math/modular_cyclotomic_polynomial.sf)
     * [Modular elliptic-curve arithmetic](./Math/modular_elliptic-curve_arithmetic.sf)
     * [Modular exponentiation](./Math/modular_exponentiation.sf)

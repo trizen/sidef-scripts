@@ -1,0 +1,167 @@
+#!/usr/bin/ruby
+
+# Translated by: Trizen
+# Date: 27 April 2022
+# https://github.com/trizen
+
+# Fast algorithm for computing the binomial coefficient modulo some integer m.
+
+# The implementation is based on Lucas' Theorem and its generalization given in the paper
+# Andrew Granville "The Arithmetic Properties of Binomial Coefficients", In Proceedings of
+# the Organic Mathematics Workshop, Simon Fraser University, December 12-14, 1995.
+
+# Translation of binomod.gp v1.5 by Max Alekseyev, with some minor optimizations.
+
+# See also:
+#   https://home.gwu.edu/~maxal/gpscripts/
+
+func factorial_without_prime(n,p,k,pk) {
+    return Mod(1,p**k) if (n<=1)
+
+    if (p > n) {
+        return(Mod(factorialmod(n, pk), pk))
+    }
+
+    Mod(1..n -> reduce {|a,b| ((p `divides` b) ? a : mulmod(a,b,pk)) }, pk)
+}
+
+func modular_binomial(n,k,m) {
+
+    if (k.is_neg || m.is_one)    { return 0 }
+    if (n.is_neg)                { return ((-1)**k * __FUNC__(-n + k - 1, k, m)) }
+    if (k > n)                   { return Mod(0,m) }
+    if (k.is_zero || (k == n))   { return Mod(1,m) }
+    if (k.is_one  || (k == n-1)) { return Mod(n,m) }
+
+    if (m.is_prime) {
+        var p = m
+        var F = Mod(1,p)
+
+        while (k) {
+            var np = n%p
+            var kp = k%p
+
+            if (kp > np) { return 0 }
+
+            F *= (Mod(factorialmod(np, p, 1), p) / (factorialmod(kp, p, 1) * factorialmod(np-kp, p, 1)))
+
+            n = idiv(n,p)
+            k = idiv(k,p)
+        }
+
+        return F
+    }
+
+    var F = []
+
+    for p,q in (m.factor_exp) {
+
+        var d = n.ilog(p)+1
+
+        if (q == 1) {
+            F << Mod(__FUNC__(n,k,p),p)
+            next
+        }
+
+        var np = {|i| idiv(n, p**i) % p }.map(0 .. d)
+        var kp = {|i| idiv(k, p**i) % p }.map(0 .. d)
+
+        var e = []
+
+        for i in (0 .. d) {
+            e[i] = ((np[i] < (kp[i]+(i>0 ? e[i-1] : 0))) ? 1 : 0)
+        }
+
+        for i in (d-1 `downto` 0) {
+            e[i] += e[i+1]
+        }
+
+        if (e[0] >= q) {
+            F << Mod(0, p**q)
+            next
+        }
+
+        var rq = q-e[0]
+
+        var pq  = p**q
+        var prq = p**rq
+
+        var N = {|i| idiv(n,   p**i) % prq }.map(0 .. d)
+        var K = {|i| idiv(k,   p**i) % prq }.map(0 .. d)
+        var R = {|i| idiv(n-k, p**i) % prq }.map(0 .. d)
+
+        var acc = [1]
+
+        for k in (1 .. min(max(N+K+R), 1e4)) {
+            if (p `divides` k) {
+                acc.push(acc[-1])
+            } else {
+                acc.push(mulmod(acc[-1], k, prq))
+            }
+        }
+
+        var v = (p**e[0] * prod(0 .. d, {|j|
+
+            var a = (acc[N[j]] \\ factorial_without_prime(N[j], p, rq, prq))
+            var b = (acc[K[j]] \\ factorial_without_prime(K[j], p, rq, prq))
+            var c = (acc[R[j]] \\ factorial_without_prime(R[j], p, rq, prq))
+
+            Mod(a, pq) / (b * c)
+        }))
+
+        if ((p>2 || rq<3) && (q<=e.len)) {
+            v *= (-1)**e[rq-1]
+        }
+
+        F << Mod(v, pq)
+    }
+
+    return chinese(F...)
+}
+
+say ("binomial(10^10, 10^5) mod 13! = ", modular_binomial(1e10, 1e5, 13!))
+
+assert_eq(modular_binomial(12,    5,   100000),      792)
+assert_eq(modular_binomial(16,    4,   100000),      1820)
+assert_eq(modular_binomial(100,   50,  139),         71)
+assert_eq(modular_binomial(1000,  10,  1243),        848)
+assert_eq(modular_binomial(124,   42,  1234567),     395154)
+assert_eq(modular_binomial(1e9,   1e4, 1234567),     833120)
+assert_eq(modular_binomial(1e10,  1e5, 1234567),     589372)
+assert_eq(modular_binomial(-1e10, 1e5, 4233330243),  2865877173)
+
+assert_eq(modular_binomial(1e10, 1e4, 13!), 1845043200)
+assert_eq(modular_binomial(1e10, 1e5, 13!), 1556755200)
+assert_eq(modular_binomial(1e10, 1e6, 13!), 5748019200)
+
+assert_eq(modular_binomial(-1e10, 1e4, 13!), 4151347200)
+assert_eq(modular_binomial(-1e10, 1e5, 13!), 1037836800)
+assert_eq(modular_binomial(-1e10, 1e6, 13!), 2075673600)
+
+assert_eq(modular_binomial(3, 1,  9), binomial(3, 1) % 9)
+assert_eq(modular_binomial(4, 1, 16), binomial(4, 1) % 16)
+
+assert_eq(modular_binomial(1e9, 1e5, 43*97*503), 585492)
+assert_eq(modular_binomial(1e9,1e6,5041689707), 15262431)
+assert_eq(modular_binomial(1e7,1e5, 43**2 * 97**3 * 13**4), 1778017500428)
+assert_eq(modular_binomial(1e7,1e5, 42**2 * 97**3 * 13**4), 10015143223176)
+assert_eq(modular_binomial(1e9,1e5,12345678910), 4517333900)
+assert_eq(modular_binomial(1e9,1e6,13**2 * 5**6), 2598375)
+assert_eq(modular_binomial(1e10, 1e5, 1234567), 589372)
+
+assert_eq(modular_binomial(1e5, 1e3, 43), binomial(1e5,1e3)%43)
+assert_eq(modular_binomial(1e5, 1e3, 43*97), binomial(1e5,1e3) % (43*97))
+assert_eq(modular_binomial(1e5, 1e3, 43*97*43), binomial(1e5,1e3) % (43*97*43))
+assert_eq(modular_binomial(1e5, 1e3, 43*97*(5**5)), binomial(1e5,1e3) % (43*97*(5**5)))
+assert_eq(modular_binomial(1e5,1e3, next_prime(1e4)**2), binomial(1e5, 1e3) % next_prime(1e4)**2)
+assert_eq(modular_binomial(1e5,1e3, next_prime(1e4)), binomial(1e5, 1e3) % next_prime(1e4))
+assert_eq(modular_binomial(1e6,1e3, next_prime(1e5)), binomial(1e6, 1e3) % next_prime(1e5))
+assert_eq(modular_binomial(1e6,1e3, next_prime(1e7)), binomial(1e6, 1e3) % next_prime(1e7))
+assert_eq(modular_binomial(1234567, 1e3, 20!), binomial(1234567, 1e3)%20!)
+assert_eq(modular_binomial(1234567, 1e4, 20!), binomial(1234567, 1e4)%20!)
+
+__END__
+for n in (1..50), k in (1..n), m in (1..50) {
+    say "Testing: binomial(#{n}, #{k}, #{m})"
+    assert_eq(modular_binomial(n, k, m), binomial(n, k) % m)
+}
