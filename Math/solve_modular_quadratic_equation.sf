@@ -1,0 +1,42 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 27 April 2022
+# https://github.com/trizen
+
+# Solve modular quadratic equations of the form:
+#   a*x^2 + b*x + c == 0 (mod m)
+
+# Solving method:
+#   D = b^2 - 4*a*c
+#   t^2 == D (mod 4*m)
+
+# By finding all the solutions to `t`, using `sqrtmod(D, 4*m)`, the candidate values for `x` are given by:
+#   x_1 = (-b + t)/(2*a)
+#   x_2 = (-b - t)/(2*a)
+
+func modular_quadratic_equation (a,b,c,m) {
+
+    var D = (b**2 - 4*a*c)
+    var S = []
+
+    for t in (sqrtmod_all(D, 4*m)) {
+        for u,v in ([[-b + t, 2*a], [-b - t, 2*a]]) {
+            var x = ((v `divides` u) ? Mod(u/v, m) : Mod(u, m)/v)
+            if (a*x*x + b*x + c == 0) {
+                S << x
+            }
+        }
+    }
+
+    return S.sort.uniq
+}
+
+say modular_quadratic_equation(1,1,-1e10 + 8,1e10)
+say modular_quadratic_equation(4,6,10 - 1e10, 1e10)
+say modular_quadratic_equation(1,1,-1e10 - 10, 1e10)
+
+__END__
+[Mod(1810486343, 10000000000), Mod(2632873031, 10000000000), Mod(7367126968, 10000000000), Mod(8189513656, 10000000000)]
+[Mod(905243171, 10000000000), Mod(1316436515, 10000000000), Mod(5905243171, 10000000000), Mod(6316436515, 10000000000)]
+[Mod(263226214, 10000000000), Mod(1620648089, 10000000000), Mod(8379351910, 10000000000), Mod(9736773785, 10000000000)]

@@ -539,6 +539,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Solovay-strassen primality test](./Math/solovay-strassen_primality_test.sf)
     * [Solve cubic equation real](./Math/solve_cubic_equation_real.sf)
     * [Solve linear congruence equation](./Math/solve_linear_congruence_equation.sf)
+    * [Solve modular quadratic equation](./Math/solve_modular_quadratic_equation.sf)
     * [Solve pell equation](./Math/solve_pell_equation.sf)
     * [Solve quadratic diophantine reciprocals](./Math/solve_quadratic_diophantine_reciprocals.sf)
     * [Solve reciprocal pythagorean equation](./Math/solve_reciprocal_pythagorean_equation.sf)
