@@ -412,6 +412,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Nth prime number](./Math/nth_prime_number.sf)
     * [Nth root good rational approximations](./Math/nth_root_good_rational_approximations.sf)
     * [Nth smooth number](./Math/nth_smooth_number.sf)
+    * [Number2expression](./Math/number2expression.sf)
     * [Number of mXn arrays with rows being permutations](./Math/number_of_mXn_arrays_with_rows_being_permutations.sf)
     * [Number of representations as sum of 3 triangles](./Math/number_of_representations_as_sum_of_3_triangles.sf)
     * [Number to continued fraction](./Math/number_to_continued_fraction.sf)
