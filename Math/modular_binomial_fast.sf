@@ -73,8 +73,11 @@ func lucas_theorem(n,k,p) {     # p is prime
 
 func modular_binomial(n,k,m) {
 
-    if (k.is_neg || m.is_one)    { return 0 }
-    if (n.is_neg)                { return ((-1)**k * __FUNC__(-n + k - 1, k, m)) }
+    if (m.is_zero)               { return NaN }
+    if (m.is_one)                { return 0 }
+    if (k.is_neg)                { k = (n - k) }
+    if (k.is_neg)                { return 0 }
+    if (n.is_neg)                { return (((-1)**k * __FUNC__(-n + k - 1, k, m)) % m) }
     if (k > n)                   { return 0 }
     if (k.is_zero || (k == n))   { return 1%m }
     if (k.is_one  || (k == n-1)) { return n%m }
@@ -160,6 +163,7 @@ func modular_binomial(n,k,m) {
         F << v
     }
 
+    F || return 0
     chinese(F...).lift % m
 }
 
@@ -217,7 +221,10 @@ assert_eq(modular_binomial(1234567, 1e3, 20!), binomial(1234567, 1e3)%20!)
 assert_eq(modular_binomial(1234567, 1e4, 20!), binomial(1234567, 1e4)%20!)
 
 __END__
-for n in (0..50), k in (0..n), m in (1..50) {
-    say "Testing: binomial(#{n}, #{k}, #{m})"
-    assert_eq(modular_binomial(n, k, m), binomial(n, k) % m)
+var upto = 10
+for n in (-upto .. upto), k in (-upto .. upto), m in (-upto .. upto) {
+    if (m != 0) {
+        say "Testing: binomial(#{n}, #{k}, #{m})"
+        assert_eq(modular_binomial(n, k, m), binomial(n, k) % m)
+    }
 }
