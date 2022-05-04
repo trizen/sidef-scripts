@@ -508,6 +508,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Quadratic integers](./Math/quadratic_integers.sf)
     * [Quaternion integer primality test](./Math/quaternion_integer_primality_test.sf)
     * [Quaternion integers](./Math/quaternion_integers.sf)
+    * [Rabin encryption method](./Math/rabin_encryption_method.sf)
     * [Ramanujan sum](./Math/ramanujan_sum.sf)
     * [Rational approximations](./Math/rational_approximations.sf)
     * [Recaman-like sequence](./Math/recaman-like_sequence.sf)
