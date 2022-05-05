@@ -4,7 +4,7 @@
 # Date: 05 May 2022
 # https://github.com/trizen
 
-# Find all the Gaussian divisors of a given number.
+# Represent a given integer as a product of two Gaussian integers.
 # For example: 5 = (2 + i)(2 − i) and 13 = (3 + 2i)(3 − 2i).
 
 func gaussian_divisors(n) {
