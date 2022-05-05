@@ -31,10 +31,20 @@ func T(n) {     # Sum_{k=1..n} k = n-th triangular number
 
 func S(n) {     # A024916(n) = Sum_{k=1..n} sigma(k) = Sum_{k=1..n} k*floor(n/k)
     #with (n.isqrt) { |s| sum(1..s, {|k| T(idiv(n,k)) + k*idiv(n,k) }) - T(s)*s }
+
+    if (n < 0) {
+        return (T(n.abs) + __FUNC__(n.abs-1))
+    }
+
     n.dirichlet_sum({1}, {_}, {_}, {.faulhaber(1)})
 }
 
 func g(a,b) {   # g(a,b) = Sum_{k=a..b} k*floor(b/k)
+
+    if (b < 0) {
+        return (T(b.abs) - T(a.abs-1)  + __FUNC__(a, b.abs-1))
+    }
+
     var total = 0
     while (a <= b) {
         var t = idiv(b, a)
@@ -45,16 +55,28 @@ func g(a,b) {   # g(a,b) = Sum_{k=a..b} k*floor(b/k)
     return total
 }
 
-func a(n, v) {     # sub-linear formula
-    n*v - S(v) + g(n+1, v)
+func sum_remainders(n, v) {     # sub-linear formula
+    sgn(v) * (n*v.abs - S(v) + g(n+1, v))
 }
 
-say {|n| a(n,   n.prime) }.map(1..20)        #=> A099726
-say {|n| a(n-1, n.sigma) }.map(1..20)        #=> A340976
+say {|n| sum_remainders(n,   n.prime) }.map(1..20)        #=> A099726
+say {|n| sum_remainders(n-1, n.sigma) }.map(1..20)        #=> A340976
 
 for k in (1..8) {
-    say ("A099726(10^#{k}) = ", a(10**k, prime(10**k)))
+    say ("A099726(10^#{k}) = ", sum_remainders(10**k, prime(10**k)))
 }
+
+# Positive v
+assert_eq(
+    20.of {|n| 20.of {|v| sum(1..n, {|k| v % k }) } },
+    20.of {|n| 20.of {|v| sum_remainders(n,v) } }
+)
+
+# Negative v
+assert_eq(
+    20.of {|n| 20.of {|v| sum(1..n, {|k| -v % k }) } },
+    20.of {|n| 20.of {|v| sum_remainders(n,-v) } }
+)
 
 __END__
 A099726(10^1) = 30
