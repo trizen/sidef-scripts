@@ -541,6 +541,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Smallest number with at least n divisors](./Math/smallest_number_with_at_least_n_divisors.sf)
     * [Smallest number with n divisors](./Math/smallest_number_with_n_divisors.sf)
     * [Solovay-strassen primality test](./Math/solovay-strassen_primality_test.sf)
+    * [Solve cubic equation](./Math/solve_cubic_equation.sf)
     * [Solve cubic equation real](./Math/solve_cubic_equation_real.sf)
     * [Solve linear congruence equation](./Math/solve_linear_congruence_equation.sf)
     * [Solve modular quadratic equation](./Math/solve_modular_quadratic_equation.sf)
