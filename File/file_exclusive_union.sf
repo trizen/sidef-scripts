@@ -1,0 +1,19 @@
+#!/usr/bin/ruby
+
+# Show the unique lines from file1 and file2 that apppear in either file1 or file2, but not in both.
+
+var file1 = File(ARGV[0])
+var file2 = File(ARGV[1])
+
+func collect_lines(fh) {
+    var list = Set()
+    fh.each {|line|
+        #list << line.words.last
+        list << line
+    }
+    list
+}
+
+collect_lines(file1.open_r) ^ collect_lines(file2.open_r) -> each {|line|
+    say line
+}

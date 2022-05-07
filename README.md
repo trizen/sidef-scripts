@@ -34,6 +34,8 @@ A nice collection of day-to-day Sidef scripts.
 * File
     * [Fdf](./File/fdf.sf)
     * [File difference](./File/file_difference.sf)
+    * [File exclusive union](./File/file_exclusive_union.sf)
+    * [File intersection](./File/file_intersection.sf)
     * [Make filenames safe](./File/make_filenames_safe.sf)
 * Game solvers
     * [Chess960 initial positions](./Game%20solvers/chess960_initial_positions.sf)
