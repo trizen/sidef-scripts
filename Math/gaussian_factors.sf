@@ -1,0 +1,68 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 09 May 2022
+# https://github.com/trizen
+
+# Find the factors of a Gaussian integer.
+
+# See also:
+#   https://www.alpertron.com.ar/GAUSSIAN.HTM
+
+func gaussian_factors(Gauss z) {
+
+    var Z = z
+    var n = z.norm
+    var factors = []
+
+    for p,e in (n.factor_exp) {
+        if (p == 2) {
+
+            while (z % Gauss(1, 1) == 0) {
+                factors << Gauss(1,1)
+                z /= Gauss(1,1)
+            }
+
+            while (z  % Gauss(1,-1) == 0) {
+                factors << Gauss(1,-1)
+                z /= Gauss(1,-1)
+            }
+        }
+        elsif (p % 4 == 3) {
+            while (z % Gauss(p,0) == 0) {
+                factors << Gauss(p,0)
+                z /= Gauss(p,0)
+            }
+        }
+        elsif (p % 4 == 1) {
+            for a,b in (sum_of_squares(p)) {
+
+                while (z % Gauss(a, b) == 0) {
+                    factors << Gauss(a,b)
+                    z /= Gauss(a,b)
+                }
+
+                while (z % Gauss(a,-b) == 0) {
+                    factors << Gauss(a,-b)
+                    z /= Gauss(a,-b)
+                }
+            }
+        }
+    }
+
+    if (z != Gauss(1,0)) {
+        assert_eq(z.abs, 1)
+        factors << z
+    }
+
+    assert_eq(factors.prod.abs, Z.abs)
+    assert_eq(factors.prod.norm, n)
+
+    return factors.sort.run_length
+}
+
+var z = Gauss(440, -55)
+var factors  = gaussian_factors(z)
+
+say factors                             #=> [[Gauss(1, -2), 2], [Gauss(1, 2), 1], [Gauss(2, 3), 1], [Gauss(11, 0), 1]]
+say factors.prod_2d {|p,e| p**e }       #=> Gauss(440, -55)
