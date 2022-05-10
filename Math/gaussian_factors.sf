@@ -8,6 +8,7 @@
 
 # See also:
 #   https://www.alpertron.com.ar/GAUSSIAN.HTM
+#   https://en.wikipedia.org/wiki/Table_of_Gaussian_integer_factorizations
 
 func gaussian_factors(Gauss z) {
 
