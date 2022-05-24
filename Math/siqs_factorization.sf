@@ -55,92 +55,28 @@ func fibonacci_factorization (n, upper_bound) {
         }
 
         if (g > 1) {
-            return g
+            return [g]
         }
 
         return nil
     }
 }
 
-func pollard_pm1_find_factor (n, bound) {
+func fast_fibonacci_factor (n, upto) {
 
-    var (t, p, g) = (n.random_prime, 2)
+    var (P, Q) = (3, 1)
 
-    while (p <= bound) {
+    for k in (2 .. upto) {
 
-        t = t.powmod(p * (bound.ilog(p) + 1), n)
-        g = gcd(t - 1, n)
-        p = p.next_prime
+        var (U, V) = lucasUVmod(P, Q, k, n)
 
-        if (g > 1) {
-            return nil if (g == n)
-            return g
-        }
-    }
+        for t in (U, V, V-1, V+1, V-P) {
 
-    return nil
-}
+            var g = gcd(t, n)
 
-func pollard_rho2_find_factor (n, max_iter) {
-
-    var x = 2
-    var y = 3
-
-    max_iter.times {
-
-        x = (((x*x - 1) % n))
-        y = (((y*y - 1)**2 - 1) % n)
-
-        var g = gcd(n, x - y)
-
-        if (g > 1) {
-            return nil if (g == n)
-            return g
-        }
-    }
-
-    return nil
-}
-
-func pollard_rho_sqrt_find_factor (n, max_iter) {
-
-    var p = n.isqrt
-    var q = (p*p - n)
-
-    var c = (q + p)
-
-    var a0 = 1;
-    var a1 = (a0*a0 + c)
-    var a2 = (a1*a1 + c)
-
-    max_iter.times {
-
-        var g = gcd(n, a2-a1)
-
-        if (g > 1) {
-            return nil if (g == n)
-            return g
-        }
-
-        a1 = ((a1*a1 + c) % n)
-        a2 = ((a2*a2 + c) % n)
-        a2 = ((a2*a2 + c) % n)
-    }
-
-    return nil
-}
-
-func fermat_find_factor (n, max_iter) {
-
-    var p = n.isqrt
-    var q = (p*p - n)
-
-    max_iter.times {
-
-        q += (2*p++ + 1)
-
-        if (q.is_square) {
-            return (p - q.isqrt)
+            if (g.is_ntf(n)) {
+                return [g]
+            }
         }
     }
 
@@ -149,25 +85,28 @@ func fermat_find_factor (n, max_iter) {
 
 # Some tuning parameters
 class SIQS (
-      LOOK_FOR_SMALL_FACTORS      = true,
-      FIBONACCI_BOUND             = 300_000,
-      POLLARD_PM1_BOUND           = 1_000_000,
-      TRIAL_DIVISION_LIMIT        = 1_000_000,
-      POLLARD_RHO_ITERATIONS      = 50_000,
-      POLLARD_RHO_SQRT_ITERATIONS = 25_000,
-      FERMAT_ITERATIONS           = 500,
-      SIQS_TRIAL_DIVISION_EPS     = 25,
-      SIQS_MIN_PRIME_POLYNOMIAL   = 400,
-      SIQS_MAX_PRIME_POLYNOMIAL   = 4000,
+      MASK_LIMIT                = 200,         # show Cn if n > MASK_LIMIT, where n ~ log_10(N)
+      LOOK_FOR_SMALL_FACTORS    = 1,
+      TRIAL_DIVISION_LIMIT      = 1_000_000,
+      PHI_FINDER_ITERATIONS     = 100_000,
+      FERMAT_ITERATIONS         = 100_000,
+      NEAR_POWER_ITERATIONS     = 1_000,
+      PELL_ITERATIONS           = 50_000,
+      FLT_ITERATIONS            = 200_000,
+      HOLF_ITERATIONS           = 100_000,
+      MBE_ITERATIONS            = 100,
+      DOP_FACTOR_LIMIT          = 1000,
+      COP_FACTOR_LIMIT          = 500,
+      MILLER_RABIN_ITERATIONS   = 100,
+      LUCAS_MILLER_ITERATIONS   = 50,
+      SIQS_TRIAL_DIVISION_EPS   = 25,
+      SIQS_MIN_PRIME_POLYNOMIAL = 400,
+      SIQS_MAX_PRIME_POLYNOMIAL = 4000,
 ) {
-
-    # List of small primes
-    has small_primes = TRIAL_DIVISION_LIMIT.primes
-
     method factor_base_primes (n, nf) {
         var factor_base = []
 
-        for p in (small_primes) {
+        1e7.each_prime {|p|
 
             var t  = n.sqrtmod(p) || next
             var lp = p.log2.round.int
@@ -746,16 +685,13 @@ class SIQS (
 
         say "[*] Trial division..."
 
-        var factors = []
-        var rem     = n
+        var factors = n.trial_factor(TRIAL_DIVISION_LIMIT)
 
-        small_primes.each {|p|
-            if (p `divides` rem) {
-                rem = self.check_factor(rem, p, factors)
-                break if rem.is_one
-            }
+        if (factors.last.is_prime) {
+            return (factors, 1)
         }
 
+        var rem = factors.pop
         return (factors, rem)
     }
 
@@ -795,13 +731,18 @@ class SIQS (
 
     method store_factor (Ref rem, Number f, Array factors) {
 
+        f || return false
+        f < *rem || return false
+
+        f `divides` *rem || die "error: #{f} does not divide #{*rem}"
+
         if (f.is_prime) {
             say "`-> prime factor: #{f}"
             *rem = self.check_factor(*rem, f, factors)
         }
         else {
             say "`-> composite factor: #{f}"
-            *rem //= f          #/
+            *rem = idiv(*rem, f)
 
             # Try to find a small factor of f
             var f_factor = self.find_small_factors(f, factors)
@@ -815,11 +756,15 @@ class SIQS (
                 var F = self.find_prime_factors(f)
 
                 F.each {|p|
-                    *rem = self.check_factor(*rem, p, factors)
-                    break if (*rem == 1)
+                    if (p `divides` *rem) {
+                        *rem = self.check_factor(*rem, p, factors)
+                        break if (*rem == 1)
+                    }
                 }
             }
         }
+
+        return true
     }
 
     method find_small_factors (rem, factors) {
@@ -829,6 +774,161 @@ class SIQS (
         # prime factors. Restart the algorithm each time a factor was found.
         # Add all identified prime factors to factors, and return 1 if all
         # prime factors were found, or otherwise the remaining factor.
+
+        var state = Hash(
+                 cyclotomic_check     => true,
+                 fast_power_check     => true,
+                 fast_fibonacci_check => true,
+        )
+
+        var len = rem.len
+
+        var factorization_methods = [
+            func {
+                say "=> Miller-Rabin method..."
+                miller_factor(rem, (len > 1000) ? 15 : MILLER_RABIN_ITERATIONS)
+            },
+
+            func {
+                if (len < 3000) {
+                    say "=> Lucas-Miller method (n+1)..."
+                    lucas_factor(rem, +1, (len > 1000) ? 10 : LUCAS_MILLER_ITERATIONS)
+                }
+            },
+
+            func {
+                if (len < 3000) {
+                    say "=> Lucas-Miller method (n-1)..."
+                    lucas_factor(rem, -1, (len > 1000) ? 10 : LUCAS_MILLER_ITERATIONS)
+                }
+            },
+
+            #~ func {
+                #~ say "=> Phi finder method...";
+                #~ phi_finder_factor(rem, PHI_FINDER_ITERATIONS)
+            #~ },
+
+            func {
+                say "=> Fermat's method..."
+                fermat_factor(rem, FERMAT_ITERATIONS)
+            },
+
+            func {
+                say "=> HOLF method..."
+                holf_factor(rem, 2*HOLF_ITERATIONS)
+            },
+
+            #~ func {
+                #~ say "=> Pell factor..."
+                #~ pell_factor(rem, CFRAC_ITERATIONS)
+            #~ },
+
+            func {
+                say "=> Fermat's little theorem (base 2)..."
+                flt_factor(rem, 2, (len > 1000) ? 1e4 : FLT_ITERATIONS)
+            },
+
+            func {
+                var len_2 = (len * (log(10) / log(2)))
+                var iter  = (((len_2 * MBE_ITERATIONS) > 1_000) ? int(1_000/len_2) : MBE_ITERATIONS)
+                if (iter > 0) {
+                    say "=> MBE method ($iter iter)...";
+                    mbe_factor(rem, iter)
+                }
+            },
+
+            func {
+                say "=> Fermat's little theorem (base 3)..."
+                flt_factor(rem, 3, (len > 1000) ? 1e4 : FLT_ITERATIONS)
+            },
+
+            func {
+                state{:fast_fibonacci_check} || return nil
+                say "=> Fast Fibonacci check..."
+                var f = fast_fibonacci_factor(rem, 5000)
+                f || do { state{:fast_fibonacci_check} = false }
+                f
+            },
+
+            func {
+                state{:cyclotomic_check} || return nil
+                say "=> Fast cyclotomic check..."
+                var f = cyclotomic_factor(rem)
+                f.len >= 2 || do { state{:cyclotomic_check} = false }
+                f
+            },
+
+            func {
+                say "=> Pollard rho (10M)..."
+                prho_factor(rem, 1e10.isqrt)
+            },
+
+            func {
+                say "=> Pollard p-1 (500K)..."
+                pm1_factor(rem, 500_000)
+            },
+
+            func {
+                say "=> Williams p±1 (500K)..."
+                pp1_factor(rem, 500_000)
+            },
+
+            func {
+                if (len < 1000) {
+                    say "=> Chebyshev p±1 (500K)..."
+                    chebyshev_factor(rem, 500_000, 1e6.irand+2)
+                }
+            },
+
+            func {
+                say "=> Williams p±1 (1M)..."
+                pp1_factor(rem, 1_000_000)
+            },
+
+            func {
+                if (len < 1000) {
+                    say "=> Chebyshev p±1 (1M)..."
+                    chebyshev_factor(rem, 1_000_000, 1e6.irand+2)
+                }
+            },
+
+            func {
+                say "=> Difference of powers..."
+                dop_factor(rem, DOP_FACTOR_LIMIT)
+            },
+
+            func {
+                if (len < 500) {
+                    say "=> Fibonacci p±1 (500K)..."
+                    fibonacci_factorization(rem, 500_000)
+                }
+            },
+
+            func {
+                say "=> Pollard-Brent rho (12M)..."
+                pbrent_factor(rem, 1e12.isqrt)
+            },
+
+            func {
+                say "=> Congruence of powers..."
+                cop_factor(rem, COP_FACTOR_LIMIT)
+            },
+
+            func {
+                say "=> Pollard p-1 (5M)..."
+                pm1_factor(rem, 5_000_000)
+            },
+
+            func {
+                say "=> Williams p±1 (3M)..."
+                pp1_factor(rem, 3_000_000)
+            },
+
+            func {
+                say "=> Pollard rho (13M)..."
+                prho_factor(rem, 1e13.isqrt)
+            },
+        ]
 
         loop {
 
@@ -840,8 +940,13 @@ class SIQS (
                 break
             }
 
-            var digits = rem.len
-            say "\n[*] Factoring #{rem} (#{digits} digits)...\n"
+            len = rem.len
+
+            if ((len >= 25) && (len <= 35)) {    # factorize with SIQS directly
+                return rem
+            }
+
+            printf("\n[*] Factoring %s (%s digits)...\n\n", (len > MASK_LIMIT ? "C#{len}" : rem), len)
 
             say "=> Perfect power check..."
             var f = self.check_perfect_power(rem)
@@ -853,46 +958,25 @@ class SIQS (
                 return 1
             }
 
-            say "=> Fermat's method..."
-            var f = fermat_find_factor(rem, FERMAT_ITERATIONS)
+            var found_factor = false
 
-            if (defined(f) && (f > 1) && (f < rem)) {
-                self.store_factor(\rem, f, factors)
-                next
+            for i in (^factorization_methods) {
+
+                var f = factorization_methods[i].call || next
+
+                f.each {|p|
+                    if (self.store_factor(\rem, p, factors)) {
+                        found_factor = true
+                    }
+                }
+
+                if (found_factor) {
+                    factorization_methods.unshift(factorization_methods.pop_at(i))
+                    break
+                }
             }
 
-            say "=> Pollard rho-sqrt..."
-            var f = pollard_rho_sqrt_find_factor(rem, POLLARD_RHO_SQRT_ITERATIONS)
-
-            if (defined(f) && (f > 1) && (f < rem)) {
-                self.store_factor(\rem, f, factors)
-                next
-            }
-
-            say "=> Fibonacci p±1..."
-            var f = fibonacci_factorization(rem, FIBONACCI_BOUND)
-
-            if (defined(f) && (f < rem)) {
-                self.store_factor(\rem, f, factors)
-                next
-            }
-
-            say "=> Pollard rho2...";
-            var f = pollard_rho2_find_factor(rem, POLLARD_RHO_ITERATIONS)
-
-            if (defined(f) && (f > 1) && (f < rem)) {
-                self.store_factor(\rem, f, factors)
-                next
-            }
-
-            say "=> Pollard p-1..."
-            var f = pollard_pm1_find_factor(rem, POLLARD_PM1_BOUND);
-
-            if (defined(f) && (f > 1) && (f < rem)) {
-                self.store_factor(\rem, f, factors)
-                next
-            }
-
+            found_factor && next
             break
         }
 
@@ -931,6 +1015,17 @@ class SIQS (
         return prime_factors
     }
 
+    method verify_prime_factors (Number n, Array factors) {
+
+        factors.prod == n || die "product of factors != n"
+
+        factors.each {|p|
+            p.is_prime || die "not prime detected: #{p}"
+        }
+
+        factors.sort
+    }
+
     method find_all_prime_factors (n) {
 
         # Return all prime factors of the given number n. Assume that n
@@ -966,14 +1061,57 @@ class SIQS (
 
         # Factorize the given integer n >= 1 into its prime factors.
 
+        var orig = n
+
         if (n < 1) {
             die "Number needs to be an integer >= 1"
         }
 
-        printf("[*] Factoring %s (%d digits)...\n", n, n.len)
+        var len = n.len
+        printf("\n[*] Factoring %s (%d digits)...\n", (len > MASK_LIMIT ? "C#{len}" : n), len)
 
         return []  if n.is_one
         return [n] if n.is_prime
+
+        with (self.check_perfect_power(n)) {|root|
+            var pow = n.perfect_power
+            var factors = self.factorize(root)
+            return self.verify_prime_factors(orig, factors*pow)
+        }
+
+        var divisors = (len>=30 ? Math.gcd_factors(
+            n, n.dop_factor(DOP_FACTOR_LIMIT) + n.cop_factor(COP_FACTOR_LIMIT)
+        ).first(-1) : [])
+
+        if (divisors) {
+
+            say "[*] Divisors found so far: #{divisors.join(', ')}";
+
+            var composites = []
+            var factors = []
+
+            divisors.each {|d|
+                d > 1 || next
+                if (d.is_prime) {
+                    factors << d
+                }
+                else {
+                    composites << d
+                }
+            }
+
+            factors << composites.reverse.map { self.factorize(_) }.flat...
+            var rem = (orig / factors.prod)
+
+            if (rem.is_prime) {
+                factors << rem
+            }
+            elsif (rem > 1) {
+                factors << self.factorize(rem)...
+            }
+
+            return self.verify_prime_factors(orig, factors)
+        }
 
         var (factors, rem) = self.trial_division_small_primes(n)
 
@@ -1006,13 +1144,23 @@ class SIQS (
             assert(p.is_prime, "non-prime detected: #{p}")
         }
 
-        return factors
+        return self.verify_prime_factors(orig, factors)
     }
 
 }
 
 if (ARGV) {
     var n = Number(ARGV[0])
+
+    if (n.is_nan) {
+        # evaluate the expression using PARI/GP
+        n = Num(`echo #{ARGV[0].escape} | gp -q -f`)
+    }
+
+    if (n.is_nan) {
+        die "Invalid expression: #{ARGV[0].dump}"
+    }
+
     var siqs = SIQS()
     say "\nPrime factors: #{siqs.factorize(n)}"
 }

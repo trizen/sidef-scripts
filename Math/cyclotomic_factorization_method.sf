@@ -17,7 +17,7 @@ func cyclotomic_factorization(n, base=10) {
     gather {
         for k in (1..lim) {
 
-            var t = cyclotomic(k, base)
+            var t = cyclotomicmod(k, base, n)
             var g = gcd(n, t)
 
             g.is_between(2, n-1) || next
