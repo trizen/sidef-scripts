@@ -91,7 +91,7 @@ class SIQS (
       PHI_FINDER_ITERATIONS     = 100_000,
       FERMAT_ITERATIONS         = 100_000,
       NEAR_POWER_ITERATIONS     = 1_000,
-      PELL_ITERATIONS           = 50_000,
+      PELL_ITERATIONS           = 100_000,
       FLT_ITERATIONS            = 200_000,
       HOLF_ITERATIONS           = 100_000,
       MBE_ITERATIONS            = 100,
@@ -818,10 +818,10 @@ class SIQS (
                 holf_factor(rem, 2*HOLF_ITERATIONS)
             },
 
-            #~ func {
-                #~ say "=> Pell factor..."
-                #~ pell_factor(rem, CFRAC_ITERATIONS)
-            #~ },
+            func {
+                say "=> Pell factor..."
+                pell_factor(rem, PELL_ITERATIONS)
+            },
 
             func {
                 say "=> Fermat's little theorem (base 2)..."
@@ -832,7 +832,7 @@ class SIQS (
                 var len_2 = (len * (log(10) / log(2)))
                 var iter  = (((len_2 * MBE_ITERATIONS) > 1_000) ? int(1_000/len_2) : MBE_ITERATIONS)
                 if (iter > 0) {
-                    say "=> MBE method ($iter iter)...";
+                    say "=> MBE method (#{iter} iter)...";
                     mbe_factor(rem, iter)
                 }
             },
@@ -942,7 +942,7 @@ class SIQS (
 
             len = rem.len
 
-            if ((len >= 25) && (len <= 35)) {    # factorize with SIQS directly
+            if ((len >= 25) && (len <= 30)) {    # factorize with SIQS directly
                 return rem
             }
 
@@ -1044,9 +1044,9 @@ class SIQS (
 
             self.find_prime_factors(rem).each {|f|
 
-                #$rem != $f     or die 'error';
-                #$rem % $f == 0 or die 'error';
-                #is_prime($f)   or die 'error';
+                #~ rem != f      || die 'error'
+                #~ rem % f == 0  || die 'error'
+                #~ is_prime(f)   || die 'error'
 
                 rem = self.check_factor(rem, f, factors);
 
@@ -1132,7 +1132,7 @@ class SIQS (
                 say "[*] Skipping the search for more small factors..."
             }
 
-            if ($rem > 1) {
+            if (rem > 1) {
                 factors += self.find_all_prime_factors(rem)
             }
         }
