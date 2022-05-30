@@ -56,9 +56,9 @@ func tonelli(n, p) {
 
 func sqrt_mod_n(a, n) is cached {
 
-    kronecker(a, n) == 1 || return []
-
     a = (a % n)
+
+    kronecker(a, n) == 1 || return []
 
     if ((n & (n - 1)) == 0) {       # n is a power of 2
 
@@ -128,7 +128,7 @@ func sqrt_mod_n(a, n) is cached {
     for p,e in (pe) {
         var m = p**e
         var r = sqrt_mod_n(a, m)
-        solutions.append(r.map {|r0| [r0, m] })
+        solutions << r.map {|r0| [r0, m] }
     }
 
     gather {
@@ -140,6 +140,7 @@ func sqrt_mod_n(a, n) is cached {
 
 func sum_of_two_squares_solutions(n) is cached {
 
+    n  < 0 && return []
     n == 0 && return [[0, 0]]
 
     var prod1 = 1
@@ -159,12 +160,12 @@ func sum_of_two_squares_solutions(n) is cached {
             else {                         # power is odd
                 prod1 *= p
                 prod2 *= p**((e - 1) >> 1)
-                prime_powers.append([p, 1])
+                prime_powers << [p, 1]
             }
         }
         else {                             # p = 1 (mod 4)
             prod1 *= p**e
-            prime_powers.append([p, e])
+            prime_powers << [p, e]
         }
     }
 
@@ -173,7 +174,7 @@ func sum_of_two_squares_solutions(n) is cached {
 
     var solutions = []
 
-    for r in (sqrt_mod_n(prod1-1, prod1)) {
+    for r in (sqrt_mod_n(-1, prod1)) {
 
         var s = r
         var q = prod1
@@ -182,7 +183,7 @@ func sum_of_two_squares_solutions(n) is cached {
             (s, q) = (q % s, s)
         }
 
-        solutions.append([prod2 * s, prod2 * (q % s)])
+        solutions << [prod2 * s, prod2 * (q % s)]
     }
 
     for p,e in (prime_powers) {
@@ -191,11 +192,9 @@ func sum_of_two_squares_solutions(n) is cached {
             var sq = p**((e - i) >> 1)
             var pp = p**(e - i)
 
-            solutions += (
-                __FUNC__(prod1 / pp).map { |pair|
-                    pair.map {|r| sq * prod2 * r }
-                }
-            )
+            solutions += __FUNC__(prod1 / pp).map { |pair|
+                pair.map {|r| sq * prod2 * r }
+            }
         }
     }
 
@@ -209,3 +208,17 @@ func sum_of_two_squares_solutions(n) is cached {
     var solutions = sum_of_two_squares_solutions(n) || next
     say %Q(#{n} = #{solutions.map {|a| "#{a[0]}^2 + #{a[1]}^2" }.join(' = ') })
 }
+
+assert_eq(sum_of_two_squares_solutions(2025), [[0, 45], [27, 36]])
+assert_eq(sum_of_two_squares_solutions(164025), [[0, 405], [243, 324]])
+assert_eq(sum_of_two_squares_solutions(99025), [[41, 312], [48, 311], [95, 300], [104, 297], [183, 256], [220, 225]])
+
+assert_eq(
+    -10 .. 160 -> grep { sum_of_two_squares_solutions(_).len > 0 },
+    %n[0, 1, 2, 4, 5, 8, 9, 10, 13, 16, 17, 18, 20, 25, 26, 29, 32, 34, 36, 37, 40, 41, 45, 49, 50, 52, 53, 58, 61, 64, 65, 68, 72, 73, 74, 80, 81, 82, 85, 89, 90, 97, 98, 100, 101, 104, 106, 109, 113, 116, 117, 121, 122, 125, 128, 130, 136, 137, 144, 145, 146, 148, 149, 153, 157, 160]
+)
+
+assert_eq(
+    sum_of_two_squares_solutions(11392163240756069707031250),
+    [[39309472125, 3374998963875], [216763660575, 3368260197225], [477329304375, 3341305130625], [729359177085, 3295481517405], [735019741071, 3294223614297], [907262616645, 3251005657515], [982736803125, 3228992353125], [1151205969375, 3172835964375], [1224793301193, 3145162095999], [1393801568775, 3074000720175], [1622919634875, 2959441687125], [1847545189875, 2824666354125], [1993551800625, 2723584854375], [2056446956025, 2676413487825], [2194367046795, 2564549961435], [2198769707673, 2560776252111], [2386646521875, 2386646521875]]
+)
