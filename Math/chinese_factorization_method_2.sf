@@ -1,0 +1,77 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 01 June 2022
+# https://github.com/trizen
+
+# Concept for an integer factorization method based on the Chinese Remainder Theorem (CRT).
+
+# Example:
+#   n = 43*97
+
+# We have:
+#   n == 1 mod 2
+#   n == 1 mod 3
+#   n == 1 mod 5
+#   n == 6 mod 7
+#   n == 2 mod 11
+
+# 43 = chinese(Mod(1,2), Mod(1,3), Mod(3,5), Mod(1,7))
+# 97 = chinese(Mod(1,2), Mod(1,3), Mod(2,5), Mod(6,7))
+
+# For some small primes p, we try to find pairs of a and b, such that:
+#   a*b == n mod p
+
+# Then using either the `a` or the `b` values, we can construct a factor of n, using the CRT.
+
+# An optimization would be to consider only values of p that satisfy:
+#   n == q (mod p)
+# where p and q are both prime.
+
+func CRT_factor(n) {
+
+    return n if n.is_prime
+
+    var congruences = [
+        Mod(0, 1)
+    ]
+
+    2..n.isqrt -> each_prime {|p|
+
+        var r = n%p
+
+        if (r == 0) {
+            return p
+        }
+
+        r.is_prime || next      # optimization
+
+        var new_congruences = []
+
+        r.divisors.each {|d|
+            var t = Mod(d, p)
+            congruences.each {|c|
+
+                var z = chinese(c, t)
+
+                with (gcd(z.lift, n)) { |g|
+                    if (g.is_ntf(n)) {
+                        return g
+                    }
+                }
+
+                new_congruences << z
+            }
+        }
+
+        congruences = new_congruences
+    }
+
+    return 1
+}
+
+say CRT_factor(43*97)           #=> 97
+say CRT_factor(503*863)         #=> 864
+say CRT_factor(2**32 + 1)       #=> 641
+say CRT_factor(2**64 + 1)       #=> 274177
+say CRT_factor(273511610089)    #=> 723907
