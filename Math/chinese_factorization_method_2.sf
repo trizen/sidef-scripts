@@ -24,10 +24,6 @@
 
 # Then using either the `a` or the `b` values, we can construct a factor of n, using the CRT.
 
-# An optimization would be to consider only values of p that satisfy:
-#   n == q (mod p)
-# where p and q are both prime.
-
 func CRT_factor(n) {
 
     return n if n.is_prime
@@ -44,11 +40,9 @@ func CRT_factor(n) {
             return p
         }
 
-        r.is_prime || next      # optimization
-
         var new_congruences = []
 
-        r.divisors.each {|d|
+        (1..^p).each {|d|
             var t = Mod(d, p)
             congruences.each {|c|
 
