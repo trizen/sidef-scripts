@@ -824,13 +824,13 @@ class SIQS (
             },
 
             func {
-                say "=> Fermat's little theorem (base 2)..."
-                flt_factor(rem, 2, (len > 1000) ? 1e4 : FLT_ITERATIONS)
+                say "=> Pollard p-1 (20K)..."
+                pm1_factor(rem, 20_000)
             },
 
             func {
-                say "=> Pollard p-1 (20K)..."
-                pm1_factor(rem, 20_000)
+                say "=> Fermat's little theorem (base 2)..."
+                flt_factor(rem, 2, (len > 1000) ? 1e4 : FLT_ITERATIONS)
             },
 
             func {
@@ -979,8 +979,9 @@ class SIQS (
             }
 
             var found_factor = false
+            var end = factorization_methods.end
 
-            for i in (^factorization_methods) {
+            for (var i = 0; i <= end; ++i) {
 
                 var f = factorization_methods[i].call || next
 
@@ -993,6 +994,11 @@ class SIQS (
                 if (found_factor) {
                     factorization_methods.unshift(factorization_methods.pop_at(i))
                     break
+                }
+                else {
+                    factorization_methods.push(factorization_methods.pop_at(i))
+                    --i
+                    --end
                 }
             }
 
