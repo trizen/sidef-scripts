@@ -829,6 +829,11 @@ class SIQS (
             },
 
             func {
+                say "=> Pollard p-1 (20K)..."
+                pm1_factor(rem, 20_000)
+            },
+
+            func {
                 var len_2 = (len * (log(10) / log(2)))
                 var iter  = (((len_2 * MBE_ITERATIONS) > 1_000) ? int(1_000/len_2) : MBE_ITERATIONS)
                 if (iter > 0) {
@@ -869,6 +874,11 @@ class SIQS (
             },
 
             func {
+                say "=> ECM (600)..."
+                ecm_factor(rem, 600, 20)
+            },
+
+            func {
                 say "=> Williams p±1 (500K)..."
                 pp1_factor(rem, 500_000)
             },
@@ -890,6 +900,11 @@ class SIQS (
                     say "=> Chebyshev p±1 (1M)..."
                     chebyshev_factor(rem, 1_000_000, 1e6.irand+2)
                 }
+            },
+
+            func {
+                say "=> ECM (2K)..."
+                ecm_factor(rem, 2000, 10)
             },
 
             func {
@@ -927,6 +942,11 @@ class SIQS (
             func {
                 say "=> Pollard rho (13M)..."
                 prho_factor(rem, 1e13.isqrt)
+            },
+
+            func {
+                say "=> ECM (160K)..."
+                ecm_factor(rem, 160_000, 80)
             },
         ]
 

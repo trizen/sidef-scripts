@@ -42,8 +42,9 @@ func CRT_factor(n) {
 
         var new_congruences = []
 
-        (1..^p).each {|d|
-            var t = Mod(d, p)
+        var mods = (1..^p -> map { Mod(_, p) })
+
+        mods.each {|t|
             congruences.each {|c|
 
                 var z = chinese(c, t)
