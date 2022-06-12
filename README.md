@@ -268,6 +268,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Fusc function](./Math/fusc_function.sf)
     * [Gamma function](./Math/gamma_function.sf)
     * [Gauss logarithm approx](./Math/gauss_logarithm_approx.sf)
+    * [Gaussian divisors](./Math/gaussian_divisors.sf)
     * [Gaussian elimination GF2 matrix](./Math/gaussian_elimination_GF2_matrix.sf)
     * [Gaussian factors](./Math/gaussian_factors.sf)
     * [Gaussian integers](./Math/gaussian_integers.sf)

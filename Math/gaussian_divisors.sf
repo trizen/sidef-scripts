@@ -1,0 +1,101 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 12 June 2022
+# https://github.com/trizen
+
+# Find the factors and divisors of a Gaussian integer.
+
+# See also:
+#   https://oeis.org/A125271
+#   https://projecteuler.net/problem=153
+#   https://www.alpertron.com.ar/GAUSSIAN.HTM
+#   https://en.wikipedia.org/wiki/Table_of_Gaussian_integer_factorizations
+
+func gaussian_factors(Gauss z) {
+
+    return [[z, 1]] if z.is_zero
+
+    var Z = z
+    var n = z.norm
+    var factors = []
+
+    for p,e in (n.factor_exp) {
+        if (p == 2) {
+
+            while (z % Gauss(1, 1) == 0) {
+                factors << Gauss(1,1)
+                z /= Gauss(1,1)
+            }
+
+            while (z  % Gauss(1,-1) == 0) {
+                factors << Gauss(1,-1)
+                z /= Gauss(1,-1)
+            }
+        }
+        elsif (p % 4 == 3) {
+            while (z % Gauss(p,0) == 0) {
+                factors << Gauss(p,0)
+                z /= Gauss(p,0)
+            }
+        }
+        elsif (p % 4 == 1) {
+            for a,b in (sum_of_squares(p)) {
+
+                while (z % Gauss(a, b) == 0) {
+                    factors << Gauss(a,b)
+                    z /= Gauss(a,b)
+                }
+
+                while (z % Gauss(a,-b) == 0) {
+                    factors << Gauss(a,-b)
+                    z /= Gauss(a,-b)
+                }
+            }
+        }
+    }
+
+    if (z != Gauss(1)) {
+        assert_eq(z.abs, 1)
+        factors << z
+    }
+
+    assert_eq(factors.prod.abs, Z.abs)
+    assert_eq(factors.prod.norm, n)
+
+    return factors.sort.run_length
+}
+
+func gaussian_divisors(n) {
+
+    var d  = [Gauss(1), Gauss(-1), Gauss(0,1), Gauss(0,-1)]
+    var pp = gaussian_factors(n)
+
+    for p,e in (pp) {
+        var r = Gauss(1)
+        d << gather {
+            e.times {
+                r *= p
+                d.each { |u|
+                    take(u*r) if (n % (u*r) -> is_zero)
+                }
+            }
+        }...
+    }
+
+    d.sort.uniq
+}
+
+for n in (1..5) {
+    say "GaussDivisors(#{n}) = #{gaussian_divisors(Gauss(n))}"
+}
+
+say gaussian_divisors(Gauss(440,-55)).len     #=> 96
+say 30.of { gaussian_divisors(Gauss(_)).grep{.real.is_pos}.len }      #=> OEIS: A125271
+
+__END__
+GaussDivisors(1) = [Gauss(-1, 0), Gauss(0, -1), Gauss(0, 1), Gauss(1, 0)]
+GaussDivisors(2) = [Gauss(-2, 0), Gauss(-1, -1), Gauss(-1, 0), Gauss(-1, 1), Gauss(0, -2), Gauss(0, -1), Gauss(0, 1), Gauss(0, 2), Gauss(1, -1), Gauss(1, 0), Gauss(1, 1), Gauss(2, 0)]
+GaussDivisors(3) = [Gauss(-3, 0), Gauss(-1, 0), Gauss(0, -3), Gauss(0, -1), Gauss(0, 1), Gauss(0, 3), Gauss(1, 0), Gauss(3, 0)]
+GaussDivisors(4) = [Gauss(-4, 0), Gauss(-2, -2), Gauss(-2, 0), Gauss(-2, 2), Gauss(-1, -1), Gauss(-1, 0), Gauss(-1, 1), Gauss(0, -4), Gauss(0, -2), Gauss(0, -1), Gauss(0, 1), Gauss(0, 2), Gauss(0, 4), Gauss(1, -1), Gauss(1, 0), Gauss(1, 1), Gauss(2, -2), Gauss(2, 0), Gauss(2, 2), Gauss(4, 0)]
+GaussDivisors(5) = [Gauss(-5, 0), Gauss(-2, -1), Gauss(-2, 1), Gauss(-1, -2), Gauss(-1, 0), Gauss(-1, 2), Gauss(0, -5), Gauss(0, -1), Gauss(0, 1), Gauss(0, 5), Gauss(1, -2), Gauss(1, 0), Gauss(1, 2), Gauss(2, -1), Gauss(2, 1), Gauss(5, 0)]

@@ -12,6 +12,8 @@
 
 func gaussian_factors(Gauss z) {
 
+    return [[z, 1]] if z.is_zero
+
     var Z = z
     var n = z.norm
     var factors = []
