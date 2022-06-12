@@ -12,7 +12,7 @@
 
 func gaussian_factors(Gauss z) {
 
-    return [[z, 1]] if z.is_zero
+    return [] if z.is_zero
 
     var Z = z
     var n = z.norm
@@ -26,7 +26,7 @@ func gaussian_factors(Gauss z) {
                 z /= Gauss(1,1)
             }
 
-            while (z  % Gauss(1,-1) == 0) {
+            while (z % Gauss(1,-1) == 0) {     # not needed
                 factors << Gauss(1,-1)
                 z /= Gauss(1,-1)
             }
