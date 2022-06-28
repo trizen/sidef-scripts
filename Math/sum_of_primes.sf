@@ -1,0 +1,38 @@
+#!/usr/bin/ruby
+
+# An attempt at creating a sublinear method for computing the sum of primes <= n.
+
+# Based on the formula:
+#   a(n) = Sum_{k=1..n} Sum_{d|k} A008683(d) * A008472(k/d)
+
+# Which can be computed in sublinear time as:
+#   a(n) = Sum_{k=1..floor(sqrt(n))} (A008472(k)*A002321(floor(n/k)) + A008683(k)*A024924(floor(n/k))) - A002321(floor(sqrt(n)))*A024924(floor(sqrt(n)))
+#   a(n) = Sum_{k=1..m} (A008472(k)*A002321(floor(n/k)) + A008683(k)*A024924(floor(n/k))) - A002321(m)*A024924(m), where m = floor(sqrt(n)).
+
+# Where A024924(n) can be computed in sublinear time as (recursively, using the sum of primes function):
+#   A024924(n) = Sum_{k=1..floor(sqrt(n))} (A061397(k)*floor(n/k) + A034387(floor(n/k))) - A034387(floor(sqrt(n)))*floor(sqrt(n))
+
+# See also:
+#   https://oeis.org/A024924
+#   https://oeis.org/A034387
+
+func sum_of_sopf(n) {
+    dirichlet_sum(n,
+        { .is_prime ? _ : 0 },
+        { 1 },
+        { .sum_primes },    # FIXME: remove the recursive definition
+        { _ }
+    )
+}
+
+func sum_of_primes(n) {
+    dirichlet_sum(n,
+        { .sopf },
+        { .mu },
+        { sum_of_sopf(_) },
+        { .mertens }
+    )
+}
+
+say sum_primes(1e5)       #=> 454396537
+say sum_of_primes(1e5)    #=> 454396537

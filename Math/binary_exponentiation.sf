@@ -1,13 +1,19 @@
 #!/usr/bin/ruby
 
-# A simple implementation of the "binary exponentiation" algorithm.
+# Generic implementation of the Binary Exponentiation algorithm.
 
-func binary_exp(n, k) {
-    k == 0 && return 1
-    k == 1 && return n
+# See also:
+#   https://en.wikipedia.org/wiki/Exponentiation_by_squaring
 
-    var p = binary_exp(n, k >> 1)
-    k.is_even ? p*p : p*p*n
+func binary_exp(a,b,c,f) {
+
+    for bit in (b.as_bin.flip.chars) {
+        c = f(a, c) if bit
+        a = f(a, a)
+    }
+
+    return c
 }
 
-say binary_exp(10, 6)
+say binary_exp(3, 42, 1, {|a,b| a * b })  # 3^42
+say binary_exp(3, 42, 0, {|a,b| a + b })  # 3*42
