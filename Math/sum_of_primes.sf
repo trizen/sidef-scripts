@@ -1,9 +1,48 @@
 #!/usr/bin/ruby
 
-# An attempt at creating a sublinear method for computing the sum of primes <= n.
+# Sublinear algorithm for computing the sum of primes <= n.
 
-# Based on the formula:
+# Algorithm from:
+#   https://math.stackexchange.com/questions/1378286/find-the-sum-of-all-primes-smaller-than-a-big-number
+
+func sum_of_primes(n) {
+
+    return 0 if (n <= 1)
+
+    var r = n.isqrt
+    var V = (1..r -> map {|k| idiv(n,k) })
+    V << range(V.last-1, 1, -1).to_a...
+
+    var S = Hash(V.map{|k| (k, faulhaber(k,1)) }...)
+
+    for p in (2..r) {
+        S{p} > S{p-1} || next
+        var sp = S{p-1}
+        var p2 = p*p
+        V.each {|v|
+            break if (v < p2)
+            S{v} -= p*(S{idiv(v,p)} - sp)
+        }
+    }
+
+    return S{n}-1
+}
+
+say sum_of_primes(1e6)      #=> 37550402023
+
+assert_eq(
+    30.of { sum_of_primes(_) }
+    30.of { .sum_primes }
+)
+
+__END__
+
+# A failed attempt at creating a sublinear method for computing the sum of primes <= n.
+
+# Based on the formulas:
 #   a(n) = Sum_{k=1..n} Sum_{d|k} A008683(d) * A008472(k/d)
+#   a(n) = Sum_{k=1..n} k*Sum_{d|k} mu(d) * omega(k/d)
+#   a(n) = Sum_{k=1..n} floor(n/k) * Sum_{p prime | k} p*mu(k/p)
 
 # Which can be computed in sublinear time as:
 #   a(n) = Sum_{k=1..floor(sqrt(n))} (A008472(k)*A002321(floor(n/k)) + A008683(k)*A024924(floor(n/k))) - A002321(floor(sqrt(n)))*A024924(floor(sqrt(n)))
@@ -29,10 +68,29 @@ func sum_of_primes(n) {
     dirichlet_sum(n,
         { .sopf },
         { .mu },
-        { sum_of_sopf(_) },
+        (sum_of_sopf),
         { .mertens }
     )
 }
 
-say sum_primes(1e5)       #=> 454396537
-say sum_of_primes(1e5)    #=> 454396537
+func A137851_partial_sum(n) {
+    dirichlet_sum(n,
+        {.is_prime ? _ : 0},
+        {.mu},
+        {.sum_primes},
+        {.mertens}
+    )
+}
+
+func sum_of_primes_2(n) {
+    dirichlet_sum(n,
+        {|k| k.prime_divisors.sum {|p| p * mu(k/p) } },
+        { 1 },
+        (A137851_partial_sum),
+        { _ },
+    )
+}
+
+say sum_primes(1e5)         #=> 454396537
+say sum_of_primes(1e5)      #=> 454396537
+say sum_of_primes_2(1e5)    #=> 454396537
