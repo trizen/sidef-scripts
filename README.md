@@ -236,6 +236,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Farey sequences](./Math/farey_sequences.sf)
     * [Fast fourier transform](./Math/fast_fourier_transform.sf)
     * [Faulhaber double series](./Math/faulhaber_double_series.sf)
+    * [Faulhaber root](./Math/faulhaber_root.sf)
     * [Faulhaber's formula](./Math/faulhaber_s_formula.sf)
     * [Faulhaber's polynomials](./Math/faulhaber_s_polynomials.sf)
     * [Faulhaber's triangle](./Math/faulhaber_s_triangle.sf)

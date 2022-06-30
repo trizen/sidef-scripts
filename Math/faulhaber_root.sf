@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 30 June 2022
+# https://github.com/trizen
+
+# Find the n-th Faulhaber root of a real number.
+
+func faulhaber_formula(n, p) {
+    sum(0..p, {|k|
+        binomial(p + 1, k) * bernoulli(k) * n**(p + 1 - k)
+    }) / (p+1)
+}
+
+func faulhaber_root(n,p) {
+    return 0 if (n == 0)
+    return 1 if (n == 1)
+    bsearch_inverse(n.root(p+1), 2*n.root(p+1), {|k|
+        faulhaber_formula(k,p) <=> n
+    })
+}
+
+say faulhaber_root(8432017,4)   #=> 33
+say faulhaber_root(9768353,4)   #=> 34
+
+assert_eq(faulhaber_formula(faulhaber_root(3348959773123132416, 2), 2).round(-35), 3348959773123132416)
+assert_eq(faulhaber_formula(faulhaber_root(3348959773123132416, 3), 3).round(-35), 3348959773123132416)
+assert_eq(faulhaber_formula(faulhaber_root(3348959773123132416, 4), 4).round(-35), 3348959773123132416)
+
+say faulhaber_root(2, 1)    #=> 1.56155281280883027491070492798703851257359961269
+say faulhaber_root(2, 2)    #=> 1.36297120224423511045950643699380803615429836616
+say faulhaber_root(2, 3)    #=> 1.25454470582718128060440288907801190677770307386
+say faulhaber_root(2, 4)    #=> 1.18970494545363732855343499605107594223791805686
+say faulhaber_root(2, 5)    #=> 1.14888255351625193295249773554136414090750638764
+
+assert_eq(faulhaber_formula(faulhaber_root(2, 4), 4).round(-30), 2)
+assert_eq(faulhaber_formula(faulhaber_root(2, 5), 5).round(-30), 2)
+assert_eq(faulhaber_formula(faulhaber_root(2, 6), 6).round(-30), 2)
+assert_eq(faulhaber_formula(faulhaber_root(2, 7), 7).round(-30), 2)
+assert_eq(faulhaber_formula(faulhaber_root(2, 8), 8).round(-30), 2)
+assert_eq(faulhaber_formula(faulhaber_root(2, 9), 9).round(-30), 2)
