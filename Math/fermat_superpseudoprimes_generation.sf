@@ -1,0 +1,66 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 31 March 2019
+# https://github.com/trizen
+
+# A new algorithm for generating Fermat super-pseudoprimes to base 2.
+
+# OEIS:
+#   https://oeis.org/A050217 -- Super-Poulet numbers: Poulet numbers whose divisors d all satisfy d|2^d-2.
+#   https://oeis.org/A214305 -- Fermat pseudoprimes to base 2 with two prime factors.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Fermat_pseudoprime
+#   https://trizenx.blogspot.com/2020/08/pseudoprimes-construction-methods-and.html
+
+func fermat_superpseudoprimes(base, prime_limit, callback) {
+
+    var table = Hash()
+
+    prime_limit.each_prime {|p|
+        var z = znorder(base, p) || next
+        for d in (divisors(p - 1)) {
+            if (d % z == 0) {
+                table{d} := [] << p
+            }
+        }
+    }
+
+    var seen = Set()
+
+    table.each_v { |a|
+
+        var L = a.len
+
+        for k in (2..L) {
+            a.combinations(k, {|*t|
+                var n = t.prod
+                callback(n) if !seen.has(n)
+                seen << n
+            })
+        }
+    }
+}
+
+var base = 2
+
+var pseudoprimes = gather {
+    fermat_superpseudoprimes(base, 2000, {|n| take(n) })
+}
+
+pseudoprimes.each {|n|
+
+    assert(n.is_super_psp(base))
+
+    if (n.legendre(5) == -1) {
+        if (fibmod(n - n.legendre(5), n) == 0) {
+            die "Found a special pseudoprime: #{n}"
+        }
+    }
+}
+
+say pseudoprimes.sort
+
+__END__
+[341, 1387, 2047, 2701, 3277, 4033, 4369, 4681, 5461, 7957, 8321, 10261, 13747, 14491, 15709, 18721, 19951, 23377, 31417, 31609, 31621, 35333, 42799, 49141, 49981, 60701, 60787, 65077, 65281, 80581, 83333, 85489, 88357, 90751, 104653, 129889, 130561, 150851, 162193, 164737, 181901, 194221, 196093, 219781, 226801, 241001, 249841, 253241, 256999, 264773, 271951, 275887, 280601, 282133, 294409, 318361, 390937, 396271, 452051, 458989, 481573, 513629, 514447, 556169, 580337, 587861, 604117, 642001, 653333, 665281, 710533, 721801, 722201, 722261, 741751, 769567, 873181, 916327, 1053761, 1082401, 1252697, 1373653, 1398101, 1507963, 1537381, 1549411, 1678541, 1755001, 1840357, 1987021, 2134277, 2163001, 2491637, 12599233, 13421773, 15162941, 15732721, 61377109, 96916279, 109322501, 157010389, 163442551, 271682651, 434042801, 464955857, 1299963601]

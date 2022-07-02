@@ -1,0 +1,61 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 31 March 2019
+# https://github.com/trizen
+
+# A new algorithm for generating Fermat overpseudoprimes to any given base.
+
+# See also:
+#   https://oeis.org/A141232 -- Overpseudoprimes to base 2: composite k such that k = A137576((k-1)/2).
+
+# See also:
+#   https://en.wikipedia.org/wiki/Fermat_pseudoprime
+#   https://trizenx.blogspot.com/2020/08/pseudoprimes-construction-methods-and.html
+
+func fermat_overpseudoprimes(base, prime_limit, callback) {
+
+    var table = Hash()
+
+    prime_limit.each_prime {|p|
+        var z = znorder(base, p) || next
+        table{z} := [] << p
+    }
+
+    var seen = Set()
+
+    table.each_v { |a|
+
+        var L = a.len
+
+        for k in (2..L) {
+            a.combinations(k, {|*t|
+                var n = t.prod
+                callback(n) if !seen.has(n)
+                seen << n
+            })
+        }
+    }
+}
+
+var base = 2
+
+var pseudoprimes = gather {
+    fermat_overpseudoprimes(base, 5000, {|n| take(n) })
+}
+
+pseudoprimes.each {|n|
+
+    assert(n.is_over_psp(base))
+
+    if (n.legendre(5) == -1) {
+        if (fibmod(n - n.legendre(5), n) == 0) {
+            die "Found a special pseudoprime: #{n}"
+        }
+    }
+}
+
+say pseudoprimes.sort
+
+__END__
+[2047, 3277, 4033, 8321, 65281, 80581, 85489, 88357, 104653, 130561, 220729, 253241, 256999, 280601, 390937, 458989, 486737, 514447, 580337, 838861, 877099, 916327, 976873, 1016801, 1082401, 1207361, 1251949, 1252697, 1325843, 1441091, 1507963, 1509709, 1530787, 1678541, 1811573, 2181961, 2205967, 2304167, 2387797, 2746477, 2811271, 2976487, 3090091, 3116107, 3375041, 3400013, 3898129, 4181921, 4469471, 4513841, 5044033, 5173169, 6226193, 6952037, 7820201, 8036033, 9863461, 10425511, 10610063, 13338371, 13421773, 14179537, 15976747, 18073817, 464955857, 536870911, 1220114377, 1541955409, 7030714813, 19089110641]
