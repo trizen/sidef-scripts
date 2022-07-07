@@ -1,0 +1,96 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 07 July 2022
+# https://github.com/trizen
+
+# Fast algorithm for computing the n-th squarefree number.
+
+# See also:
+#   https://oeis.org/A005117
+
+# PARI/GP program:
+#   S(n) = my(s); forsquarefree(k=1,sqrtint(n),s+=n\k[1]^2*moebius(k)); s;
+#   a(n) = my(min=1, max=231, k=0, sc=0); if(n >= 144, min=floor(zeta(2)*n - 5*sqrt(n)); max=ceil(zeta(2)*n + 5*sqrt(n))); while(min <= max, k=(min+max)\2; sc=S(k); if(abs(sc-n) <= sqrtint(n), break); if(sc > n, max=k-1, if(sc < n, min=k+1, break))); while(!issquarefree(k), k-=1); while(sc != n, my(j=1); if(sc > n, j=-1); k += j; sc += j; while(!issquarefree(k), k+=j)); k;
+
+func nth_squarefree(n) {
+
+    n == 0 && return 0      # not squarefree, but...
+    n <= 0 && return NaN
+    n == 1 && return 1
+
+    var min = 1
+    var max = 231
+
+    # Bounds on squarefree numbers:
+    #   https://mathoverflow.net/questions/66701/bounds-on-squarefree-numbers
+
+    if (n >= 268293) {
+        min = int(zeta(2)*n - 0.058377*sqrt(n))
+        max = int(zeta(2)*n + 0.058377*sqrt(n))
+    }
+    elsif (n >= 144) {
+        min = int(zeta(2)*n - 5*sqrt(n))
+        max = int(zeta(2)*n + 5*sqrt(n))
+    }
+
+    var k = 0
+    var c = 0
+
+    loop {
+        k = (min + max)>>1
+        c = k.squarefree_count
+
+        if (abs(c - n) <= k.isqrt) {
+            break
+        }
+
+        given (c <=> n) {
+            when (+1) { max = k-1 }
+            when (-1) { min = k+1 }
+            else      { break }
+        }
+    }
+
+    while (!is_squarefree(k)) {
+        --k
+    }
+
+    while (c != n) {
+        var j = (n <=> c)
+        k += j
+        c += j
+        k += j while !k.is_squarefree
+    }
+
+    return k
+}
+
+for n in (1..10) {
+    var s = nth_squarefree(10**n)
+    assert(s.is_squarefree)
+    assert_eq(s.squarefree_count, 10**n)
+    assert_eq(10**n -> nth_squarefree, s)
+    say "S(10^#{n}) = #{s}"
+}
+
+assert_eq(
+    nth_squarefree.map(1..100),
+    100.by { .is_squarefree },
+)
+
+__END__
+S(10^1) = 14
+S(10^2) = 163
+S(10^3) = 1637
+S(10^4) = 16446
+S(10^5) = 164498
+S(10^6) = 1644918
+S(10^7) = 16449369
+S(10^8) = 164493390
+S(10^9) = 1644934081
+S(10^10) = 16449340709
+S(10^11) = 164493406178
+S(10^12) = 1644934067511
+S(10^13) = 16449340668746
+S(10^14) = 164493406685659

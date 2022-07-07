@@ -1,0 +1,90 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 06 June 2021
+# Edit: 07 July 2022
+# https://github.com/trizen
+
+# Return the n-th composite number, using binary search and the prime counting function.
+
+# See also:
+#   https://oeis.org/A002808
+
+func nth_composite(n) {
+
+    n == 0 && return 1      # not composite, but...
+    n <= 0 && return NaN
+    n == 1 && return 4
+
+    # Lower and upper bounds from A002808 (for n >= 4).
+    var min = int(n + n/log(n) + n/(log(n)**2))
+    var max = int(n + n/log(n) + (3*n)/(log(n)**2))
+
+    if (n < 4) {
+        min = 4;
+        max = 8;
+    }
+
+    #~ var k = bsearch_le(min, max, {|k|
+        #~ (k - prime_count(k) - 1) <=> n
+    #~ })
+
+    var k = 0
+    var c = 0
+
+    loop {
+
+        k = (min + max)>>1
+        c = (k - prime_count(k) - 1)
+
+        if (abs(c - n) <= k.iroot(3)) {
+            break
+        }
+
+        given (c <=> n) {
+            when (+1) { max = k-1 }
+            when (-1) { min = k+1 }
+            else      { break }
+        }
+    }
+
+    if (!k.is_composite) {
+        --k
+    }
+
+    while (c != n) {
+        var j = (n <=> c)
+        k += j
+        c += j
+        k += j while !k.is_composite
+    }
+
+    return k
+}
+
+for n in (1..10) {
+    var c = nth_composite(10**n)
+    assert(c.is_composite)
+    assert_eq(c.composite_count, 10**n)
+    assert_eq(10**n -> nth_composite, c)
+    say "C(10^#{n}) = #{c}"
+}
+
+assert_eq(
+    nth_composite.map(1..100),
+    100.by { .is_composite }
+)
+
+__END__
+C(10^1) = 18
+C(10^2) = 133
+C(10^3) = 1197
+C(10^4) = 11374
+C(10^5) = 110487
+C(10^6) = 1084605
+C(10^7) = 10708555
+C(10^8) = 106091745
+C(10^9) = 1053422339
+C(10^10) = 10475688327
+C(10^11) = 104287176419
+C(10^12) = 1039019056246

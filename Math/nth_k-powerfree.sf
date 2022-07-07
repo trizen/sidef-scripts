@@ -1,0 +1,123 @@
+#!/usr/bin/ruby
+
+# Fast algorithm for computing the n-th squarefree integer.
+
+func nth_powerfree(n,k=2) {
+
+    n == 0 && return 0      # not k-powerfree, but...
+    n <= 0 && return NaN
+    n == 1 && return 1
+
+    var min = 1
+    var max = 231
+
+    # Bounds on squarefree numbers:
+    #   https://mathoverflow.net/questions/66701/bounds-on-squarefree-numbers
+
+    if (n >= 144) {
+        min = int(zeta(k)*n - 5*n.iroot(k))
+        max = int(zeta(k)*n + 5*n.iroot(k))
+    }
+
+    var v = 0
+    var c = 0
+
+    loop {
+        v = (min + max)>>1
+        c = k.powerfree_count(v)
+
+        if (abs(c - n) <= v.iroot(k)) {
+            break
+        }
+
+        given (c <=> n) {
+            when (+1) { max = v-1 }
+            when (-1) { min = v+1 }
+            else      { break }
+        }
+    }
+
+    while (!v.is_powerfree(k)) {
+        --v
+    }
+
+    while (c != n) {
+        var j = (n <=> c)
+        v += j
+        c += j
+        v += j while !v.is_powerfree(k)
+    }
+
+    return v
+}
+
+for k in (2..5) {
+    say ":: (10^n)-th #{k}-powerfree numbers:"
+    for n in (1..10) {
+        var s = nth_powerfree(10**n, k)
+        assert(s.is_powerfree(k))
+        assert_eq(k.powerfree_count(s), 10**n)
+        #assert_eq(10**n -> nth_powerfree(k), s)
+        say "S(10^#{n}, #{k}) = #{s}"
+    }
+    say ''
+}
+
+assert_eq(
+    { nth_powerfree(_, 2) }.map(1..100),
+    100.by { .is_powerfree(2) },
+)
+
+assert_eq(
+    { nth_powerfree(_, 3) }.map(1..100),
+    100.by { .is_powerfree(3) }
+)
+
+__END__
+:: (10^n)-th 2-powerfree numbers:
+S(10^1, 2) = 14
+S(10^2, 2) = 163
+S(10^3, 2) = 1637
+S(10^4, 2) = 16446
+S(10^5, 2) = 164498
+S(10^6, 2) = 1644918
+S(10^7, 2) = 16449369
+S(10^8, 2) = 164493390
+S(10^9, 2) = 1644934081
+S(10^10, 2) = 16449340709
+
+:: (10^n)-th 3-powerfree numbers:
+S(10^1, 3) = 11
+S(10^2, 3) = 118
+S(10^3, 3) = 1199
+S(10^4, 3) = 12019
+S(10^5, 3) = 120203
+S(10^6, 3) = 1202057
+S(10^7, 3) = 12020570
+S(10^8, 3) = 120205685
+S(10^9, 3) = 1202056919
+S(10^10, 3) = 12020569022
+
+:: (10^n)-th 4-powerfree numbers:
+S(10^1, 4) = 10
+S(10^2, 4) = 107
+S(10^3, 4) = 1081
+S(10^4, 4) = 10821
+S(10^5, 4) = 108232
+S(10^6, 4) = 1082319
+S(10^7, 4) = 10823229
+S(10^8, 4) = 108232319
+S(10^9, 4) = 1082323240
+S(10^10, 4) = 10823232339
+
+:: (10^n)-th 5-powerfree numbers:
+S(10^1, 5) = 10
+S(10^2, 5) = 103
+S(10^3, 5) = 1036
+S(10^4, 5) = 10367
+S(10^5, 5) = 103691
+S(10^6, 5) = 1036925
+S(10^7, 5) = 10369275
+S(10^8, 5) = 103692775
+S(10^9, 5) = 1036927751
+S(10^10, 5) = 10369277550

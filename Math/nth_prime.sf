@@ -1,0 +1,84 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 06 June 2021
+# Edit: 07 July 2022
+# https://github.com/trizen
+
+# Return the n-th prime number, using binary search and the prime counting function.
+
+# See also:
+#   https://oeis.org/A002808
+
+func nth_prime(n) {
+
+    n == 0 && return 1      # not prime, but...
+    n <= 0 && return NaN
+    n == 1 && return 2
+
+    var min = n.prime_lower
+    var max = n.prime_upper
+
+    #~ var k = bsearch(min, max, {|k|
+        #~ prime_count(k) <=> n
+    #~ })
+
+    var k = 0
+    var c = 0
+
+    loop {
+
+        k = (min + max)>>1
+        c = prime_count(k)
+
+        if (abs(c - n) <= n.iroot(3)) {
+            break
+        }
+
+        given (c <=> n) {
+            when (+1) { max = k-1 }
+            when (-1) { min = k+1 }
+            else      { break }
+        }
+    }
+
+    while (!k.is_prime) {
+        --k
+    }
+
+    while (c != n) {
+        var j = (n <=> c)
+        k += j
+        c += j
+        k += j while !k.is_prime
+    }
+
+    return k
+}
+
+for n in (1..10) {
+    var p = nth_prime(10**n)
+    assert(p.is_prime)
+    assert_eq(p.prime_count, 10**n)
+    assert_eq(10**n -> nth_prime, p)
+    say "P(10^#{n}) = #{p}"
+}
+
+assert_eq(
+    nth_prime.map(1..100),
+    100.by { .is_prime }
+)
+
+__END__
+P(10^1) = 29
+P(10^2) = 541
+P(10^3) = 7919
+P(10^4) = 104729
+P(10^5) = 1299709
+P(10^6) = 15485863
+P(10^7) = 179424673
+P(10^8) = 2038074743
+P(10^9) = 22801763489
+P(10^10) = 252097800623
+P(10^11) = 2760727302517
+P(10^12) = 29996224275833
