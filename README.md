@@ -424,6 +424,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Nth composite](./Math/nth_composite.sf)
     * [Nth k-powerfree](./Math/nth_k-powerfree.sf)
     * [Nth prime](./Math/nth_prime.sf)
+    * [Nth prime power](./Math/nth_prime_power.sf)
     * [Nth root good rational approximations](./Math/nth_root_good_rational_approximations.sf)
     * [Nth smooth number](./Math/nth_smooth_number.sf)
     * [Nth squarefree](./Math/nth_squarefree.sf)

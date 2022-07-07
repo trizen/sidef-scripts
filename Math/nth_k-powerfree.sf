@@ -57,7 +57,7 @@ for k in (2..5) {
         var s = nth_powerfree(10**n, k)
         assert(s.is_powerfree(k))
         assert_eq(k.powerfree_count(s), 10**n)
-        #assert_eq(10**n -> nth_powerfree(k), s)
+        assert_eq(10**n -> nth_powerfree(k), s)
         say "S(10^#{n}, #{k}) = #{s}"
     }
     say ''

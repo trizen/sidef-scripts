@@ -1,0 +1,103 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 07 July 2022
+# https://github.com/trizen
+
+# Compute the n-th prime power, using binary search and the prime-power counting function.
+
+# See also:
+#   https://oeis.org/A143039
+
+func prime_power_count_lower(n) {
+    sum(1..n.ilog2, {|k|
+        prime_count_lower(n.iroot(k))
+    })
+}
+
+func prime_power_count_upper(n) {
+    sum(1..n.ilog2, {|k|
+        prime_count_upper(n.iroot(k))
+    })
+}
+
+func nth_prime_power_lower(n) {
+    bsearch_min(n, n.nth_prime_upper, {|k|
+        prime_power_count_upper(k) <=> n
+    })
+}
+
+func nth_prime_power_upper(n) {
+    bsearch_max(n, n.nth_prime_upper, {|k|
+        prime_power_count_lower(k) <=> n
+    })
+}
+
+func nth_prime_power(n) {
+
+    n == 0 && return 1      # not a prime power, but...
+    n <= 0 && return NaN
+    n == 1 && return 2
+
+    var min = nth_prime_power_lower(n)
+    var max = nth_prime_power_upper(n)
+
+    var k = 0
+    var c = 0
+
+    loop {
+
+        k = (min + max)>>1
+        c = prime_power_count(k)
+
+        if (abs(c - n) <= n.iroot(3)) {
+            break
+        }
+
+        given (c <=> n) {
+            when (+1) { max = k-1 }
+            when (-1) { min = k+1 }
+            else      { break }
+        }
+    }
+
+    while (!k.is_prime_power) {
+        --k
+    }
+
+    while (c != n) {
+        var j = (n <=> c)
+        k += j
+        c += j
+        k += j while !k.is_prime_power
+    }
+
+    return k
+}
+
+for n in (1..10) {
+    var p = nth_prime_power(10**n)
+    assert(p.is_prime_power)
+    assert_eq(p.prime_power_count, 10**n)
+    #assert_eq(10**n -> nth_prime_power, p)
+    say "P(10^#{n}) = #{p}"
+}
+
+assert_eq(
+    nth_prime_power.map(1..100),
+    100.by { .is_prime_power }
+)
+
+__END__
+P(10^1) = 16
+P(10^2) = 419
+P(10^3) = 7517
+P(10^4) = 103511
+P(10^5) = 1295953
+P(10^6) = 15474787
+P(10^7) = 179390821
+P(10^8) = 2037968761
+P(10^9) = 22801415981
+P(10^10) = 252096675073
+P(10^11) = 2760723662941
+P(10^12) = 29996212395727
