@@ -1,6 +1,10 @@
 #!/usr/bin/ruby
 
-# Fast algorithm for computing the n-th squarefree integer.
+# Daniel "Trizen" Șuteu
+# Date: 07 July 2022
+# https://github.com/trizen
+
+# Fast algorithm for computing the n-th k-powerfree integer.
 
 func nth_powerfree(n,k=2) {
 
