@@ -1,0 +1,91 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 29 August 2022
+# https://github.com/trizen
+
+# Generate all the squarefree Fermat overpseudoprimes to given a base with n prime factors in a given range [a,b]. (not in sorted order)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+#   https://trizenx.blogspot.com/2020/08/pseudoprimes-construction-methods-and.html
+
+func squarefree_fermat_overpseudoprimes_in_range(a, b, k, base, callback) {
+
+    a = max(k.pn_primorial, a)
+
+    func (m, lambda, p, k) {
+
+        var y = idiv(b,m).iroot(k)
+
+        if (k == 1) {
+
+            var x = max(p, idiv_ceil(a, m))
+
+            each_prime(x, y, {|p|
+                if (lambda == znorder(base, p)) {
+                    callback(m*p)
+                }
+            })
+
+            return nil
+        }
+
+        for(var r; p <= y; p = r) {
+
+            r = p.next_prime
+
+            var t = m*p
+            var u = idiv_ceil(a, t)
+            var v = idiv(b, t)
+
+            if ((u <= v) && !p.divides(base)) {
+                var L = znorder(base, p)
+                if ((lambda==1 || lambda==L) && t.is_coprime(L)) {
+                    __FUNC__(t, L, r, k-1)
+                }
+            }
+        }
+    }(1, 1, 2, k)
+
+    return callback
+}
+
+# High-level implementation (unoptimized)
+func squarefree_fermat_overpseudoprimes_in_range_unoptimized(A, B, k, base, callback) {
+
+    func F(m, lambda, p, k) {
+        if (k == 1) {
+            each_prime(max(p, ceil(A/m)), floor(B/m), {|q|
+                if (znorder(base, q) == lambda) {
+                    callback(m*q)
+                }
+            })
+        }
+        elsif (k >= 2) {
+            for q in (primes(p, (B/m)**(1/k))) {
+                if ((ceil(A/(m*q)) <= floor(B/(m*q))) && !q.divides(base)) {
+                    var L = znorder(base, q)
+                    if ((lambda==L || lambda==1) && (gcd(L, m*q) == 1)) {
+                        F(m*q, L, q.next_prime, k-1)
+                    }
+                }
+            }
+        }
+    }
+
+    F(1, 1, 2, k)
+}
+
+# Generate all the squarefree Fermat overpseudoprimes to base 2 with 2 prime factors in the range [1194649, 1325843]
+
+var k    = 2
+var base = 2
+var from = 1194649
+var upto = 1325843
+
+say gather { squarefree_fermat_overpseudoprimes_in_range(from, upto, k, base, { take(_) }) }.sort
+say gather { squarefree_fermat_overpseudoprimes_in_range_unoptimized(from, upto, k, base, { take(_) }) }.sort
+
+__END__
+[1207361, 1251949, 1252697, 1325843]
