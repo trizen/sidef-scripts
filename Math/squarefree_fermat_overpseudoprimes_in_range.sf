@@ -23,8 +23,10 @@ func squarefree_fermat_overpseudoprimes_in_range(a, b, k, base, callback) {
             var x = max(p, idiv_ceil(a, m))
 
             each_prime(x, y, {|p|
-                if (lambda == znorder(base, p)) {
-                    callback(m*p)
+                with (m*p - 1) {|t|
+                    if ((lambda `divides` t) && (lambda == znorder(base, p))) {
+                        callback(t+1)
+                    }
                 }
             })
 
@@ -57,7 +59,7 @@ func squarefree_fermat_overpseudoprimes_in_range_unoptimized(A, B, k, base, call
     func F(m, lambda, p, k) {
         if (k == 1) {
             each_prime(max(p, ceil(A/m)), floor(B/m), {|q|
-                if (znorder(base, q) == lambda) {
+                if ((znorder(base, q) == lambda) && (lambda `divides` (m*q - 1))) {
                     callback(m*q)
                 }
             })
