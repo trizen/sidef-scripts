@@ -37,15 +37,15 @@ func squarefree_fermat_overpseudoprimes_in_range(a, b, k, base, callback) {
 
             r = p.next_prime
 
+            var L = znorder(base, p)
+            ((lambda==1 || lambda==L) && m.is_coprime(L)) || next
+
             var t = m*p
             var u = idiv_ceil(a, t)
             var v = idiv(b, t)
 
             if ((u <= v) && !p.divides(base)) {
-                var L = znorder(base, p)
-                if ((lambda==1 || lambda==L) && t.is_coprime(L)) {
-                    __FUNC__(t, L, r, k-1)
-                }
+                __FUNC__(t, L, r, k-1)
             }
         }
     }(1, 1, 2, k)
@@ -68,7 +68,7 @@ func squarefree_fermat_overpseudoprimes_in_range_unoptimized(A, B, k, base, call
             for q in (primes(p, (B/m)**(1/k))) {
                 if ((ceil(A/(m*q)) <= floor(B/(m*q))) && !q.divides(base)) {
                     var L = znorder(base, q)
-                    if ((lambda==L || lambda==1) && (gcd(L, m*q) == 1)) {
+                    if ((lambda==L || lambda==1) && (gcd(L, m) == 1)) {
                         F(m*q, L, q.next_prime, k-1)
                     }
                 }

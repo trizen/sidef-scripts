@@ -43,15 +43,15 @@ func lucas_carmichael_numbers_in_range(a, b, k, callback) {
 
             r = p.next_prime
 
+            var L = lcm(lambda, p+1)
+            m.is_coprime(L) || next
+
             var t = m*p
             var u = idiv_ceil(a, t)
             var v = idiv(b, t)
 
             if (u <= v) {
-                var L = lcm(lambda, p+1)
-                if (t.is_coprime(L)) {
-                    __FUNC__(t, L, r, k-1)
-                }
+                __FUNC__(t, L, r, k-1)
             }
         }
     }(1, 1, 3, k)

@@ -251,6 +251,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Fermat pseudoprimes generation](./Math/fermat_pseudoprimes_generation.sf)
     * [Fermat pseudoprimes generation 2](./Math/fermat_pseudoprimes_generation_2.sf)
     * [Fermat pseudoprimes generation 3](./Math/fermat_pseudoprimes_generation_3.sf)
+    * [Fermat pseudoprimes in range](./Math/fermat_pseudoprimes_in_range.sf)
     * [Fermat strong primality test](./Math/fermat_strong_primality_test.sf)
     * [Fermat superpseudoprimes generation](./Math/fermat_superpseudoprimes_generation.sf)
     * [Fibonacci-fermat primality test](./Math/fibonacci-fermat_primality_test.sf)

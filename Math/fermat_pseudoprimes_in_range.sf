@@ -1,0 +1,68 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 30 August 2022
+# https://github.com/trizen
+
+# Generate all the k-omega Fermat pseudoprimes in range [a,b]. (not in sorted order)
+
+# Definition:
+#   k-omega primes are numbers n such that omega(n) = k.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+#   https://en.wikipedia.org/wiki/Prime_omega_function
+#   https://trizenx.blogspot.com/2020/08/pseudoprimes-construction-methods-and.html
+
+func fermat_pseudoprimes(A, B, k, base, callback) {
+
+    A = max(k.pn_primorial, A)
+
+    func (m, lambda, p, j) {
+
+        var s = idiv(B,m).iroot(j)
+
+        for (var r; p <= s; p = r) {
+
+            r = p.next_prime
+            p.divides(base) && next
+
+            for (var t = m*p; t <= B; t *= p) {
+
+                if (j == 1) {
+                    t >= A || next
+                    k.is_one && t.is_prime && next
+                    lambda `divides` t-1 || next
+                    znorder(base, p) `divides` t-1 || next
+                    powmod(base, t-1, t) == 1 || next
+                    callback(t)
+                    next
+                }
+
+                t*r <= B || next
+                var L = lcm(lambda, znorder(base, p))
+                L.is_coprime(m) || next
+                __FUNC__(t, L, r, j-1)
+            }
+        }
+    }(1, 1, 2, k)
+
+    return callback
+}
+
+# Generate all the Fermat pseudoprimes to base 3 in range [1, 10^4]
+
+var from = 1
+var upto = 1e4
+var base = 3
+var arr = []
+
+for k in (1..100) {
+    break if k.pn_primorial>upto
+    fermat_pseudoprimes(from, upto, k, base, { arr << _ })
+}
+
+say arr.sort
+
+__END__
+[91, 121, 286, 671, 703, 949, 1105, 1541, 1729, 1891, 2465, 2665, 2701, 2821, 3281, 3367, 3751, 4961, 5551, 6601, 7381, 8401, 8911]
