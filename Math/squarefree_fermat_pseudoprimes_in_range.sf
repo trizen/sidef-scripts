@@ -39,6 +39,7 @@ func squarefree_fermat_pseudoprimes_in_range(a, b, k, base, callback) {
         for(var r; p <= y; p = r) {
 
             r = p.next_prime
+            p.divides(base) && next
 
             var L = lcm(lambda, znorder(base, p))
             m.is_coprime(L) || next
@@ -47,7 +48,7 @@ func squarefree_fermat_pseudoprimes_in_range(a, b, k, base, callback) {
             var u = idiv_ceil(a, t)
             var v = idiv(b, t)
 
-            if ((u <= v) && !p.divides(base)) {
+            if (u <= v) {
                 __FUNC__(t, L, r, k-1)
             }
         }
