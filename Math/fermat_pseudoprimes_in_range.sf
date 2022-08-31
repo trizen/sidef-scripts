@@ -27,21 +27,23 @@ func fermat_pseudoprimes(A, B, k, base, callback) {
             r = p.next_prime
             p.divides(base) && next
 
+            var z = znorder(base, p)
+            var L = lcm(lambda, z)
+            L.is_coprime(m) || next
+
             for (var t = m*p; t <= B; t *= p) {
 
                 if (j == 1) {
                     t >= A || next
                     k.is_one && t.is_prime && next
-                    lambda `divides` t-1 || next
-                    znorder(base, p) `divides` t-1 || next
+                    lambda `divides` t-1      || next
+                    z `divides` t-1           || next
                     powmod(base, t-1, t) == 1 || next
                     callback(t)
                     next
                 }
 
                 t*r <= B || next
-                var L = lcm(lambda, znorder(base, p))
-                L.is_coprime(m) || next
                 __FUNC__(t, L, r, j-1)
             }
         }
