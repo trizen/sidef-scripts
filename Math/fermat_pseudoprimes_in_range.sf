@@ -14,6 +14,12 @@
 #   https://en.wikipedia.org/wiki/Prime_omega_function
 #   https://trizenx.blogspot.com/2020/08/pseudoprimes-construction-methods-and.html
 
+# PARI/GP program (version 1):
+#   fermat_psp(A, B, k, base=2) = A=max(A, vecprod(primes(k))); (f(m, l, p, j) = my(list=List()); forprime(q=p, sqrtnint(B\m, j), if(base%q != 0, my(z=znorder(Mod(base, q)), L=lcm(l, z)); if(gcd(L, m)==1, my(v=m*q, r=nextprime(q+1)); while(v <= B, if(j==1, if(v>=A && if(k==1, !isprime(v), 1) && (v-1)%l == 0 && (v-1)%z == 0 && Mod(base, v)^(v-1) == 1, listput(list, v)), if(v*r <= B, list=concat(list, f(v, l, r, j-1)))); v *= q)))); list); vecsort(Vec(f(1, 1, 2, k)));
+
+# PARI/GP program (version 2):
+#   fermat_psp(A, B, k, base) = A=max(A, vecprod(primes(k))); (f(m, l, p, j) = my(list=List()); forprime(q=p, sqrtnint(B\m, j), if(base%q != 0, my(v=m*q, t=q, r=nextprime(q+1)); while(v <= B, my(L=lcm(l, znorder(Mod(base, t)))); if(gcd(L, v) == 1, if(j==1, if(v>=A && if(k==1, !isprime(v), 1) && (v-1)%L == 0, listput(list, v)), if(v*r <= B, list=concat(list, f(v, L, r, j-1)))), break); v *= q; t *= q))); list); vecsort(Vec(f(1, 1, 2, k)));
+
 func fermat_pseudoprimes(A, B, k, base, callback) {
 
     A = max(k.pn_primorial, A)
@@ -25,26 +31,24 @@ func fermat_pseudoprimes(A, B, k, base, callback) {
         for (var r; p <= s; p = r) {
 
             r = p.next_prime
-            p.divides(base) && next
+            next if p.divides(base)
 
-            var z = znorder(base, p)
-            var L = lcm(lambda, z)
-            L.is_coprime(m) || next
+            for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
 
-            for (var t = m*p; t <= B; t *= p) {
+                var L = lcm(lambda, znorder(base, q))
+
+                L.is_coprime(v) || break
 
                 if (j == 1) {
-                    t >= A || next
-                    k.is_one && t.is_prime && next
-                    lambda `divides` t-1      || next
-                    z `divides` t-1           || next
-                    powmod(base, t-1, t) == 1 || next
-                    callback(t)
+                    v >= A || next
+                    k.is_one && v.is_prime && next
+                    L `divides` v-1 || next
+                    callback(v)
                     next
                 }
 
-                t*r <= B || next
-                __FUNC__(t, L, r, j-1)
+                v*r <= B || next
+                __FUNC__(v, L, r, j-1)
             }
         }
     }(1, 1, 2, k)
