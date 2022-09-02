@@ -22,13 +22,29 @@ func squarefree_fermat_overpseudoprimes_in_range(a, b, k, base, callback) {
 
             var x = max(p, idiv_ceil(a, m))
 
-            each_prime(x, y, {|p|
-                with (m*p - 1) {|t|
-                    if ((lambda `divides` t) && (lambda == znorder(base, p))) {
-                        callback(t+1)
+            if (idiv(y-x, lambda) > prime_count(x, y)) {
+                each_prime(x, y, {|p|
+                    with (m*p - 1) {|t|
+                        if ((lambda `divides` t) && powmod(base, lambda, p).is_one && (lambda == znorder(base, p))) {
+                            callback(t+1)
+                        }
+                    }
+                })
+                return nil
+            }
+
+            var u = lambda*idiv_ceil(x-1, lambda)
+
+            for w in (range(u, y, lambda)) {
+                with (w+1) { |p|
+                    p.is_prime || next
+                    with (m*p - 1) {|t|
+                        if ((lambda `divides` t) && powmod(base, lambda, p).is_one && (lambda == znorder(base, p))) {
+                            callback(t+1)
+                        }
                     }
                 }
-            })
+            }
 
             return nil
         }
