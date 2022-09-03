@@ -10,6 +10,10 @@
 #   https://en.wikipedia.org/wiki/Almost_prime
 #   https://trizenx.blogspot.com/2020/08/pseudoprimes-construction-methods-and.html
 
+func inverse_znorder_primes(base, lambda) is cached {
+    base**lambda - 1 -> prime_divisors.grep {|p| znorder(base, p) == lambda }
+}
+
 func squarefree_fermat_overpseudoprimes_in_range(a, b, k, base, callback) {
 
     a = max(k.pn_primorial, a)
@@ -22,7 +26,20 @@ func squarefree_fermat_overpseudoprimes_in_range(a, b, k, base, callback) {
 
             var x = max(p, idiv_ceil(a, m))
 
-            if (idiv(y-x, lambda) > prime_count(x, y)) {
+            if (lambda <= 135) {
+                inverse_znorder_primes(base, lambda).each {|p|
+                    next if (p < x)
+                    next if (p > y)
+                    with (m*p - 1) {|t|
+                        if (lambda `divides` t) {
+                            callback(t+1)
+                        }
+                    }
+                }
+                return nil
+            }
+
+            if (prime_count_lower(y)-prime_count_lower(x) < idiv(y-x, lambda)) {    # probably never happens
                 each_prime(x, y, {|p|
                     with (m*p - 1) {|t|
                         if ((lambda `divides` t) && powmod(base, lambda, p).is_one && (lambda == znorder(base, p))) {
@@ -49,13 +66,55 @@ func squarefree_fermat_overpseudoprimes_in_range(a, b, k, base, callback) {
             return nil
         }
 
+        if ((lambda > 1) && (lambda <= 135)) {
+            for q in (inverse_znorder_primes(base, lambda)) {
+
+                next if (q < p)
+                next if (q > y)
+
+                var t = m*q
+                var u = idiv_ceil(a, t)
+                var v = idiv(b, t)
+
+                if (u <= v) {
+                    __FUNC__(t, lambda, q.next_prime, k-1)
+                }
+            }
+            return nil
+        }
+
+        if (lambda > 1) {
+
+            var u = lambda*idiv_ceil(p-1, lambda)
+
+            return nil if (u > y)
+
+            for w in (range(u, y, lambda)) {
+                with (w+1) { |p|
+
+                    p.is_prime || next
+                    p.divides(base) && next
+                    lambda==znorder(base, p) || next
+
+                    var t = m*p
+                    var u = idiv_ceil(a, t)
+                    var v = idiv(b, t)
+
+                    if (u <= v) {
+                        __FUNC__(t, lambda, p.next_prime, k-1)
+                    }
+                }
+            }
+            return nil
+        }
+
         for(var r; p <= y; p = r) {
 
             r = p.next_prime
             p.divides(base) && next
 
             var L = znorder(base, p)
-            ((lambda==1 || lambda==L) && m.is_coprime(L)) || next
+            lambda==1 || lambda==L || next
 
             var t = m*p
             var u = idiv_ceil(a, t)
@@ -76,7 +135,7 @@ func squarefree_fermat_overpseudoprimes_in_range_unoptimized(A, B, k, base, call
     func F(m, lambda, p, k) {
         if (k == 1) {
             each_prime(max(p, ceil(A/m)), floor(B/m), {|q|
-                if ((znorder(base, q) == lambda) && (lambda `divides` (m*q - 1))) {
+                if ((powmod(base, lambda, q) == 1) && (znorder(base, q) == lambda) && (lambda `divides` (m*q - 1))) {
                     callback(m*q)
                 }
             })
@@ -96,15 +155,15 @@ func squarefree_fermat_overpseudoprimes_in_range_unoptimized(A, B, k, base, call
     F(1, 1, 2, k)
 }
 
-# Generate all the squarefree Fermat overpseudoprimes to base 2 with 2 prime factors in the range [1194649, 1325843]
+# Generate all the squarefree Fermat overpseudoprimes to base 2 with 3 prime factors in the range [1194649, 14325843000]
 
-var k    = 2
+var k    = 3
 var base = 2
 var from = 1194649
-var upto = 1325843
+var upto = 14325843000
 
 say gather { squarefree_fermat_overpseudoprimes_in_range(from, upto, k, base, { take(_) }) }.sort
-say gather { squarefree_fermat_overpseudoprimes_in_range_unoptimized(from, upto, k, base, { take(_) }) }.sort
+say gather { squarefree_fermat_overpseudoprimes_in_range_unoptimized(from, upto, k, base, { take(_) }) }.sort if false
 
 __END__
-[1207361, 1251949, 1252697, 1325843]
+[13421773, 464955857, 536870911, 1220114377, 1541955409, 2454285751, 3435973837, 5256967999, 5726579371, 7030714813, 8493511669, 8538455017, 8788016089, 10545166433, 13893138041]
