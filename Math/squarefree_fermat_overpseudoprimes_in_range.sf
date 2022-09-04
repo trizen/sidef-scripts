@@ -11,7 +11,39 @@
 #   https://trizenx.blogspot.com/2020/08/pseudoprimes-construction-methods-and.html
 
 func inverse_znorder_primes(base, lambda) is cached {
-    base**lambda - 1 -> prime_divisors.grep {|p| znorder(base, p) == lambda }
+    base**lambda - 1 -> prime_divisors
+}
+
+func iterate_over_primes(x,y,base,lambda,callback) {
+
+    if ((lambda > 1) && (lambda <= 100)) {
+        for q in (inverse_znorder_primes(base, lambda)) {
+
+            next if (q < x)
+            next if (q > y)
+
+            znorder(base, q) == lambda || next
+
+            callback(q)
+        }
+        return nil
+    }
+
+    if (lambda > 1) {
+
+        var u = lambda*idiv_ceil(x-1, lambda)
+
+        return nil if (u > y)
+
+        for w in (range(u, y, lambda)) {
+            with (w+1) { |p|
+                callback(p) if p.is_prime
+            }
+        }
+        return nil
+    }
+
+    each_prime(x, y, callback)
 }
 
 func squarefree_fermat_overpseudoprimes_in_range(a, b, k, base, callback) {
@@ -22,108 +54,43 @@ func squarefree_fermat_overpseudoprimes_in_range(a, b, k, base, callback) {
 
         var y = idiv(b,m).iroot(k)
 
+        return nil if (p > y)
+
         if (k == 1) {
 
             var x = max(p, idiv_ceil(a, m))
 
-            if (lambda <= 135) {
-                inverse_znorder_primes(base, lambda).each {|p|
-                    next if (p < x)
-                    next if (p > y)
+            iterate_over_primes(x, y, base, lambda, {|p|
+                if (powmod(base, lambda, p) == 1) {
                     with (m*p - 1) {|t|
-                        if (lambda `divides` t) {
+                        if ((lambda `divides` t) && (lambda == znorder(base, p))) {
                             callback(t+1)
                         }
                     }
                 }
-                return nil
-            }
-
-            if (prime_count_lower(y)-prime_count_lower(x) < idiv(y-x, lambda)) {    # probably never happens
-                each_prime(x, y, {|p|
-                    with (m*p - 1) {|t|
-                        if ((lambda `divides` t) && powmod(base, lambda, p).is_one && (lambda == znorder(base, p))) {
-                            callback(t+1)
-                        }
-                    }
-                })
-                return nil
-            }
-
-            var u = lambda*idiv_ceil(x-1, lambda)
-
-            for w in (range(u, y, lambda)) {
-                with (w+1) { |p|
-                    p.is_prime || next
-                    with (m*p - 1) {|t|
-                        if ((lambda `divides` t) && powmod(base, lambda, p).is_one && (lambda == znorder(base, p))) {
-                            callback(t+1)
-                        }
-                    }
-                }
-            }
+            })
 
             return nil
         }
 
-        if ((lambda > 1) && (lambda <= 135)) {
-            for q in (inverse_znorder_primes(base, lambda)) {
+        iterate_over_primes(p, y, base, lambda, {|p|
 
-                next if (q < p)
-                next if (q > y)
-
-                var t = m*q
-                var u = idiv_ceil(a, t)
-                var v = idiv(b, t)
-
-                if (u <= v) {
-                    __FUNC__(t, lambda, q.next_prime, k-1)
-                }
-            }
-            return nil
-        }
-
-        if (lambda > 1) {
-
-            var u = lambda*idiv_ceil(p-1, lambda)
-
-            return nil if (u > y)
-
-            for w in (range(u, y, lambda)) {
-                with (w+1) { |p|
-
-                    p.is_prime || next
-                    p.divides(base) && next
-                    lambda==znorder(base, p) || next
-
-                    var t = m*p
-                    var u = idiv_ceil(a, t)
-                    var v = idiv(b, t)
-
-                    if (u <= v) {
-                        __FUNC__(t, lambda, p.next_prime, k-1)
-                    }
-                }
-            }
-            return nil
-        }
-
-        for(var r; p <= y; p = r) {
-
-            r = p.next_prime
             p.divides(base) && next
 
             var L = znorder(base, p)
-            lambda==1 || lambda==L || next
+            if (lambda > 1) {
+                lambda == L || next
+            }
+            m.is_coprime(L) || next
 
             var t = m*p
             var u = idiv_ceil(a, t)
             var v = idiv(b, t)
 
             if (u <= v) {
-                __FUNC__(t, L, r, k-1)
+                __FUNC__(t, L, p.next_prime, k-1)
             }
-        }
+        })
     }(1, 1, 2, k)
 
     return callback

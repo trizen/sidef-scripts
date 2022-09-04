@@ -248,6 +248,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Fermat hybrid factorization method](./Math/fermat_hybrid_factorization_method.sf)
     * [Fermat numbers find small factor](./Math/fermat_numbers_find_small_factor.sf)
     * [Fermat overpseudoprimes generation](./Math/fermat_overpseudoprimes_generation.sf)
+    * [Fermat overpseudoprimes in range](./Math/fermat_overpseudoprimes_in_range.sf)
     * [Fermat pseudoprimes generation](./Math/fermat_pseudoprimes_generation.sf)
     * [Fermat pseudoprimes generation 2](./Math/fermat_pseudoprimes_generation_2.sf)
     * [Fermat pseudoprimes generation 3](./Math/fermat_pseudoprimes_generation_3.sf)
