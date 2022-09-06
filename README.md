@@ -584,6 +584,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Squarefree almost primes in range](./Math/squarefree_almost_primes_in_range.sf)
     * [Squarefree fermat overpseudoprimes in range](./Math/squarefree_fermat_overpseudoprimes_in_range.sf)
     * [Squarefree fermat pseudoprimes in range](./Math/squarefree_fermat_pseudoprimes_in_range.sf)
+    * [Squarefree lucas U pseudoprimes in range](./Math/squarefree_lucas_U_pseudoprimes_in_range.sf)
     * [Stable marriage problem](./Math/stable_marriage_problem.sf)
     * [Stern brocot continued fraction](./Math/stern_brocot_continued_fraction.sf)
     * [Stern brocot encoding](./Math/stern_brocot_encoding.sf)

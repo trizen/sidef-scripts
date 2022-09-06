@@ -1,0 +1,80 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 06 September 2022
+# https://github.com/trizen
+
+# Generate all the squarefree Lucas pseudoprimes to the U_n(P,Q) sequence with n prime factors in a given range [a,b]. (not in sorted order)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+#   https://en.wikipedia.org/wiki/Lucas_sequence
+#   https://trizenx.blogspot.com/2020/08/pseudoprimes-construction-methods-and.html
+
+func lucas_znorder(P,Q,D,n) {
+    n - kronecker(D, n) -> divisors.first_by {|d| lucasUmod(P, Q, d, n) == 0 }
+}
+
+func squarefree_lucas_U_pseudoprimes_in_range(a, b, k, P, Q, callback) {
+
+    a = max(k.pn_primorial, a)
+
+    var D = (P*P - 4*Q)
+
+    func (m, lambda, p, k) {
+
+        var y = idiv(b,m).iroot(k)
+
+        if (k == 1) {
+
+            var x = max(p, idiv_ceil(a, m))
+
+            each_prime(x, y, {|p|
+                with (m*p - kronecker(D, m*p)) {|t|
+                    if ((lambda `divides` t) && (lucas_znorder(P, Q, D, p) `divides` t)) {
+                        callback(m*p)
+                    }
+                }
+            })
+
+            return nil
+        }
+
+        for(var r; p <= y; p = r) {
+
+            r = p.next_prime
+            p.divides(D) && next
+
+            var L = lcm(lambda, lucas_znorder(P, Q, D, p))
+            m.is_coprime(L) || next
+
+            var t = m*p
+            var u = idiv_ceil(a, t)
+            var v = idiv(b, t)
+
+            if (u <= v) {
+                __FUNC__(t, L, r, k-1)
+            }
+        }
+    }(1, 1, 2, k)
+
+    return callback
+}
+
+# Generate all the squarefree Fibonacci pseudoprimes in the range [1, 15251]
+
+var from = 1
+var upto = 15251
+var P    = 1
+var Q    = -1
+var arr  = []
+
+for k in (2..100) {
+    break if k.pn_primorial>upto
+    squarefree_lucas_U_pseudoprimes_in_range(from, upto, k, P, Q, { arr << _ })
+}
+
+say arr.sort
+
+__END__
+[323, 377, 1891, 3827, 4181, 5777, 6601, 6721, 8149, 10877, 11663, 13201, 13981, 15251]

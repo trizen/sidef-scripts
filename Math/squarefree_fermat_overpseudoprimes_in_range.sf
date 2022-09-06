@@ -19,10 +19,10 @@ func iterate_over_primes(x,y,base,lambda,callback) {
     if ((lambda > 1) && (lambda <= 100)) {
         for q in (inverse_znorder_primes(base, lambda)) {
 
-            next if (q < x)
-            next if (q > y)
+            next  if (q < x)
+            break if (q > y)
 
-            znorder(base, q) == lambda || next
+            #znorder(base, q) == lambda || next
 
             callback(q)
         }
