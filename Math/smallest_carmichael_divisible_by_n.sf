@@ -1,0 +1,43 @@
+#!/usr/bin/ruby
+
+# Simple method for finding the smallest Carmichael number divisible by n.
+
+# See also:
+#   https://oeis.org/A135721
+#   https://oeis.org/A253595
+
+func carmichael_divisible_by(n) {
+
+    gcd(n, phi(n)) == 1 || return nil
+
+    n >= 3 || return nil
+
+    var c = n
+    var t = n
+
+    if (c.is_prime) {
+        c = (c**2 - c)
+    }
+
+    c.is_carmichael && return c
+
+    loop {
+        t.is_carmichael && return t
+        t += c
+    }
+}
+
+assert_eq(carmichael_divisible_by(3), 561)
+assert_eq(carmichael_divisible_by(3*5), 62745)
+assert_eq(carmichael_divisible_by(7*19), 1729)
+assert_eq(carmichael_divisible_by(47*89), 62745)
+assert_eq(carmichael_divisible_by(5*47*89), 62745)
+assert_eq(carmichael_divisible_by(3*47*89), 62745)
+assert_eq(carmichael_divisible_by(3*89), 62745)
+
+say carmichael_divisible_by.map(primes(3..50))
+say 40.of(carmichael_divisible_by).grep
+
+__END__
+[561, 1105, 1729, 561, 1105, 561, 1729, 6601, 2465, 2821, 29341, 6601, 334153, 62745]
+[561, 1105, 1729, 561, 1105, 62745, 561, 1729, 6601, 2465, 2821, 561, 825265, 29341]

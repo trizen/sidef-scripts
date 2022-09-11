@@ -1,0 +1,39 @@
+#!/usr/bin/ruby
+
+# Simple method for finding the smallest Lucas-Carmichael number divisible by n.
+
+# See also:
+#   https://oeis.org/A253597
+#   https://oeis.org/A253598
+
+func lucas_carmichael_divisible_by(n) {
+
+    gcd(n, psi(n)) == 1 || return nil
+
+    n >= 3 || return nil
+
+    var c = n
+    var t = n
+
+    if (c.is_prime) {
+        c = (c**2 + c)
+    }
+
+    c.is_lucas_carmichael && return c
+
+    loop {
+        t.is_lucas_carmichael && return t
+        t += c
+    }
+}
+
+assert_eq(lucas_carmichael_divisible_by(3), 399)
+assert_eq(lucas_carmichael_divisible_by(3*7), 399)
+assert_eq(lucas_carmichael_divisible_by(7*19), 399)
+
+say lucas_carmichael_divisible_by.map(primes(3..50))
+say 40.of(lucas_carmichael_divisible_by).grep
+
+__END__
+[399, 935, 399, 935, 2015, 935, 399, 4991, 51359, 2015, 1584599, 20705, 5719, 18095]
+[399, 935, 399, 935, 2015, 935, 399, 399, 4991, 51359, 2015, 8855, 1584599, 9486399]
