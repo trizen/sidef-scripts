@@ -8,6 +8,7 @@
 
 func lucas_carmichael_divisible_by(n) {
 
+    n.is_even && return nil
     gcd(n, psi(n)) == 1 || return nil
 
     n >= 3 || return nil

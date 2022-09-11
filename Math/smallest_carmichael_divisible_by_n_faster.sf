@@ -1,0 +1,99 @@
+#!/usr/bin/ruby
+
+# Method for finding the smallest Carmichael number divisible by n.
+
+# See also:
+#   https://oeis.org/A135721
+#   https://oeis.org/A253595
+
+func carmichael_numbers_from_multiple(A, B, m, lambda, p, k, callback) {
+
+    var y = idiv(B,m).iroot(k)
+
+    if (k == 1) {
+
+        var x = max(p, idiv_ceil(A, m))
+
+        each_prime(x, y, {|p|
+            p.divides(m) && next
+            with (m*p - 1) {|t|
+                if ((lambda `divides` t) && (p-1 `divides` t)) {
+                    callback(t+1)
+                }
+            }
+        })
+
+        return nil
+    }
+
+    for(var r; p <= y; p = r) {
+
+        r = p.next_prime
+        p.divides(m) && next
+
+        var L = lcm(lambda, p-1)
+        m.is_coprime(L) || next
+
+        var t = m*p
+        var u = idiv_ceil(A, t)
+        var v = idiv(B, t)
+
+        if (u <= v) {
+            __FUNC__(A, B, t, L, r, k-1, callback)
+        }
+    }
+}
+
+func carmichael_divisible_by(m) {
+
+    m >= 1 || return nil
+    m.is_even && return nil
+    gcd(m, phi(m)) == 1 || return nil
+
+    var a = max(561, m)
+    var b = 2*a
+    var L = m.factor.lcm{.dec}
+
+    var found = []
+
+    loop {
+
+        for k in ((m.is_prime ? 2 : 1)..1000) {
+
+            var P = k.by {|p|
+                p.is_odd && p.is_prime && !p.divides(m) && !p.divides(L)
+            }
+
+            break if (P.prod*m > b)
+
+            var callback = {|n|
+                found << n
+                b = min(b, n)
+            }
+
+            carmichael_numbers_from_multiple(a, b, m, L, P[0], k, callback)
+        }
+
+        a = b+1
+        b = 2*a
+
+        break if found
+    }
+
+    found.min
+}
+
+assert_eq(carmichael_divisible_by(3), 561)
+assert_eq(carmichael_divisible_by(3*5), 62745)
+assert_eq(carmichael_divisible_by(7*19), 1729)
+assert_eq(carmichael_divisible_by(47*89), 62745)
+assert_eq(carmichael_divisible_by(5*47*89), 62745)
+assert_eq(carmichael_divisible_by(3*47*89), 62745)
+assert_eq(carmichael_divisible_by(3*89), 62745)
+
+say carmichael_divisible_by.map(primes(3..50))
+say 40.of(carmichael_divisible_by).grep
+
+__END__
+[561, 1105, 1729, 561, 1105, 561, 1729, 6601, 2465, 2821, 29341, 6601, 334153, 62745]
+[561, 561, 1105, 1729, 561, 1105, 62745, 561, 1729, 6601, 2465, 2821, 561, 825265, 29341]

@@ -1,0 +1,95 @@
+#!/usr/bin/ruby
+
+# Simple method for finding the smallest Lucas-Carmichael number divisible by n.
+
+# See also:
+#   https://oeis.org/A253597
+#   https://oeis.org/A253598
+
+func lucas_carmichael_numbers_from_multiple(A, B, m, lambda, p, k, callback) {
+
+    var y = idiv(B,m).iroot(k)
+
+    if (k == 1) {
+
+        var x = max(p, idiv_ceil(A, m))
+
+        each_prime(x, y, {|p|
+            p.divides(m) && next
+            with (m*p + 1) {|t|
+                if ((lambda `divides` t) && (p+1 `divides` t)) {
+                    callback(t-1)
+                }
+            }
+        })
+
+        return nil
+    }
+
+    for(var r; p <= y; p = r) {
+
+        r = p.next_prime
+        p.divides(m) && next
+
+        var L = lcm(lambda, p+1)
+        m.is_coprime(L) || next
+
+        var t = m*p
+        var u = idiv_ceil(A, t)
+        var v = idiv(B, t)
+
+        if (u <= v) {
+            __FUNC__(A, B, t, L, r, k-1, callback)
+        }
+    }
+}
+
+func lucas_carmichael_divisible_by(m) {
+
+    m >= 1 || return nil
+    m.is_even && return nil
+    gcd(m, psi(m)) == 1 || return nil
+
+    var a = max(399, m)
+    var b = 2*a
+    var L = m.factor.lcm{.inc}
+
+    var found = []
+
+    loop {
+
+        for k in ((m.is_prime ? 2 : 1)..1000) {
+
+            var P = k.by {|p|
+                p.is_odd && p.is_prime && !p.divides(m) && !p.divides(L)
+            }
+
+            break if (P.prod*m > b)
+
+            var callback = {|n|
+                found << n
+                b = min(b, n)
+            }
+
+            lucas_carmichael_numbers_from_multiple(a, b, m, L, P[0], k, callback)
+        }
+
+        a = b+1
+        b = 2*a
+
+        break if found
+    }
+
+    found.min
+}
+
+assert_eq(lucas_carmichael_divisible_by(3), 399)
+assert_eq(lucas_carmichael_divisible_by(3*7), 399)
+assert_eq(lucas_carmichael_divisible_by(7*19), 399)
+
+say lucas_carmichael_divisible_by.map(primes(3..50))
+say 40.of(lucas_carmichael_divisible_by).grep
+
+__END__
+[399, 935, 399, 935, 2015, 935, 399, 4991, 51359, 2015, 1584599, 20705, 5719, 18095]
+[399, 399, 935, 399, 935, 2015, 935, 399, 399, 4991, 51359, 2015, 8855, 1584599, 9486399]
