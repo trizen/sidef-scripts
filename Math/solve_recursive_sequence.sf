@@ -1,0 +1,43 @@
+#!/usr/bin/ruby
+
+# Find a recursive formula for a given sequence, using the "number wall" method.
+
+# Inspired by the following Mathologer video:
+#   Secrets of the lost number walls
+#   https://yewtu.be/watch?v=NO1_-qptr6c
+
+func solve_recursive_sequence(seq) {
+
+    var x = Poly(1)
+
+    var a = seq.len.of(1)
+    var b = seq.map_cons(2, {|a,b|
+        b - a*x
+    })
+
+    loop {
+
+        var c = {|i|
+            (b[i-1]*b[i+1] - b[i].sqr)/(-a[i])
+        }.map(1 .. (b.end-1))
+
+        if (c.all{.is_zero}) {
+
+            var cf = b[0].coeffs
+            var d  = cf.pop[1]
+            var fc = (Poly(cf.flat...)/-d -> coeffs)
+
+            return [
+                fc.map{.tail}.flip,
+                "a(n) = " + (fc.map_kv{|k,v|
+                    (v[1] == 1 ? '' : "#{v[1].as_rat}*") + "a(n-#{fc.len - k})"
+                }.flip.join(' + ') || '0')
+            ]
+        }
+        (a, b) = (b.ft(1), c)
+    }
+}
+
+say solve_recursive_sequence(20.of{.fib})[1]                #=> a(n) = a(n-1) + a(n-2)
+say solve_recursive_sequence(20.of{.sqr})[1]                #=> a(n) = 3*a(n-1) + -3*a(n-2) + a(n-3)
+say solve_recursive_sequence(20.of{.faulhaber(2)})[1]       #=> a(n) = 4*a(n-1) + -6*a(n-2) + 4*a(n-3) + -1*a(n-4)

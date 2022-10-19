@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# Simple method for finding the smallest Lucas-Carmichael number divisible by n.
+# Method for finding the smallest Lucas-Carmichael number divisible by n.
 
 # See also:
 #   https://oeis.org/A253597
