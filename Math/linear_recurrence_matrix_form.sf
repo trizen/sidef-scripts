@@ -1,0 +1,66 @@
+#!/usr/bin/ruby
+
+# Efficiently compute the n-th term of a given linear recurrence.
+
+# See also:
+#   http://linear.ups.edu/scla/html/section-recurrence-relations.html
+#   https://reference.wolfram.com/language/ref/LinearRecurrence.html
+#   https://the-algorithms.com/algorithm/linear-recurrence-matrix
+
+# Method: from a linear recurrence of the form [5, -10, 10, -5, 1], we build a matrix like:
+#
+#   A = [
+#     [0,  1,  0,  0,  0],
+#     [0,  0,  1,  0,  0],
+#     [0,  0,  0,  1,  0],
+#     [0,  0,  0,  0,  1],
+#     [1, -5, 10, -10, 5]
+#   ]
+#
+# Let `b` be the column vector of base-cases:
+#
+#   b = [
+#        [0],     # a(0)
+#        [1],     # a(1)
+#        [9],     # a(2)
+#        [36],    # a(3)
+#        [100]    # a(4)
+#       ]
+#
+# Then the n-th term a(n) is defined as:
+#   a(n) = (A^n * b)[0][0]
+
+func linear_recurrence_matrix(ker) {
+    var A = Matrix.build(ker.len, {|i,j|
+        (i+1 == j) ? 1 : 0
+    })
+    A.set_row(ker.len-1, ker.flip)
+    return A
+}
+
+func linear_recurrence(ker, init, from=0, to=9) {
+
+    var A = linear_recurrence_matrix(ker)
+    var b = Matrix.column_vector(init...)
+
+    var c = (A**from * b)
+    var S = c.transpose.row(0)
+    var T = ker.flip
+
+    from..to -> map {
+        S << (S ~Z* T -> sum)
+        S.shift
+    }
+}
+
+say linear_recurrence([5, -10, 10, -5, 1], [0, 1, 9, 36, 100], 0, 10)
+say linear_recurrence([5, -10, 10, -5, 1], [0, 1, 16, 81, 256], 0, 10)
+
+assert_eq(linear_recurrence([5, -10, 10, -5, 1], [0, 1, 16, 81, 256], 0, 200).sum, 64802666660)
+assert_eq(linear_recurrence([5, -10, 10, -5, 1], [0, 1, 16, 81, 256], 50, 200).sum, 64743249995)
+
+assert_eq(linear_recurrence([-3, 1], [7,2], 0, 10), [7, 2, 1, -1, 4, -13, 43, -142, 469, -1549, 5116])
+assert_eq(linear_recurrence([1,1], [1,1], 0, 10), [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89])
+assert_eq(linear_recurrence([1,1], [1,1], -6, 6), [5, -3, 2, -1, 1, 0, 1, 1, 2, 3, 5, 8, 13])
+assert_eq(linear_recurrence([1,1], [0,1], 0, 10), [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
+assert_eq(linear_recurrence([0,1,1], [3,0,2], 0, 10), [3, 0, 2, 3, 2, 5, 5, 7, 10, 12, 17])

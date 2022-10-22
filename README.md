@@ -374,6 +374,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Linear congruential generator](./Math/linear_congruential_generator.sf)
     * [Linear diophantine equation](./Math/linear_diophantine_equation.sf)
     * [Linear diophantine equation invmod search](./Math/linear_diophantine_equation_invmod_search.sf)
+    * [Linear recurrence matrix form](./Math/linear_recurrence_matrix_form.sf)
     * [Linked list addition](./Math/linked_list_addition.sf)
     * [Liouville sum function](./Math/liouville_sum_function.sf)
     * [Log10 digit by digit](./Math/log10_digit_by_digit.sf)
