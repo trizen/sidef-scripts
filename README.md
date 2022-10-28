@@ -16,6 +16,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Base64 decoder](./Decoding/base64_decoder.sf)
     * [Cnp](./Decoding/cnp.sf)
 * Digest
+    * [Binomial hash function](./Digest/binomial_hash_function.sf)
     * [Md5](./Digest/md5.sf)
 * Encoding
     * [Arithmetic coding](./Encoding/arithmetic_coding.sf)

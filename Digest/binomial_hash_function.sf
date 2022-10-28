@@ -1,0 +1,162 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 28 October 2022
+# https://github.com/trizen
+
+# A very simple hash function (most likely, not secure), using the binomial function to create the avalanche effect.
+
+# See also:
+#   https://oeis.org/A014062
+#   https://yewtu.be/watch?v=KqqOXndnvic
+#   https://en.wikipedia.org/wiki/Avalanche_effect
+
+define (
+    BLOCK_SIZE = 16,            # in bytes
+    MODULO     = 2**128,
+)
+
+func process_block(str) {
+
+    func f(bits) {
+        bits.sum_kv {|k,v|
+            binomial(k*k + v, k)
+        } % MODULO
+    }
+
+    while (str.len < BLOCK_SIZE) {
+        str += str.bytes.sum
+    }
+
+    var A = f(str.ascii2bits)
+    var B = f(str.reverse.ascii2bits)
+
+    mulmod(A, B, MODULO)
+}
+
+func prepare_result(num) {
+
+    num %= MODULO
+
+    while (num < (MODULO>>1)) {
+        num += (MODULO>>1)
+    }
+
+    num.as_hex
+}
+
+func binomial_hash_string(str) {
+    prepare_result(str.encode_utf8.split(BLOCK_SIZE).map(process_block).sum)
+}
+
+func binomial_hash_file(filename) {
+    var total = 0
+    var fh = File(filename).open('<:raw') || return nil
+    while (fh.read(\var block, BLOCK_SIZE)) {
+        total += process_block(block)
+    }
+    prepare_result(total)
+}
+
+var tests = [
+    '',
+    "\0",
+    'a',
+    'b',
+    'ab',
+    'ba',
+    'abc',
+    'acb',
+    'message digest',
+    'abcdefghijklmnopqrstuvwxyz',
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+    '12345678901234567890123456789012345678901234567890123456789012345678901234567890',
+]
+
+for msg in tests {
+    var hash = binomial_hash_string(msg)
+    say "#{hash} : #{msg.dump}"
+}
+
+printf("\nBinomial hash of this script: %s\n\n", binomial_hash_file(__FILE__))
+
+#
+## Run some special tests
+#
+
+assert_ne(
+    binomial_hash_string(BLOCK_SIZE.of(50.chr).join),
+    binomial_hash_string(BLOCK_SIZE.dec.of(50.chr).join)
+)
+
+assert_ne(
+    binomial_hash_string(BLOCK_SIZE.of(16.chr).join),
+    binomial_hash_string(BLOCK_SIZE.dec.of(8.chr).join)
+)
+
+assert_ne(
+    binomial_hash_string(BLOCK_SIZE.of(16.chr).join),
+    binomial_hash_string(BLOCK_SIZE.dec.of(16.chr).join)
+)
+
+assert_ne(
+    binomial_hash_string(BLOCK_SIZE.dec.of(15.chr).join),
+    binomial_hash_string(BLOCK_SIZE.dec.dec.of(15.chr).join)
+)
+
+assert_ne(
+    binomial_hash_string(BLOCK_SIZE.inc.of(2.chr).join),
+    binomial_hash_string(BLOCK_SIZE.inc.inc.of(2.chr).join)
+)
+
+assert_ne(
+    binomial_hash_string(BLOCK_SIZE.of(15.chr).join),
+    binomial_hash_string(BLOCK_SIZE.dec.of(15.chr).join)
+)
+
+assert_ne(
+    binomial_hash_string(BLOCK_SIZE.dec.of(14.chr).join),
+    binomial_hash_string(BLOCK_SIZE.dec.dec.of(14.chr).join)
+)
+
+assert_ne(
+    binomial_hash_string(BLOCK_SIZE.inc.of(1.chr).join),
+    binomial_hash_string(BLOCK_SIZE.inc.inc.of(1.chr).join)
+)
+
+assert_ne(
+    binomial_hash_string(BLOCK_SIZE.of(126.chr).join),
+    binomial_hash_string(BLOCK_SIZE.of(63.chr).join)
+)
+
+assert_ne(
+    binomial_hash_string(BLOCK_SIZE.of(254.chr).join),
+    binomial_hash_string(BLOCK_SIZE.of(191.chr).join)
+)
+
+assert_ne(
+    binomial_hash_string(BLOCK_SIZE.of(124.chr).join),
+    binomial_hash_string(BLOCK_SIZE.of(62.chr).join)
+)
+
+for n in (48..52) {
+    assert_ne(
+        binomial_hash_string(BLOCK_SIZE.inc.of(n.chr).join),
+        binomial_hash_string(BLOCK_SIZE.inc.inc.of(n.chr).join),
+        "Collision for n = #{n}"
+    )
+}
+
+__END__
+80000000000000000000000000000000 : ""
+ea15afaabc455ba964b4382a5356b398 : "\0"
+b8aa2322566431ec985f19c6232a8d50 : "a"
+b7334920a0fedb33bb706d77c62e6ab0 : "b"
+c8d16b3cf77280d33c6b6703cfb8d734 : "ab"
+b513bffd825b87bebcd47619d7f706c4 : "ba"
+e0d2cdd5ef6186bc7959828eee22c632 : "abc"
+a7828a33159532496e57732db799c9c2 : "acb"
+e78fe710416cc20e0db92642a5635d64 : "message digest"
+d164856891b0ec778ee69341683b5783 : "abcdefghijklmnopqrstuvwxyz"
+8b51f08839f998ee289a69069b02a59d : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+bfcdbe7ba1ae8243902eee55226f3a0c : "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
