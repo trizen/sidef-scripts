@@ -1,0 +1,46 @@
+#!/usr/bin/ruby
+
+# A Restricted Domain Lucas Probable Prime Test.
+
+# Algorithm due to Paul Underwood:
+#   https://mersenneforum.org/showpost.php?p=592064&postcount=1
+#   https://mersenneforum.org/attachment.php?s=079f9f78729772b2ca6812afe23864f6&attachmentid=26368&d=1645276338
+
+func RDPRP(n) {
+
+    if (n==2 || n==3 || n==7) {
+        return true
+    }
+
+    if (n<2 || n.is_even || n.is_div(3) || n.is_div(7) || n.is_square) {
+        return false
+    }
+
+    var k = kronecker(2, n)
+    if (Mod(2, n)**((n-1)/2) != k) {
+        return false
+    }
+
+    var r = 0
+    var t = Mod(4, n)**r
+
+    while ((kronecker(t.lift - 8, n) != -1) || (gcd((r-1)*(2*r - 1), n-1) > 3)) {
+        ++r
+        t *= 4
+    }
+
+    static z = Poly(1)
+    Mod(Mod(z, n), z**2 - (t/2 - 2)*z + 1)**((n+1)/2) == k
+}
+
+say RDPRP(1e100.random_prime)           #=> true
+say RDPRP(1e100.irand.next_composite)   #=> false
+
+assert(!RDPRP(341))
+assert(!RDPRP(561))
+assert(RDPRP(541))
+assert(!RDPRP(530881))
+assert(!RDPRP(2**256 + 1))
+assert(RDPRP(2**127 - 1))
+assert(!RDPRP(1e100.irand.next_composite))
+assert(RDPRP(1e100.random_prime))

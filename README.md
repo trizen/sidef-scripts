@@ -393,6 +393,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Lucas primality test](./Math/lucas_primality_test.sf)
     * [Lucas pseudoprimes generation](./Math/lucas_pseudoprimes_generation.sf)
     * [Lucas pseudoprimes generation erdos method](./Math/lucas_pseudoprimes_generation_erdos_method.sf)
+    * [Lucas restricted domain primality test](./Math/lucas_restricted_domain_primality_test.sf)
     * [Lucas sequences of k-th order](./Math/lucas_sequences_of_k-th_order.sf)
     * [Lucas sequences U V](./Math/lucas_sequences_U_V.sf)
     * [Lucas theorem](./Math/lucas_theorem.sf)
