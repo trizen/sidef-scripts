@@ -380,6 +380,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Liouville sum function](./Math/liouville_sum_function.sf)
     * [Log10 digit by digit](./Math/log10_digit_by_digit.sf)
     * [Long addition](./Math/long_addition.sf)
+    * [Long multiplication](./Math/long_multiplication.sf)
     * [Lu decomposition](./Math/lu_decomposition.sf)
     * [Lucas-carmichael generation erdos method](./Math/lucas-carmichael_generation_erdos_method.sf)
     * [Lucas-carmichael numbers in range](./Math/lucas-carmichael_numbers_in_range.sf)
