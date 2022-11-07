@@ -71,8 +71,13 @@ func usigma0_partial_sum_2 (n) {      # based on formula by Jerome Raulin (https
     return total
 }
 
+func usigma0_partial_sum_3(n) {     # O(sqrt(n)) complexity, using Dirichlet's hyperbola method
+    n.dirichlet_sum({1}, {.mu.abs}, {_}, {.squarefree_count})
+}
+
 say 20.of(usigma0_partial_sum_1)
 say 20.of(usigma0_partial_sum_2)
+say 20.of(usigma0_partial_sum_3)
 
 for k in (0..7) {
 

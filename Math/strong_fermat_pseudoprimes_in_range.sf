@@ -1,0 +1,82 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 07 November 2022
+# https://github.com/trizen
+
+# Generate all the squarefree strong Fermat pseudoprimes to given a base with n prime factors in a given range [a,b]. (not in sorted order)
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+#   https://trizenx.blogspot.com/2020/08/pseudoprimes-construction-methods-and.html
+
+func squarefree_strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
+
+    A = max(k.pn_primorial, A)
+
+    var generator = func (m, lambda, p, k, k_exp, congr) {
+
+        var y = idiv(B,m).iroot(k)
+
+        if (k == 1) {
+
+            var x = max(p, idiv_ceil(A, m))
+
+            each_prime(x, y, {|p|
+                with (m*p - 1) {|t|
+                    if ((lambda `divides` t) && (znorder(base, p) `divides` t)) {
+                        var v = p.dec.valuation(2)
+                        if (v > k_exp && powmod(base, (p.dec>>v)<<k_exp, p).is_congruent(congr, p)) {
+                            callback(t+1)
+                        }
+                    }
+                }
+            })
+
+            return nil
+        }
+
+        for(var r; p <= y; p = r) {
+
+            r = p.next_prime
+            p.divides(base) && next
+
+            var val2 = p.dec.valuation(2)
+            val2 > k_exp || next
+            powmod(base, (p.dec>>val2)<<k_exp, p).is_congruent(congr, p) || next
+
+            var L = lcm(lambda, znorder(base, p))
+            m.is_coprime(L) || next
+
+            var t = m*p
+            var u = idiv_ceil(A, t)
+            var v = idiv(B, t)
+
+            if (u <= v) {
+                __FUNC__(t, L, r, k-1, k_exp, congr)
+            }
+        }
+    }
+
+    # Case where 2^d == 1 (mod p), where d is the odd part of p-1.
+    generator(1, 1, 2, k, 0, 1)
+
+    # Cases where 2^(d * 2^v) == -1 (mod p), for some v >= 0.
+    for v in (0..B.ilog2) {
+        generator(1, 1, 2, k, v, -1)
+    }
+
+    return callback
+}
+
+# Generate all the squarefree strong Fermat pseudoprimes to base 5 with 3 prime factors in the range [1, 10^6]
+
+var k    = 3
+var base = 5
+var from = 1
+var upto = 1e6
+
+say gather { squarefree_strong_fermat_pseudoprimes_in_range(from, upto, k, base, { take(_) }) }.sort
+
+__END__
+[24211, 102311, 104721, 141361, 222301, 289081, 552451, 559903, 851201, 882601]

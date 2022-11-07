@@ -45,7 +45,7 @@ func solve_recursive_sequence(seq) {
             var p = b.first{ defined(_) && .kind_of(Poly) }
             var cf = p.coeffs
             var d  = cf.pop.tail
-            var fc = (Poly(cf.flat...)/-d -> coeffs)
+            var fc = (Poly(cf)/-d -> coeffs)
 
             var h = Hash(fc.flat...)
             return (^p.degree -> map { h{_} \\ 0 }.flip)

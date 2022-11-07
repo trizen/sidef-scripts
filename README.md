@@ -601,6 +601,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Stern brocot encoding matrix form](./Math/stern_brocot_encoding_matrix_form.sf)
     * [Stirling factorial correction terms](./Math/stirling_factorial_correction_terms.sf)
     * [Strange numbers in base n](./Math/strange_numbers_in_base_n.sf)
+    * [Strong fermat pseudoprimes in range](./Math/strong_fermat_pseudoprimes_in_range.sf)
     * [Substring primes in base n](./Math/substring_primes_in_base_n.sf)
     * [Sum of cubes function nonnegative recursive](./Math/sum_of_cubes_function_nonnegative_recursive.sf)
     * [Sum of cubes function recursive](./Math/sum_of_cubes_function_recursive.sf)

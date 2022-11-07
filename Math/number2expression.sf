@@ -46,8 +46,8 @@ var tests = [
 ]
 
 for n,b in (tests) {
-    say ("base #{'%2d'%b}: ", number2expr(n,b))
-    say ("base #{'%2d'%b}: (", number2expr_alt(n,b), ")/#{b-1}")
+    say ("base #{'%2d'%b}: ", number2expr(n,b).pretty)
+    say ("base #{'%2d'%b}: (", number2expr_alt(n,b).pretty, ")/#{b-1}")
     say ''
     assert_eq(number2expr(n,b) -> eval(b), n)
     assert_eq(number2expr_alt(n,b)/(b-1) -> eval(b), n)
