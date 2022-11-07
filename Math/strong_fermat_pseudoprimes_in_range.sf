@@ -1,0 +1,89 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 07 November 2022
+# https://github.com/trizen
+
+# Generate all the k-omega strong Fermat pseudoprimes in range [a,b]. (not in sorted order)
+
+# Definition:
+#   k-omega primes are numbers n such that omega(n) = k.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+#   https://en.wikipedia.org/wiki/Prime_omega_function
+#   https://trizenx.blogspot.com/2020/08/pseudoprimes-construction-methods-and.html
+
+# PARI/GP program (version 1):
+#   strong_fermat_psp(A, B, k, base) = A=max(A, vecprod(primes(k))); (f(m, l, p, j, k_exp, congr) = my(list=List()); forprime(q=p, sqrtnint(B\m, j), if(base%q != 0, my(tv=valuation(q-1, 2)); if(tv > k_exp && Mod(base, q)^(((q-1)>>tv)<<k_exp) == congr, my(v=m*q, t=q, r=nextprime(q+1)); while(v <= B, my(L=lcm(l, znorder(Mod(base, t)))); if(gcd(L, v) == 1, if(j==1, if(v>=A && if(k==1, !isprime(v), 1) && (v-1)%L == 0, listput(list, v)), if(v*r <= B, list=concat(list, f(v, L, r, j-1, k_exp, congr)))), break); v *= q; t *= q)))); list); my(r=f(1, 1, 2, k, 0, 1)); for(v=0, logint(B, 2), r=concat(r, f(1, 1, 2, k, v, -1))); vecsort(Vec(r));
+
+# PARI/GP program (version 2):
+#   strong_fermat_psp(A, B, k, base) = A=max(A, vecprod(primes(k))); (f(m, l, p, j, k_exp, congr) = my(list=List()); forprime(q=p, sqrtnint(B\m, j), if(base%q != 0, my(tv=valuation(q-1, 2)); if(tv > k_exp && Mod(base, q)^(((q-1)>>tv)<<k_exp) == congr, my(v=m*q, t=q, r=nextprime(q+1)); while(v <= B, my(L=lcm(l, znorder(Mod(base, t)))); if(gcd(L, v) == 1, my(tv=valuation(t-1, 2)); if(tv > k_exp && Mod(base, t)^(((t-1)>>tv)<<k_exp) == congr, if(j==1, if(v>=A && if(k==1, !isprime(v), 1) && (v-1)%L == 0, listput(list, v)), if(v*r <= B, list=concat(list, f(v, L, r, j-1, k_exp, congr))))), break); v *= q; t *= q)))); list); my(r=f(1, 1, 2, k, 0, 1)); for(v=0, logint(B, 2), r=concat(r, f(1, 1, 2, k, v, -1))); vecsort(Vec(r));
+
+func strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
+
+    A = max(k.pn_primorial, A)
+
+    var generator = func (m, lambda, p, j, k_exp, congr) {
+
+        var s = idiv(B,m).iroot(j)
+
+        for (var r; p <= s; p = r) {
+
+            r = p.next_prime
+            next if p.divides(base)
+
+            var val2 = p.dec.valuation(2)
+            val2 > k_exp || next
+            powmod(base, (p.dec>>val2)<<k_exp, p).is_congruent(congr, p) || next
+
+            for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
+
+                var L = lcm(lambda, znorder(base, q))
+                L.is_coprime(v) || break
+
+                var val2 = q.dec.valuation(2)
+                val2 > k_exp || next
+                powmod(base, (q.dec>>val2)<<k_exp, q).is_congruent(congr, q) || next
+
+                if (j == 1) {
+                    v >= A || next
+                    k.is_one && v.is_prime && next
+                    L `divides` v-1 || next
+                    callback(v)
+                    next
+                }
+
+                v*r <= B || next
+                __FUNC__(v, L, r, j-1, k_exp, congr)
+            }
+        }
+    }
+
+    # Case where 2^d == 1 (mod p), where d is the odd part of p-1.
+    generator(1, 1, 2, k, 0, 1)
+
+    # Cases where 2^(d * 2^v) == -1 (mod p), for some v >= 0.
+    for v in (0..B.ilog2) {
+        generator(1, 1, 2, k, v, -1)
+    }
+
+    return callback
+}
+
+# Generate all the strong Fermat pseudoprimes to base 3 in range [1, 10^4]
+
+var from = 1
+var upto = 1e4
+var base = 3
+var arr = []
+
+for k in (1..100) {
+    break if k.pn_primorial>upto
+    strong_fermat_pseudoprimes_in_range(from, upto, k, base, { arr << _ })
+}
+
+say arr.sort
+
+__END__
+[121, 703, 1891, 3281, 8401, 8911]
