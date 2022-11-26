@@ -1,0 +1,127 @@
+#!/usr/bin/ruby
+
+# Implementation of the QOI decoder (generating a PNG file).
+
+# See also:
+#   https://qoiformat.org/
+#   https://github.com/phoboslab/qoi
+
+require('Imager')
+
+func qoi_decoder(bytes) {
+
+    func decode32(a,b,c,d) {
+        (a << 8*3) | (b << 8*2) | (c << 8*1) | (d << 8*0)
+    }
+
+    func invalid() {
+        die "Not a QOIF image"
+    }
+
+    var index = 0
+    [bytes[index..index+3]] == %b'qoif' || invalid()
+    index += 4
+
+    var width  = decode32(bytes[index..index+3])
+    index += 4
+    var height = decode32(bytes[index..index+3])
+    index += 4
+
+    var channels   = bytes[index++]
+    var colorspace = bytes[index++]
+
+    width>0 && height>0 || invalid()
+    channels   ~~ [3,4] || invalid()
+    colorspace ~~ [0,1] || invalid()
+
+    bytes.pop == 0x01 || invalid()
+    7.times { bytes.pop == 0x00 || invalid() }
+
+    say [width, height, channels, colorspace]
+
+    var img = %O<Imager>.new(
+        xsize    => width,
+        ysize    => height,
+        channels => channels,
+    )
+
+    var w = 0
+    var run = 0
+    var px = [0, 0, 0, 255]
+
+    var color = %O<Imager::Color>.new(px...)
+    var colors = 64.of { px.clone }
+
+    loop {
+
+        if (run > 0) {
+            --run
+        }
+        else {
+            var byte = (bytes[index++] \\ break)
+
+            if (byte == 0b_11_11_11_10) {   # OP RGB
+                var (r,g,b) = bytes[index..index+2]
+                index += 3
+                px[0] = r
+                px[1] = g
+                px[2] = b
+            }
+            elsif (byte == 0b_11_11_11_11) { # OP RGBA
+                var (r,g,b,a) = bytes[index..index+3]
+                index += 4
+                px = [r,g,b,a]
+            }
+            elsif (byte >> 6 == 0b00) {     # OP INDEX
+                px = colors[byte]
+            }
+            elsif (byte >> 6 == 0b01) {     # OP DIFF
+                var dr = (byte & 0b00_11_00_00 >> 4)-2
+                var dg = (byte & 0b00_00_11_00 >> 2)-2
+                var db = (byte & 0b00_00_00_11 >> 0)-2
+
+                px[0] += dr
+                px[1] += dg
+                px[2] += db
+            }
+            elsif (byte >> 6 == 0b10) {   # OP LUMA
+                var byte2 = bytes[index++]
+
+                var dg    = (byte  & 0b00_111_111)-32
+                var dr_dg = (byte2 & 0b1111_0000 >> 4)-8
+                var db_dg = (byte2 & 0b0000_1111)-8
+
+                var dr = (dr_dg+dg)
+                var db = (db_dg+dg)
+
+                px[0] += dr
+                px[1] += dg
+                px[2] += db
+            }
+            elsif (byte >> 6 == 0b11) {     # OP RUN
+                run = (byte & 0b00_111_111)
+            }
+
+            var i = (px[0]*3 + px[1]*5 + px[2]*7 + px[3]*11)%64
+            colors[i] = px.clone
+            color.set(px...)
+        }
+
+        img.setpixel(x => w%width, y => idiv(w, width), color => color)
+        ++w
+    }
+
+    return img
+}
+
+ARGV || do {
+    STDERR << "usage: #{File(__MAIN__).basename} [input.qoi] [output.png]\n"
+    Sys.exit(2)
+}
+
+var in_file  = File(ARGV[0])
+var out_file = (ARGV[1] \\ (in_file - /\.qoi\z/i + '.png'))
+var bytes = in_file.read(:raw).bytes
+
+var img = qoi_decoder(bytes)
+img.write(file => out_file, type => 'png')

@@ -8,10 +8,10 @@ var deaths = 61e6           # deaths per year
 var births = deaths/5       # births per year
 var target = 500_000_000    # target population
 
-var death_rate = deaths/population
-var birth_rate = births/population
+var death_rate = deaths/population.float
+var birth_rate = births/population.float
 
-var years  = 0
+var years = 0
 
 while (population > target) {
     population -= population*death_rate

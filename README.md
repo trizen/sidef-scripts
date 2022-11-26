@@ -80,6 +80,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Plant 2](./Image/plant_2.sf)
     * [Plasma effect](./Image/plasma_effect.sf)
     * [Pythagoras tree](./Image/pythagoras_tree.sf)
+    * [Qoi decoder](./Image/qoi_decoder.sf)
     * [Sierpinski arrowhead curve](./Image/sierpinski_arrowhead_curve.sf)
     * [Sierpinski curve](./Image/sierpinski_curve.sf)
     * [Sierpinski square curve](./Image/sierpinski_square_curve.sf)

@@ -72,7 +72,7 @@ func carmichael_strong_fermat_in_range(A, B, k, base, callback) {
     return callback
 }
 
-# Generate all the 3-Carmichael numbers in the range [1, 10^8] that are also strong pseudoprimes to base 2.
+# Generate all the 3-Carmichael numbers in the range [1, 10^6] that are also strong pseudoprimes to base 2.
 
 var k    = 3
 var base = 2
