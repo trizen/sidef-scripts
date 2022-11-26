@@ -45,11 +45,10 @@ func qoi_decoder(bytes) {
         channels => channels,
     )
 
-    var w = 0
     var run = 0
-    var px = [0, 0, 0, 255]
+    var px  = [0, 0, 0, 255]
 
-    var color = %O<Imager::Color>.new(px...)
+    var pixels = []
     var colors = 64.of { [0,0,0,0] }
 
     loop {
@@ -102,11 +101,14 @@ func qoi_decoder(bytes) {
             }
 
             colors[(px[0]*3 + px[1]*5 + px[2]*7 + px[3]*11)%64] = px.clone
-            color.set(px...)
         }
 
-        img.setpixel(x => w%width, y => idiv(w, width), color => color)
-        ++w
+        pixels << px...
+    }
+
+    for row in (^height) {
+        var line = pixels.splice(0, 4*width)
+        img.setscanline(y => row, pixels => line.pack('C*'))
     }
 
     return img
