@@ -53,7 +53,7 @@ func qoi_decoder(bytes) {
     var px = [0, 0, 0, 255]
 
     var color = 0
-    var colors = 64.of { px.clone }
+    var colors = 64.of { [0,0,0,0] }
 
     loop {
 

@@ -6,7 +6,7 @@
 #   https://qoiformat.org/
 #   https://github.com/phoboslab/qoi
 
-require('Imager')
+require('Image::Magick')
 
 func qoi_decoder(bytes) {
 
@@ -39,17 +39,19 @@ func qoi_decoder(bytes) {
 
     say [width, height, channels, colorspace]
 
-    var img = %O<Imager>.new(
-        xsize    => width,
-        ysize    => height,
-        channels => channels,
-    )
+    var img = %O<Image::Magick>.new(join('x', width, height))
+
+    if (channels == 4) {
+        img.ReadImage('canvas:transparent')
+        img.Set(alpha => 'Transparent')
+    }
+    else {
+        img.ReadImage('canvas:white')
+    }
 
     var w = 0
     var run = 0
     var px = [0, 0, 0, 255]
-
-    var color = %O<Imager::Color>.new(px...)
     var colors = 64.of { [0,0,0,0] }
 
     loop {
@@ -102,10 +104,9 @@ func qoi_decoder(bytes) {
             }
 
             colors[(px[0]*3 + px[1]*5 + px[2]*7 + px[3]*11)%64] = px.clone
-            color.set(px...)
         }
 
-        img.setpixel(x => w%width, y => idiv(w, width), color => color)
+        img.Set('pixel[' + join(',', w%width, idiv(w, width)) + ']', sprintf("#%02x%02x%02x%02x", px...))
         ++w
     }
 
@@ -122,4 +123,4 @@ var out_file = (ARGV[1] \\ (in_file - /\.qoi\z/i + '.png'))
 var bytes = in_file.read(:raw).bytes
 
 var img = qoi_decoder(bytes)
-img.write(file => out_file, type => 'png')
+img.Write(out_file) && die "Error: couldn't save file!"
