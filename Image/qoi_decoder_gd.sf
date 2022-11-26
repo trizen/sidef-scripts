@@ -6,7 +6,8 @@
 #   https://qoiformat.org/
 #   https://github.com/phoboslab/qoi
 
-require('Imager')
+require('GD')
+%O<GD::Image>.trueColor(1)
 
 func qoi_decoder(bytes) {
 
@@ -39,17 +40,19 @@ func qoi_decoder(bytes) {
 
     say [width, height, channels, colorspace]
 
-    var img = %O<Imager>.new(
-        xsize    => width,
-        ysize    => height,
-        channels => channels,
-    )
+    var img = %O<GD::Image>.new(width, height)
+
+    # FIXME: alpha does not really work...
+    if (channels == 4) {
+        img.saveAlpha(1)
+        img.alphaBlending(1)
+    }
 
     var w = 0
     var run = 0
     var px = [0, 0, 0, 255]
 
-    var color = %O<Imager::Color>.new(px...)
+    var color = 0
     var colors = 64.of { px.clone }
 
     loop {
@@ -102,10 +105,16 @@ func qoi_decoder(bytes) {
             }
 
             colors[(px[0]*3 + px[1]*5 + px[2]*7 + px[3]*11)%64] = px.clone
-            color.set(px...)
+
+            if (channels == 4) {
+                color = img.colorResolveAlpha(px[0], px[1], px[2], 127-Math.map(px[3], 0, 255, 0, 127).int)  # FIXME
+            }
+            else {
+                color = img.colorResolve(px[0], px[1], px[2])
+            }
         }
 
-        img.setpixel(x => w%width, y => idiv(w, width), color => color)
+        img.setPixel(w%width, idiv(w, width), color)
         ++w
     }
 
@@ -122,4 +131,4 @@ var out_file = (ARGV[1] \\ (in_file - /\.qoi\z/i + '.png'))
 var bytes = in_file.read(:raw).bytes
 
 var img = qoi_decoder(bytes)
-img.write(file => out_file, type => 'png')
+File(out_file).write(img.png, :raw)
