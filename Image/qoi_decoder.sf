@@ -78,9 +78,9 @@ func qoi_decoder(bytes) {
                 var dg = (byte & 0b00_00_11_00 >> 2)-2
                 var db = (byte & 0b00_00_00_11 >> 0)-2
 
-                px[0] += dr
-                px[1] += dg
-                px[2] += db
+                px[0].addmod!(dr, 256)
+                px[1].addmod!(dg, 256)
+                px[2].addmod!(db, 256)
             }
             elsif (byte >> 6 == 0b10) {   # OP LUMA
                 var byte2 = bytes[index++]
@@ -92,9 +92,9 @@ func qoi_decoder(bytes) {
                 var dr = (dr_dg+dg)
                 var db = (db_dg+dg)
 
-                px[0] += dr
-                px[1] += dg
-                px[2] += db
+                px[0].addmod!(dr, 256)
+                px[1].addmod!(dg, 256)
+                px[2].addmod!(db, 256)
             }
             elsif (byte >> 6 == 0b11) {     # OP RUN
                 run = (byte & 0b00_111_111)
