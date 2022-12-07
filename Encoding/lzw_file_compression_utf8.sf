@@ -1,0 +1,107 @@
+#!/usr/bin/ruby
+
+# Encode and decode small files using LZW compression and UTF-8 encoding.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch
+
+# Compress a string to a list of output symbols.
+func compress(String uncompressed) -> String {
+
+    var dict_size = 256
+    var dictionary = Hash()
+
+    ^dict_size -> each { |i|
+        dictionary{i.chr} = i.chr
+    }
+
+    var w = ''
+    var result = []
+
+    func append_entry(w) {
+        var v = dictionary{w}
+
+        if (v.kind_of(Num)) {
+            result.append(v.chr)
+        }
+        else {
+            result.append(v)
+        }
+    }
+
+    uncompressed.each { |c|
+        var wc = w+c
+        if (dictionary.has_key(wc)) {
+            w = wc
+        } else {
+            append_entry(w)
+            dictionary{wc} = dict_size
+            dict_size++
+            w = c
+        }
+    }
+
+    # Output the code for w.
+    if (w != '') {
+        append_entry(w)
+    }
+
+    return result.join
+}
+
+# Decompress a list of output ks to a string.
+func decompress(String compressed) -> String {
+
+    var dict_size = 256
+    var dictionary = Hash()
+
+    ^dict_size -> each { |i|
+        dictionary{i.chr} = i.chr
+    }
+
+    compressed.chars!
+
+    var w = compressed.shift
+    var result = w
+
+    compressed.each { |k|
+        var entry
+
+        if (dictionary.has_key(k)) {
+            entry = dictionary{k}
+        }
+        elsif (k.ord == dict_size) {
+            entry = w+w.substr(0,1)
+        }
+        else {
+            die "Bad compressed k: #{k}"
+        }
+
+        result += entry
+
+        dictionary{dict_size.chr} = w+entry.substr(0,1)
+        dict_size++
+
+        w = entry
+    }
+
+    return result
+}
+
+ARGV.getopt!('d', \var decode)
+
+var file = File(ARGV.shift) || do {
+    say "usage: #{File(__MAIN__).basename} [-d] [input file]"
+    Sys.exit(2)
+}
+
+if (decode || file.match(/\.lzw\.enc\z/)) {
+    var compressed = file.read(:utf8)
+    var decompressed = decompress(compressed)
+    File("output.lzw.dec").write(decompressed, :raw)
+}
+else {
+    var orig = file.read(:raw)
+    var compressed = compress(orig)
+    File("output.lzw.enc").write(compressed, :utf8)
+}

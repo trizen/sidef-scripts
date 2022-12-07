@@ -31,7 +31,7 @@ func qoi_decoder(bytes) {
     var colorspace = bytes[index++]
 
     width>0 && height>0 || invalid()
-    channels   ~~ [3,4] || invalid()
+    channels   ~~ 1..4  || invalid()
     colorspace ~~ [0,1] || invalid()
 
     bytes.pop == 0x01 || invalid()

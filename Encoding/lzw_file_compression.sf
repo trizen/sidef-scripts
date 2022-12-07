@@ -1,91 +1,153 @@
 #!/usr/bin/ruby
 
-# Encode and decode small files using LZW compression and UTF-8 encoding.
+# Encode and decode small files using LZW compression.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch
 
-# Compress a string to a list of output symbols.
-func compress(String uncompressed) -> String {
+define(
+    MAGIC_SIGNATURE = ('LZW22' + 1.chr)
+)
 
+# Compress a string to a list of output symbols
+func compress(String uncompressed) -> Array {
+
+    # Build the dictionary
     var dict_size = 256
-    var dictionary = Hash()
+    var dictionary = Hash.new
 
-    ^dict_size -> each { |i|
-        dictionary{i.chr} = i.chr
+    for i in (^dict_size) {
+        dictionary{i.chr} = i
     }
 
     var w = ''
     var result = []
 
-    func append_entry(w) {
-        var v = dictionary{w}
-
-        if (v.kind_of(Num)) {
-            result.append(v.chr)
-        }
-        else {
-            result.append(v)
-        }
-    }
-
     uncompressed.each { |c|
         var wc = w+c
-        if (dictionary.has_key(wc)) {
+        if (dictionary.has(wc)) {
             w = wc
         } else {
-            append_entry(w)
-            dictionary{wc} = dict_size
-            dict_size++
+            result.append(dictionary{w})
+            # Add wc to the dictionary
+            dictionary{wc} = dict_size++
             w = c
         }
     }
 
-    # Output the code for w.
+    # Output the code for w
     if (w != '') {
-        append_entry(w)
+        result.append(dictionary{w})
     }
 
-    return result.join
+    return result
 }
 
-# Decompress a list of output ks to a string.
-func decompress(String compressed) -> String {
+# Decompress a list of output ks to a string
+func decompress(Array compressed) -> String {
 
+    # Build the dictionary
     var dict_size = 256
-    var dictionary = Hash()
+    var dictionary = Hash.new
 
-    ^dict_size -> each { |i|
-        dictionary{i.chr} = i.chr
+    for i in (^dict_size) {
+        dictionary{i} = i.chr
     }
 
-    compressed.chars!
-
-    var w = compressed.shift
+    var w = compressed.shift.chr
     var result = w
 
     compressed.each { |k|
-        var entry
 
-        if (dictionary.has_key(k)) {
-            entry = dictionary{k}
-        }
-        elsif (k.ord == dict_size) {
-            entry = w+w.substr(0,1)
-        }
-        else {
+        var entry = if (dictionary.has(k)) {
+            dictionary{k}
+        } elsif (k == dict_size) {
+            w+w.substr(0,1)
+        } else {
             die "Bad compressed k: #{k}"
         }
 
         result += entry
 
-        dictionary{dict_size.chr} = w+entry.substr(0,1)
-        dict_size++
-
+        # Add w+entry[0] to the dictionary
+        dictionary{dict_size++} = w+entry.substr(0,1)
         w = entry
     }
 
-    return result
+    return result;
+}
+
+func lzw_decompress_file(File file) {
+
+    var fh = file.open('<:raw')
+
+    if (MAGIC_SIGNATURE.len.of { fh.getc }.join != MAGIC_SIGNATURE) {
+        die "Not a LZW22 archive!\n"
+    }
+
+    var count_len = fh.getc.ord
+    var counts = []
+
+    count_len.times {
+        var b = fh.getc.ord
+        var l = unpack('N', 4.of { fh.getc }.join)
+        counts << [b.to_i, l.to_i]
+    }
+
+    var chunks = []
+    var bits = fh.slurp.ascii2bin
+
+    for b,len in (counts) {
+        len > 0 || next
+        chunks << bits.substr(0, b*len).slices(b)...
+        bits.ft!(b*len)
+    }
+
+    decompress(chunks.map{ Num(_, 2) })
+}
+
+func lzw_compress_file(File file) {
+
+    var compressed = compress(file.read(:raw));
+
+    var counts = []
+    var count = 0
+    var bits_per_symbol = 2
+    var processed_len = 0
+
+    for k in (compressed) {
+        while (k >= bits_per_symbol) {
+
+            if (count > 0) {
+                counts << [bits_per_symbol.len(2)-1, count]
+                processed_len += count
+            }
+
+            count = 0
+            bits_per_symbol *= 2
+        }
+        ++count
+    }
+
+    counts << [bits_per_symbol.len(2)-1, compressed.len - processed_len]
+
+    var header = MAGIC_SIGNATURE
+    var clen = counts.len
+    header += clen.chr
+
+    for b,len in (counts) {
+        header += chr(b)
+        header += pack('N', len)
+    }
+
+    var bits = []
+
+    for b,len in (counts) {
+        len > 0 || next
+        bits << compressed.splice(0, len).map{ sprintf('%0*b', b, _) }...
+    }
+
+    header + pack('B*', bits.join)
 }
 
 ARGV.getopt!('d', \var decode)
@@ -96,12 +158,10 @@ var file = File(ARGV.shift) || do {
 }
 
 if (decode || file.match(/\.lzw\.enc\z/)) {
-    var compressed = file.read(:utf8)
-    var decompressed = decompress(compressed)
+    var decompressed = lzw_decompress_file(file)
     File("output.lzw.dec").write(decompressed, :raw)
 }
 else {
-    var orig = file.read(:raw)
-    var compressed = compress(orig)
-    File("output.lzw.enc").write(compressed, :utf8)
+    var compressed = lzw_compress_file(file)
+    File("output.lzw.enc").write(compressed, :raw)
 }

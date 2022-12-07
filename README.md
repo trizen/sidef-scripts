@@ -26,6 +26,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Log encode](./Encoding/log_encode.sf)
     * [Lzw compression](./Encoding/lzw_compression.sf)
     * [Lzw file compression](./Encoding/lzw_file_compression.sf)
+    * [Lzw file compression utf8](./Encoding/lzw_file_compression_utf8.sf)
     * [Run length encoding](./Encoding/run_length_encoding.sf)
     * [Substitution cipher](./Encoding/substitution_cipher.sf)
 * Encryption
