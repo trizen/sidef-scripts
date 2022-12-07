@@ -1,0 +1,172 @@
+#!/usr/bin/ruby
+
+# A proof of concept compression method, combining LZW with Huffman coding.
+
+# Idea:
+#   1. Apply Huffman coding on the input bytes and return an array of symbols.
+#   2. Do LZW compression on the symbols returned by (1) and return an array of symbols.
+#   3. Apply Huffman coding on the symbols returned by (2).
+
+# See also:
+#   https://rosettacode.org/wiki/huffman_coding
+#   https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch
+
+func walk(n, s, h) {
+    if (n.has(:a)) {
+        h{n{:a}} = s
+        return nil
+    }
+    walk(n{:0}, s+'0', h)
+    walk(n{:1}, s+'1', h)
+}
+
+func make_tree(bytes) {
+
+    var nodes = bytes.freq.kv.sort.map_2d { |b,f|
+        Hash(a => b, freq => f)
+    }
+
+    var n = Hash()
+    while (nodes.sort_by!{|h| h{:freq} }.len > 1) {
+        n = Hash(:0 => nodes.shift, :1 => nodes.shift)
+        n{:freq} = (n{:0}{:freq} + n{:1}{:freq})
+        nodes << n
+    }
+
+    walk(n, '', n{:tree} = Hash())
+    return n
+}
+
+func huffman_encode(bytes, t) {
+    t = t{:tree}
+    bytes.map { t{_} }
+}
+
+func huffman_decode (enc, tree) {
+    var n = tree
+    var out = []
+
+    enc.each {|bit|
+        n = n{bit}
+        if (n.has(:a)) {
+            out << n{:a}
+            n = tree
+        }
+    }
+
+    return out
+}
+
+# Compress a string to a list of output symbols
+func lzw_compress(Array uncompressed, Array symbols)  {
+
+    # Build the dictionary
+    var dictionary = Hash()
+
+    var i = 0
+    symbols.uniq.sort.each {|k|
+        dictionary{k} = i++
+    }
+
+    var dict_size = i
+
+    var w = ''
+    var result = []
+
+    uncompressed.each { |c|
+
+        var wc = w+c
+        if (dictionary.has(wc)) {
+            w = wc
+        }
+        else {
+            result.append(dictionary{w})
+            # Add wc to the dictionary
+            dictionary{wc} = dict_size++
+            w = c
+        }
+    }
+
+    # Output the code for w
+    if (w != '') {
+        result.append(dictionary{w})
+    }
+
+    return result
+}
+
+# Decompress a list of output ks to a string
+func lzw_uncompress(Array compressed, Array symbols)  {
+
+    # Build the dictionary
+    var dictionary = Hash()
+
+    var i = 0
+    symbols.uniq.sort.each {|k|
+        dictionary{i++} = [Str(k)]
+    }
+
+    var dict_size = i
+
+    # Clone the compressed data, since we call `.shift` on it
+    compressed.clone!
+
+    var w = dictionary{compressed.shift}
+    var result = [w[0]]
+
+    compressed.each { |k|
+
+        var entry = if (dictionary.has(k)) {
+            dictionary{k}
+        }
+        elsif (k == dict_size) {
+            w + w[0]
+        }
+        else {
+            die "Bad compressed k: #{k}"
+        }
+
+        result << entry...
+
+        # Add w+entry[0] to the dictionary
+        dictionary{dict_size++} = w+entry[0]
+        w = entry
+    }
+
+    return result;
+}
+
+#var text = "TOBEORNOTTOBEORTOBEORNOT"
+var text = File(__FILE__).read(:raw)
+
+var bytes = text.bytes
+var tree  = make_tree(bytes)
+var enc   = huffman_encode(bytes, tree)
+
+var symbols = tree{:tree}.values
+var lzw = lzw_compress(enc, symbols)
+
+var unlzw = lzw_uncompress(lzw, symbols).join
+var dec = pack('C*', huffman_decode(unlzw, tree)...)
+
+assert_eq(dec, text)
+
+var tree2 = make_tree(lzw)
+var enc2 = huffman_encode(lzw, tree2)
+
+# The entire process backwards
+assert_eq(
+    pack('C*',
+        huffman_decode(
+            lzw_uncompress(
+                huffman_decode(enc2.join, tree2).map{.to_i}, symbols
+            ).join, tree
+        )...
+    ), text)
+
+# LZW only on bits
+#assert_eq(pack('B*', lzw_uncompress(lzw_compress(text.ascii2bin.chars, [0,1]), [0,1]).join), text)
+
+say ("Uncompressed: ", text.len)
+say ("Huffman:      ", enc.join.len/8f)
+say ("LZW+Huffman:  ", enc2.join.len/8f)
