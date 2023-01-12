@@ -77,35 +77,7 @@ func decompress(Array compressed) -> String {
     return result;
 }
 
-func lzw_decompress_file(File file) {
-
-    var fh = file.open('<:raw')
-
-    if (MAGIC_SIGNATURE.len.of { fh.getc }.join != MAGIC_SIGNATURE) {
-        die "Not a LZW22 archive!\n"
-    }
-
-    var count_len = fh.getc.ord
-    var counts = []
-
-    count_len.times {
-        var b = fh.getc.ord
-        var l = unpack('N', 4.of { fh.getc }.join)
-        counts << [b.to_i, l.to_i]
-    }
-
-    var chunks = []
-    var bits = fh.slurp.ascii2bin
-
-    for b,len in (counts) {
-        len > 0 || next
-        chunks << bits.substr(0, b*len).slices(b)...
-        bits.ft!(b*len)
-    }
-
-    decompress(chunks.map{ Num(_, 2) })
-}
-
+# Compress file
 func lzw_compress_file(File file) {
 
     var compressed = compress(file.read(:raw));
@@ -148,6 +120,36 @@ func lzw_compress_file(File file) {
     }
 
     header + pack('B*', bits.join)
+}
+
+# Decompress file
+func lzw_decompress_file(File file) {
+
+    var fh = file.open('<:raw')
+
+    if (MAGIC_SIGNATURE.len.of { fh.getc }.join != MAGIC_SIGNATURE) {
+        die "Not a LZW22 archive!\n"
+    }
+
+    var count_len = fh.getc.ord
+    var counts = []
+
+    count_len.times {
+        var b = fh.getc.ord
+        var l = unpack('N', 4.of { fh.getc }.join)
+        counts << [b.to_i, l.to_i]
+    }
+
+    var chunks = []
+    var bits = fh.slurp.ascii2bin
+
+    for b,len in (counts) {
+        len > 0 || next
+        chunks << bits.substr(0, b*len).slices(b)...
+        bits.ft!(b*len)
+    }
+
+    decompress(chunks.map{ Num(_, 2) })
 }
 
 ARGV.getopt!('d', \var decode)

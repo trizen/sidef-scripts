@@ -12,10 +12,24 @@ use strict;
 use autodie;
 use warnings;
 
-use Cwd qw(getcwd);
-use File::Spec qw();
-use File::Basename qw(basename dirname);
-use URI::Escape qw(uri_escape);
+use Cwd                   qw(getcwd);
+use File::Spec::Functions qw(rel2abs curdir);
+use File::Basename        qw(basename dirname);
+use URI::Escape           qw(uri_escape);
+
+my %ignore;
+if (open my $fh, '<:utf8', '.gitignore') {
+
+    while (<$fh>) {
+        next if /^#/;
+        chomp;
+        if (-e $_) {
+            $ignore{rel2abs($_)} = 1;
+        }
+    }
+
+    close $fh;
+}
 
 sub add_section {
     my ($section, $file) = @_;
@@ -39,7 +53,7 @@ sub add_section {
 }
 
 my $summary_file = 'README.md';
-my $main_dir     = File::Spec->curdir;
+my $main_dir     = curdir();
 
 {
     my @root;
@@ -67,6 +81,8 @@ my $main_dir     = File::Spec->curdir;
                 next if $1 !~ /^(?:sf|sm)\z/i;
             }
 
+            next if exists $ignore{$file->{path}};
+
             if (-d $file->{path}) {
                 $section .= (' ' x $spaces) . "* $title\n";
                 push @root, $file->{name};
@@ -75,7 +91,7 @@ my $main_dir     = File::Spec->curdir;
             else {
                 next if $dir eq $main_dir;
                 my $naked_title = $title =~ s/\.(?:sf|sm)\z//ri;
-                my $url_path    = uri_escape($make_section_url->($file->{name}), ' ');
+                my $url_path    = uri_escape($make_section_url->($file->{name}), ' ?');
                 $section .= (' ' x $spaces) . "* [\u$naked_title]($url_path)\n";
             }
         }
@@ -85,7 +101,7 @@ my $main_dir     = File::Spec->curdir;
     }
 }
 
-my $section = make_section($main_dir, 0);
+my $section         = make_section($main_dir, 0);
 my $section_content = add_section($section, $summary_file);
 
 say "** All done!";
