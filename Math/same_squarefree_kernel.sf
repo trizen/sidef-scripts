@@ -1,0 +1,56 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 26 January 2023
+# https://github.com/trizen
+
+# An efficient algorithm for checking if two integers have the same squarefree kernel (radical), without factoring the integers.
+
+# See also:
+#   https://oeis.org/A007947
+#   https://oeis.org/A291138
+
+func have_same_kernel(a,b) {
+
+    return true  if ((a == 1) && (b == 1))
+    return true  if ((a == 0) && (b == 0))
+    return false if ((a <= 0) || (b <= 0))
+
+    var g = gcd(a,b)
+
+    if (g > 1) {
+
+        a.remdiv!(g)        # remove from `a` any divisibility by `g`
+        b.remdiv!(g)        # remove from `b` any divisibility by `g`
+
+        (a,b) = (b,a) if (a > b)
+
+        for (var g1 = gcd(a,g); g1 > 1; g1 = gcd(a,g1)) {
+            a.remdiv!(g1)
+        }
+
+        a == 1 || return false
+
+        for (var g2 = gcd(b,g); g2 > 1; g2 = gcd(b,g2)) {
+            b.remdiv!(g2)
+        }
+
+        b == 1 || return false
+
+        return true
+    }
+
+    return false
+}
+
+assert_eq(10.by{ .rad == 15 }, 10.by { have_same_kernel(_, 15) })
+assert_eq(10.by{ .rad == 21 }, 10.by { have_same_kernel(_, 21) })
+assert_eq(10.by{ .rad == 30 }, 10.by { have_same_kernel(_, 30) })
+
+with (2276636446451684409902423258511902667950499176465934432578610) {|n|
+    assert(have_same_kernel(n.psi, n.phi))
+}
+
+# Numbers whose prime factors are 3 and 5
+# https://oeis.org/A033849
+say 10.by { have_same_kernel(_, 15) }   #=> [15, 45, 75, 135, 225, 375, 405, 675, 1125, 1215]

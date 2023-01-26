@@ -555,6 +555,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Roots of unity convergents](./Math/roots_of_unity_convergents.sf)
     * [Round half to even](./Math/round_half_to_even.sf)
     * [RSA algorithm](./Math/RSA_algorithm.sf)
+    * [Same squarefree kernel](./Math/same_squarefree_kernel.sf)
     * [Secant numbers](./Math/secant_numbers.sf)
     * [Semiconvergents](./Math/semiconvergents.sf)
     * [Semiprime count](./Math/semiprime_count.sf)
