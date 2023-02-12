@@ -25,14 +25,14 @@ func have_same_kernel(a,b) {
 
         (a,b) = (b,a) if (a > b)
 
-        for (var g1 = gcd(a,g); g1 > 1; g1 = gcd(a,g1)) {
-            a.remdiv!(g1)
+        Math.for(gcd(a,g), { _ > 1 }, { .gcd(a) }).each {|t|
+            a.remdiv!(t)
         }
 
         a == 1 || return false
 
-        for (var g2 = gcd(b,g); g2 > 1; g2 = gcd(b,g2)) {
-            b.remdiv!(g2)
+        Math.for(gcd(b,g), { _ > 1 }, { .gcd(b) }).each {|t|
+            b.remdiv!(t)
         }
 
         b == 1 || return false

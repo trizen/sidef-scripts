@@ -25,7 +25,9 @@ func process_block(str) {
     }
 
     while (str.len < BLOCK_SIZE) {
-        str += str.bytes.sum
+        var arr = str.bytes.map{.inc}
+        str += arr.sum
+        str += arr.prod
     }
 
     var A = f(str.ascii2bits)
@@ -35,14 +37,7 @@ func process_block(str) {
 }
 
 func prepare_result(num) {
-
-    num %= MODULO
-
-    while (num < (MODULO>>1)) {
-        num += (MODULO>>1)
-    }
-
-    num.as_hex
+    sprintf('%0*s', 2*BLOCK_SIZE, num % MODULO -> as_hex)
 }
 
 func binomial_hash_string(str) {
@@ -139,6 +134,11 @@ assert_ne(
     binomial_hash_string(BLOCK_SIZE.of(62.chr).join)
 )
 
+assert_ne(
+    binomial_hash_string("1"),
+    binomial_hash_string("149"),
+)
+
 for n in (48..52) {
     assert_ne(
         binomial_hash_string(BLOCK_SIZE.inc.of(n.chr).join),
@@ -148,15 +148,15 @@ for n in (48..52) {
 }
 
 __END__
-80000000000000000000000000000000 : ""
-ea15afaabc455ba964b4382a5356b398 : "\0"
-b8aa2322566431ec985f19c6232a8d50 : "a"
-b7334920a0fedb33bb706d77c62e6ab0 : "b"
-c8d16b3cf77280d33c6b6703cfb8d734 : "ab"
-b513bffd825b87bebcd47619d7f706c4 : "ba"
-e0d2cdd5ef6186bc7959828eee22c632 : "abc"
-a7828a33159532496e57732db799c9c2 : "acb"
-e78fe710416cc20e0db92642a5635d64 : "message digest"
-d164856891b0ec778ee69341683b5783 : "abcdefghijklmnopqrstuvwxyz"
-8b51f08839f998ee289a69069b02a59d : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+00000000000000000000000000000000 : ""
+fea891fdc54930fd39620fcc478299f0 : "\0"
+e1a06e532bba0bcf2ef6115e06f6e410 : "a"
+004cac7e4dcb9c4129aa7748278626f2 : "b"
+82eb8712eb98d42f187531a7eb3f32b2 : "ab"
+c8f774efd7bc079c0b749703106346c2 : "ba"
+23c44e458e6e4b79109b9a0417499796 : "abc"
+643c218207789c53e40d246912feb456 : "acb"
+d55aee8c85258c85ed4a866bf4891014 : "message digest"
+82a9f92413c1b3cac57f28488d61836b : "abcdefghijklmnopqrstuvwxyz"
+c4c22251fd0388692867eefe8af04b99 : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 bfcdbe7ba1ae8243902eee55226f3a0c : "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
