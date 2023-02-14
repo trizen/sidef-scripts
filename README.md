@@ -189,6 +189,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Count of k-powerful numbers](./Math/count_of_k-powerful_numbers.sf)
     * [Count of palindromic numbers](./Math/count_of_palindromic_numbers.sf)
     * [Count of primes](./Math/count_of_primes.sf)
+    * [Count of pythagorean triples with side n](./Math/count_of_pythagorean_triples_with_side_n.sf)
     * [Count of rough numbers](./Math/count_of_rough_numbers.sf)
     * [Count of smooth numbers](./Math/count_of_smooth_numbers.sf)
     * [Count of smooth numbers 2](./Math/count_of_smooth_numbers_2.sf)

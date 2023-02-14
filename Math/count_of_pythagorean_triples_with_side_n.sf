@@ -1,0 +1,38 @@
+#!/usr/bin/ruby
+
+# Formula for counting the number of integer-sided right triangles with n as a hypotenuse or leg.
+
+# See also:
+#   https://oeis.org/A046081
+#   https://projecteuler.net/problem=827
+
+func count_of_pythagorean_triples(n) {
+
+    # Inspired by the PARI/GP program by Michel Marcus, Mar 07 2016.
+    # https://oeis.org/A046081
+
+    var n0_sigma0 = 1
+    var n1_sigma0 = 1
+
+    for p,e in (n.factor_exp) {
+        if (p == 2) {
+            n0_sigma0 *= (2*e - 1)
+        }
+        else {
+            n0_sigma0 *= (2*e + 1)
+            if (p % 4 == 1) {
+                n1_sigma0 *= (2*e + 1)
+            }
+        }
+    }
+
+    (n0_sigma0 + n1_sigma0)/2 - 1
+}
+
+say count_of_pythagorean_triples(48)
+say count_of_pythagorean_triples(8064000)
+
+assert_eq(
+    1000.of(count_of_pythagorean_triples).ft(1),
+    1000.of { .sqr.sum_of_squares.len.dec + .sqr.diff_of_squares.len.dec }.ft(1)
+)
