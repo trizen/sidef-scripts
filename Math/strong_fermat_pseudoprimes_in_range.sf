@@ -24,40 +24,42 @@ func strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
 
     A = max(k.pn_primorial, A)
 
-    var generator = func (m, lambda, p, j, k_exp, congr) {
+    var generator = func (m, L, lo, j, k_exp, congr) {
 
-        var s = idiv(B,m).iroot(j)
+        var hi = idiv(B,m).iroot(j)
 
-        for (var r; p <= s; p = r) {
+        if (lo > hi) {
+            return nil
+        }
 
-            r = p.next_prime
+        each_prime(lo, hi, {|p|
+
             next if p.divides(base)
 
             var val2 = p.dec.valuation(2)
             val2 > k_exp || next
-            powmod(base, (p.dec>>val2)<<k_exp, p).is_congruent(congr, p) || next
+            powmod(base, p.dec>>(val2-k_exp), p).is_congruent(congr, p) || next
 
             for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
 
-                var L = lcm(lambda, znorder(base, q))
-                L.is_coprime(v) || break
+                var t = lcm(L, znorder(base, q))
+                t.is_coprime(v) || break
 
                 var val2 = q.dec.valuation(2)
                 val2 > k_exp || next
-                powmod(base, (q.dec>>val2)<<k_exp, q).is_congruent(congr, q) || next
+                powmod(base, q.dec>>(val2-k_exp), q).is_congruent(congr, q) || next
 
                 if (j == 1) {
                     v >= A || next
                     k.is_one && v.is_prime && next
-                    L `divides` v-1 || next
+                    t `divides` v-1 || next
                     callback(v)
                     next
                 }
 
-                v*r <= B || next
-                __FUNC__(v, L, r, j-1, k_exp, congr)
+                __FUNC__(v, t, p+1, j-1, k_exp, congr)
             }
-        }
+        })
     }
 
     # Case where 2^d == 1 (mod p), where d is the odd part of p-1.

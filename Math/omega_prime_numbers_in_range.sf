@@ -17,23 +17,25 @@ func omega_prime_numbers(a, b, k, callback) {
 
     a = max(k.pn_primorial, a)
 
-    func (m, p, k) {
+    func (m, lo, k) {
 
-        for (var s = idiv(b,m).iroot(k); p <= s; true) {
+        var hi = idiv(b,m).iroot(k)
 
-            var r = p.next_prime
+        if (lo > hi) {
+            return nil
+        }
+
+        each_prime(lo, hi, {|p|
 
             for (var t = m*p ; t <= b; t *= p) {
                 if (k == 1) {
                     callback(t) if (t >= a)
                 }
                 else {
-                    __FUNC__(t, r, k-1) if (t*r <= b)
+                    __FUNC__(t, p+1, k-1) if (t*p <= b)
                 }
             }
-
-            p = r
-        }
+        })
     }(1, 2, k)
 
     return callback
@@ -51,7 +53,6 @@ var arr = gather {
 
 assert_eq(arr, max(from, k.pn_primorial)..upto -> grep{ .omega == k })
 say arr
-
 
 # Run some tests
 

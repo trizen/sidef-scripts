@@ -6,18 +6,22 @@
 #   https://oeis.org/A253597
 #   https://oeis.org/A253598
 
-func lucas_carmichael_numbers_from_multiple(A, B, m, lambda, p, k, callback) {
+func lucas_carmichael_numbers_from_multiple(A, B, m, L, lo, k, callback) {
 
-    var y = idiv(B,m).iroot(k)
+    var hi = idiv(B,m).iroot(k)
+
+    return nil if (lo > hi)
 
     if (k == 1) {
 
-        var x = max(p, idiv_ceil(A, m))
+        lo = max(lo, idiv_ceil(A, m))
 
-        each_prime(x, y, {|p|
+        return nil if (lo > hi)
+
+        each_prime(lo, hi, {|p|
             p.divides(m) && next
             with (m*p + 1) {|t|
-                if ((lambda `divides` t) && (p+1 `divides` t)) {
+                if ((L `divides` t) && (p+1 `divides` t)) {
                     callback(t-1)
                 }
             }
@@ -26,22 +30,15 @@ func lucas_carmichael_numbers_from_multiple(A, B, m, lambda, p, k, callback) {
         return nil
     }
 
-    for(var r; p <= y; p = r) {
+    each_prime(lo, hi, {|p|
 
-        r = p.next_prime
         p.divides(m) && next
 
-        var L = lcm(lambda, p+1)
-        m.is_coprime(L) || next
+        var t = lcm(L, p+1)
+        m.is_coprime(t) || next
 
-        var t = m*p
-        var u = idiv_ceil(A, t)
-        var v = idiv(B, t)
-
-        if (u <= v) {
-            __FUNC__(A, B, t, L, r, k-1, callback)
-        }
-    }
+        __FUNC__(A, B, m*p, t, p+1, k-1, callback)
+    })
 }
 
 func lucas_carmichael_divisible_by(m) {

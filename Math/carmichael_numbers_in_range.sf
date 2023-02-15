@@ -17,17 +17,25 @@ func carmichael_numbers_in_range(a, b, k, callback) {
 
     a = max(pn_primorial(k+1)/2, a)
 
-    func (m, lambda, p, k) {
+    func (m, L, lo, k) {
 
-        var y = idiv(b,m).iroot(k)
+        var hi = idiv(b,m).iroot(k)
+
+        if (lo > hi) {
+            return nil
+        }
 
         if (k == 1) {
 
-            var x = max(p, idiv_ceil(a, m))
+            lo = max(lo, idiv_ceil(a, m))
 
-            each_prime(x, y, {|p|
+            if (lo > hi) {
+                return nil
+            }
+
+            each_prime(lo, hi, {|p|
                 with (m*p - 1) {|t|
-                    if ((lambda `divides` t) && (p-1 `divides` t)) {
+                    if ((L `divides` t) && (p-1 `divides` t)) {
                         callback(t+1)
                     }
                 }
@@ -36,21 +44,13 @@ func carmichael_numbers_in_range(a, b, k, callback) {
             return nil
         }
 
-        for(var r; p <= y; p = r) {
+        each_prime(lo, hi, {|p|
 
-            r = p.next_prime
+            var t = lcm(L, p-1)
+            m.is_coprime(t) || next
 
-            var L = lcm(lambda, p-1)
-            m.is_coprime(L) || next
-
-            var t = m*p
-            var u = idiv_ceil(a, t)
-            var v = idiv(b, t)
-
-            if (u <= v) {
-                __FUNC__(t, L, r, k-1)
-            }
-        }
+            __FUNC__(m*p, t, p+1, k-1)
+        })
     }(1, 1, 3, k)
 
     return callback
@@ -68,11 +68,9 @@ func carmichael_numbers_in_range_unoptimized(A, B, k, callback) {
             })
         }
         elsif (k >= 2) {
-            for q in (primes(p, (B/m)**(1/k))) {
-                if (ceil(A/(m*q)) <= floor(B/(m*q))) {
-                    if (gcd(lcm(lambda, q-1), m) == 1) {
-                        F(m*q, lcm(lambda, q-1), q.next_prime, k-1)
-                    }
+            for q in (primes(p, floor((B/m)**(1/k)))) {
+                if (gcd(lcm(lambda, q-1), m) == 1) {
+                    F(m*q, lcm(lambda, q-1), q+1, k-1)
                 }
             }
         }

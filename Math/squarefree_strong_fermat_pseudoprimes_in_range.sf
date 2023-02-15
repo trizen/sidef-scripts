@@ -14,19 +14,23 @@ func squarefree_strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
 
     A = max(k.pn_primorial, A)
 
-    var generator = func (m, lambda, p, k, k_exp, congr) {
+    var generator = func (m, lambda, lo, k, k_exp, congr) {
 
-        var y = idiv(B,m).iroot(k)
+        var hi = idiv(B,m).iroot(k)
+
+        return nil if (lo > hi)
 
         if (k == 1) {
 
-            var x = max(p, idiv_ceil(A, m))
+            lo = max(lo, idiv_ceil(A, m))
 
-            each_prime(x, y, {|p|
+            return nil if (lo > hi)
+
+            each_prime(lo, hi, {|p|
                 with (m*p - 1) {|t|
                     if ((lambda `divides` t) && (znorder(base, p) `divides` t)) {
                         var v = p.dec.valuation(2)
-                        if (v > k_exp && powmod(base, (p.dec>>v)<<k_exp, p).is_congruent(congr, p)) {
+                        if (v > k_exp && powmod(base, p.dec>>(v-k_exp), p).is_congruent(congr, p)) {
                             callback(t+1)
                         }
                     }
@@ -36,26 +40,19 @@ func squarefree_strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
             return nil
         }
 
-        for(var r; p <= y; p = r) {
+        each_prime(lo, hi, {|p|
 
-            r = p.next_prime
             p.divides(base) && next
 
             var val2 = p.dec.valuation(2)
             val2 > k_exp || next
-            powmod(base, (p.dec>>val2)<<k_exp, p).is_congruent(congr, p) || next
+            powmod(base, p.dec>>(val2-k_exp), p).is_congruent(congr, p) || next
 
             var L = lcm(lambda, znorder(base, p))
             m.is_coprime(L) || next
 
-            var t = m*p
-            var u = idiv_ceil(A, t)
-            var v = idiv(B, t)
-
-            if (u <= v) {
-                __FUNC__(t, L, r, k-1, k_exp, congr)
-            }
-        }
+            __FUNC__(m*p, L, p+1, k-1, k_exp, congr)
+        })
     }
 
     # Case where 2^d == 1 (mod p), where d is the odd part of p-1.

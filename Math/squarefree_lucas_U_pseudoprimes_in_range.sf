@@ -21,15 +21,19 @@ func squarefree_lucas_U_pseudoprimes_in_range(a, b, k, P, Q, callback) {
 
     var D = (P*P - 4*Q)
 
-    func (m, lambda, p, k) {
+    func (m, lambda, lo, k) {
 
-        var y = idiv(b,m).iroot(k)
+        var hi = idiv(b,m).iroot(k)
+
+        return nil if (lo > hi)
 
         if (k == 1) {
 
-            var x = max(p, idiv_ceil(a, m))
+            lo = max(lo, idiv_ceil(a, m))
 
-            each_prime(x, y, {|p|
+            return nil if (lo > hi)
+
+            each_prime(lo, hi, {|p|
                 with (m*p - kronecker(D, m*p)) {|t|
                     if ((lambda `divides` t) && (lucas_znorder(P, Q, D, p) `divides` t)) {
                         callback(m*p)
@@ -40,22 +44,15 @@ func squarefree_lucas_U_pseudoprimes_in_range(a, b, k, P, Q, callback) {
             return nil
         }
 
-        for(var r; p <= y; p = r) {
+        each_prime(lo, hi, {|p|
 
-            r = p.next_prime
             p.divides(D) && next
 
             var L = lcm(lambda, lucas_znorder(P, Q, D, p))
             m.is_coprime(L) || next
 
-            var t = m*p
-            var u = idiv_ceil(a, t)
-            var v = idiv(b, t)
-
-            if (u <= v) {
-                __FUNC__(t, L, r, k-1)
-            }
-        }
+            __FUNC__(m*p, L, p+1, k-1)
+        })
     }(1, 1, 2, k)
 
     return callback

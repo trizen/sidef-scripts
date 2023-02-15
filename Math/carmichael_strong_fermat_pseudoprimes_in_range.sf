@@ -17,19 +17,27 @@ func carmichael_strong_fermat_in_range(A, B, k, base, callback) {
 
     A = max(k.pn_primorial, A)
 
-    var generator = func (m, lambda, p, k, k_exp, congr) {
+    var generator = func (m, L, lo, k, k_exp, congr) {
 
-        var y = idiv(B,m).iroot(k)
+        var hi = idiv(B,m).iroot(k)
+
+        if (lo > hi) {
+            return nil
+        }
 
         if (k == 1) {
 
-            var x = max(p, idiv_ceil(A, m))
+            lo = max(lo, idiv_ceil(A, m))
 
-            each_prime(x, y, {|p|
+            if (lo > hi) {
+                return nil
+            }
+
+            each_prime(lo, hi, {|p|
                 with (m*p - 1) {|t|
-                    if ((lambda `divides` t) && (p.dec `divides` t)) {
+                    if ((L `divides` t) && (p.dec `divides` t)) {
                         var v = p.dec.valuation(2)
-                        if (v > k_exp && powmod(base, (p.dec>>v)<<k_exp, p).is_congruent(congr, p)) {
+                        if (v > k_exp && powmod(base, p.dec>>(v-k_exp), p).is_congruent(congr, p)) {
                             callback(t+1)
                         }
                     }
@@ -39,26 +47,19 @@ func carmichael_strong_fermat_in_range(A, B, k, base, callback) {
             return nil
         }
 
-        for(var r; p <= y; p = r) {
+        each_prime(lo, hi, {|p|
 
-            r = p.next_prime
             p.divides(base) && next
 
             var val2 = p.dec.valuation(2)
             val2 > k_exp || next
-            powmod(base, (p.dec>>val2)<<k_exp, p).is_congruent(congr, p) || next
+            powmod(base, p.dec>>(val2-k_exp), p).is_congruent(congr, p) || next
 
-            var L = lcm(lambda, p-1)
-            m.is_coprime(L) || next
+            var t = lcm(L, p-1)
+            m.is_coprime(t) || next
 
-            var t = m*p
-            var u = idiv_ceil(A, t)
-            var v = idiv(B, t)
-
-            if (u <= v) {
-                __FUNC__(t, L, r, k-1, k_exp, congr)
-            }
-        }
+            __FUNC__(m*p, t, p+1, k-1, k_exp, congr)
+        })
     }
 
     # Case where 2^d == 1 (mod p), where d is the odd part of p-1.

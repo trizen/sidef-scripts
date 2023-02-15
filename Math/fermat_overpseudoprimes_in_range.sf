@@ -54,22 +54,17 @@ func fermat_overpseudoprimes_in_range(A, B, k, base, callback) {
 
     A = max(k.pn_primorial, A)
 
-    func (m, lambda, x, j) {
+    func (m, lambda, lo, j) {
 
-        var y = idiv(B,m).iroot(j)
+        var hi = idiv(B,m).iroot(j)
 
-        if (x > y) {
+        if (lo > hi) {
             return nil
         }
 
-        iterate_over_primes(x, y, base, lambda, {|p|
+        iterate_over_primes(lo, hi, base, lambda, {|p|
 
             next if p.divides(base)
-            var r = p.next_prime
-
-            while (r.divides(base)) {
-                r.next_prime!
-            }
 
             for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
 
@@ -87,8 +82,8 @@ func fermat_overpseudoprimes_in_range(A, B, k, base, callback) {
                     next
                 }
 
-                v*r <= B || break
-                __FUNC__(v, L, r, j-1)
+                v*p <= B || break
+                __FUNC__(v, L, p+1, j-1)
             }
         })
     }(1, 1, 2, k)

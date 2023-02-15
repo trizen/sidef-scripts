@@ -14,34 +14,32 @@ func squarefree_almost_primes(a, b, k, callback) {
 
     a = max(k.pn_primorial, a)
 
-    func (m, p, k) {
+    func (m, lo, k) {
 
-        var y = idiv(b,m).iroot(k)
+        var hi = idiv(b,m).iroot(k)
+
+        if (lo > hi) {
+            return nil
+        }
 
         if (k == 1) {
 
-            var x = max(p, idiv_ceil(a, m))
+            lo = max(lo, idiv_ceil(a, m))
 
-            each_prime(x, y, {|p|
+            if (lo > hi) {
+                return nil
+            }
+
+            primes_each(lo, hi, {|p|
                 callback(m*p)
             })
 
             return nil
         }
 
-        while (p <= y) {
-
-            var r = p.next_prime
-            var t = m*p
-            var u = idiv_ceil(a, t)
-            var v = idiv(b, t)
-
-            if (u <= v) {
-                __FUNC__(t, r, k-1)
-            }
-
-            p = r
-        }
+        primes_each(lo, hi, {|p|
+            __FUNC__(m*p, p+1, k-1)
+        })
     }(1, 2, k)
 
     return callback
