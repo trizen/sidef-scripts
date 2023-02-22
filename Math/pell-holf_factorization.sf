@@ -30,7 +30,7 @@ func pell_holf_factorization(n) {
         r = round((x + y) / z)
 
         var s = 1+isqrt(n * 4*k)
-        var m = (s*s % n)
+        var m = powmod(s, 2, n)
 
         if (m.is_square) {
             var g = gcd(n, s - m.isqrt)

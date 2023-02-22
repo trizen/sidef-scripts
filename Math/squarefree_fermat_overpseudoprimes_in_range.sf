@@ -50,7 +50,7 @@ func squarefree_fermat_overpseudoprimes_in_range(a, b, k, base, callback) {
 
     a = max(k.pn_primorial, a)
 
-    func (m, lambda, lo, k) {
+    func (m, L, lo, k) {
 
         var hi = idiv(b,m).iroot(k)
 
@@ -62,10 +62,10 @@ func squarefree_fermat_overpseudoprimes_in_range(a, b, k, base, callback) {
 
             return nil if (lo > hi)
 
-            iterate_over_primes(lo, hi, base, lambda, {|p|
-                if (powmod(base, lambda, p) == 1) {
+            iterate_over_primes(lo, hi, base, L, {|p|
+                if (powmod(base, L, p) == 1) {
                     with (m*p - 1) {|t|
-                        if ((lambda `divides` t) && (lambda == znorder(base, p))) {
+                        if ((L `divides` t) && (L == znorder(base, p))) {
                             callback(t+1)
                         }
                     }
@@ -75,17 +75,17 @@ func squarefree_fermat_overpseudoprimes_in_range(a, b, k, base, callback) {
             return nil
         }
 
-        iterate_over_primes(lo, hi, base, lambda, {|p|
+        iterate_over_primes(lo, hi, base, L, {|p|
 
             p.divides(base) && next
 
-            var L = znorder(base, p)
-            if (lambda > 1) {
-                lambda == L || next
+            var z = znorder(base, p)
+            if (L > 1) {
+                z == L || next
             }
-            m.is_coprime(L) || next
+            m.is_coprime(z) || next
 
-            __FUNC__(m*p, L, p.next_prime, k-1)
+            __FUNC__(m*p, z, p.next_prime, k-1)
         })
     }(1, 1, 2, k)
 

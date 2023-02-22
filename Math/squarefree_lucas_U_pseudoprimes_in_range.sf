@@ -21,7 +21,7 @@ func squarefree_lucas_U_pseudoprimes_in_range(a, b, k, P, Q, callback) {
 
     var D = (P*P - 4*Q)
 
-    func (m, lambda, lo, k) {
+    func (m, L, lo, k) {
 
         var hi = idiv(b,m).iroot(k)
 
@@ -30,16 +30,26 @@ func squarefree_lucas_U_pseudoprimes_in_range(a, b, k, P, Q, callback) {
         if (k == 1) {
 
             lo = max(lo, idiv_ceil(a, m))
+            lo > hi && return nil
 
-            return nil if (lo > hi)
+            for j in (1, -1) {
+                var t = mulmod(m.invmod(L), j, L)
 
-            each_prime(lo, hi, {|p|
-                with (m*p - kronecker(D, m*p)) {|t|
-                    if ((lambda `divides` t) && (lucas_znorder(P, Q, D, p) `divides` t)) {
-                        callback(m*p)
+                t > hi && next
+                t += L while (t < lo)
+                t > hi && next
+
+                for p in (range(t, hi, L)) {
+                    p.is_prime || next
+                    with (m*p) {|n|
+                        with (n - kronecker(D, n)) {|w|
+                            if ((L `divides` w) && (lucas_znorder(P, Q, D, p) `divides` w)) {
+                                callback(n)
+                            }
+                        }
                     }
                 }
-            })
+            }
 
             return nil
         }
@@ -48,10 +58,10 @@ func squarefree_lucas_U_pseudoprimes_in_range(a, b, k, P, Q, callback) {
 
             p.divides(D) && next
 
-            var L = lcm(lambda, lucas_znorder(P, Q, D, p))
-            m.is_coprime(L) || next
+            var z = lucas_znorder(P, Q, D, p)
+            m.is_coprime(z) || next
 
-            __FUNC__(m*p, L, p+1, k-1)
+            __FUNC__(m*p, lcm(L, z), p+1, k-1)
         })
     }(1, 1, 2, k)
 

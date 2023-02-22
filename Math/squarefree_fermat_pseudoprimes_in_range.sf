@@ -26,16 +26,22 @@ func squarefree_fermat_pseudoprimes_in_range(a, b, k, base, callback) {
         if (k == 1) {
 
             lo = max(lo, idiv_ceil(a, m))
+            lo > hi && return nil
 
-            return nil if (lo > hi)
+            var t = m.invmod(L)
 
-            each_prime(lo, hi, {|p|
-                with (m*p - 1) {|t|
-                    if ((L `divides` t) && (znorder(base, p) `divides` t)) {
-                        callback(t+1)
+            t > hi && return nil
+            t += L while (t < lo)
+            t > hi && return nil
+
+            for p in (range(t, hi, L)) {
+                p.is_prime || next
+                with (m*p) {|n|
+                    if (znorder(base, p) `divides` n.dec) {
+                        callback(n)
                     }
                 }
-            })
+            }
 
             return nil
         }

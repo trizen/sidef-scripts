@@ -803,10 +803,10 @@ class SIQS (
                 }
             },
 
-            #~ func {
-                #~ say "=> Phi finder method...";
-                #~ phi_finder_factor(rem, PHI_FINDER_ITERATIONS)
-            #~ },
+            func {
+                say "=> Phi finder method...";
+                phi_finder_factor(rem, PHI_FINDER_ITERATIONS)
+            },
 
             func {
                 say "=> Fermat's method..."

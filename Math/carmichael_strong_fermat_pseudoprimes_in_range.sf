@@ -28,21 +28,25 @@ func carmichael_strong_fermat_in_range(A, B, k, base, callback) {
         if (k == 1) {
 
             lo = max(lo, idiv_ceil(A, m))
+            lo > hi && return nil
 
-            if (lo > hi) {
-                return nil
-            }
+            var t = m.invmod(L)
 
-            each_prime(lo, hi, {|p|
-                with (m*p - 1) {|t|
-                    if ((L `divides` t) && (p.dec `divides` t)) {
+            t > hi && return nil
+            t += L while (t < lo)
+            t > hi && return nil
+
+            for p in (range(t, hi, L)) {
+                p.is_prime || next
+                with (m*p) {|n|
+                    if (p.dec `divides` n.dec) {
                         var v = p.dec.valuation(2)
                         if (v > k_exp && powmod(base, p.dec>>(v-k_exp), p).is_congruent(congr, p)) {
-                            callback(t+1)
+                            callback(n)
                         }
                     }
                 }
-            })
+            }
 
             return nil
         }
@@ -73,14 +77,14 @@ func carmichael_strong_fermat_in_range(A, B, k, base, callback) {
     return callback
 }
 
-# Generate all the 3-Carmichael numbers in the range [1, 10^6] that are also strong pseudoprimes to base 2.
+# Generate all the 3-Carmichael numbers in the range [1, 10^7] that are also strong pseudoprimes to base 2.
 
 var k    = 3
 var base = 2
 var from = 1
-var upto = 1e6
+var upto = 1e7
 
 say gather { carmichael_strong_fermat_in_range(from, upto, k, base, { take(_) }) }.sort
 
 __END__
-[15841, 29341, 52633, 252601, 314821]
+[15841, 29341, 52633, 252601, 314821, 1909001, 3581761, 4335241, 5049001, 5444489]

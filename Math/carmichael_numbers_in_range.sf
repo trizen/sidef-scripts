@@ -28,28 +28,29 @@ func carmichael_numbers_in_range(a, b, k, callback) {
         if (k == 1) {
 
             lo = max(lo, idiv_ceil(a, m))
+            lo > hi && return nil
 
-            if (lo > hi) {
-                return nil
-            }
+            var t = m.invmod(L)
 
-            each_prime(lo, hi, {|p|
-                with (m*p - 1) {|t|
-                    if ((L `divides` t) && (p-1 `divides` t)) {
-                        callback(t+1)
+            t > hi && return nil
+            t += L while (t < lo)
+            t > hi && return nil
+
+            for p in (range(t, hi, L)) {
+                p.is_prime || next
+                with (m*p) {|n|
+                    if (p.dec `divides` n.dec) {
+                        callback(n)
                     }
                 }
-            })
+            }
 
             return nil
         }
 
         each_prime(lo, hi, {|p|
-
-            var t = lcm(L, p-1)
-            m.is_coprime(t) || next
-
-            __FUNC__(m*p, t, p+1, k-1)
+            m.is_coprime(p-1) || next
+            __FUNC__(m*p, lcm(L, p-1), p+1, k-1)
         })
     }(1, 1, 3, k)
 
