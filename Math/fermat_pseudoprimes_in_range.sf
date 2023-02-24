@@ -24,33 +24,62 @@ func fermat_pseudoprimes_in_range(A, B, k, base, callback) {
 
     A = max(k.pn_primorial, A)
 
-    func (m, lambda, p, j) {
+    func (m, L, lo, j) {
 
-        var s = idiv(B,m).iroot(j)
+        var hi = idiv(B,m).iroot(j)
 
-        for (var r; p <= s; p = r) {
+        lo > hi && return nil
 
-            r = p.next_prime
-            next if p.divides(base)
+        if (j == 1) {
+
+            lo = max(lo, idiv_ceil(A, m))
+            lo > hi && return nil
+
+            if (L == 1) {   # optimization
+                each_prime(lo, hi, {|p|
+
+                    next if p.divides(base)
+
+                    for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
+                        k.is_one && v.is_prime && next
+                        if (znorder(base, q) `divides` v.dec) {
+                            callback(v)
+                        }
+                    }
+                })
+                return nil
+            }
+
+            var t = m.invmod(L)
+
+            t > hi && return nil
+            t += L while (t < lo)
+            t > hi && return nil
+
+            for p in (range(t, hi, L)) {
+                p.is_prime || next
+                p.divides(base) && next
+                for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
+                    k.is_one && v.is_prime && next
+                    if (znorder(base, q) `divides` v.dec) {
+                        callback(v)
+                    }
+                }
+            }
+
+            return nil
+        }
+
+        each_prime(lo, hi, {|p|
+
+            p.divides(base) && next
 
             for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
-
-                var L = lcm(lambda, znorder(base, q))
-
-                L.is_coprime(v) || break
-
-                if (j == 1) {
-                    v >= A || next
-                    k.is_one && v.is_prime && next
-                    L `divides` v-1 || next
-                    callback(v)
-                    next
-                }
-
-                v*r <= B || next
-                __FUNC__(v, L, r, j-1)
+                var z = znorder(base, q)
+                v.is_coprime(z) || break
+                __FUNC__(v, lcm(L, z), p+1, j-1)
             }
-        }
+        })
     }(1, 1, 2, k)
 
     return callback

@@ -82,7 +82,6 @@ func fermat_overpseudoprimes_in_range(A, B, k, base, callback) {
                     next
                 }
 
-                v*p <= B || break
                 __FUNC__(v, L, p+1, j-1)
             }
         })
