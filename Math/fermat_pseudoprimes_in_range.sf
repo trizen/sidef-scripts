@@ -24,6 +24,8 @@ func fermat_pseudoprimes_in_range(A, B, k, base, callback) {
 
     A = max(k.pn_primorial, A)
 
+    var seen = Hash()
+
     func (m, L, lo, j) {
 
         var hi = idiv(B,m).iroot(j)
@@ -32,18 +34,16 @@ func fermat_pseudoprimes_in_range(A, B, k, base, callback) {
 
         if (j == 1) {
 
-            lo = max(lo, idiv_ceil(A, m))
-            lo > hi && return nil
-
             if (L == 1) {   # optimization
                 each_prime(lo, hi, {|p|
 
                     next if p.divides(base)
 
                     for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
+                        v >= A || next
                         k.is_one && v.is_prime && next
                         if (znorder(base, q) `divides` v.dec) {
-                            callback(v)
+                            callback(v) if !(seen{v} := 0 ++)
                         }
                     }
                 })
@@ -57,13 +57,16 @@ func fermat_pseudoprimes_in_range(A, B, k, base, callback) {
             t > hi && return nil
 
             for p in (range(t, hi, L)) {
-                p.is_prime || next
-                p.divides(base) && next
-                for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
-                    k.is_one && v.is_prime && next
-                    if (znorder(base, q) `divides` v.dec) {
-                        callback(v)
-                    }
+
+                p.is_prime_power   || next
+                p.is_coprime(m)    || next
+                p.is_coprime(base) || next
+
+                var v = m*p
+                v >= A || next
+                k.is_one && v.is_prime && next
+                if (znorder(base, p) `divides` v.dec) {
+                    callback(v) if !(seen{v} := 0 ++)
                 }
             }
 
@@ -90,14 +93,41 @@ func fermat_pseudoprimes_in_range(A, B, k, base, callback) {
 var from = 1
 var upto = 1e4
 var base = 3
-var arr = []
 
-for k in (1..100) {
-    break if k.pn_primorial>upto
-    fermat_pseudoprimes_in_range(from, upto, k, base, { arr << _ })
+var arr = gather {
+    for k in (1..100) {
+        break if k.pn_primorial>upto
+        fermat_pseudoprimes_in_range(from, upto, k, base, { take(_) })
+    }
 }
 
 say arr.sort
+
+# Run some tests
+
+if (false) {    # true to run some tests
+    for k in (1..5) {
+
+        var lo           = k.pn_primorial
+        var hi           = lo*1000
+        var omega_primes = k.omega_primes(lo, hi)
+
+        assert_eq(omega_primes.len, k.omega_prime_count(lo, hi))
+
+        omega_primes.grep!{ .is_composite }
+
+        for base in (2..100) {
+
+            var this = omega_primes.grep { .is_pseudoprime(base) }
+            var that = gather {
+                fermat_pseudoprimes_in_range(lo, hi, k, base, func (n) { take(n) })
+            }.sort
+
+            this == that ||
+                die "Error for k = #{k} and base = #{base} with hi = #{hi}\n#{this} != #{that}";
+        }
+    }
+}
 
 __END__
 [91, 121, 286, 671, 703, 949, 1105, 1541, 1729, 1891, 2465, 2665, 2701, 2821, 3281, 3367, 3751, 4961, 5551, 6601, 7381, 8401, 8911]

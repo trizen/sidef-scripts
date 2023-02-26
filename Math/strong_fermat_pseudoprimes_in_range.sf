@@ -24,6 +24,8 @@ func strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
 
     A = max(k.pn_primorial, A)
 
+    var seen = Hash()
+
     var generator = func (m, L, lo, j, k_exp, congr) {
 
         var hi = idiv(B,m).iroot(j)
@@ -33,9 +35,6 @@ func strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
         }
 
         if (j == 1) {
-
-            lo = max(lo, idiv_ceil(A, m))
-            lo > hi && return nil
 
             if (L == 1) {   # optimization
                 each_prime(lo, hi, {|p|
@@ -47,9 +46,12 @@ func strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
                     powmod(base, p.dec>>(val2-k_exp), p).is_congruent(congr, p) || next
 
                     for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
+
+                        v >= A || next
                         k.is_one && v.is_prime && next
+
                         if (znorder(base, q) `divides` v.dec) {
-                            callback(v)
+                            callback(v) if !(seen{v} := 0 ++)
                         }
                     }
                 })
@@ -64,18 +66,20 @@ func strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
 
             for p in (range(t, hi, L)) {
 
-                p.is_prime || next
-                p.divides(base) && next
+                p.is_prime_power   || next
+                p.is_coprime(m)    || next
+                p.is_coprime(base) || next
 
                 var val2 = p.dec.valuation(2)
                 val2 > k_exp || next
                 powmod(base, p.dec>>(val2-k_exp), p).is_congruent(congr, p) || next
 
-                for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
-                    k.is_one && v.is_prime && next
-                    if (znorder(base, q) `divides` v.dec) {
-                        callback(v)
-                    }
+                var v = m*p
+                v >= A || next
+                k.is_one && v.is_prime && next
+
+                if (znorder(base, p) `divides` v.dec) {
+                    callback(v) if !(seen{v} := 0 ++)
                 }
             }
 
@@ -122,6 +126,34 @@ for k in (1..100) {
 }
 
 say arr.sort
+
+# Run some tests
+
+if (false) {    # true to run some tests
+    for k in (1..5) {
+
+        say "Testing k = #{k}"
+
+        var lo           = k.pn_primorial
+        var hi           = lo*1000
+        var omega_primes = k.omega_primes(lo, hi)
+
+        assert_eq(omega_primes.len, k.omega_prime_count(lo, hi))
+
+        omega_primes.grep!{ .is_composite }
+
+        for base in (2..100) {
+
+            var this = omega_primes.grep { .is_strong_pseudoprime(base) }
+            var that = gather {
+                strong_fermat_pseudoprimes_in_range(lo, hi, k, base, func (n) { take(n) })
+            }.sort
+
+            this == that ||
+                die "Error for k = #{k} and base = #{base} with hi = #{hi}\n#{this} != #{that}";
+        }
+    }
+}
 
 __END__
 [121, 703, 1891, 3281, 8401, 8911]
