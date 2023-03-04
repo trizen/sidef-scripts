@@ -30,9 +30,7 @@ func strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
 
         var hi = idiv(B,m).iroot(j)
 
-        if (lo > hi) {
-            return nil
-        }
+        lo > hi && return nil
 
         if (j == 1) {
 
@@ -45,14 +43,10 @@ func strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
                     val2 > k_exp || next
                     powmod(base, p.dec>>(val2-k_exp), p).is_congruent(congr, p) || next
 
-                    for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
-
-                        v >= A || next
-                        k.is_one && v.is_prime && next
-
-                        if (znorder(base, q) `divides` v.dec) {
-                            callback(v) if !(seen{v} := 0 ++)
-                        }
+                    for (var v = (m == 1 ? p*p : m*p); v <= B; v *= p) {
+                        v >= A                || next
+                        v.is_strong_psp(base) || break
+                        callback(v) if !(seen{v} := 0 ++)
                     }
                 })
                 return nil
@@ -76,7 +70,6 @@ func strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
 
                 var v = m*p
                 v >= A || next
-                k.is_one && v.is_prime && next
 
                 if (znorder(base, p) `divides` v.dec) {
                     callback(v) if !(seen{v} := 0 ++)
@@ -94,9 +87,15 @@ func strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
             val2 > k_exp || next
             powmod(base, p.dec>>(val2-k_exp), p).is_congruent(congr, p) || next
 
+            var z = znorder(base, p)
+            m.is_coprime(z) || next
+
             for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
-                var z = znorder(base, q)
-                v.is_coprime(z) || break
+
+                if (q > p) {
+                    powmod(base, z, q) == 1 || break
+                }
+
                 __FUNC__(v, lcm(L, z), p+1, j-1, k_exp, congr)
             }
         })
@@ -134,17 +133,12 @@ if (false) {    # true to run some tests
 
         say "Testing k = #{k}"
 
-        var lo           = k.pn_primorial
-        var hi           = lo*1000
-        var omega_primes = k.omega_primes(lo, hi)
-
-        assert_eq(omega_primes.len, k.omega_prime_count(lo, hi))
-
-        omega_primes.grep!{ .is_composite }
+        var lo = k.pn_primorial
+        var hi = lo*1000
 
         for base in (2..100) {
 
-            var this = omega_primes.grep { .is_strong_pseudoprime(base) }
+            var this = k.strong_fermat_psp(base, lo, hi)
             var that = gather {
                 strong_fermat_pseudoprimes_in_range(lo, hi, k, base, func (n) { take(n) })
             }.sort

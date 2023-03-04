@@ -37,14 +37,12 @@ func fermat_pseudoprimes_in_range(A, B, k, base, callback) {
             if (L == 1) {   # optimization
                 each_prime(lo, hi, {|p|
 
-                    next if p.divides(base)
+                    p.divides(base) && next
 
-                    for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
-                        v >= A || next
-                        k.is_one && v.is_prime && next
-                        if (znorder(base, q) `divides` v.dec) {
-                            callback(v) if !(seen{v} := 0 ++)
-                        }
+                    for (var v = (m == 1 ? p*p : m*p); v <= B; v *= p) {
+                        v >= A         || next
+                        v.is_psp(base) || break
+                        callback(v) if !(seen{v} := 0 ++)
                     }
                 })
                 return nil
@@ -64,7 +62,7 @@ func fermat_pseudoprimes_in_range(A, B, k, base, callback) {
 
                 var v = m*p
                 v >= A || next
-                k.is_one && v.is_prime && next
+
                 if (znorder(base, p) `divides` v.dec) {
                     callback(v) if !(seen{v} := 0 ++)
                 }
@@ -77,9 +75,15 @@ func fermat_pseudoprimes_in_range(A, B, k, base, callback) {
 
             p.divides(base) && next
 
+            var z = znorder(base, p)
+            m.is_coprime(z) || next
+
             for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
-                var z = znorder(base, q)
-                v.is_coprime(z) || break
+
+                if (q > p) {
+                    powmod(base, z, q) == 1 || break
+                }
+
                 __FUNC__(v, lcm(L, z), p+1, j-1)
             }
         })
@@ -108,17 +112,14 @@ say arr.sort
 if (false) {    # true to run some tests
     for k in (1..5) {
 
-        var lo           = k.pn_primorial
-        var hi           = lo*1000
-        var omega_primes = k.omega_primes(lo, hi)
+        say "Testing: k = #{k}"
 
-        assert_eq(omega_primes.len, k.omega_prime_count(lo, hi))
-
-        omega_primes.grep!{ .is_composite }
+        var lo = k.pn_primorial
+        var hi = lo*1000
 
         for base in (2..100) {
 
-            var this = omega_primes.grep { .is_pseudoprime(base) }
+            var this = k.fermat_psp(base, lo, hi)
             var that = gather {
                 fermat_pseudoprimes_in_range(lo, hi, k, base, func (n) { take(n) })
             }.sort
