@@ -96,13 +96,14 @@ func strong_fermat_pseudoprimes_in_range(A, B, k, base, callback) {
             var z = znorder(base, p)
             m.is_coprime(z) || next
 
-            for (var (q,v) = (p, m*p); v <= B; (q,v) = (q*p, v*p)) {
+            var q = p
+            var v = m*p
 
-                if (q > p) {
-                    powmod(base, z, q) == 1 || break
-                }
-
+            while (v <= B) {
                 __FUNC__(v, lcm(L, z), p+1, j-1, k_exp, congr)
+                q *= p
+                powmod(base, z, q) == 1 || break
+                v *= p
             }
         })
     }
@@ -126,7 +127,7 @@ var base = 3
 var arr = []
 
 for k in (1..100) {
-    break if k.pn_primorial>upto
+    break if (k.pn_primorial > upto)
     strong_fermat_pseudoprimes_in_range(from, upto, k, base, { arr << _ })
 }
 

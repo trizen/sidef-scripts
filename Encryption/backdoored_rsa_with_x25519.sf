@@ -1,0 +1,107 @@
+#!/usr/bin/ruby
+
+# RSA key generation, backdoored using curve25519.
+
+# Inspired by:
+#   https://gist.github.com/ryancdotorg/18235723e926be0afbdd
+
+# See also:
+#   https://eprint.iacr.org/2002/183.pdf
+#   https://www.reddit.com/r/crypto/comments/2ss1v5/rsa_key_generation_backdoored_using_curve25519/
+
+require('Crypt::PK::X25519')
+
+struct RSAKey {
+    e, p, q, d, n
+}
+
+func generate_rsa_key (Num bits = 2048, Str ephem_pub = "", Num pos = 80, Str seed = nil) {
+
+    if (defined(seed)) {
+        iseed(seed.ascii2hex.hex)
+    }
+
+    var (p, q) = 2.of { irand(1<<(bits >> 1)).next_prime }...
+
+    if (p > q) {
+        (p, q) = (q, p)
+    }
+
+    var n = (p * q)
+
+    # Embed the public key into the modulus
+    n = Num(n.as_hex.insert(ephem_pub, pos, ephem_pub.len), 16)
+
+    # Recompute n, reusing p in computing a new q
+    q = next_prime(idiv(n,p))
+    n = (p * q)
+
+    var phi = ((p - 1) * (q - 1))
+
+    var e = 0
+    for (var k = 16 ; gcd(e, phi) != 1 ; ++k) {
+        e = (2**k + 1)
+    }
+
+    var d = invmod(e, phi)
+
+    RSAKey(e, p, q, d, n)
+}
+
+func recover_rsa_key (Num bits, Num n, Str master_private_key, Num pos) {
+
+    var ephem_pub = n.as_hex.substr(pos, 64)    # extract the embeded public key
+
+    # Import the public key
+    var ephem_pub_key = %O<Crypt::PK::X25519>.new.import_key(Hash(curve => "x25519", pub => ephem_pub))
+
+    # Import the master private key
+    var master_priv_key = %O<Crypt::PK::X25519>.new.import_key(Hash(curve => "x25519", priv => master_private_key))
+
+    # Recover the shared secret that was used as a seed value for the random number generator
+    var recovered_secret = master_priv_key.shared_secret(ephem_pub_key)
+
+    # Recompute the RSA key, given the embeded public key and the seed value
+    generate_rsa_key(bits, ephem_pub, pos, recovered_secret)
+}
+
+var BITS = 2048            # must be >= 1024
+var POS  = (BITS >> 5)
+
+# Public and private master keys
+var MASTER_PUBLIC  = "c10811d4e424305c6696f9b5f787efb67f80530e6115e367bd7967ba05093e3d"
+var MASTER_PRIVATE = "3a35b10511bcd20bcb9b12bd73ab9ad0bf8f7f469ffb70d2ae8fb110b761df97"
+
+# Generate a random ephemeral key-pair. The private key will be used in creating
+# the shared secret, while the public key will be embeded in the RSA modulus.
+var random_ephem_key = %O<Crypt::PK::X25519>.new.generate_key
+
+# Import the master public key
+var master_public_key = %O<Crypt::PK::X25519>.new.import_key(Hash(curve => "x25519", pub => MASTER_PUBLIC))
+
+var ephem_pub     = random_ephem_key.key2hash(){:pub}
+var shared_secret = random_ephem_key.shared_secret(master_public_key)
+
+# Generate the backdoored RSA key, using the ephemeral random public key, which will be embeded
+# in the RSA modulus, and pass the shared secret value as a seed for the random number generator.
+var rsa_key = generate_rsa_key(BITS, ephem_pub, POS, shared_secret)
+
+var m = "Hello, world!".ascii2hex.hex
+
+if (m >= rsa_key.n) {
+    die "Message is too long!"
+}
+
+var c = powmod(m, rsa_key.e, rsa_key.n)        # encoded message
+var M = powmod(c, rsa_key.d, rsa_key.n)        # decoded message
+
+say M.as_hex.hex2ascii
+
+# Recover the RSA key, given the RSA modulus n and the private master key.
+var recovered_rsa = recover_rsa_key(BITS, rsa_key.n, MASTER_PRIVATE, POS)
+
+# Decode the encrypted message, using the recovered RSA key
+var decoded_message = powmod(c, recovered_rsa.d, rsa_key.n)
+
+# Print the decoded message, decoded with the recovered key
+say decoded_message.as_hex.hex2ascii
