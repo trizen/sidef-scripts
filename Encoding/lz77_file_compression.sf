@@ -1,0 +1,104 @@
+#!/usr/bin/ruby
+
+# Encode and decode small files using LZ77 compression.
+
+define(
+    CHUNK_SIZE = (1 << 16),
+    SIGNATURE  = ('LZ77' + 2.chr)
+)
+
+func lz77_compress (str) {
+
+    var la = 0
+    var rep = ''
+
+    var prefix = ''
+    var chars  = str.chars
+    var end    = chars.end
+
+    while (la <= end) {
+
+        var n = 1
+        var p = 0
+
+        var token = chars[la]
+
+        while ((n < 255) && (la+n <= end) && ((var tmp = prefix.index(token, p)) >= 0)) {
+            p = tmp
+            token += chars[la + n]
+            ++n
+        }
+
+        --n
+        var c = chars[la + n]
+        rep += 'SC'.pack(p, n)+c
+        la += n+1
+        prefix += token
+    }
+
+    return rep
+}
+
+# Compress file
+func lz77_compress_file(File input, File output) {
+
+    var in_fh  =  input.open('<:raw') || die "Can't open file <<#{input}>> for reading"
+    var out_fh = output.open('>:raw') || die "Can't open file <<#{output}>> for writing"
+
+    var header = SIGNATURE
+
+    # Print the header
+    out_fh.print(header)
+
+    # Compress data
+    while (in_fh.read(\var chunk, CHUNK_SIZE)) {
+        out_fh.print(lz77_compress(chunk))
+    }
+
+    # Close the files
+    in_fh.close
+    out_fh.close
+}
+
+# Decompress file
+func lz77_decompress_file(File input, File output) {
+
+    var in_fh = input.open('<:raw') || die "Can't open file <<#{input}>> for reading"
+
+    if (SIGNATURE.len.of { in_fh.getc }.join != SIGNATURE) {
+        die "Not a LZ77 archive!\n"
+    }
+
+    var out_fh = output.open('>:raw') || die "Can't open file <<#{output}>> for writing"
+
+    var chunk = ''
+    while (in_fh.read(\var slice, 3)) {
+        var (s, l) = 'SC'.unpack(slice)
+
+        chunk += (chunk.substr(s, l) + in_fh.getc)
+
+        if (chunk.len >= CHUNK_SIZE) {
+            out_fh.print(chunk)
+            chunk = ''
+        }
+    }
+
+    out_fh.print(chunk)
+
+    in_fh.close
+    out_fh.close
+}
+
+ARGV.getopt!('d', \var decode)
+
+var file = File(ARGV.shift) || do {
+    say "usage: #{File(__MAIN__).basename} [-d] [input file]"
+    Sys.exit(2)
+}
+
+if (decode || file.match(/\.lz77\.enc\z/)) {
+    lz77_decompress_file(file, File("output.lz77.dec"))
+}
+else {
+    lz77_compress_file(file, File("output.lz77.enc"))
+}

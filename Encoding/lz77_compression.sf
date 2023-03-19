@@ -1,0 +1,72 @@
+#!/usr/bin/ruby
+
+# Implementation of the LZ77 compression algorithm.
+
+define(
+    CHUNK_SIZE = (1 << 16),
+)
+
+func compression (str) {
+
+    var rep = []
+    var la = 0
+
+    var prefix = ''
+    var chars  = str.chars
+    var end    = chars.end
+
+    while (la <= end) {
+
+        var n = 1
+        var p = 0
+
+        var token = chars[la]
+
+        while ((n < 255) && (la+n <= end) && ((var tmp = prefix.index(token, p)) >= 0)) {
+            p = tmp
+            token += chars[la + n]
+            ++n
+        }
+
+        --n
+        var c = chars[la + n]
+        rep << [p, n, c.ord]
+        la += n+1
+        prefix += token
+    }
+
+    rep.map {|e| 'SCC'.pack(e...) }.join
+}
+
+func decompression (str) {
+
+    var ret   = ''
+    var chunk = ''
+
+    for slice in (str.slices(4)) {
+        var (s, l, c) = 'SCC'.unpack(slice)
+
+        chunk += (chunk.substr(s, l) + 'C'.pack(c))
+
+        if (chunk.len >= CHUNK_SIZE) {
+            ret += chunk
+            chunk = ''
+        }
+    }
+
+    if (chunk != '') {
+        ret += chunk
+    }
+
+    return ret
+}
+
+# How to use:
+var compressed = compression('TOBEORNOTTOBEORTOBEORNOT')
+say compressed.dump
+var decompressed = decompression(compressed)
+say decompressed
+
+__END__
+"\0\0\0T\0\0\0O\0\0\0B\0\0\0E\1\0\1R\0\0\0N\1\0\1T\0\0\6T\1\0\aT"
+TOBEORNOTTOBEORTOBEORNOT

@@ -24,6 +24,8 @@ A nice collection of day-to-day Sidef scripts.
     * [Caesar cipher](./Encoding/caesar_cipher.sf)
     * [Huffman coding](./Encoding/huffman_coding.sf)
     * [Log encode](./Encoding/log_encode.sf)
+    * [Lz77 compression](./Encoding/lz77_compression.sf)
+    * [Lz77 file compression](./Encoding/lz77_file_compression.sf)
     * [Lzw+huffman compression](./Encoding/lzw+huffman_compression.sf)
     * [Lzw compression](./Encoding/lzw_compression.sf)
     * [Lzw file compression](./Encoding/lzw_file_compression.sf)

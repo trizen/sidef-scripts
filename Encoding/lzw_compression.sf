@@ -1,5 +1,10 @@
 #!/usr/bin/ruby
 
+# Implementation of the LZW compression algorithm.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch
+
 # Compress a string to a list of output symbols.
 func compress(String uncompressed) -> Array {
 

@@ -21,7 +21,7 @@ func generate_rsa_key (Num bits = 2048, Str ephem_pub = "", Num pos = 80, Str se
         iseed(seed.ascii2hex.hex)
     }
 
-    var (p, q) = 2.of { irand(1<<(bits >> 1)).next_prime }...
+    var (p, q) = 2.of { 1<<(bits >> 1) -> irand.next_prime }...
 
     if (p > q) {
         (p, q) = (q, p)
@@ -30,10 +30,10 @@ func generate_rsa_key (Num bits = 2048, Str ephem_pub = "", Num pos = 80, Str se
     var n = (p * q)
 
     # Embed the public key into the modulus
-    n = Num(n.as_hex.insert(ephem_pub, pos, ephem_pub.len), 16)
+    n = n.as_hex.insert(ephem_pub, pos, ephem_pub.len).hex
 
     # Recompute n, reusing p in computing a new q
-    q = next_prime(idiv(n,p))
+    q = idiv(n,p).next_prime
     n = (p * q)
 
     var phi = ((p - 1) * (q - 1))
