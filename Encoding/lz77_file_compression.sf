@@ -72,15 +72,16 @@ func lz77_decompress_file(File input, File output) {
     var out_fh = output.open('>:raw') || die "Can't open file <<#{output}>> for writing"
 
     var chunk = ''
-    while (in_fh.read(\var slice, 3)) {
-        var (s, l) = 'SC'.unpack(slice)
+    while (in_fh.read(\var data, 4*CHUNK_SIZE)) {
+        ['(SCC)*'.unpack(data)].each_slice(3, {|s,l,c|
 
-        chunk += (chunk.substr(s, l) + in_fh.getc)
+            chunk += (chunk.substr(s, l) + 'C'.pack(c))
 
-        if (chunk.len >= CHUNK_SIZE) {
-            out_fh.print(chunk)
-            chunk = ''
-        }
+            if (chunk.len >= CHUNK_SIZE) {
+                out_fh.print(chunk)
+                chunk = ''
+            }
+        })
     }
 
     out_fh.print(chunk)
