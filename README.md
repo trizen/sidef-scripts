@@ -27,6 +27,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Lz77 compression](./Encoding/lz77_compression.sf)
     * [Lz77 file compression](./Encoding/lz77_file_compression.sf)
     * [Lz77h file compression](./Encoding/lz77h_file_compression.sf)
+    * [Lz77h file compression v2](./Encoding/lz77h_file_compression_v2.sf)
     * [Lzw+huffman compression](./Encoding/lzw+huffman_compression.sf)
     * [Lzw compression](./Encoding/lzw_compression.sf)
     * [Lzw file compression](./Encoding/lzw_file_compression.sf)

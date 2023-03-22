@@ -10,7 +10,7 @@ define(
 func lz77_compress (str) {
 
     var la = 0
-    var rep = ''
+    var compressed_data = []
 
     var prefix = ''
     var chars  = str.chars
@@ -30,13 +30,12 @@ func lz77_compress (str) {
         }
 
         --n
-        var c = chars[la + n]
-        rep += 'SC'.pack(p, n)+c
+        compressed_data << (p, n, chars[la+n])
         la += n+1
         prefix += token
     }
 
-    return rep
+    return pack('(SCa)*', compressed_data...)
 }
 
 # Compress file
