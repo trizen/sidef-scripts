@@ -14,7 +14,7 @@ func compress(String uncompressed) -> Array {
 
     # Build the dictionary
     var dict_size = 256
-    var dictionary = Hash.new
+    var dictionary = Hash()
 
     for i in (^dict_size) {
         dictionary{i.chr} = i
@@ -48,39 +48,36 @@ func decompress(Array compressed) -> String {
 
     # Build the dictionary
     var dict_size = 256
-    var dictionary = Hash.new
+    var dictionary = Hash()
 
     for i in (^dict_size) {
         dictionary{i} = i.chr
     }
 
     var w = compressed.shift.chr
-    var result = w
+    var result = [w]
 
     compressed.each { |k|
 
         var entry = if (dictionary.has(k)) {
             dictionary{k}
         } elsif (k == dict_size) {
-            w+w.substr(0,1)
+            w+w.char(0)
         } else {
             die "Bad compressed k: #{k}"
         }
 
-        result += entry
+        result << entry
 
         # Add w+entry[0] to the dictionary
-        dictionary{dict_size++} = w+entry.substr(0,1)
+        dictionary{dict_size++} = w+entry.char(0)
         w = entry
     }
 
-    return result;
+    return result.join
 }
 
-# Compress file
-func lzw_compress_file(File file) {
-
-    var compressed = compress(file.read(:raw));
+func encode_integers (Array compressed) {
 
     var counts = []
     var count = 0
@@ -103,9 +100,8 @@ func lzw_compress_file(File file) {
 
     counts << [bits_per_symbol.len(2)-1, compressed.len - processed_len]
 
-    var header = MAGIC_SIGNATURE
     var clen = counts.len
-    header += clen.chr
+    var header = clen.chr
 
     for b,len in (counts) {
         header += chr(b)
@@ -122,6 +118,35 @@ func lzw_compress_file(File file) {
     header + pack('B*', bits.join)
 }
 
+func decode_integers (FileHandle fh) {
+
+    var count_len = fh.getc.ord
+    var counts = []
+
+    count_len.times {
+        var b = fh.getc.ord
+        var l = Num(unpack('N', 4.of { fh.getc }.join))
+        counts << [b, l]
+    }
+
+    var chunks = []
+    var bits = fh.slurp.ascii2bin
+
+    for b,len in (counts) {
+        len > 0 || next
+        chunks << bits.substr(0, b*len).slices(b)...
+        bits.substr!(b*len)
+    }
+
+    chunks.map { Num(_, 2) }
+}
+
+# Compress file
+func lzw_compress_file(File file) {
+    var compressed = compress(file.read(:raw))
+    MAGIC_SIGNATURE + encode_integers(compressed)
+}
+
 # Decompress file
 func lzw_decompress_file(File file) {
 
@@ -131,25 +156,7 @@ func lzw_decompress_file(File file) {
         die "Not a LZW22 archive!\n"
     }
 
-    var count_len = fh.getc.ord
-    var counts = []
-
-    count_len.times {
-        var b = fh.getc.ord
-        var l = unpack('N', 4.of { fh.getc }.join)
-        counts << [b.to_i, l.to_i]
-    }
-
-    var chunks = []
-    var bits = fh.slurp.ascii2bin
-
-    for b,len in (counts) {
-        len > 0 || next
-        chunks << bits.substr(0, b*len).slices(b)...
-        bits.ft!(b*len)
-    }
-
-    decompress(chunks.map{ Num(_, 2) })
+    decompress(decode_integers(fh))
 }
 
 ARGV.getopt!('d', \var decode)

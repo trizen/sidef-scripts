@@ -72,9 +72,9 @@ func lz77_decompress_file(File input, File output) {
 
     var chunk = ''
     while (in_fh.read(\var data, 4*CHUNK_SIZE)) {
-        ['(SCC)*'.unpack(data)].each_slice(3, {|s,l,c|
+        ['(SCa)*'.unpack(data)].each_slice(3, {|s,l,c|
 
-            chunk += (chunk.substr(s, l) + 'C'.pack(c))
+            chunk += (chunk.substr(s, l) + c)
 
             if (chunk.len >= CHUNK_SIZE) {
                 out_fh.print(chunk)

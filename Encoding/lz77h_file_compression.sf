@@ -18,7 +18,7 @@ func walk(Hash n, String s, Hash h) {
 
 func make_tree(Array bytes) {
 
-    var nodes = bytes.freq.kv.sort.map_2d { |b,f|
+    var nodes = bytes.freq.sort.map_2d { |b,f|
         Hash(a => b, freq => f)
     }
 
@@ -104,9 +104,7 @@ func lz77h_compress_file(File input, File output) {
     # Print the header
     out_fh.print(header)
 
-    var uncompressed = []
-    var lengths = []
-    var indices = []
+    var (uncompressed, indices, lengths) = ([], [], [])
 
     # Compress data
     while (in_fh.read(\var chunk, CHUNK_SIZE)) {
@@ -125,23 +123,38 @@ func lz77h_compress_file(File input, File output) {
     out_fh.close
 }
 
+func read_bits (FileHandle fh, Number bits_len) {
+
+    var str = ''
+    fh.read(\str, bits_len>>3)
+    str = unpack('B*', str)
+
+    while (str.len < bits_len) {
+        str += unpack('B*', fh.getc \\ break)
+    }
+
+    if (str.len > bits_len) {
+        str.substr!(0, bits_len)
+    }
+
+    return str
+}
+
 func decode_huffman_entry (FileHandle fh) {
 
     var codes = []
     var codes_len = 0
 
-    for c in (0..255) {
-        var l = fh.getc.ord
+    fh.read(\var buffer, 256)
+
+    [unpack('C*', buffer)].map{ Num(_) }.each_kv {|c,l|
         if (l > 0) {
             codes_len += l
             codes << [c, l]
         }
     }
 
-    var codes_bin = ''
-    while (codes_bin.len < codes_len) {
-        codes_bin += unpack('B*', fh.getc \\ break)
-    }
+    var codes_bin = read_bits(fh, codes_len)
 
     var rev_dict = Hash()
     for c,l in (codes) {
@@ -153,19 +166,7 @@ func decode_huffman_entry (FileHandle fh) {
     var enc_len = Num(unpack('N', 4.of{ fh.getc }.join))
 
     if (enc_len > 0) {
-
-        var enc_data = ''
-        fh.read(\enc_data, enc_len>>3)
-        enc_data = unpack('B*', enc_data)
-
-        while (enc_data.len < enc_len) {
-            enc_data += unpack('B*', fh.getc)
-        }
-
-        if (enc_data.len > enc_len) {
-            enc_data.substr!(0, enc_len)
-        }
-
+        var enc_data = read_bits(fh, enc_len)
         return huffman_decode(enc_data, rev_dict)
     }
 
