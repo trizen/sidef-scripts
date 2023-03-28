@@ -1,0 +1,28 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 27 March 2023
+# https://github.com/trizen
+
+# Examples on how to use the `lgrt(x)` function for computing the inverse of exponential functions.
+
+# Where `lgrt(n)` is defined as:
+#   lgrt(x^x) = x
+
+func exponential_inverse(n, a=1, b=1, c=1, d=0) {
+    lgrt((n/c)**(a/b)) * b / a + d
+}
+
+var n = 100
+
+say exponential_inverse(n.factorial, 1, Num.e, sqrt(Num.tau), -1/2)              # inverse of factorial(n)
+say exponential_inverse(n.bernreal.abs, 1, Num.e * Num.tau, 2*Num.tau, -1/2)     # inverse of abs(Bernoulli(n))
+
+say exponential_inverse(n**n * Num.e**n, Num.e, 1)
+say exponential_inverse(n**n / Num.e**n, 1, Num.e)
+say exponential_inverse(n**n / Num.e**n * 2**n, 2, Num.e)
+say exponential_inverse(n**n * Num.e**n * 2**n, 2 * Num.e, 1)
+
+say exponential_inverse(sqrt(2*Num.pi)**n * (n/Num.e)**n, sqrt(2*Num.pi), Num.e)
+say exponential_inverse((n/Num.e)**n / sqrt(2*Num.pi)**n, 1, sqrt(2*Num.pi) * Num.e)
+say exponential_inverse(sqrt(2*Num.pi)**n / (n/Num.e)**n, -1, sqrt(2*Num.pi) * Num.e).abs

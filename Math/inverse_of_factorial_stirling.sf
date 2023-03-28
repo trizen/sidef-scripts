@@ -5,20 +5,19 @@
 # Date: 27 September 2016
 # Website: https://github.com/trizen
 
-# The inverse of n factorial, based on the inverse of Stirling's approximation.
+# The inverse of n factorial, based on the inverse of Stirling's approximation:
+#   n! ~ sqrt(2*pi*n) * (n/e)^n
 
 define τ = Num.tau
 define e = Num.e
-define S = τ.sqrt.ln
-define T = τ.root(-2*e)
 
 func inverse_factorial_W(n) {
-    var l = (n.ln - S)
+    var l = (log(n) - log(τ)/2)
     l / lambert_w(l / e) - 1/2
 }
 
 func inverse_factorial_lgrt(n) {
-    lgrt(T * n.root(e)) * e - 1/2
+    lgrt((n / sqrt(τ))**(1/e)) * e - 1/2
 }
 
 for n in (1..50) {

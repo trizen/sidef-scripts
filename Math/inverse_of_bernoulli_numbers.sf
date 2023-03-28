@@ -2,6 +2,7 @@
 
 # Daniel "Trizen" Șuteu
 # Date: 29 June 2017
+# Edit: 27 March 2023
 # https://github.com/trizen
 
 # Inverse of Bernoulli numbers, based on the inverse of the following asymptotic formula:
@@ -18,18 +19,16 @@
 
 define e = Num.e
 define τ = Num.tau
-define S = log(sqrt(τ))
-define T = τ**(-1/2 / e / τ)
 
 func inverse_bernoulli_W (n) {
-    (log(n/2) - S) / LambertW((log(n/2) - S) / τ / e) - 1/2
+    (log(n/2) - log(τ)) / LambertW((log(n/2) - log(τ)) / (τ*e)) - 1/2
 }
 
 func inverse_bernoulli_lgrt (n) {
-    lgrt(T * (n/2)**(1 / e / τ)) * e * τ - 1/2
+    lgrt((n/(2*τ))**(1/(e*τ))) * e * τ - 1/2
 }
 
 var x = abs(bernreal(1000000))
 
-say inverse_bernoulli_W(x)         #=> 1000000.07672120297238023703521860508549747587329
-say inverse_bernoulli_lgrt(x)      #=> 1000000.07672120297238023703521860508549747587329
+say inverse_bernoulli_W(x)         #=> 999999.999999996521295786570230337488233833193417
+say inverse_bernoulli_lgrt(x)      #=> 999999.999999996521295786570230337488233833193417
