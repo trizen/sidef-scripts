@@ -13,7 +13,9 @@
 
 func legendre_phi(x, a) is cached {
     return x if (a <= 0)
-    __FUNC__(x, a-1) - __FUNC__(idiv(x, a.prime), a-1)
+    var p = a.prime
+    return __FUNC__(x, a-1) if (p > x)
+    __FUNC__(x, a-1) - __FUNC__(idiv(x, p), a-1)
 }
 
 func legendre_prime_count(n) is cached {
