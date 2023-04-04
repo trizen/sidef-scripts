@@ -6,17 +6,17 @@
 # Website: https://github.com/trizen
 
 #
-## A basic Fraction() class, implementing some common fraction identities.
+## A basic Rational() class, implementing some common fraction identities.
 #
 
-class Fraction(num, den) {
+class Rational(num, den) {
 
     method +(Number o) {
-        self + Fraction(o, 1)
+        self + Rational(o, 1)
     }
 
-    method +(Fraction o) {
-        Fraction(
+    method +(Rational o) {
+        Rational(
             num*o.den + o.num*den,
             den*o.den
         )
@@ -26,27 +26,27 @@ class Fraction(num, den) {
         self + -o
     }
 
-    method -(Fraction o) {
+    method -(Rational o) {
         self + -o
     }
 
     method *(Number o) {
-        Fraction(num*o, den)
+        Rational(num*o, den)
     }
 
-    method *(Fraction o) {
-        Fraction(num*o.num, den*o.den)
+    method *(Rational o) {
+        Rational(num*o.num, den*o.den)
     }
 
     method /(Number o) {
-        Fraction(
+        Rational(
             num,
             den * o
         )
     }
 
-    method /(Fraction o) {
-        Fraction(
+    method /(Rational o) {
+        Rational(
             num * o.den,
             den * o.num,
         )
@@ -55,43 +55,43 @@ class Fraction(num, den) {
     method **(Number o) {
         if (o < 0) {
             var a = o.abs
-            Fraction(den**a, num**a)
+            Rational(den**a, num**a)
         }
         else {
-            Fraction(num**o, den**o)
+            Rational(num**o, den**o)
         }
     }
 
     method neg {
-        Fraction(-num, den)
+        Rational(-num, den)
     }
 
     method to_s {
-        "Fraction(#{num}, #{den})"
+        "Rational(#{num}, #{den})"
     }
 }
 
 class Number {
-    method +(Fraction o) {
+    method +(Rational o) {
         o + self
     }
 
-    method -(Fraction o) {
+    method -(Rational o) {
         -o + self
     }
 
-    method *(Fraction o) {
+    method *(Rational o) {
         o * self
     }
 
-    method /(Fraction o) {
+    method /(Rational o) {
         o**(-1) * self
     }
 }
 
-var r = Fraction(1, 1)
+var r = Rational(1, 1)
 
 prime(10).primes_each {|p|
-    r *= (1 - Fraction(1, p))
+    r *= (1 - Rational(1, p))
     say r
 }
