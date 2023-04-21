@@ -1,0 +1,33 @@
+#!/usr/bin/ruby
+
+# A simple (non-practical) implementation of the AKS primality test.
+
+func aks_primality_test(n) {
+
+    # Algorithm 4.1.5, described in the book "Prime Numbers - A computational perspective".
+
+    # Make sure n is not a perfect power
+    return false if n.is_power
+
+    # Find the least integer r with znorder(n, r) > (log_2(n))^2
+    var r = (n.ilog2**2 .. Inf -> lazy.grep{.is_prime}.first_by {|m|
+        znorder(n, m) > n.log2**2
+    })
+
+    # If n has a proper factor in [2, sqrt(phi(n)) * log_2(n)], then n is composite
+    var max_a = floor(sqrt(phi(r))*n.log2)
+    n.trial_factor(max_a).len == 1 || return false
+
+    # Binomial congruences
+    var x = Poly(1).mod(n)
+    var m = (Poly(r) - 1)
+
+    for k in (1..max_a) {
+        var a = Mod(k, n)
+        (x + a).powmod(n, m) == (x.powmod(n, m) + a) || return false
+    }
+
+    return true
+}
+
+say 10.by(aks_primality_test)   # first 10 primes

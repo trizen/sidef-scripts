@@ -1,0 +1,56 @@
+#!/usr/bin/ruby
+
+# A simple implemenetation of the Frobenius pseudoprimality test, using polynomials.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Frobenius_pseudoprime
+
+# Frobenius primality test:
+#   1. Let: Q=2 and let P be the first odd integer P >= 5 such that kronecker(P^2 - 4*Q, n) = -1.
+#   2. Let: f(x) = x^2 - P*x + Q.
+#   3. Let: D = P^2 - 4*Q, not a square.
+#   4. Let n be the number to be tested, with gcd(n, 2*Q*D) = 1.
+#   5. If x^n == P-x (mod (f(x), n)), then n is most likely a prime number.
+
+# No counter-examples are known to this test.
+
+func is_frobenius_pseudoprime(n, P=1, Q=-1) {
+
+    var D = (P**2 - 4*Q)
+    var g = gcd(n, 2*Q*D)
+
+    assert(!D.is_square)
+
+    if (g != 1) {
+        return false if (g < n)
+    }
+
+    var x = Poly(1)
+    var r = x.mod(n).powmod(n, x**2 - P*x + Q)
+
+    kronecker(D, n) == 1 ? (r == x) : (r == (P - x))
+}
+
+func frobenius_primality_test(n) {
+
+    return false if (n <= 1)
+    return true  if (n == 2)
+    return false if (n.is_even)
+    return true  if (n <= 5)
+    return false if (n.is_power)
+
+    # Using the parameters (P,Q), where Q = 2 and P is the first
+    # odd integer P >= 5 such that kronecker(P^2 - 4*Q, n) = -1.
+
+    var Q = 2
+    var P = (5..Inf `by` 2 -> first {|P|
+        kronecker(P**2 - 4*Q, n) == -1
+    })
+
+    is_frobenius_pseudoprime(n, P, Q)
+}
+
+var FPP_list = 50.by(frobenius_primality_test)
+say FPP_list
+
+assert_eq(FPP_list, 50.nprimes)

@@ -1,0 +1,47 @@
+#!/usr/bin/ruby
+
+# A simple (non-practical) implementation of the n-1 variant of the AKS primality test.
+
+func aks_primality_test(n) {
+
+    # Theorem 4.5.7, described in the book "Prime Numbers - A computational perspective".
+
+    # Let n,r,b be integers with n > 1 and r | (n-1), r > (log_2(n))^2,
+    # b^(n-1) == 1 (mod n) and gcd(b^((n-1)/q) - 1, n) = 1 for each prime q|r.
+    # If (x-1)^n == x^n - 1 (mod x^r - b, n), then n is a prime or a prime power.
+
+    # Make sure n is not a perfect power
+    return false if n.is_power
+
+    # n-1 must be greater than (log_2(n))^2
+    n-1 > n.log2**2 || return n.is_prime
+
+    return false if n.is_even
+
+    # Find the smallest divisor d of n-1 that is greater than (log_2(n))^2
+    var r = (1..Inf -> lazy.map {|k|
+        divisors(n-1, (n.ilog2**2) << k).first {|d|
+            d > n.log2**2
+        }
+    }.first_by { _ != nil })
+
+    var f = r.factor_exp.map { .head }
+
+    # Find b such that b^(n-1) == 1 (mod n) and gcd(b^((n-1)/q) - 1, n) = 1 for each prime q|r.
+    var b = (1..Inf -> lazy.map { irand(2, n-2) }.first_by { |b|
+        powmod(b, n-1, n) == 1 || return false
+        f.all {|q|
+            var g = gcd(powmod(b, idiv(n-1, q), n) - 1, n)
+            g.is_between(2, n-1) && return false
+            g == 1
+        }
+    })
+
+    # Binomial congruence
+    var x = Poly(1).mod(n)
+    var m = (Poly(r) - b)
+
+    (x - 1).powmod(n, m) == (x.powmod(n, m) - 1)
+}
+
+say 15.by(aks_primality_test)   # first 15 primes
