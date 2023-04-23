@@ -1,27 +1,44 @@
 #!/usr/bin/ruby
 
-# Simple implementation of Pollard's p−1 integer factorization algorithm.
+# Simple implementation of Pollard's p−1 integer factorization algorithm, with the B2 stage.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm
 
-func pollard_pm1_factor (n, B = n.ilog2**3) {
+func pollard_pm1_factor (n, B1 = n.ilog(6)**3, B2 = B1*B1.ilog2) {
 
     return n if ((n <= 1) || n.is_prime)
     return 2 if n.is_even
 
     var t = 2
-    var G = B*B
+    var G = B1*B1
 
-    B.primes_each {|p|
-        t = powmod(t, p**G.ilog(p), n)
-        is_coprime(t-1, n) || break
-    }
+    primes_each(2, B1.isqrt, {|p|
+        G.ilog(p).times {
+            t = powmod(t, p, n)
+        }
+    })
 
-    return gcd(t-1, n)
+    primes_each(B1.isqrt+1, B1, {|p|
+        t = powmod(t, p, n)
+        is_coprime(t-1, n) || return gcd(t-1, n)
+    })
+
+    var Q  = B1.next_prime
+    var TQ = powmod(t, Q, n)
+
+    var table = []
+
+    primes_each(Q.next_prime, B2, {|p|
+        TQ = mulmod(TQ, (table[p-Q] := powmod(t, p - Q, n)), n)
+        is_coprime(TQ-1, n) || return gcd(TQ-1, n)
+        Q = p
+    })
+
+    return 1
 }
 
-say pollard_pm1_factor(1204123279);                                #=> 25889
-say pollard_pm1_factor(83910721266759813859)                       #=> 4545646757
-say pollard_pm1_factor(406816927495811038353579431);               #=> 9074269
-say pollard_pm1_factor(38568900844635025971879799293495379321);    #=> 17495058332072672321
+say pollard_pm1_factor(1204123279)                                #=> 25889
+say pollard_pm1_factor(83910721266759813859)                      #=> 4545646757
+say pollard_pm1_factor(406816927495811038353579431)               #=> 9074269
+say pollard_pm1_factor(38568900844635025971879799293495379321)    #=> 17495058332072672321
