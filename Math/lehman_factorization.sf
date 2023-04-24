@@ -1,0 +1,31 @@
+#!/usr/bin/ruby
+
+# Simple implementation of Lehman's factorization method.
+
+func lehman_factor(n) {
+
+    var c = n.icbrt
+    var r = n.isqrt
+
+    for k in (1 .. c.inc) {
+        for a in (RangeNum(2*isqrt(n*k) + 1, 2*isqrt(n*k) + idiv(r, 4*k.isqrt) + 2)) {
+            if (a.powmod(2, n).is_square) {
+                return gcd(a + isqrt(a.sqr % n), n)
+            }
+        }
+    }
+
+    # Check whether n has any prime factor in the range [2, n^(1/3)]
+    return n.trial_factor(c).first
+}
+
+for n in ([43*97, 503*863, 39557647476023, 160587846247027, 2**64 - 1, 2**128 - 1]) {
+    say "lehman_factor(#{n}) = #{lehman_factor(n)}"
+}
+
+say ''
+
+for n in (1..10) {
+    var n = 2.of { 18.random_nbit_prime }.prod
+    say ("lehman_factor(#{n}) = ", lehman_factor(n))
+}

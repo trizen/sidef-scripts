@@ -388,6 +388,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Legendre factorial](./Math/legendre_factorial.sf)
     * [Legendre prime counting function](./Math/legendre_prime_counting_function.sf)
     * [Legendre prime counting function from k-rough count](./Math/legendre_prime_counting_function_from_k-rough_count.sf)
+    * [Lehman factorization](./Math/lehman_factorization.sf)
     * [Levenshtein distance iter](./Math/levenshtein_distance_iter.sf)
     * [Levenshtein distance rec](./Math/levenshtein_distance_rec.sf)
     * [Limits for pi](./Math/limits_for_pi.sf)
