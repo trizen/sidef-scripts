@@ -1,0 +1,442 @@
+#!/usr/bin/ruby
+
+#`(if running under some shell) {
+    eval 'exec /usr/bin/sidef $0 ${1+"$@"}'
+}
+
+# Author: Trizen
+# Date: 26 April 2023
+# https://github.com/trizen
+
+# Solver for the asciiplanes game.
+
+var asciitable =
+        try   { require('Text::ASCIITable') }
+        catch { STDERR.print("Can't load the 'Text::ASCIITable' Perl module...\n"); Sys.exit(2) }
+
+var ANSI =
+    try   { frequire('Term::ANSIColor') }
+    catch { nil }
+
+## Package variables
+var pkgname = 'asciiplanes-player'
+var version = 0.01
+
+## Game variables
+var BOARD_SIZE = 8
+var PLANES_NUM = 3
+
+define(
+    AIR   = '`',
+    BLANK = ' ',
+    HIT   = 'O',
+    HEAD  = 'X',
+)
+
+var score_table = Hash(
+    air  => AIR,
+    head => HEAD,
+    hit  => HIT,
+)
+
+var use_colors = defined(ANSI)
+var wrap_plane = false
+var simulate   = false
+var hit_char   = HIT
+var miss_char  = AIR
+var head_char  = HEAD
+
+func usage {
+    print <<"EOT"
+usage: #{__MAIN__} [options]
+
+main:
+        --size=i    : length side of the board (default: #{BOARD_SIZE})
+        --planes=i  : the total number of planes (default: #{PLANES_NUM})
+        --wrap!     : wrap the plane around the play board (default: #{wrap_plane})
+        --hit=s     : character used when a plane is hit (default: "#{hit_char}")
+        --miss=s    : character used when a plane is missed (default: "#{miss_char}")
+        --colors!   : use ANSI colors (requires Term::ANSIColor) (default: #{use_colors})
+        --simulate! : run a random simulation (default: #{simulate})
+
+help:
+        --help      : print this message and exit
+        --version   : print the version number and exit
+
+example:
+        #{__MAIN__} --size=12 --planes=6 --hit='*'
+
+EOT
+
+    Sys.exit
+}
+
+func ver {
+    print "#{pkgname} #{version}\n"
+    Sys.exit
+}
+
+if (ARGV) {
+    var getopt = (
+                    try   { frequire('Getopt::Long') }
+                    catch { STDERR.print("Can't load the 'Getopt::Long' Perl module...\n"); Sys.exit(2) }
+                 )
+
+    getopt.GetOptions(
+         'board-size|size=i' => func(_,v) { BOARD_SIZE = Num(v)  },
+         'planes-num=i'      => func(_,v) { PLANES_NUM = Num(v)  },
+         'hit-char=s'        => func(_,v) { hit_char   = Str(v)  },
+         'miss-char=s'       => func(_,v) { miss_char  = Str(v)  },
+         'wrap!'             => func(_,v) { wrap_plane = Bool(v) },
+         'colors!'           => func(_,v) { use_colors = Bool(v) },
+         'simulate!'         => func(_,v) { simulate = Bool(v) },
+         'help|h|?'          => func(*_)  { usage() },
+         'version|v|V'       => func(*_)  { ver() },
+    )
+}
+
+#---------------------------------------------------------------
+
+func pointers(board, x, y, indices) {
+    gather {
+        indices.each_2d { |i,j|
+
+            var (row, col) = (x+i, y+j)
+
+            if (wrap_plane) {
+                row %= BOARD_SIZE
+                col %= BOARD_SIZE
+            }
+
+            row.is_between(0, BOARD_SIZE-1) || return []
+            col.is_between(0, BOARD_SIZE-1) || return []
+
+            take(\board[row][col])
+        }
+    }
+}
+
+var up =
+    [
+                  [+0, +0],
+        [+1, -1], [+1, +0], [+1, +1],
+                  [+2, +0],
+        [+3, -1], [+3, +0], [+3, +1],
+    ]
+
+var down =
+    [
+        [-3, -1], [-3, +0], [-3, +1],
+                  [-2, +0],
+        [-1, -1], [-1, +0], [-1, +1],
+                  [+0, +0],
+    ]
+
+var left =
+    [
+                  [-1, +1],           [-1, +3],
+        [+0, +0], [+0, +1], [+0, +2], [+0, +3],
+                  [+1, +1],           [+1, +3],
+    ]
+
+var right =
+    [
+        [-1, -3],           [-1, -1],
+        [+0, -3], [+0, -2], [+0, -1], [+0, +0],
+        [+1, -3],           [+1, -1],
+    ]
+
+const DIRECTIONS = [up, down, left, right]
+
+const PAIR_INDICES =
+    BOARD_SIZE.range.map {|i|
+            BOARD_SIZE.range.map {|j|
+                [i, j]
+            }...
+        }
+
+func assign(board, dir, x, y, force = false) {
+
+    var plane = pointers(board, x, y, dir) || return false
+
+    if (!force) {
+        plane.all {|c| *c == BLANK } || return false
+    }
+
+    plane.each {|c| *c = HIT }
+    board[x][y] = HEAD
+
+    return true
+}
+
+func print_ascii_table(*boards) {
+
+    var ascii_tables = []
+
+    for board in (boards) {
+        var table = asciitable.new(Hash(headingText => "#{pkgname} #{version}"))
+
+        table.setCols(' ', (1..BOARD_SIZE)...)
+
+        var char = 'a';
+        board.each { |row|
+            table.addRow([char++, row...])
+            table.addRowLine()
+        }
+
+        var t = table.drawit
+
+        if (defined(ANSI) && use_colors) {
+            t.gsub!(hit_char, ANSI.colored(hit_char, 'bold red'))
+            t.gsub!(miss_char, ANSI.colored(miss_char, 'yellow'))
+            t.gsub!(HEAD, ANSI.colored(head_char, 'bold green'))
+        }
+
+        ascii_tables << t
+    }
+
+    ascii_tables.map { .lines }.zip {|*a|
+        say a.join('  ')
+    }
+}
+
+func valid_assignment (play_board, info_board) {
+
+    [play_board, info_board].zip {|*rows|
+        rows.zip {|play,info|
+            if (info == AIR) {
+                if (play != BLANK) {
+                    return false
+                }
+            }
+        }
+    }
+
+    return true
+}
+
+func create_planes(play_board) {
+
+    var count = 0
+    var max_tries = BOARD_SIZE**4
+
+    while (count != PLANES_NUM) {
+
+        var x = irand(1, BOARD_SIZE)-1
+        var y = irand(1, BOARD_SIZE)-1
+
+        var dir = DIRECTIONS.rand
+
+        if (--max_tries <= 0) {
+            die "FATAL ERROR: try to increase the size of the grid (--size=x).\n"
+        }
+
+        assign(play_board, dir, x, y) || next
+        ++count
+    }
+
+    return true
+}
+
+func guess(info_board, play_board, plane_count) {
+
+    var count = 0
+    var sampled = Set()
+    var max_tries = BOARD_SIZE*BOARD_SIZE
+
+    while (count != (PLANES_NUM - plane_count)) {
+
+        #var x = irand(1, BOARD_SIZE)-1
+        #var y = irand(1, BOARD_SIZE)-1
+
+        var (x,y) = (PAIR_INDICES.shuffle.first_by {|idx|
+            (play_board[idx[0]][idx[1]] == BLANK) && (info_board[idx[0]][idx[1]] == BLANK) && !sampled.has(idx)
+        } \\ return nil)...
+
+        if (--max_tries <= 0) {
+            return nil
+        }
+
+        sampled << [x,y]
+
+        var good_directions = DIRECTIONS.grep {|dir|
+            var plane = pointers(info_board, x, y, dir)
+            plane && plane.none { *_ == AIR }
+        } || next
+
+        good_directions.shuffle.any {|dir|
+            assign(play_board, dir, x, y)
+        } || next
+
+        #valid_assignment(play_board, info_board) || return nil
+        ++count
+    }
+
+    return true
+}
+
+func get_head_positions(board) {
+
+    var headshots = []
+
+    board.each_kv {|i,row|
+        row.each_kv {|j,entry|
+            if (entry == HEAD) {
+                headshots << [i,j]
+            }
+        }
+    }
+
+    return headshots
+}
+
+func make_play_board {
+    BOARD_SIZE.of { BOARD_SIZE.of { BLANK } }
+}
+
+func make_play_boards(info_board) {
+
+    var headshots = get_head_positions(info_board)
+
+    var boards = [
+        [make_play_board(), 0]
+    ]
+
+    for x,y in (headshots), dir in (DIRECTIONS) {
+        for board,count in (boards.map { .dclone }) {
+            assign(board, dir, x, y) || next
+            boards << [board, count+1]
+        }
+    }
+
+    var max_count = boards.map { .tail }.max
+    boards.grep { .tail == max_count }.grep { valid_assignment(.head, info_board) }
+}
+
+func get_letters() {
+
+    var letters = Hash()
+    var char = 'a'
+
+    BOARD_SIZE.range.each { |i|
+        letters{char++} = i
+    }
+
+    return letters
+}
+
+func valid (play_board, info_board) {
+
+    [play_board, info_board].zip {|*rows|
+        rows.zip {|play,info|
+
+            info == BLANK && next
+
+            if (info == AIR) {
+                if (play != BLANK) {
+                    return false
+                }
+            }
+            elsif (info != play) {
+                return false
+            }
+        }
+    }
+
+    return true
+}
+
+func solve(callback) {
+
+    var tries = 0
+    var info_board = BOARD_SIZE.of { BOARD_SIZE.of { BLANK } }
+    var boards = make_play_boards(info_board)
+
+    loop {
+        for board,plane_count in (boards) {
+
+            var play_board = board.dclone
+            guess(info_board, play_board, plane_count) || next
+            valid(play_board, info_board) || next
+
+            var all_dead = true
+            var new_info = false
+
+            get_head_positions(play_board).shuffle.each_2d {|i,j|
+
+                if (info_board[i][j] == HEAD) {
+                    next    # already destroyed
+                }
+
+                all_dead  = false
+                var score = callback(i, j, play_board, info_board)
+
+                if (score == BLANK) {
+                    score = AIR
+                }
+
+                ++tries
+                info_board[i][j] = score
+
+                if (score == HEAD) {
+                    new_info = true
+                    boards = make_play_boards(info_board)
+                }
+                elsif (score == AIR) {
+                    new_info = true
+                    boards = boards.grep { valid_assignment(.head, info_board) }
+                }
+
+                break
+            }
+
+            if (all_dead) {
+                return tries
+            }
+
+            break if new_info
+        }
+    }
+}
+
+var letters2indices = get_letters()
+var indices2letters = letters2indices.flip
+
+func process_user_input(i, j, play_board, info_board) {
+
+    print_ascii_table(play_board, info_board)
+
+    loop {
+        say "=> My guess: #{indices2letters{i}}#{j+1}"
+        say "=> Score (hit, head or air)"
+        var input = (Sys.scanln("> ") \\ break -> lc)
+        input ~~ ['q', 'quit'] && break
+
+        input.trim!
+
+        score_table.has(input) || do {
+            say ":: Invalid score..."
+            next
+        }
+
+        return score_table{input}
+    }
+}
+
+if (simulate) {
+
+    var board = make_play_board()
+    create_planes(board)
+
+    var tries = solve(func(i, j, play_board, info_board) {
+        print_ascii_table(play_board, info_board)
+        board[i][j]
+    })
+
+    say "It took #{tries} tries to solve:"
+    print_ascii_table(board)
+}
+else {
+    var tries = solve(process_user_input)
+    say "\n:: All planes destroyed in #{tries} tries!\n"
+}

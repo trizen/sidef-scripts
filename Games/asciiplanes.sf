@@ -14,15 +14,13 @@
 
 # Find the planes' positions on a grid. (text-based game)
 
-var asciitable = (
-                   try   { require('Text::ASCIITable') }
-                   catch { STDERR.print("Can't load the 'Text::ASCIITable' Perl module...\n"); Sys.exit(2) }
-                 )
+var asciitable =
+        try   { require('Text::ASCIITable') }
+        catch { STDERR.print("Can't load the 'Text::ASCIITable' Perl module...\n"); Sys.exit(2) }
 
-var ANSI = (
-                try   { frequire('Term::ANSIColor') }
-                catch { nil }
-           )
+var ANSI =
+        try   { frequire('Term::ANSIColor') }
+        catch { nil }
 
 ## Package variables
 var pkgname = 'asciiplanes'
@@ -107,19 +105,14 @@ func pointers(board, x, y, indices) {
             pair.kind_of(Array) || next
             var (row, col) = (x + pair[0], y + pair[1])
 
-            if (row > board.end) {
-                wrap_plane || return []
-                row %= board.len
+            if (wrap_plane) {
+                row %= BOARD_SIZE   #=
+                col %= BOARD_SIZE   #=
             }
 
-            if (col > board[row].end) {
-                wrap_plane || return []
-                col %= board[row].len
-            }
+            row.is_between(0, BOARD_SIZE-1) || return []
+            col.is_between(0, BOARD_SIZE-1) || return []
 
-            if (!wrap_plane && (row<0 || col<0)) {
-                return []
-            }
             take(\board[row][col])
         }
     }
