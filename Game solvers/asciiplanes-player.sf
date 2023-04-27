@@ -55,6 +55,7 @@ main:
         --size=i    : length side of the board (default: #{BOARD_SIZE})
         --planes=i  : the total number of planes (default: #{PLANES_NUM})
         --wrap!     : wrap the plane around the play board (default: #{wrap_plane})
+        --head=s    : character used for the head of the plane (default: "#{head_char}")
         --hit=s     : character used when a plane is hit (default: "#{hit_char}")
         --miss=s    : character used when a plane is missed (default: "#{miss_char}")
         --colors!   : use ANSI colors (requires Term::ANSIColor) (default: #{use_colors})
@@ -79,15 +80,15 @@ func ver {
 }
 
 if (ARGV) {
-    var getopt = (
-                    try   { frequire('Getopt::Long') }
-                    catch { STDERR.print("Can't load the 'Getopt::Long' Perl module...\n"); Sys.exit(2) }
-                 )
+    var getopt =
+        try   { frequire('Getopt::Long') }
+        catch { STDERR.print("Can't load the 'Getopt::Long' Perl module...\n"); Sys.exit(2) }
 
     getopt.GetOptions(
          'board-size|size=i' => func(_,v) { BOARD_SIZE = Num(v)  },
          'planes-num=i'      => func(_,v) { PLANES_NUM = Num(v)  },
          'seed=i'            => func(_,v) { seed       = Num(v)  },
+         'head-char=s'       => func(_,v) { head_char  = Str(v)  },
          'hit-char=s'        => func(_,v) { hit_char   = Str(v)  },
          'miss-char=s'       => func(_,v) { miss_char  = Str(v)  },
          'wrap!'             => func(_,v) { wrap_plane = Bool(v) },
@@ -195,8 +196,8 @@ func print_ascii_table(*boards) {
         var t = table.drawit
 
         if (defined(ANSI) && use_colors) {
-            t.gsub!(hit_char, ANSI.colored(hit_char, 'bold red'))
-            t.gsub!(miss_char, ANSI.colored(miss_char, 'yellow'))
+            t.gsub!(HIT,  ANSI.colored(hit_char, 'bold red'))
+            t.gsub!(AIR,  ANSI.colored(miss_char, 'yellow'))
             t.gsub!(HEAD, ANSI.colored(head_char, 'bold green'))
         }
 
@@ -208,12 +209,21 @@ func print_ascii_table(*boards) {
     }
 }
 
-func valid_assignment (play_board, info_board) {
+func valid_assignment (play_board, info_board, extra = false) {
 
     [play_board, info_board].zip {|*rows|
         rows.zip {|play,info|
+
             if (info == AIR) {
                 if (play != BLANK) {
+                    return false
+                }
+            }
+            elsif (extra) {
+
+                info == BLANK && next
+
+                if (info != play) {
                     return false
                 }
             }
@@ -333,31 +343,10 @@ func get_letters() {
     return letters
 }
 
-func valid (play_board, info_board) {
-
-    [play_board, info_board].zip {|*rows|
-        rows.zip {|play,info|
-
-            info == BLANK && next
-
-            if (info == AIR) {
-                if (play != BLANK) {
-                    return false
-                }
-            }
-            elsif (info != play) {
-                return false
-            }
-        }
-    }
-
-    return true
-}
-
 func solve(callback) {
 
     var tries = 0
-    var info_board = BOARD_SIZE.of { BOARD_SIZE.of { BLANK } }
+    var info_board = make_play_board()
     var boards = make_play_boards(info_board)
 
     loop {
@@ -365,24 +354,26 @@ func solve(callback) {
 
             var play_board = board.dclone
             guess(info_board, play_board, plane_count) || next
-            valid(play_board, info_board) || next
+            valid_assignment(play_board, info_board, true) || next
 
             var all_dead = true
             var new_info = false
 
-            var head_pos = get_head_positions(play_board).shuffle
+            # Prefer points nearest to the center of the board
+            var head_pos = get_head_positions(play_board).sort_by {|p|
+                hypot(p.map {|i| (BOARD_SIZE-1)/2 - i }...)
+            }
 
             head_pos = head_pos.grep_2d {|x,y| info_board[x][y] == BLANK }.map_2d {|x,y|
-                [x, y, DIRECTIONS.first_by {|d|
-                    (pointers(play_board, x, y, d).count_by { *_ == HIT } == 7) &&
-                    (pointers(info_board, x, y, d).none { *_ == AIR })
+                [x, y, DIRECTIONS.map {|d| pointers(info_board, x, y, d) }.grep {|t|
+                    t && t.none { *_ == AIR }
                 }]
             }
 
             # Prefer the planes with the most hits
             head_pos = head_pos.sort_by {|p|
-                pointers(info_board, p[0], p[1], p[2]).count_by { *_ == HIT }
-            }.flip
+                p[2].sum_by {|t| t.count_by { *_ == HIT } } -> neg
+            }
 
             head_pos.each_2d {|i,j|
 
@@ -391,7 +382,7 @@ func solve(callback) {
                 }
 
                 all_dead  = false
-                var score = callback(i, j, play_board, info_board)
+                var score = callback(i, j, play_board, info_board) \\ return nil
 
                 if (score == BLANK) {
                     score = AIR
@@ -432,13 +423,13 @@ func process_user_input(i, j, play_board, info_board) {
     loop {
         say "=> My guess: #{indices2letters{i}}#{j+1}"
         say "=> Score (hit, head or air)"
-        var input = (Sys.scanln("> ") \\ break -> lc)
-        input ~~ ['q', 'quit'] && break
+        var input = (Sys.scanln("> ") \\ return nil -> lc)
+        input ~~ ['q', 'quit'] && return nil
 
         input.trim!
 
         score_table.has(input) || do {
-            say ":: Invalid score..."
+            say "\n:: Invalid score...\n"
             next
         }
 
@@ -461,5 +452,7 @@ if (simulate) {
 }
 else {
     var tries = solve(process_user_input)
-    say "\n:: All planes destroyed in #{tries} tries!\n"
+    if (defined(tries)) {
+        say "\n:: All planes destroyed in #{tries} tries!\n"
+    }
 }

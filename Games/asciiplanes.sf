@@ -35,7 +35,7 @@ var plane_chars = ['$', '#', '@']
 
 var use_colors = defined(ANSI)
 var wrap_plane = false
-var hit_char   = %q{*}
+var hit_char   = %q{O}
 var miss_char  = %q{`}
 
 func usage {
@@ -68,10 +68,9 @@ func ver {
 }
 
 if (ARGV) {
-    var getopt = (
-                    try   { frequire('Getopt::Long') }
-                    catch { STDERR.print("Can't load the 'Getopt::Long' Perl module...\n"); Sys.exit(2) }
-                 )
+    var getopt =
+        try   { frequire('Getopt::Long') }
+        catch { STDERR.print("Can't load the 'Getopt::Long' Perl module...\n"); Sys.exit(2) }
 
     getopt.GetOptions(
          'board-size|size=i' => func(_,v) { BOARD_SIZE = Num(v)  },
