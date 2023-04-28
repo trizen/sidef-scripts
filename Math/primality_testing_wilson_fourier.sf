@@ -15,7 +15,7 @@
 #   https://en.wikipedia.org/wiki/Wilson's_theorem
 #   https://en.wikipedia.org/wiki/Floor_and_ceiling_functions#Continuity_and_series_expansions
 
-local Number!PREC = *("3000")
+local Number!PREC = 3000.numify
 
 const π = Num.pi
 const i = Num.i

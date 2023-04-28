@@ -16,7 +16,7 @@
 
 func mediant_inverse (n, f, min=0, max=n, prec=192) {
 
-    local Number!PREC = *"#{prec}"
+    local Number!PREC = prec.numify
 
     (min, max) = (max, min) if (min > max)
 

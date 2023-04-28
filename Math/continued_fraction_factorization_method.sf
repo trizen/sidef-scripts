@@ -151,10 +151,10 @@ func cffmm (n, multiplier=1) {
     while (A.len < L) {
 
         y = (r*z - y)
-        z = ((N - y*y) / z)         # exact division
+        z = idiv(N - y*y, z)         # exact division
         r = (ROUND_DIVISION ? idiv_round(x+y, z) : idiv(x+y, z))
 
-        (f1, f2) = (f2, (r*f2 + f1) % n)
+        (f1, f2) = (f2, addmod(mulmod(r, f2, n), f1, n))
 
         if (z.is_square) {
             resolve_factor(f1, z)

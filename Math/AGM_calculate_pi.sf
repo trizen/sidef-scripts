@@ -9,7 +9,7 @@
 func AGM_PI(digits=100) {
 
     var acc = 8+digits
-    local Number!PREC = *"#{4*digits}"
+    local Number!PREC = numify(4*digits)
 
     var (an, bn, tn, pn) = (1, sqrt(1/2), 1/4, 1)
 

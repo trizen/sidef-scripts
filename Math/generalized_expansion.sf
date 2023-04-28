@@ -9,7 +9,7 @@
 #   https://oeis.org/A067882
 #   https://oeis.org/A096622
 
-local Num!PREC = 300
+local Num!PREC = 300.numify
 
 func f(n, x, t, r={.floor}) {
     return r(x) if (n == 0)

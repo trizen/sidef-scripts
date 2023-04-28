@@ -63,11 +63,11 @@ func cffm (n) {
 
     do {
         y = (r*z - y)
-        z = ((n - y*y) // z)        #/
-        r = round((x + y) / z)
+        z = idiv(n - y*y, z)
+        r = idiv(x + y, z)
 
-        var a = ((x*f2 + e2) % n)
-        var b = (a*a % n)
+        var a = addmod(x*f2, e2, n)
+        var b = mulmod(a, a, n)
 
         if (b.is_square) {
             resolve_factor(a, b)
@@ -80,8 +80,8 @@ func cffm (n) {
             S{b} = a
         }
 
-        (f1, f2) = (f2, (r*f2 + f1) % n)
-        (e1, e2) = (e2, (r*e2 + e1) % n)
+        (f1, f2) = (f2, addmod(r*f2, f1, n))
+        (e1, e2) = (e2, addmod(r*e2, e1, n))
 
     } while (z != 1)
 

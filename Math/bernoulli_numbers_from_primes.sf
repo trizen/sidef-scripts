@@ -19,7 +19,7 @@ func bern_from_primes(n) {
 
     var log2B = (log(4*Num.tau*n)/2 + n*log(n) - n*log(Num.tau) - n)/log(2)
 
-    local Number!PREC = *(int(n + log2B) + (n <= 90 ? 18 : 0))
+    local Number!PREC = numify(int(n + log2B) + (n <= 90 ? 18 : 0))
 
     var K = (n! * 2 / Num.tau**n)
     var d = 1

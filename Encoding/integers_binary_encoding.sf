@@ -6,14 +6,14 @@
 
 # Encode and decode a random list of integers into a binary string.
 
-func encode_integers (Array compressed) {
+func encode_integers (Array integers) {
 
     var counts = []
     var count = 0
     var bits_per_symbol = 2
     var processed_len = 0
 
-    for k in (compressed) {
+    for k in (integers) {
         while (k >= bits_per_symbol) {
 
             if (count > 0) {
@@ -27,7 +27,7 @@ func encode_integers (Array compressed) {
         ++count
     }
 
-    counts << [bits_per_symbol.len(2)-1, compressed.len - processed_len]
+    counts << [[bits_per_symbol.len(2)-1, integers.len - processed_len]].grep { .tail > 0 }...
 
     var clen = counts.len
     var header = clen.chr
@@ -40,8 +40,7 @@ func encode_integers (Array compressed) {
     var bits = []
 
     for b,len in (counts) {
-        len > 0 || next
-        bits << compressed.splice(0, len).map{ sprintf('%0*s', b, .as_bin) }...
+        bits << integers.splice(0, len).map{ sprintf('%0*s', b, .as_bin) }...
     }
 
     header + pack('B*', bits.join)
@@ -59,14 +58,13 @@ func decode_integers (String str) {
     count_len.times {
         var b = str_shift(\str).ord
         var l = Num(unpack('N', 4.of { str_shift(\str) }.join))
-        counts << [b, l]
+        counts << [b, l] if (l > 0)
     }
 
     var chunks = []
     var bits = str.ascii2bin
 
     for b,len in (counts) {
-        len > 0 || next
         chunks << bits.substr(0, b*len).slices(b)...
         bits.substr!(b*len)
     }
