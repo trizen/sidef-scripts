@@ -1,0 +1,61 @@
+#!/usr/bin/ruby
+
+# A very simple message encryption method based on multiplication of large numbers, for messages of arbitrary length, given a secret key.
+
+# The encryption method is secure(-ish) as long as the secret key is not reused,
+# and the prime factorization of large integers remains hard on classical computers.
+
+func sha512_prefix(data) {
+    var t = data.sha512
+
+    while (t.begins_with('0')) {
+        t = t.sha512
+    }
+
+    return t
+}
+
+func create_key(secret_key) {
+    sha512_prefix(secret_key) + secret_key.sha256 -> hex.next_prime
+}
+
+func encode_msg(msg) {
+    sha512_prefix(msg) + msg.deflate.ascii2hex + msg.sha256 -> hex
+}
+
+func decode_msg(q) {
+    q.as_hex.hex2ascii.ascii2bin.substr(512, -256).bin2ascii.inflate
+}
+
+func encrypt_msg(msg, secret_key) {
+
+    var p = create_key(secret_key)
+    var q = encode_msg(msg)
+
+    p*q
+}
+
+func decrypt_msg(enc, secret_key) {
+
+    var p = create_key(secret_key)
+    var q = idiv(enc,p)
+
+    decode_msg(q)
+}
+
+var secret_key = "a very secret key"
+
+var msg = "Hello, world!"
+#var msg = File(__FILE__).read(:raw)
+
+var enc = encrypt_msg(msg, secret_key)
+var dec = decrypt_msg(enc, secret_key)
+
+say enc
+say dec
+
+assert_eq(msg, dec)
+
+__END__
+2313765241604776730077187616606220478778378021428094989014061346164718072327441037803783726456555953740488543698806966901832086461575914083085289674698300664807080338570395068231775186371894735575206059185704435982655146890302969562971284105104409127738236093004139833572225600394494208944939806197536115369755018907653051538280008818698500913422153562078257468391736978030143442662583677560114553981509305080631703881162093910282823689333603461691803069109034824442161920955634589779269967832750935
+Hello, world!

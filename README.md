@@ -40,6 +40,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Age-lf](./Encryption/age-lf.sf)
     * [Backdoored rsa with x25519](./Encryption/backdoored_rsa_with_x25519.sf)
     * [Insecurity of XOR](./Encryption/insecurity_of_XOR.sf)
+    * [Multiplication encryption](./Encryption/multiplication_encryption.sf)
     * [One-time pad](./Encryption/one-time_pad.sf)
 * File
     * [Fdf](./File/fdf.sf)

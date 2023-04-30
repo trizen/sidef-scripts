@@ -36,8 +36,8 @@ class EllipticCurveMod(x, y, N, A = 0) {
         else {
             var u = invmod(p.x - x, N) || die gcd(p.x - x, N)
             var slope = mulmod(p.y - y, u, N)
-            var x2 = (slope*slope - x - p.x)%N
-            var y2 = (slope * (x - x2) - y)%N
+            var x2 = submod(mulmod(slope, slope, N) - x, p.x, N)
+            var y2 = submod(mulmod(slope, x - x2, N), y, N)
             EllipticCurveMod(x2, y2, N, A)
         }
     }
@@ -51,9 +51,9 @@ class EllipticCurveMod(x, y, N, A = 0) {
     }
 
     method *((2)) {
-        var l = divmod(3 * x*x + A, 2 * y, N)
-        var x2 = (l*l - 2*x)%N
-        var y2 = (l * (x - x2) - y)%N
+        var l  = divmod(3*mulmod(x, x, N) + A, 2*y, N)
+        var x2 = submod(mulmod(l, l, N), 2*x, N)
+        var y2 = submod(mulmod(l, x - x2, N), y, N)
         EllipticCurveMod(x2, y2, N, A)
     }
 
@@ -76,14 +76,12 @@ class Number {
 
 func elliptic_curve_factorization(N, alimit = 100, B = 10000) {
 
-    var primes = B.primes
-
     for a in (-alimit .. alimit) {
         say "Testing: #{a}"
 
         var curve = EllipticCurveMod(0, 1, N, a)
 
-        primes.each {|p|
+        B.each_prime {|p|
             var pp = p**B.ilog(p)
             try {
                 curve *= pp
