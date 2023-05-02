@@ -46,7 +46,7 @@ func qoi_decoder(bytes) {
     )
 
     var run = 0
-    var px  = [0, 0, 0, 255]
+    var (R, G, B, A) = (0, 0, 0, 255)
 
     var pixels = []
     var colors = 64.of { [0,0,0,0] }
@@ -60,27 +60,27 @@ func qoi_decoder(bytes) {
             var byte = (bytes[index++] \\ break)
 
             if (byte == 0b_11_11_11_10) {   # OP RGB
-                px[0] = bytes[index++]
-                px[1] = bytes[index++]
-                px[2] = bytes[index++]
+                R = bytes[index++]
+                G = bytes[index++]
+                B = bytes[index++]
             }
             elsif (byte == 0b_11_11_11_11) { # OP RGBA
-                px[0] = bytes[index++]
-                px[1] = bytes[index++]
-                px[2] = bytes[index++]
-                px[3] = bytes[index++]
+                R = bytes[index++]
+                G = bytes[index++]
+                B = bytes[index++]
+                A = bytes[index++]
             }
             elsif (byte >> 6 == 0b00) {     # OP INDEX
-                px = colors[byte].clone
+                (R, G, B, A) = colors[byte]...
             }
             elsif (byte >> 6 == 0b01) {     # OP DIFF
                 var dr = (byte & 0b00_11_00_00 >> 4)-2
                 var dg = (byte & 0b00_00_11_00 >> 2)-2
                 var db = (byte & 0b00_00_00_11 >> 0)-2
 
-                px[0].addmod!(dr, 256)
-                px[1].addmod!(dg, 256)
-                px[2].addmod!(db, 256)
+                R.addmod!(dr, 256)
+                G.addmod!(dg, 256)
+                B.addmod!(db, 256)
             }
             elsif (byte >> 6 == 0b10) {   # OP LUMA
                 var byte2 = bytes[index++]
@@ -92,18 +92,18 @@ func qoi_decoder(bytes) {
                 var dr = (dr_dg+dg)
                 var db = (db_dg+dg)
 
-                px[0].addmod!(dr, 256)
-                px[1].addmod!(dg, 256)
-                px[2].addmod!(db, 256)
+                R.addmod!(dr, 256)
+                G.addmod!(dg, 256)
+                B.addmod!(db, 256)
             }
             elsif (byte >> 6 == 0b11) {     # OP RUN
                 run = (byte & 0b00_111_111)
             }
 
-            colors[(px[0]*3 + px[1]*5 + px[2]*7 + px[3]*11)%64] = px.clone
+            colors[sum(3*R, 5*G, 7*B, 11*A)%64] = [R, G, B, A]
         }
 
-        pixels << px...
+        pixels << (R, G, B, A)
     }
 
     for row in (^height) {
@@ -120,7 +120,7 @@ ARGV || do {
 }
 
 var in_file  = File(ARGV[0])
-var out_file = (ARGV[1] \\ (in_file - /\.qoi\z/i + '.png'))
+var out_file = File(ARGV[1] \\ (in_file - /\.qoi\z/i + '.png'))
 var bytes = in_file.read(:raw).bytes
 
 var img = qoi_decoder(bytes)

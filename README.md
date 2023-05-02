@@ -94,6 +94,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Qoi decoder](./Image/qoi_decoder.sf)
     * [Qoi decoder gd](./Image/qoi_decoder_gd.sf)
     * [Qoi decoder magick](./Image/qoi_decoder_magick.sf)
+    * [Qoi encoder](./Image/qoi_encoder.sf)
     * [Sierpinski arrowhead curve](./Image/sierpinski_arrowhead_curve.sf)
     * [Sierpinski curve](./Image/sierpinski_curve.sf)
     * [Sierpinski square curve](./Image/sierpinski_square_curve.sf)

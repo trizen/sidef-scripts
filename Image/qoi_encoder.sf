@@ -1,0 +1,130 @@
+#!/usr/bin/ruby
+
+# Implementation of the QOI encoder.
+
+# See also:
+#   https://qoiformat.org/
+#   https://github.com/phoboslab/qoi
+#   https://yewtu.be/watch?v=EFUYNoFRHQI
+
+require("Imager")
+
+func qoi_encoder (img) {
+
+    define(
+          QOI_OP_RGB  = 0b1111_1110,
+          QOI_OP_RGBA = 0b1111_1111,
+          QOI_OP_DIFF = 0b01_000_000,
+          QOI_OP_RUN  = 0b11_000_000,
+          QOI_OP_LUMA = 0b10_000_000,
+    )
+
+    var width      = img.getwidth
+    var height     = img.getheight
+    var channels   = img.getchannels
+    var colorspace = 0
+
+    say [width, height, channels, colorspace]
+
+    var *bytes = unpack('C*', 'qoif')
+
+    bytes << unpack('C4', pack('N', width))
+    bytes << unpack('C4', pack('N', height))
+
+    bytes << channels
+    bytes << colorspace
+
+    var run = 0
+    var (R_, G_, B_, A_) = (0, 0, 0, 255)
+
+    var colors = 64.of { [0, 0, 0, 0] }
+
+    for y in (0 ..^ height) {
+
+        var line = img.getscanline(y => y).bytes
+
+        line.each_slice(4, {|R,G,B,A|
+
+            if ((R == R_) &&
+                (G == G_) &&
+                (B == B_) &&
+                (A == A_)
+            ) {
+                if (++run == 62) {
+                    bytes << (QOI_OP_RUN | (run - 1))
+                    run = 0
+                }
+            }
+            else {
+
+                if (run > 0) {
+                    bytes << (QOI_OP_RUN | (run - 1))
+                    run = 0
+                }
+
+                var hash     = sum(3*R, 5*G, 7*B, 11*A)%64
+                var index_px = colors[hash]
+
+                if ((R == index_px[0]) &&
+                    (G == index_px[1]) &&
+                    (B == index_px[2]) &&
+                    (A == index_px[3])
+                ) {
+                    bytes << hash
+                }
+                else {
+
+                    colors[hash] = [R, G, B, A]
+
+                    if (A == A_) {
+
+                        var vr = (R - R_)
+                        var vg = (G - G_)
+                        var vb = (B - B_)
+
+                        var vg_r = (vr - vg)
+                        var vg_b = (vb - vg)
+
+                        if (vr.is_between(-2, 1) && vg.is_between(-2, 1) && vb.is_between(-2, 1)) {
+                            bytes << (QOI_OP_DIFF | ((vr + 2) << 4) | ((vg + 2) << 2) | (vb + 2))
+                        }
+                        elsif (vg_r.is_between(-8, 7) && vg.is_between(-32, 31) && vg_b.is_between(-8, 7)) {
+                            bytes << (QOI_OP_LUMA | (vg + 32))
+                            bytes << (((vg_r + 8) << 4) | (vg_b + 8))
+                        }
+                        else {
+                            bytes << (QOI_OP_RGB, R, G, B)
+                        }
+                    }
+                    else {
+                        bytes << (QOI_OP_RGBA, R, G, B, A)
+                    }
+                }
+            }
+
+            (R_, G_, B_, A_) = (R, G, B, A)
+        })
+    }
+
+    if (run > 0) {
+        bytes << (QOI_OP_RUN | (run - 1))
+    }
+
+    bytes << 7.of { 0x00 }...
+    bytes << 0x01
+
+    return bytes
+}
+
+ARGV || do {
+    STDERR.say("usage: #{__MAIN__} [input.png] [output.qoi]")
+    Sys.exit(2)
+}
+
+var in_file  = File(ARGV[0])
+var out_file = File(ARGV[1] \\ "#{in_file}.qoi")
+
+var img = %O'Imager'.new(file => in_file) || die "Can't read image: #{in_file}"
+
+var bytes = qoi_encoder(img)
+out_file.write(pack('C*', bytes...), ':raw') || die "Can't open file <<#{out_file}>> for writing: #{$!}"
