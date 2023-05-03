@@ -1,0 +1,58 @@
+#!/usr/bin/ruby
+
+# Fast recursive algorithm for summing of k-powerful numbers <= n.
+# A positive integer n is considered k-powerful, if for every prime p that divides n, so does p^k.
+
+# Example:
+#   2-powerful = a^2 * b^3,             for a,b >= 1
+#   3-powerful = a^3 * b^4 * c^5,       for a,b,c >= 1
+#   4-powerful = a^4 * b^5 * c^6 * d^7, for a,b,c,d >= 1
+
+# OEIS:
+#   https://oeis.org/A001694 -- 2-powerful numbers
+#   https://oeis.org/A036966 -- 3-powerful numbers
+#   https://oeis.org/A036967 -- 4-powerful numbers
+#   https://oeis.org/A069492 -- 5-powerful numbers
+#   https://oeis.org/A069493 -- 6-powerful numbers
+
+# See also:
+#   https://oeis.org/A118896 -- Number of powerful numbers <= 10^n.
+
+func powerful_sum(n, k=2) {
+
+    var total = 0
+
+    func (m,r) {
+
+        var t = iroot(idiv(n,m), r)
+
+        if (r == k) {
+            total += m*t.faulhaber(r)
+            return nil
+        }
+
+        t.each_squarefree {|a|
+            a.is_coprime(m) || next
+            __FUNC__(m * a**r, r-1)
+        }
+
+    }(1, 2*k - 1)
+
+    return total
+}
+
+for k in (2..10) {
+    assert_eq(powerful_sum(10**k, k), try { k.powerful_sum(10**k) } catch { k.powerful(10**k).sum })
+    printf("Sum of %2d-powerful <= 10^j: {%s}\n", k, (8+k).of {|j| powerful_sum(10**j, k) }.join(', '))
+}
+
+__END__
+Sum of  2-powerful <= 10^j: {1, 22, 524, 19969, 647133, 21293330, 690154771, 22126455022, 707444825013, 22531463332915}
+Sum of  3-powerful <= 10^j: {1, 9, 229, 6350, 141760, 3661606, 84495874, 1894833684, 43695994939, 973472346931, 21652017897141}
+Sum of  4-powerful <= 10^j: {1, 1, 194, 2687, 63057, 1493950, 28174003, 544065586, 10524441680, 203856527098, 3829559010761, 72275651598337}
+Sum of  5-powerful <= 10^j: {1, 1, 97, 1965, 36974, 783095, 14722451, 244171407, 4275588844, 74940997896, 1288184918776, 22466066295600, 388313265512187}
+Sum of  6-powerful <= 10^j: {1, 1, 65, 1690, 25798, 452936, 7956701, 149833898, 2268380814, 39253554837, 585370819713, 9782805908099, 159478894133643, 2501225774416189}
+Sum of  7-powerful <= 10^j: {1, 1, 1, 897, 25005, 296550, 4816426, 98075925, 1437528717, 23702635440, 332788924847, 5058814007325, 78571097000348, 1179649322069888, 18139832969679803}
+Sum of  8-powerful <= 10^j: {1, 1, 1, 769, 22690, 216110, 2232827, 58618470, 909724982, 14824205830, 219409095991, 3395577100029, 46984978856794, 687497306135850, 9969430114335719, 146437638154520828}
+Sum of  9-powerful <= 10^j: {1, 1, 1, 513, 15873, 209293, 1835385, 35660067, 632241907, 9460006209, 155849805293, 2310959485614, 31791763211253, 440239102116259, 6127453579487685, 84767785139882415, 1228081028239458556}
+Sum of 10-powerful <= 10^j: {1, 1, 1, 1, 15361, 189098, 1815190, 33686747, 317817188, 5928488370, 112135203635, 1693616602552, 23427369705872, 320917113913428, 4203704157341370, 54497606113497815, 778580336025928968, 10534756044644479786}
