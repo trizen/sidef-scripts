@@ -722,6 +722,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Markov chain text generator](./Text/markov_chain_text_generator.sf)
     * [Ordered concatenations](./Text/ordered_concatenations.sf)
     * [Shell string expand](./Text/shell_string_expand.sf)
+    * [Simple string search](./Text/simple_string_search.sf)
     * [Smart word wrap lazy](./Text/smart_word_wrap_lazy.sf)
     * [Soundex](./Text/soundex.sf)
 * Time

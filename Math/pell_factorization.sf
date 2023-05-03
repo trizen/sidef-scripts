@@ -28,13 +28,13 @@ func pell_factorization(n) {
     loop {
 
         y = (r*z - y)
-        z = ((n - y*y) / z)
-        r = round((x + y) / z)
+        z = idiv(n - y*y, z)
+        r = idiv_round(x + y, z)
 
-        (f1, f2) = (f2, (r*f2 + f1)%n)
+        (f1, f2) = (f2, addmod(mulmod(r, f2, n), f1, n))
 
         var u = f1
-        var v = (u*u)%n
+        var v = mulmod(u, u, n)
 
         if (v > w) {
             v = (n - v)
@@ -47,7 +47,7 @@ func pell_factorization(n) {
             }
         }
 
-        return n if (z == 1)
+        return n if (z.abs == 1)
     }
 }
 

@@ -1,0 +1,62 @@
+#!/usr/bin/ruby
+
+# A very simple algorithm for searching for one string within another,
+# using the sliding window technique, returning the position of the first
+# occurrence of the substring in the main string.
+
+# The algorithm runs in, essentially, linear time.
+
+func simple_index(str, substr, pos = 0) {
+
+    var substr_chars = substr.chars.map { .ord }
+    var target_len   = substr_chars.len
+    var target_sum   = substr_chars.sum
+
+    var current_slice     = []
+    var current_slice_len = 0
+    var current_sum       = 0
+
+    var str_chars = str.chars
+
+    for k in (pos .. str_chars.end) {
+
+        current_slice << str_chars[k].ord
+        current_sum += current_slice[-1]
+
+        if (++current_slice_len >= target_len) {
+
+            if (target_sum == current_sum) {
+                if (current_slice == substr_chars) {
+                    return (k - target_len + 1)
+                }
+            }
+
+            current_sum -= current_slice.shift
+        }
+    }
+
+    return -1
+}
+
+func find_all_matches (substr, str) {
+    var pos = -1
+    var matches = []
+    while ((pos = simple_index(str, substr, pos+1)) != -1) {
+        matches << pos
+    }
+    return matches
+}
+
+say simple_index("Sidef is great", "S")         # Returns 0
+say simple_index("Sidef is great", "g")         # Returns 9
+say simple_index("Sidef is great", "great")     # Also returns 9
+say simple_index("Sidef is great", "e", 5)      # Returns 11
+
+say simple_index(File(__FILE__).read, "Sidef")  # Returns 1200
+
+assert_eq(find_all_matches("bar",      "foobartestbarend"),         [3, 10])
+assert_eq(find_all_matches("bar",      "foo-bar-test-bar-end"),     [4, 13])
+assert_eq(find_all_matches("Bar",      "foo-bar-test-Bar-end-Bar"), [13, 21])
+assert_eq(find_all_matches("-test-",   "foo-bar-test-Bar-end-Bar"), [7])
+assert_eq(find_all_matches("-Bar-end", "foo-Bar-test-Bar-end-Bar"), [12])
+assert_eq(find_all_matches("-Bar",     "foo-Bar-test-Bar-end-Bar"), [3, 12, 20])

@@ -11,7 +11,7 @@ func semiconvergents(n, callback, r=10) {
 
     var cfrac = n.as_cfrac
 
-    for k in (1..r) {
+    for k in (1 .. min(r, cfrac.end-1)) {
 
         var c1 = cfrac.first(k).flip.reduce{|a,b| b + 1/a }
         var c2 = cfrac.first(k+1).flip.reduce{|a,b| b + 1/a }

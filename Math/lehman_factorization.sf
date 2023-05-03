@@ -5,7 +5,7 @@
 func lehman_factor(n) {
 
     var c = n.icbrt
-    var r = n.isqrt
+    var r = c.isqrt
 
     for k in (1 .. c.inc) {
         for a in (RangeNum(2*isqrt(n*k) + 1, 2*isqrt(n*k) + idiv(r, 4*k.isqrt) + 2)) {
