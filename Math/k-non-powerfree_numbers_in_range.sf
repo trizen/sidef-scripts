@@ -1,0 +1,29 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 03 May 2023
+# https://github.com/trizen
+
+# A simple algorithm for generating the non-(k-powerfree) numbers in a given range [A, B].
+# A number is called k-powerfree, if all the exponents in its prime factorization are < k.
+
+func non_powerfree(A, B, k=1) {
+
+    var arr = []
+
+    for j in (2 .. B.iroot(k)) {
+
+        var m = j**k
+
+        for s in (idiv_ceil(A,m) .. idiv(B,m)) {
+            if (s.is_powerfree(k)) {
+                arr << m*s
+            }
+        }
+    }
+
+    return arr.sort
+}
+
+say non_powerfree(65, 100, 2)   #=> [68, 72, 75, 76, 80, 81, 84, 88, 90, 92, 96, 98, 99, 100]
+say non_powerfree(64, 150, 3)   #=> [64, 72, 80, 81, 88, 96, 104, 108, 112, 120, 125, 128, 135, 136, 144]
