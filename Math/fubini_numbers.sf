@@ -1,0 +1,56 @@
+#!/usr/bin/ruby
+
+# A new algorithm for computing the first n Fubini numbers.
+
+# See also:
+#   http://oeis.org/A000670
+
+func fubini_numbers(n) {
+
+    var F = [1]
+
+    for i in (1..n) {
+
+        var b = 1   # binomial(i, k)
+        var w = 0
+
+        for k in (0 ..^ i) {
+            w.iadd!(F[k] * b)
+            b.imul!(i - k)
+            b.idiv!(k + 1)
+        }
+
+        F[i] = w
+    }
+
+    return F
+}
+
+var F = fubini_numbers(20)
+
+F.each_kv {|k,v|
+    say "F(#{k}) = #{v}"
+}
+
+__END__
+F(0) = 1
+F(1) = 1
+F(2) = 3
+F(3) = 13
+F(4) = 75
+F(5) = 541
+F(6) = 4683
+F(7) = 47293
+F(8) = 545835
+F(9) = 7087261
+F(10) = 102247563
+F(11) = 1622632573
+F(12) = 28091567595
+F(13) = 526858348381
+F(14) = 10641342970443
+F(15) = 230283190977853
+F(16) = 5315654681981355
+F(17) = 130370767029135901
+F(18) = 3385534663256845323
+F(19) = 92801587319328411133
+F(20) = 2677687796244384203115

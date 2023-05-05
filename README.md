@@ -298,6 +298,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Frobenius primality test](./Math/frobenius_primality_test.sf)
     * [Frobenius primality test polynomial](./Math/frobenius_primality_test_polynomial.sf)
     * [Frobenius pseudoprimes generation](./Math/frobenius_pseudoprimes_generation.sf)
+    * [Fubini numbers](./Math/fubini_numbers.sf)
     * [Function inverse binary search](./Math/function_inverse_binary_search.sf)
     * [Function inverse mediant inequality](./Math/function_inverse_mediant_inequality.sf)
     * [Fusc function](./Math/fusc_function.sf)
