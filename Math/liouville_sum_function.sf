@@ -80,6 +80,7 @@ for n in (1 .. 6) {    # takes ~1.3 seconds
     var L2 = liouville_sum_test(10**n)
 
     assert_eq(L1, L2)
+    assert_eq(L1, 10**n -> liouville_sum)   # built-in
 
     say ("L(10^#{n}) = ", L1)
 }

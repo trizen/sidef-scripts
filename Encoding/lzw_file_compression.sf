@@ -14,11 +14,7 @@ func compress(String uncompressed) -> Array {
 
     # Build the dictionary
     var dict_size = 256
-    var dictionary = Hash()
-
-    for i in (^dict_size) {
-        dictionary{i.chr} = i
-    }
+    var dictionary = Hash(dict_size.of {|i| (i.chr, i) }...)
 
     var w = ''
     var result = []
@@ -29,7 +25,6 @@ func compress(String uncompressed) -> Array {
             w = wc
         } else {
             result.append(dictionary{w})
-            # Add wc to the dictionary
             dictionary{wc} = dict_size++
             w = c
         }
@@ -48,29 +43,26 @@ func decompress(Array compressed) -> String {
 
     # Build the dictionary
     var dict_size = 256
-    var dictionary = Hash()
-
-    for i in (^dict_size) {
-        dictionary{i} = i.chr
-    }
+    var dictionary = dict_size.of { .chr }
 
     var w = compressed.shift.chr
     var result = [w]
 
     compressed.each { |k|
 
-        var entry = if (dictionary.has(k)) {
-            dictionary{k}
+        var entry = if (k < dict_size) {
+            dictionary[k]
         } elsif (k == dict_size) {
             w+w.char(0)
         } else {
             die "Bad compressed k: #{k}"
         }
 
-        result << entry
+        result.append(entry)
 
         # Add w+entry[0] to the dictionary
-        dictionary{dict_size++} = w+entry.char(0)
+        dictionary.append(w+entry.char(0))
+        ++dict_size
         w = entry
     }
 
