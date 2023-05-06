@@ -81,6 +81,7 @@ func modular_binomial(n,k,m) {
     if (k > n)                   { return 0 }
     if (k.is_zero || (k == n))   { return 1%m }
     if (k.is_one  || (k == n-1)) { return n%m }
+    if (n-k < k)                 { k = (n - k) }
 
     var F = []
 

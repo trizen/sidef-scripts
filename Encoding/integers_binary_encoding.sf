@@ -48,25 +48,22 @@ func encode_integers (Array integers) {
 
 func decode_integers (String str) {
 
-    func str_shift(Ref s) {
-        with ((*s).substr(0, 1)) { |t| (*s).substr!(1); t }
-    }
-
-    var count_len = str_shift(\str).ord
+    var str_fh = str.open_r(:raw)
+    var count_len = str_fh.getc.ord
     var counts = []
 
     count_len.times {
-        var b = str_shift(\str).ord
-        var l = Num(unpack('N', 4.of { str_shift(\str) }.join))
+        var b = str_fh.getc.ord
+        var l = Num(unpack('N', 4.of { str_fh.getc }.join))
         counts << [b, l] if (l > 0)
     }
 
     var chunks = []
-    var bits = str.ascii2bin
+    var bits_fh = str_fh.slurp.ascii2bin.open_r(:raw)
 
     for b,len in (counts) {
-        chunks << bits.substr(0, b*len).slices(b)...
-        bits.substr!(b*len)
+        bits_fh.read(\var chunk, len*b)
+        chunks << chunk.slices(b)...
     }
 
     chunks.map { Num(_, 2) }

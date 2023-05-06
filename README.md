@@ -37,6 +37,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Lzw file compression utf8](./Encoding/lzw_file_compression_utf8.sf)
     * [Run length encoding](./Encoding/run_length_encoding.sf)
     * [Substitution cipher](./Encoding/substitution_cipher.sf)
+    * [Variable length run encoding](./Encoding/variable_length_run_encoding.sf)
 * Encryption
     * [Age-lf](./Encryption/age-lf.sf)
     * [Backdoored rsa with x25519](./Encryption/backdoored_rsa_with_x25519.sf)
