@@ -1,0 +1,40 @@
+#!/usr/bin/ruby
+
+# Find all the roots `x` to a given polynomial `f`, such that f(x) = 0, using Newton's method.
+
+func newton_inverse_method(f, x = 1f) {
+    var df = derivative(f)
+    while (f(x) <~> 0) {
+        x = (x - (f(x) / df(x)))
+    }
+    return x
+}
+
+func roots_of_unity(n) {
+    n.of { |j|
+        exp(2i * Num.pi / n * j)
+    }
+}
+
+func polynomial_roots(f) {
+    roots_of_unity(f.degree).map {|r| newton_inverse_method(f, r) }
+}
+
+var x = Poly(1)
+var f = (43*x**5 + 12*x**4 + -13*x**3 + 11*x**2 - 9*x - 4171)
+
+say "=> Polynomial:\n#{f} = 0"
+
+say "\n=> All roots (Newton's method):"
+polynomial_roots(f).each {|x| say "x = #{x}" }
+
+__END__
+=> Polynomial:
+43*x^5 + 12*x^4 - 13*x^3 + 11*x^2 - 9*x - 4171 = 0
+
+=> All roots (Newton's method):
+x = 2.46080682285023567908265472618970060164526042431
+x = 0.729208457027589206734796460108780612566686172519 + 2.35669000613724060523419825983110598029981575934i
+x = -2.09914675217363727883426335808735184362187452421 + 1.43899056170716413073009457273260836659195140837i
+x = -2.09914675217363727883426335808735184362187452421 - 1.43899056170716413073009457273260836659195140837i
+x = 0.729208457027589206734796460108780612566686172519 - 2.35669000613724060523419825983110598029981575934i

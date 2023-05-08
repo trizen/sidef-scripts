@@ -530,6 +530,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Polygonal representations](./Math/polygonal_representations.sf)
     * [Polynomial interpolation](./Math/polynomial_interpolation.sf)
     * [Polynomial regression](./Math/polynomial_regression.sf)
+    * [Polynomial roots](./Math/polynomial_roots.sf)
     * [Pomerance condition for bpsw counter-example](./Math/pomerance_condition_for_bpsw_counter-example.sf)
     * [Power divisors](./Math/power_divisors.sf)
     * [Power integers](./Math/power_integers.sf)
