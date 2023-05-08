@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
 
-# Encode and decode small files using LZ77 compression + Huffman coding.
+# Compress/decompress files using LZ77 compression + Huffman coding.
 
 define(
     CHUNK_SIZE = (1 << 16),
-    SIGNATURE  = ('LZ77H' + 1.chr)
+    SIGNATURE  = ('LZH' + 1.chr)
 )
 
 func walk(Hash n, String s, Hash h) {
@@ -12,8 +12,8 @@ func walk(Hash n, String s, Hash h) {
         h{n{:a}} = s
         return nil
     }
-    walk(n{:0}, s+'0', h)
-    walk(n{:1}, s+'1', h)
+    walk(n{:0}, s+'0', h) if n.has(:0)
+    walk(n{:1}, s+'1', h) if n.has(:1)
 }
 
 func make_tree(Array bytes) {
@@ -22,13 +22,21 @@ func make_tree(Array bytes) {
         Hash(a => b, freq => f)
     }
 
-    var n = Hash()
-    while (nodes.sort_by!{|h| h{:freq} }.len > 1) {
-        n = Hash(:0 => nodes.shift, :1 => nodes.shift)
-        n{:freq} = (n{:0}{:freq} + n{:1}{:freq})
-        nodes << n
+    loop {
+        nodes.sort_by!{|h| h{:freq} }
+        var(x, y) = (nodes.shift, nodes.shift)
+        if (defined(x)) {
+            if (defined(y)) {
+                nodes << Hash(:0 => x, :1 => y, :freq => x{:freq}+y{:freq})
+            }
+            else {
+                nodes << Hash(:0 => x, :freq => x{:freq})
+            }
+        }
+        nodes.len > 1 || break
     }
 
+    var n = nodes.first
     walk(n, '', n{:tree} = Hash())
     return n
 }
@@ -179,7 +187,7 @@ func lz77h_decompress_file(File input, File output) {
     var in_fh = input.open('<:raw') || die "Can't open file <<#{input}>> for reading"
 
     if (SIGNATURE.len.of { in_fh.getc }.join != SIGNATURE) {
-        die "Not a LZ77H archive!\n"
+        die "Not a LZH archive!\n"
     }
 
     var out_fh = output.open('>:raw') || die "Can't open file <<#{output}>> for writing"
@@ -212,9 +220,9 @@ var file = File(ARGV.shift) || do {
     Sys.exit(2)
 }
 
-if (decode || file.match(/\.lz77h\.enc\z/)) {
-    lz77h_decompress_file(file, File("output.lz77h.dec"))
+if (decode || file.match(/\.lzh\.enc\z/)) {
+    lz77h_decompress_file(file, File("output.lzh.dec"))
 }
 else {
-    lz77h_compress_file(file, File("output.lz77h.enc"))
+    lz77h_compress_file(file, File("output.lzh.enc"))
 }

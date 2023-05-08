@@ -11,28 +11,36 @@
 #   https://rosettacode.org/wiki/huffman_coding
 #   https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch
 
-func walk(n, s, h) {
+func walk(Hash n, String s, Hash h) {
     if (n.has(:a)) {
         h{n{:a}} = s
         return nil
     }
-    walk(n{:0}, s+'0', h)
-    walk(n{:1}, s+'1', h)
+    walk(n{:0}, s+'0', h) if n.has(:0)
+    walk(n{:1}, s+'1', h) if n.has(:1)
 }
 
-func make_tree(bytes) {
+func make_tree(Array bytes) {
 
-    var nodes = bytes.freq.kv.sort.map_2d { |b,f|
+    var nodes = bytes.freq.sort.map_2d { |b,f|
         Hash(a => b, freq => f)
     }
 
-    var n = Hash()
-    while (nodes.sort_by!{|h| h{:freq} }.len > 1) {
-        n = Hash(:0 => nodes.shift, :1 => nodes.shift)
-        n{:freq} = (n{:0}{:freq} + n{:1}{:freq})
-        nodes << n
+    loop {
+        nodes.sort_by!{|h| h{:freq} }
+        var(x, y) = (nodes.shift, nodes.shift)
+        if (defined(x)) {
+            if (defined(y)) {
+                nodes << Hash(:0 => x, :1 => y, :freq => x{:freq}+y{:freq})
+            }
+            else {
+                nodes << Hash(:0 => x, :freq => x{:freq})
+            }
+        }
+        nodes.len > 1 || break
     }
 
+    var n = nodes.first
     walk(n, '', n{:tree} = Hash())
     return n
 }
