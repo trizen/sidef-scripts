@@ -11,7 +11,7 @@ define(
     CHUNK_SIZE        = (1 << 16),
     COMPRESSED_BYTE   = 1.chr,
     UNCOMPRESSED_BYTE = 0.chr,
-    SIGNATURE         = ('LZIH' + 1.chr),
+    SIGNATURE         = ('LZIH' + 2.chr),
 )
 
 func read_bits (FileHandle fh, Number bits_len) {
@@ -143,10 +143,12 @@ func create_huffman_entry (Array bytes, FileHandle out_fh) {
     var h   = make_tree(bytes){:tree}
     var enc = huffman_encode(bytes, h)
 
+    var max_symbol = bytes.max.ord
+
     var codes = ''
     var lengths = []
 
-    for i in (0..255) {
+    for i in (0..max_symbol) {
         var c = (h{i.chr} \\ '')
         codes += c
         lengths << c.len
@@ -163,10 +165,6 @@ func decode_huffman_entry (FileHandle fh) {
     var codes = []
     var codes_len = 0
     var lengths = decode_integers(fh)
-
-    if (lengths.len != 256) {
-        die "Invalid Huffman entry!"
-    }
 
     lengths.each_kv {|i,l|
         if (l > 0) {

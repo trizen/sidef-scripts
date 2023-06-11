@@ -15,28 +15,28 @@ func lucasVmod(P, Q, n, m) {
 
     for bit in ((n>>(s+1)).as_bin.chars) {
 
-        Q1 = (Q1 * Q2)%m
+        Q1 = mulmod(Q1, Q2, m)
 
         if (bit) {
-            Q2 = (Q1 * Q)%m
-            V1 = (V2*V1 - P*Q1)%m
-            V2 = (V2*V2 - 2*Q2)%m
+            Q2 = mulmod(Q1, Q, m)
+            V1 = mulsubmulmod(V2, V1, P, Q1, m)
+            V2 = mulsubmulmod(V2, V2, 2, Q2, m)
         }
         else {
             Q2 = Q1
-            V2 = (V2*V1 - P*Q1)%m
-            V1 = (V1*V1 - 2*Q2)%m
+            V2 = mulsubmulmod(V2, V1, P, Q1, m)
+            V1 = mulsubmulmod(V1, V1, 2, Q2, m)
         }
     }
 
-    Q1 = (Q1 * Q2)%m
-    Q2 = (Q1 * Q)%m
-    V1 = (V2*V1 - P*Q1)%m
-    Q1 = (Q1 * Q2)%m
+    Q1 = mulmod(Q1, Q2, m)
+    Q2 = mulmod(Q1, Q, m)
+    V1 = mulsubmulmod(V2, V1, P, Q1, m)
+    Q1 = mulmod(Q1, Q2, m)
 
     s.times {
-        V1 = (V1*V1 - 2*Q1)%m
-        Q1 = (Q1 * Q1)%m
+        V1 = mulsubmulmod(V1, V1, 2, Q1, m)
+        Q1 = mulmod(Q1, Q1, m)
     }
 
     return V1
@@ -48,3 +48,21 @@ say {|n| lucasVmod(1, -1, n, n) }.map(1..30)        # Lucas(n) modulo n
 say 25.by {|n| lucasVmod(1, -1, n, n) == 1 }        # First 25 prime numbers
 
 #--------------------------------------------------------
+
+for k in (1..20) {      # run some tests
+
+    var p = 1e30.random_prime
+
+    assert_eq(lucasVmod(1, -1, p, p), 1)
+
+    var n = 1e30.irand
+    var m = 1e30.irand
+
+    var P = (100.irand * [-1,1].rand)
+    var Q = (100.irand * [-1,1].rand)
+
+    var V1 = lucasVmod(P, Q, n, m)
+    var V2 = ::LucasVmod(P, Q, n, m)
+
+    assert_eq(V1, V2)
+}

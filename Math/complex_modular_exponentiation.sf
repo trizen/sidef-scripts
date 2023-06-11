@@ -16,9 +16,14 @@ func complex_powmod(a, b, n, m) {
 
     var (x, y) = (1, 0)
 
+    #~ do {
+        #~ (x, y) = ((x*a - y*b)%m, (x*b + y*a)%m) if n.is_odd
+        #~ (a, b) = ((a*a - b*b)%m, (2*a*b)%m)
+    #~ } while (n >>= 1)
+
     do {
-        (x, y) = ((x*a - y*b)%m, (x*b + y*a)%m) if n.is_odd
-        (a, b) = ((a*a - b*b)%m, (2*a*b)%m)
+        (x, y) = (mulsubmulmod(x,a,y,b,m), muladdmulmod(x,b,y,a,m)) if n.is_odd
+        (a, b) = (mulsubmulmod(a,a,b,b,m), mulmod(2*a,b,m))
     } while (n >>= 1)
 
     (x, y)

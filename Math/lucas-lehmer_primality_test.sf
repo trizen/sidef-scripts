@@ -15,7 +15,8 @@ func lucas_lehmer(p) {
     var S = 4
 
     p-2 -> times {
-        S = (powmod(S, 2, M) - 2)
+        #S = (powmod(S, 2, M) - 2)
+        S = mulsubmod(S, S, 2, M)
     }
 
     S == 0

@@ -85,10 +85,12 @@ for k in (1..10) {
 
     var x = omega_prime_count(upto, k)
     var y = k.omega_primes(upto).len
+    var z = k.omega_prime_count(upto)
 
     say "Testing: #{k} with n = #{upto} -> #{x}"
 
     assert_eq(x, y)
+    assert_eq(x, z)
 }
 
 say ''

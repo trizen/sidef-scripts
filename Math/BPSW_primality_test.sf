@@ -49,36 +49,36 @@ func BPSW_primality_test(n) {
 
     for bit in ((d>>(s+1)).as_bin.chars) {
 
-        Q1 = (Q1 * Q2)%n
+        Q1 = mulmod(Q1, Q2, n)
 
         if (bit) {
-            Q2 = (Q1 * Q)%n
-            U1 = (U1 * V2)%n
-            V1 = (V2*V1 - Q1)%n
-            V2 = (V2*V2 - 2*Q2)%n
+            Q2 = mulmod(Q1, Q, n)
+            U1 = mulmod(U1, V2, n)
+            V1 = mulsubmod(V2, V1, Q1, n)
+            V2 = mulsubmulmod(V2, V2, 2, Q2, n)
         }
         else {
             Q2 = Q1
-            U1 = (U1*V1 - Q1)%n
-            V2 = (V2*V1 - Q1)%n
-            V1 = (V1*V1 - 2*Q2)%n
+            U1 = mulsubmod(U1, V1, Q1, n)
+            V2 = mulsubmod(V2, V1, Q1, n)
+            V1 = mulsubmulmod(V1, V1, 2, Q2, n)
         }
     }
 
-    Q1 = (Q1 * Q2)%n
-    Q2 = (Q1 * Q)%n
-    U1 = (U1*V1 - Q1)%n
-    V1 = (V2*V1 - Q1)%n
-    Q1 = (Q1 * Q2)%n
+    Q1 = mulmod(Q1, Q2, n)
+    Q2 = mulmod(Q1, Q, n)
+    U1 = mulsubmod(U1, V1, Q1, n)
+    V1 = mulsubmod(V2, V1, Q1, n)
+    Q1 = mulmod(Q1, Q2, n)
 
     return true if U1.is_congruent(0, n)
     return true if V1.is_congruent(0, n)
 
     (s-1).times {
 
-        U1 = (U1 * V1)%n
-        V1 = (V1*V1 - 2*Q1)%n
-        Q1 = (Q1 * Q1)%n
+        U1 = mulmod(U1, V1, n)
+        V1 = mulsubmulmod(V1, V1, 2, Q1, n)
+        Q1 = mulmod(Q1, Q1, n)
 
         return true if V1.is_congruent(0, n)
     }

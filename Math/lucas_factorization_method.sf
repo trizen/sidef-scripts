@@ -48,36 +48,36 @@ func lucas_factorization(n, B = n.ilog2**2) {
 
     for bit in ((d>>(s+1)).as_bin.chars) {
 
-        Q1 = (Q1 * Q2)%n
+        Q1 = mulmod(Q1, Q2, n)
 
         if (bit) {
-            Q2 = (Q1 * Q)%n
-            U1 = (U1 * V2)%n
-            V1 = (V2*V1 - Q1)%n
-            V2 = (V2*V2 - 2*Q2)%n
+            Q2 = mulmod(Q1, Q, n)
+            U1 = mulmod(U1, V2, n)
+            V1 = mulsubmod(V1, V2, Q1, n)
+            V2 = mulsubmulmod(V2, V2, 2, Q2, n)
         }
         else {
             Q2 = Q1
-            U1 = (U1*V1 - Q1)%n
-            V2 = (V2*V1 - Q1)%n
-            V1 = (V1*V1 - 2*Q2)%n
+            U1 = mulsubmod(U1, V1, Q1, n)
+            V2 = mulsubmod(V2, V1, Q1, n)
+            V1 = mulsubmulmod(V1, V1, 2, Q2, n)
         }
     }
 
-    Q1 = (Q1 * Q2)%n
-    Q2 = (Q1 * Q)%n
-    U1 = (U1*V1 - Q1)%n
-    V1 = (V2*V1 - Q1)%n
-    Q1 = (Q1 * Q2)%n
+    Q1 = mulmod(Q1, Q2, n)
+    Q2 = mulmod(Q1, Q, n)
+    U1 = mulsubmod(U1, V1, Q1, n)
+    V1 = mulsubmod(V2, V1, Q1, n)
+    Q1 = mulmod(Q1, Q2, n)
 
     check_factor(U1)
     check_factor(V1)
 
     s.times {
 
-        U1 = (U1 * V1)%n
-        V1 = (V1*V1 - 2*Q1)%n
-        Q1 = (Q1 * Q1)%n
+        U1 = mulmod(U1, V1, n)
+        V1 = mulsubmulmod(V1, V1, 2, Q1, n)
+        Q1 = mulmod(Q1, Q1, n)
 
         check_factor(U1)
         check_factor(V1)

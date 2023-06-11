@@ -18,21 +18,21 @@ func lucasUVmod(P, Q, n, m) {
 
     n.as_bin.each {|bit|
 
-        Q1 = (Q1*Q2)%m
+        Q1 = mulmod(Q1, Q2, m)
 
         if (bit) {
-            Q2 = (Q1*Q)%m
-            V1 = (V2*V1 - P*Q1)%m
-            V2 = (V2*V2 - 2*Q2)%m
+            Q2 = mulmod(Q1, Q, m)
+            V1 = mulsubmulmod(V2, V1, P, Q1, m)
+            V2 = mulsubmulmod(V2, V2, 2, Q2, m)
         }
         else {
             Q2 = Q1
-            V2 = (V2*V1 - P*Q1)%m
-            V1 = (V1*V1 - 2*Q2)%m
+            V2 = mulsubmulmod(V2, V1, P, Q1, m)
+            V1 = mulsubmulmod(V1, V1, 2, Q2, m)
         }
     }
 
-    var Un = ((2*V2 - P*V1) * D.invmod(m))%m
+    var Un = mulmod(mulsubmulmod(2, V2, P, V1, m), D.invmod(m), m)
 
     return (Un, V1)
 }

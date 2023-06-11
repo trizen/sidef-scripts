@@ -30,7 +30,13 @@ func is_lucas_carmichael (n) {
     n.divides(lucas_bernoulli_denominator(n+1))
 }
 
-say is_lucas_carmichael.first(5)
+func is_lucas_carmichael_faster (n) {
+    var f = n.factor_exp
+    f.len >= 3 && f.all { .tail == 1 } && f.all {|p| (n+1) % (p.head+1) == 0 }
+}
+
+say is_lucas_carmichael.first(5)           #=> [399, 935, 2015, 2915, 4991]
+say is_lucas_carmichael_faster.first(5)    #=> [399, 935, 2015, 2915, 4991]
 
 __END__
 399, 935, 2015, 2915, 4991, 5719, 7055, 8855, 12719, 18095
