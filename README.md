@@ -35,6 +35,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Lzw compression](./Encoding/lzw_compression.sf)
     * [Lzw file compression](./Encoding/lzw_file_compression.sf)
     * [Lzw file compression utf8](./Encoding/lzw_file_compression_utf8.sf)
+    * [Move-to-front transform](./Encoding/move-to-front_transform.sf)
     * [Run length encoding](./Encoding/run_length_encoding.sf)
     * [Substitution cipher](./Encoding/substitution_cipher.sf)
     * [Variable length run encoding](./Encoding/variable_length_run_encoding.sf)

@@ -138,7 +138,7 @@ func read_bits (FileHandle fh, Number bits_len) {
     str = unpack('B*', str)
 
     while (str.len < bits_len) {
-        str += unpack('B*', fh.getc \\ break)
+        str += unpack('B*', fh.getc \\ return nil)
     }
 
     if (str.len > bits_len) {

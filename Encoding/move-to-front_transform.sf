@@ -1,0 +1,52 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 13 June 2023
+# https://github.com/trizen
+
+# The Move to Front transform (MTF).
+
+# Reference:
+#   COMP526 Unit 7-6 2020-03-24 Compression - Move-to-front transform
+#   https://youtube.com/watch?v=Q2pinaj3i9Y
+
+func mtf_encode (bytes, alphabet = @(^256)) {
+
+    var C = []
+
+    for c in bytes {
+        C << alphabet.first_index(c)
+        alphabet.prepend(alphabet.delete_index(C.tail))
+    }
+
+    return C
+}
+
+func mtf_decode (encoded, alphabet = @(^256)) {
+
+    var S = []
+
+    for p in encoded {
+        S << alphabet[p]
+        alphabet.prepend(alphabet.delete_index(p))
+    }
+
+    return S
+}
+
+var str = "INEFICIENCIES"
+
+var encoded = mtf_encode(str.bytes, @(ord('A') .. ord('Z')))
+var decoded = mtf_decode(encoded, @(ord('A') .. ord('Z')))
+
+say "Encoded: #{encoded}"               #=> Encoded: 8 13 6 7 3 6 1 3 4 3 3 3 18
+say "Decoded: #{decoded.join_bytes}"    #=> Decoded: INEFICIENCIES
+
+assert_eq(decoded.pack('C*'), str)
+
+do {
+    var str     = File(__FILE__).read(:raw)
+    var encoded = mtf_encode(str.bytes)
+    var decoded = mtf_decode(encoded)
+    assert_eq(str, decoded.pack('C*'))
+}
