@@ -1,0 +1,69 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 13 June 2023
+# https://github.com/trizen
+
+# Implementation of the Delta encoding scheme, using unary encoding.
+
+# Reference:
+#   Data Compression (Summer 2023) - Lecture 6 - Delta Compression and Prediction
+#   https://youtube.com/watch?v=-3H_eDbWNEU
+
+func delta_encode (bytes) {
+
+    var deltas = ([0] + bytes -> diffs)
+    var bitstring = FileHandle.new_buf(:raw)
+
+    for d in (deltas) {
+        if (d == 0) {
+            bitstring << '0'
+        }
+        else {
+            bitstring << ('1' + ((d < 0) ? '0' : '1') + '1'*(d.abs-1) + '0')
+        }
+    }
+
+    return bitstring.parent
+}
+
+func delta_decode (bitstring) {
+
+    var bits = bitstring.chars
+    var deltas = []
+
+    while (bits) {
+        var bit = bits.shift
+        if (bit == '0') {
+            deltas << 0
+        }
+        else {
+            var bit = bits.shift
+            var n = (^Inf -> first { bits.shift != '1' })+1
+            deltas << ((bit == '1') ? n : -n)
+        }
+    }
+
+    deltas.acc
+}
+
+var str = "TOBEORNOTTOBEORTOBEORNOT"
+
+var enc = delta_encode(str.bytes)
+var dec = delta_decode(enc)
+
+say "Encoded: #{enc}"
+say "Decoded: #{dec.pack('C*')}"
+
+assert_eq(dec.pack('C*'), str)
+
+do {
+    var str     = File(__FILE__).read(:raw)
+    var encoded = delta_encode(str.bytes)
+    var decoded = delta_decode(encoded)
+    assert_eq(str, decoded.pack('C*'))
+}
+
+__END__
+Encoded: 111111111111111111111111111111111111111111111111111111111111111111111111111111111111101011110101111111111110111101111111111101111010111011011111100101111010111111111111011110111111111110111101110101111010111111111111011110111111111110111101011101101111110
+Decoded: TOBEORNOTTOBEORTOBEORNOT

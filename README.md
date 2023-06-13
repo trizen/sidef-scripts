@@ -23,6 +23,8 @@ A nice collection of day-to-day Sidef scripts.
     * [Burrows wheeler transform](./Encoding/burrows_wheeler_transform.sf)
     * [Caesar cipher](./Encoding/caesar_cipher.sf)
     * [Compress](./Encoding/compress.sf)
+    * [Delta encoding with elias coding](./Encoding/delta_encoding_with_elias_coding.sf)
+    * [Delta encoding with unary coding](./Encoding/delta_encoding_with_unary_coding.sf)
     * [Huffman coding](./Encoding/huffman_coding.sf)
     * [Huffman file compression](./Encoding/huffman_file_compression.sf)
     * [Integers binary encoding](./Encoding/integers_binary_encoding.sf)
