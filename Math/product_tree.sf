@@ -9,10 +9,11 @@ func product_tree(X) {
     gather {
         take(X)
         while (X.len > 1) {
-            X = range((X.len+1)>>1).map{|i| X.ft(i<<1, ((i+1)<<1)-1).prod }
+            X = range((X.len+1)>>1).map{|i| X.slice(i<<1, ((i+1)<<1) - i<<1).prod }
             take(X)
         }
     }
 }
 
-say product_tree([10,20,30,40,50,60])   #=> [[10, 20, 30, 40, 50, 60], [200, 1200, 3000], [240000, 3000], [720000000]]
+say var t = product_tree([10,20,30,40,50,60])
+assert_eq(t, [[10, 20, 30, 40, 50, 60], [200, 1200, 3000], [240000, 3000], [720000000]])

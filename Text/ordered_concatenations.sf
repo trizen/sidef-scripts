@@ -40,7 +40,7 @@ func create_tries(array) {
     var root = []
 
     for i in (^array) {
-        root << [array.slice(0, i)..., __FUNC__(array.slice(i+1))]
+        root << [array.slice(0, i+1)..., __FUNC__(array.slice(i+1))]
     }
 
     root

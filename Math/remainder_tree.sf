@@ -9,7 +9,7 @@ func product_tree(X) {
     gather {
         take(X)
         while (X.len > 1) {
-            X = range((X.len+1)>>1).map{|i| X.ft(i<<1, ((i+1)<<1)-1).prod }
+            X = range((X.len+1)>>1).map{|i| X.slice(i<<1, ((i+1)<<1) - i<<1).prod }
             take(X)
         }
     }
@@ -23,4 +23,5 @@ func remainders(n,X) {
     return result
 }
 
-say remainders(8675309, [11,13,17,19,23])    #=> [5, 6, 5, 4, 8]
+say var r = remainders(8675309, [11,13,17,19,23])    #=> [5, 6, 5, 4, 8]
+assert_eq(r, [5, 6, 5, 4, 8])

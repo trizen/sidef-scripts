@@ -1,0 +1,40 @@
+#!/usr/bin/ruby
+
+# Burrows–Wheeler transform, implemented to work on an array of symbols.
+
+#
+## https://rosettacode.org/wiki/Burrows–Wheeler_transform
+#
+
+class BurrowsWheelerTransform (Number L = 256) {
+
+    method encode(Array s) {
+        s = ([L] + s)
+        var bwt = s.len.of{|i| s.slice(i) + s.slice(0, i) }.sort.map{.last}
+        var idx = bwt.index(L)
+        bwt.delete_index(idx)
+        return (bwt, idx)
+    }
+
+    method decode(Array s, Number idx) {
+        s = (s.slice(0, idx) + [L] + s.slice(idx))
+        var t = s.len.of{ [] }
+        var c = s.map { [_] }
+        { t = (c »+« t).sort } * s.len
+        t.first { .head == L }.slice(1)
+    }
+}
+
+var tests = [
+    "banana", "appellee", "dogwood", "TOBEORNOTTOBEORTOBEORNOT"
+    "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES",
+]
+
+var bwt = BurrowsWheelerTransform()
+
+tests.each { |str|
+    var (enc, idx) = bwt.encode(str.bytes)
+    say "BWT(#{str.dump}) = (#{enc.join_bytes.dump}, #{idx})"
+    var dec = bwt.decode(enc, idx)
+    assert_eq(str, dec.join_bytes)
+}

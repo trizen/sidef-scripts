@@ -296,7 +296,7 @@ class Product(*values) {
 
     method neg {
         if (values) {
-            Product(values[0].neg, values.ft(1)...)
+            Product(values[0].neg, values.slice(1)...)
         }
         else {
             Product(-1)

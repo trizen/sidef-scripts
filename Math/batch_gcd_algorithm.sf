@@ -10,7 +10,7 @@ func batch_gcd(X) {
     var prods = gather {
         take(X)
         while (X.len > 1) {
-            X = range((X.len+1)>>1).map{|i| X.ft(i<<1, ((i+1)<<1)-1).prod }
+            X = range((X.len+1)>>1).map{|i| X.slice(i<<1, ((i+1)<<1) - i<<1).prod }
             take(X)
         }
     }
@@ -31,8 +31,11 @@ func batch_gcd_naive(X) {    # a simpler approach (much slower)
 
 var arr = [43*97, 41*29, 43*503, 503*863]
 
-say batch_gcd(arr)          #=> [43, 1, 21629, 503]
-say batch_gcd_naive(arr)    #=> [1, 1, 43, 503]
+say var a = batch_gcd(arr)          #=> [43, 1, 21629, 503]
+say var b = batch_gcd_naive(arr)    #=> [1, 1, 43, 503]
+
+assert_eq(a, %n[43, 1, 21629, 503])
+assert_eq(b, %n[1, 1, 43, 503])
 
 assert(batch_gcd(1000.of { irand(2**1024) }).len, 1000)
 assert(batch_gcd(1001.of { irand(2**1024) }).len, 1001)

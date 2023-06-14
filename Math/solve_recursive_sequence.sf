@@ -51,7 +51,7 @@ func solve_recursive_sequence(seq) {
             return (^p.degree -> map { h{_} \\ 0 }.flip)
         }
 
-        (a, b) = (b.ft(1,-2), c)
+        (a, b) = (b.slice(1,-1), c)
     }
 }
 
