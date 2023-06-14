@@ -1,0 +1,179 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 14 June 2023
+# Edit: 15 June 2023
+# https://github.com/trizen
+
+# Implementation of the Burrows–Wheeler transform, with fast inversion.
+# https://rosettacode.org/wiki/Burrows–Wheeler_transform
+
+# Reference:
+#   Data Compression (Summer 2023) - Lecture 12 - The Burrows-Wheeler Transform (BWT)
+#   https://youtube.com/watch?v=rQ7wwh4HRZM
+
+define LOOKAHEAD_LEN = 128    # lower values are faster (on average)
+
+func bwt_quadratic (s) {    # O(n^2) space (impractical)
+    ^s.len -> map {|i| [s.rotate(i), i] }.sort_by { .[0] }.map { .[1] }
+}
+
+func bwt_simple (s) {    # O(n) space (very slow)
+    @(^s.len) -> sort {|a,b|
+        s.rotate(a) <=> s.rotate(b)
+    }
+}
+
+func bwt_cyclic (s) {    # O(n) space (very slow)
+
+    var cyclic = s.chars
+    var len    = cyclic.len
+
+    gather {    # check if all the symbols are the same
+        take(true)
+        cyclic.each_cons(2, {|a,b|
+            if (a != b) {
+                take(false)
+                break
+            }
+        })
+    } == [true] && return @(^len)
+
+    @(^s.len) -> sort {|i,j|
+        while (cyclic[i] == cyclic[j]) {
+            i %= len if (++i >= len)
+            j %= len if (++j >= len)
+        }
+        cyclic[i] <=> cyclic[j]
+    }
+}
+
+func bwt_lookahead (s) {    # O(n) space (moderately fast)
+
+    @(^s.len) -> sort {|a,b|
+        var t = s.slice(a, LOOKAHEAD_LEN)
+        var u = s.slice(b, LOOKAHEAD_LEN)
+
+        if (t.len < LOOKAHEAD_LEN) {
+            t += s.slice(0, min(a, LOOKAHEAD_LEN - t.len))
+        }
+
+        if (u.len < LOOKAHEAD_LEN) {
+            u += s.slice(0, min(b, LOOKAHEAD_LEN - u.len))
+        }
+
+        (t <=> u) || (s.rotate(a) <=> s.rotate(b))
+    }
+}
+
+func bwt_balanced (s) {    # O(n * LOOKAHEAD_LEN) space (fast)
+
+    ^s.len -> map {|i|
+        var t = s.slice(i, LOOKAHEAD_LEN)
+
+        if (t.len < LOOKAHEAD_LEN) {
+            t += s.slice(0, min(i, LOOKAHEAD_LEN - t.len))
+        }
+
+        [t, i]
+    }.sort {|a,b|
+        (a[0] <=> b[0]) || (s.rotate(a[1]) <=> s.rotate(b[1]))
+    }.map { .[1] }
+}
+
+func bwt_encode_quadratic(String s) {  # O(n^2) space
+
+    #var bwt = s.len.of{|i| s.slice(i) + s.slice(0, i) }.sort
+    var bwt = s.len.of{|i| s.rotate(i) }.sort
+    var ret = bwt.map { .last }.join
+    var idx = bwt.index(s)
+
+    return (ret, idx)
+}
+
+func bwt_encode(String s) {
+
+    #var bwt = bwt_simple(s)
+    #var bwt = bwt_quadratic(s)
+    #var bwt = bwt_cyclic(s)
+    #var bwt = bwt_lookahead(s)
+    var bwt = bwt_balanced(s)
+
+    var ret    = bwt.map {|i| s.slice(i-1, 1) }.join
+    var prefix = s.slice(0, LOOKAHEAD_LEN)
+    var len    = prefix.len
+
+    var idx = 0;
+    for i in (bwt) {
+
+        var lookahead = s.slice(i, len)
+
+        if (lookahead.len < len) {
+            lookahead += s.slice(0, len - lookahead.len)
+        }
+
+        if (lookahead == prefix) {
+            var row = s.rotate(i)
+            if (row == s) {
+                break
+            }
+        }
+        ++idx
+    }
+
+    return (ret, idx)
+}
+
+func bwt_decode(String bwt, Number idx) {    # fast inversion
+
+    var tail = bwt.chars
+    var head = tail.sort
+
+    var indices = []
+    tail.each_kv {|i,v|
+        indices[v.ord] := [] << i
+    }
+
+    var table = []
+
+    head.each_kv {|i,b|
+        table[i] = indices[b.ord].shift
+    }
+
+    var dec = ''
+    var i = idx
+
+    head.len.times {
+        dec += head[i]
+        i = table[i]
+    }
+
+    return dec
+}
+
+var tests = [
+    "banana", "appellee", "dogwood", "TOBEORNOTTOBEORTOBEORNOT"
+    "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES", "PINEAPPLE",
+    "","a","aa","aabb","aaaaaaaaaaaa","aaaaaaaaaaaab",
+    "baaaaaaaaaaaa","aaaaaabaaaaaa","aaaaaaabaaaaa",
+    File(__FILE__).read(:raw),
+    File($^PERL).read(:raw),
+    #File($^SIDEF).read(:raw),
+]
+
+tests.each { |str|
+    var (enc, idx) = bwt_encode(str)
+    var dec = bwt_decode(enc, idx)
+    if (enc.len < 1024) {
+        say "BWT(#{dec.dump}) = (#{enc.dump}, #{idx})"
+    }
+    assert_eq(str, dec)
+}
+
+__END__
+BWT("banana") = ("nnbaaa", 3)
+BWT("appellee") = ("eelplepa", 0)
+BWT("dogwood") = ("odoodwg", 1)
+BWT("TOBEORNOTTOBEORTOBEORNOT") = ("OOOBBBRRTTTEEENNOOORTTOO", 20)
+BWT("SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES") = ("TEXYDST.E.IXIXIXXSSMPPS.B..E.S.EUSFXDIIOIIIT", 29)
+BWT("PINEAPPLE") = ("ENLPPIEPA", 6)

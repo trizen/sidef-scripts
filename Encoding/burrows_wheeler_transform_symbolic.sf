@@ -1,40 +1,130 @@
 #!/usr/bin/ruby
 
+# Author: Trizen
+# Date: 14 June 2023
+# Edit: 15 June 2023
+# https://github.com/trizen
+
 # Burrows–Wheeler transform, implemented to work on an array of symbols.
+# https://rosettacode.org/wiki/Burrows–Wheeler_transform
 
-#
-## https://rosettacode.org/wiki/Burrows–Wheeler_transform
-#
+# Reference:
+#   Data Compression (Summer 2023) - Lecture 12 - The Burrows-Wheeler Transform (BWT)
+#   https://youtube.com/watch?v=rQ7wwh4HRZM
 
-class BurrowsWheelerTransform (Number L = 256) {
+define LOOKAHEAD_LEN = 128    # lower values are faster (on average)
 
-    method encode(Array s) {
-        s = ([L] + s)
-        var bwt = s.len.of{|i| s.slice(i) + s.slice(0, i) }.sort.map{.last}
-        var idx = bwt.index(L)
-        bwt.delete_index(idx)
-        return (bwt, idx)
+func bwt_cyclic (s) {    # O(n) space
+
+    var len = s.len
+
+    gather {    # check if all the symbols are the same
+        take(true)
+        s.each_cons(2, {|a,b|
+            if (a != b) {
+                take(false)
+                break
+            }
+        })
+    } == [true] && return @(^len)
+
+    @(^len) -> sort {|i,j|
+        while (s[i] == s[j]) {
+            i %= len if (++i >= len)
+            j %= len if (++j >= len)
+        }
+        s[i] <=> s[j]
+    }
+}
+
+func bwt_encode_quadratic(Array s) {  # O(n^2) space
+
+    #var bwt = s.len.of{|i| s.slice(i) + s.slice(0, i) }.sort
+    var bwt = s.len.of{|i| s.rotate(i) }.sort
+    var ret = bwt.map { .last }
+    var idx = bwt.index(s)
+
+    return (ret, idx)
+}
+
+func bwt_encode(Array s) {
+
+    var bwt = bwt_cyclic(s)
+
+    var ret    = bwt.map {|i| s.slice(i-1, 1)... }
+    var prefix = s.slice(0, LOOKAHEAD_LEN)
+    var len    = prefix.len
+
+    var idx = 0
+    for i in (bwt) {
+
+        var lookahead = s.slice(i, len)
+
+        if (lookahead.len < len) {
+            lookahead += s.slice(0, len - lookahead.len)
+        }
+
+        if (lookahead == prefix) {
+            var row = s.rotate(i)
+            if (row == s) {
+                break
+            }
+        }
+
+        ++idx
     }
 
-    method decode(Array s, Number idx) {
-        s = (s.slice(0, idx) + [L] + s.slice(idx))
-        var t = s.len.of{ [] }
-        var c = s.map { [_] }
-        { t = (c »+« t).sort } * s.len
-        t.first { .head == L }.slice(1)
+    return (ret, idx)
+}
+
+func bwt_decode(Array bwt, Number idx) {    # fast inversion
+
+    var tail = bwt
+    var head = bwt.sort
+
+    var indices = []
+    tail.each_kv {|i,v|
+        indices[v] := [] << i
     }
+
+    var table = []
+
+    head.each_kv {|i,b|
+        table[i] = indices[b].shift
+    }
+
+    var dec = []
+    var i = idx
+
+    head.len.times {
+        dec << head[i]
+        i = table[i]
+    }
+
+    return dec
 }
 
 var tests = [
     "banana", "appellee", "dogwood", "TOBEORNOTTOBEORTOBEORNOT"
-    "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES",
+    "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES", "PINEAPPLE",
+    "","a","aa","aabb","aaaaaaaaaaaa","aaaaaaaaaaaab",
+    "baaaaaaaaaaaa","aaaaaabaaaaaa","aaaaaaabaaaaa",
+    File(__FILE__).read(:raw),
 ]
 
-var bwt = BurrowsWheelerTransform()
-
 tests.each { |str|
-    var (enc, idx) = bwt.encode(str.bytes)
-    say "BWT(#{str.dump}) = (#{enc.join_bytes.dump}, #{idx})"
-    var dec = bwt.decode(enc, idx)
-    assert_eq(str, dec.join_bytes)
+    var (enc, idx) = bwt_encode(str.bytes)
+    if (enc.len < 1024) {
+        say "BWT(#{str.dump}) = (#{enc.join_bytes.dump}, #{idx})"
+    }
+    var dec = bwt_decode(enc, idx)
+    assert_eq(str, dec.pack('C*'))
 }
+
+__END__
+BWT("banana") = ("nnbaaa", 3)
+BWT("appellee") = ("eelplepa", 0)
+BWT("dogwood") = ("odoodwg", 1)
+BWT("TOBEORNOTTOBEORTOBEORNOT") = ("OOOBBBRRTTTEEENNOOORTTOO", 20)
+BWT("SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES") = ("TEXYDST.E.IXIXIXXSSMPPS.B..E.S.EUSFXDIIOIIIT", 29)
+BWT("PINEAPPLE") = ("ENLPPIEPA", 6)

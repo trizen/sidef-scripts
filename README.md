@@ -21,6 +21,7 @@ A nice collection of day-to-day Sidef scripts.
 * Encoding
     * [Arithmetic coding](./Encoding/arithmetic_coding.sf)
     * [Burrows wheeler transform](./Encoding/burrows_wheeler_transform.sf)
+    * [Burrows wheeler transform fast](./Encoding/burrows_wheeler_transform_fast.sf)
     * [Burrows wheeler transform symbolic](./Encoding/burrows_wheeler_transform_symbolic.sf)
     * [Caesar cipher](./Encoding/caesar_cipher.sf)
     * [Compress](./Encoding/compress.sf)
