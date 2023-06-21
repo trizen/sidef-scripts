@@ -10,7 +10,7 @@ func batch_gcd(X) {
     var prods = gather {
         take(X)
         while (X.len > 1) {
-            X = range((X.len+1)>>1).map{|i| X.slice(i<<1, ((i+1)<<1) - i<<1).prod }
+            X = range((X.len+1)>>1).map{|i| X.slice(i<<1, 2).prod }
             take(X)
         }
     }

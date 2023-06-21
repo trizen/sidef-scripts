@@ -20,9 +20,11 @@ A nice collection of day-to-day Sidef scripts.
     * [Md5](./Digest/md5.sf)
 * Encoding
     * [Arithmetic coding](./Encoding/arithmetic_coding.sf)
+    * [Binary variable length run encoding](./Encoding/binary_variable_length_run_encoding.sf)
     * [Burrows wheeler transform](./Encoding/burrows_wheeler_transform.sf)
     * [Burrows wheeler transform fast](./Encoding/burrows_wheeler_transform_fast.sf)
     * [Burrows wheeler transform symbolic](./Encoding/burrows_wheeler_transform_symbolic.sf)
+    * [Bwrl file compression](./Encoding/bwrl_file_compression.sf)
     * [Bwt file compression](./Encoding/bwt_file_compression.sf)
     * [Caesar cipher](./Encoding/caesar_cipher.sf)
     * [Compress](./Encoding/compress.sf)
@@ -45,6 +47,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Run length encoding](./Encoding/run_length_encoding.sf)
     * [Substitution cipher](./Encoding/substitution_cipher.sf)
     * [Variable length run encoding](./Encoding/variable_length_run_encoding.sf)
+    * [Variable length run encoding 2](./Encoding/variable_length_run_encoding_2.sf)
 * Encryption
     * [Age-lf](./Encryption/age-lf.sf)
     * [Backdoored rsa with x25519](./Encryption/backdoored_rsa_with_x25519.sf)

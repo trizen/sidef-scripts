@@ -1,0 +1,61 @@
+#!/usr/bin/ruby
+
+# Implementation of the Variable Length Run Encoding, for a binary string consisting of only 0s and 1s.
+
+# Reference:
+#   Data Compression (Summer 2023) - Lecture 5 - Basic Techniques
+#   https://youtube.com/watch?v=TdFWb8mL5Gk
+
+func binary_vrl_encoding (String str) {
+
+    var bits = str.chars
+    var bitstream = [bits[0]]
+
+    for c,v in (bits.run_length) {
+        if (v == 1) {
+            bitstream << '0'
+        }
+        else {
+            var t = (v-1).as_bin
+            bitstream << ('1'*t.len + '0' + t.substr(1))
+        }
+    }
+
+    bitstream.join
+}
+
+func binary_vrl_decoding (String bitstring) {
+
+    var bits_fh = bitstring.open_r(:raw)
+    var decoded = []
+    var bit = bits_fh.getc
+
+    while (!bits_fh.eof) {
+
+        decoded << bit
+
+        var bl = (^Inf -> first { bits_fh.getc != '1' })
+
+        if (bl > 0) {
+            decoded << bit*Num('1' + (bl-1).of { bits_fh.getc }.join, 2)
+        }
+
+        bit = (bit == '1' ? '0' : '1')
+    }
+
+    decoded.join
+}
+
+var bitstring = "101000010000000010000000100000000001001100010000000000000010010100000000000000001"
+
+var enc = binary_vrl_encoding(bitstring)
+var dec = binary_vrl_decoding(enc)
+
+say enc
+say dec
+
+assert_eq(dec, bitstring)
+
+__END__
+1000110101110110111010011110001010101100011110101010000111101110
+101000010000000010000000100000000001001100010000000000000010010100000000000000001

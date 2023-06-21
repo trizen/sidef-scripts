@@ -1,3 +1,4 @@
+
 #!/usr/bin/ruby
 
 # Implementation of the Variable Length Run Encoding.
@@ -16,8 +17,8 @@ func VLR_encoding (String str) {
             bitstream << '0'
         }
         else {
-            var t = (v-1).as_bin
-            bitstream << ('1'*t.len + '0' + t.substr(1))
+            var t = v.as_bin
+            bitstream << ('1'*(t.len-1) + '0' + t.substr(1))
         }
     }
 
@@ -38,7 +39,7 @@ func VLR_decoding (String bitstring) {
         decoded << c
 
         if (bl > 0) {
-            decoded << c*Num('1' + (bl-1).of { bits_fh.getc }.join, 2)
+            decoded << c*(Num('1' + bl.of { bits_fh.getc }.join, 2)-1)
         }
     }
 
@@ -62,5 +63,5 @@ with (File(__FILE__).read(':raw')) {|str|
 }
 
 __END__
-011000011111010001100010111101010110001111110001011001001100011001010011001100011001111101
+011000011110101011000101110110011000111110010011001001010110010100110011000110011111000
 aaaaaaaaaaaaabbbbbbbbbbbbbbccccccccccdddefgggg

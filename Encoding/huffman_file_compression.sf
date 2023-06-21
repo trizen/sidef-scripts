@@ -42,7 +42,7 @@ func make_tree(Array bytes) {
 }
 
 func huffman_encode(Array bytes, Hash t) {
-    bytes.map { t{_} }.join
+    join('', t{bytes...})
 }
 
 func huffman_decode (String bits, Hash tree) {

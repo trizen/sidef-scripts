@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
 
 # Author: Trizen
-# Date: 20 June 2023
+# Date: 21 June 2023
 # https://github.com/trizen
 
-# Compress/decompress files using Burrows-Wheeler Transform (BWT) + Move-to-Front Transform + Run-length encoding + Huffman coding.
+# Compress/decompress files using Burrows-Wheeler Transform (BWT) + Variable length-run encoding + Huffman coding.
 
 # Reference:
 #   Data Compression (Summer 2023) - Lecture 13 - BZip2
@@ -12,7 +12,7 @@
 
 define(
     CHUNK_SIZE        = (1 << 17),
-    SIGNATURE         = ('BWT' + 2.chr),
+    SIGNATURE         = ('BWRL' + 1.chr),
     LOOKAHEAD_LEN     = 128,
 )
 
@@ -42,30 +42,6 @@ func read_bits (FileHandle fh, Number bits_len) {
     }
 
     return str
-}
-
-func mtf_encode (Array bytes, Array alphabet = @(^256)) {
-
-    var C = []
-
-    for c in bytes {
-        C << alphabet.first_index(c)
-        alphabet.prepend(alphabet.delete_index(C.tail))
-    }
-
-    return C
-}
-
-func mtf_decode (Array encoded, Array alphabet = @(^256)) {
-
-    var S = []
-
-    for p in encoded {
-        S << alphabet[p]
-        alphabet.prepend(alphabet.delete_index(p))
-    }
-
-    return S
 }
 
 func bwt_sort (String s) {    # O(n * LOOKAHEAD_LEN) space (fast)
@@ -137,7 +113,7 @@ func bwt_decode(String bwt, Number idx) {    # fast inversion
     return dec
 }
 
-func delta_encode (Array integers, Bool double = false) {
+func delta_encode (Array integers) {
 
     var deltas = [0, integers.len, integers...].diffs
     var bitstring = FileHandle.new_buf(:raw)
@@ -146,13 +122,8 @@ func delta_encode (Array integers, Bool double = false) {
         if (d == 0) {
             bitstring << '0'
         }
-        elsif (double) {
-            var t = d.abs.as_bin
-            var l = (t.len + 1).as_bin
-            bitstring << join('', '1', ((d < 0) ? '0' : '1'), ('1' * (l.len-1)), '0', l.substr(1), t.substr(1))
-        }
         else {
-            var t = d.abs.as_bin
+            var t = sprintf('%b', d.abs)
             bitstring << join('', '1', ((d < 0) ? '0' : '1'), ('1' * (t.len-1)), '0', t.substr(1))
         }
     }
@@ -160,7 +131,7 @@ func delta_encode (Array integers, Bool double = false) {
     pack('B*', bitstring.parent)
 }
 
-func delta_decode (FileHandle fh, Bool double = false) {
+func delta_decode (FileHandle fh) {
 
     var deltas = []
     var buffer = ''
@@ -171,15 +142,6 @@ func delta_decode (FileHandle fh, Bool double = false) {
 
         if (bit == '0') {
             deltas << 0
-        }
-        elsif (double) {
-            var bit = read_bit(fh, \buffer)
-            var bl = (^Inf -> first { read_bit(fh, \buffer) != '1' })
-
-            var bl2 = Num('1' + bl.of { read_bit(fh, \buffer) }.join, 2)-1
-            var int = Num('1' + (bl2-1).of { read_bit(fh, \buffer) }.join, 2)
-
-            deltas << (bit == '1' ? int : -int)
         }
         else {
             var bit = read_bit(fh, \buffer)
@@ -248,7 +210,7 @@ func create_huffman_entry (Array bytes, FileHandle out_fh) {
     var enc = huffman_encode(bytes, h)
 
     var max_symbol = (bytes.max \\ 0)
-    say "Max symbol: #{max_symbol}\n";
+    say "Max symbol: #{max_symbol}";
 
     var freqs = []
     for i in (0 .. max_symbol) {
@@ -278,7 +240,7 @@ func decode_huffman_entry (FileHandle fh) {
     }
 
     var enc_len = unpack('N', 4.of { fh.getc }.join).to_i
-    say "Encoded length: #{enc_len}\n"
+    say "Encoded length: #{enc_len}"
 
     if (enc_len > 0) {
         return huffman_decode(read_bits(fh, enc_len), rev_dict).nums
@@ -287,219 +249,69 @@ func decode_huffman_entry (FileHandle fh) {
     return []
 }
 
-func rle4_encode (Array bytes) {    # RLE1
+func VLR_encoding (Array bytes) {
 
-    var rle = []
-    var end  = bytes.end
-    var prev = -1
-    var run  = 0
+    var uncompressed = []
+    var bitstream = FileHandle.new_buf(:raw)
 
-    for (var i = 0; i <= end ; ++i) {
-
-        if (bytes[i] == prev) {
-            ++run
+    for c,v in (bytes.run_length) {
+        uncompressed << c
+        if (v == 1) {
+            bitstream << '0'
         }
         else {
-            run = 1
-        }
-
-        rle << (prev = bytes[i])
-
-        if (run >= 4) {
-
-            run = 0
-            i += 1
-
-            while ((run < 255) && (i <= end) && (bytes[i] == prev)) {
-                ++run
-                ++i
-            }
-
-            rle << run
-            run = 1
-
-            if (i <= end) {
-                rle << (prev = bytes[i])
-            }
+            var t = v.as_bin
+            bitstream << ('1'*(t.len-1) + '0' + t.substr(1))
         }
     }
 
-    return rle
+    return (uncompressed, bitstream.parent)
 }
 
-func rle4_decode (Array bytes) {    # RLE1
+func VLR_decoding (Array uncompressed, FileHandle fh) {
 
-    var dec  = [bytes[0]]
-    var end  = bytes.end
-    var prev = bytes[0]
-    var run  = 1
+    var decoded = FileHandle.new_buf(:raw)
+    var buffer = ''
 
-    for (var i = 1 ; i <= end ; ++i) {
+    uncompressed.len.times {
 
-        if (bytes[i] == prev) {
-            ++run
+        var c = uncompressed.shift.chr
+        var bl = (^Inf -> first { read_bit(fh, \buffer) != '1' })
+
+        if (bl > 0) {
+            decoded << c*Num('1' + bl.of { read_bit(fh, \buffer) }.join, 2)
         }
         else {
-            run = 1
-        }
-
-        dec << (prev = bytes[i])
-
-        if (run >= 4) {
-            if (++i <= end) {
-                run = bytes[i]
-                dec << run.of(prev)...
-            }
-            run = 0
+            decoded << c
         }
     }
 
-    return dec
-}
-
-func rle_encode (Array bytes) {    # RLE2
-
-    var rle = []
-    var end = bytes.end
-
-    for (var i = 0 ; i <= end ; ++i) {
-
-        var run = 0
-        while ((i <= end) && (bytes[i] == 0)) {
-            ++run
-            ++i
-        }
-
-        if (run >= 1) {
-            var t = (run+1).as_bin
-            rle << t.substr(1).chars.map{.to_i}...
-        }
-
-        if (i <= end) {
-            rle << (bytes[i] + 1)
-        }
-    }
-
-    return rle
-}
-
-func rle_decode (Array rle) {    # RLE2
-
-    var dec = []
-    var end = rle.end
-
-    for (var i = 0 ; i <= end ; ++i) {
-        var k = rle[i]
-
-        if ((k == 0) || (k == 1)) {
-            var run = 1
-            while ((i <= end) && ((k == 0) || (k == 1))) {
-                (run <<= 1) |= k
-                k = rle[++i]
-            }
-            dec << (run-1).of(0)...
-        }
-
-        if (i <= end) {
-            dec << (k - 1)
-        }
-    }
-
-    return dec
-}
-
-func encode_alphabet (Array alphabet) {
-
-    (var table = Hash()){alphabet...} = ()
-
-    var populated = 0
-    var marked = []
-
-    for (var i = 0 ; i <= 255 ; i += 32) {
-
-        var enc = 0
-        for j in (0 .. 31) {
-            if (table.has(i + j)) {
-                enc |= (1 << j)
-            }
-        }
-
-        if (enc == 0) {
-            populated <<= 1
-        }
-        else {
-            (populated <<= 1) |= 1
-            marked << enc
-        }
-    }
-
-    var delta = delta_encode(marked, true)
-
-    say "Populated : #{sprintf('%08b', populated)}"
-    say "Marked    : #{marked}"
-    say "Delta len : #{delta.len}"
-
-    var encoded = ''
-    encoded += populated.chr
-    encoded += delta
-    return encoded
-}
-
-func decode_alphabet (FileHandle fh) {
-
-    var populated = sprintf('%08b', ord(fh.getc)).chars
-    var marked    = delta_decode(fh, true)
-
-    var alphabet = []
-    for (var i = 0 ; i <= 255 ; i += 32) {
-        if (populated.shift) {
-            var m = marked.shift
-            for j in (0 .. 31) {
-                if (m & 1) {
-                    alphabet << (i + j)
-                }
-                m >>= 1
-            }
-        }
-    }
-
-    return alphabet
+    return decoded.parent
 }
 
 func compression (String chunk, FileHandle out_fh) {
+    var (bwt, idx) = bwt_encode(chunk)
 
-    var rle1 = rle4_encode(chunk.bytes)
-    var (bwt, idx) = bwt_encode(rle1.pack('C*'))
+    say "\nBWT index = #{idx}"
 
-    say "BWT index = #{idx}"
-
-    var bytes        = bwt.bytes
-    var alphabet     = bwt.uniq.sort.bytes
-    var alphabet_enc = encode_alphabet(alphabet)
-
-    var mtf = mtf_encode(bytes, alphabet)
-    var rle = rle_encode(mtf)
+    var (uncompressed, lengths) = VLR_encoding(bwt.bytes)
 
     out_fh << pack('N', idx)
-    out_fh << alphabet_enc
-    create_huffman_entry(rle, out_fh)
+    create_huffman_entry(uncompressed, out_fh)
+    create_huffman_entry(pack('B*', lengths).bytes, out_fh)
 }
 
 func decompression (FileHandle fh, FileHandle out_fh) {
 
-    var idx      = unpack('N', 4.of { fh.getc \\ die "error" }.join).to_i
-    var alphabet = decode_alphabet(fh)
+    var idx = unpack('N', 4.of { fh.getc \\ die "error" }.join).to_i
 
-    say "BWT index = #{idx}"
-    say "Alphabet size: #{alphabet.len}"
+    say "\nBWT index = #{idx}"
 
-    var rle  = decode_huffman_entry(fh)
-    var mtf  = rle_decode(rle);
-    var bwt  = mtf_decode(mtf, alphabet)
-    var rle4 = bwt_decode(bwt.pack('C*'), idx)
-    var data = rle4_decode(rle4.bytes)
+    var uncompressed = decode_huffman_entry(fh)
+    var lengths = decode_huffman_entry(fh).pack('C*')
 
-    out_fh << data.pack('C*')
+    var bwt = VLR_decoding(uncompressed, lengths.open_r(:raw))
+    out_fh << bwt_decode(bwt, idx)
 }
 
 # Compress file
@@ -529,7 +341,7 @@ func decompress_file(File input, File output) {
     var in_fh = input.open('<:raw') || die "Can't open file <<#{input}>> for reading"
 
     if (SIGNATURE.len.of { in_fh.getc }.join != SIGNATURE) {
-        die "Not a BWT archive!\n"
+        die "Not a BWRL archive!\n"
     }
 
     var out_fh = output.open('>:raw') || die "Can't open file <<#{output}>> for writing"
@@ -549,9 +361,9 @@ var file = File(ARGV.shift) || do {
     Sys.exit(2)
 }
 
-if (decode || file.match(/\.bwt\.enc\z/)) {
-    decompress_file(file, File("output.bwt.dec"))
+if (decode || file.match(/\.bwrl\.enc\z/)) {
+    decompress_file(file, File("output.bwrl.dec"))
 }
 else {
-    compress_file(file, File("output.bwt.enc"))
+    compress_file(file, File("output.bwrl.enc"))
 }
