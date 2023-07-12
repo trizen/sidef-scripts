@@ -1,0 +1,236 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 12 July 2023
+# https://github.com/trizen
+
+# The Arithmetic Coding algorithm, implemented using native integers.
+
+# Reference:
+#   Data Compression (Summer 2023) - Lecture 15 - Infinite Precision in Finite Bits
+#   https://youtube.com/watch?v=EqKbT3QdtOI
+
+define(
+    BITS = 31,
+    MAX  = ((1 << BITS) - 1),
+    MSB  = (1 << (BITS - 1)),
+    SMSB = (1 << (BITS - 2)),
+)
+
+func create_cfreq(freq) {
+
+    var c_low = Hash()
+    var c_high = Hash()
+
+    var T = 0
+
+    for i in (0..256) {
+        freq{i} \\ next
+        c_low{i} = T
+        T += freq{i}
+        c_high{i} = T
+    }
+
+    return (c_low, c_high, T)
+}
+
+func encode (String str) {
+
+    var bytes = str.bytes+[256]
+    var enc = FileHandle.new_buf(:raw)
+    var freq = bytes.freq
+
+    # Workaround for low frequencies
+    for k in (freq.keys) {
+        freq{k} += 256 if (freq{k} < 256)
+    }
+
+    var(cf_low, cf_high, T) = create_cfreq(freq)
+
+    if (T > MAX) {
+        die ("Too few bits: #{T} > ", MAX)
+    }
+
+    var low      = 0
+    var high     = MAX
+    var uf_count = 0
+
+    for c in (bytes) {
+
+        var w = (high - low + 1)
+
+        high = (low + idiv(w * cf_high{c}, T))
+        low  = (low + idiv(w * cf_low{c}, T))
+
+        if (high > MAX) {
+            die "high > MAX: #{high} > #{MAX}"
+        }
+
+        if (low >= high) { die "#{low} >= #{high}" }
+
+        loop {
+
+            if ((low & MSB) == (high & MSB)) {
+
+                var bit = ((low & MSB) >> (BITS - 1))
+
+                enc << bit
+
+                if (uf_count > 0) {
+                    enc << uf_count.of(1 - bit).join
+                    uf_count = 0
+                }
+
+                if (bit == 1) {
+                    low  ^= MSB
+                    high ^= MSB
+                }
+
+                low  <<= 1
+                high <<= 1
+                high |= 1
+            }
+            elsif (((low & SMSB) == SMSB) && ((high & SMSB) == 0)) {
+
+                low ^= SMSB
+                #low = (((low & MSB) >> 1) | (low & (SMSB - 1)))
+
+                high -= SMSB if (high >= SMSB)
+                #high = (((high & MSB) >> 1) | (high & (SMSB - 1)))
+
+                low  <<= 1
+                high <<= 1
+                high |= 1
+
+                uf_count += 1
+            }
+            else {
+                break
+            }
+        }
+    }
+
+    if (enc.parent == '') {
+        var bit = ((low & MSB) >> (BITS - 1))
+
+        enc << bit
+
+        if (uf_count > 0) {
+            enc << uf_count.of(1 - bit).join
+            uf_count = 0
+        }
+    }
+
+    enc << '1'
+    return (enc.parent, freq)
+}
+
+func decode (bits, freq) {
+    var fh = bits.open_r(:raw)
+
+    var(cf_low, cf_high, T) = create_cfreq(freq)
+
+    var dec  = FileHandle.new_buf(:raw)
+    var low  = 0
+    var high = MAX
+    var enc  = Num(BITS.of {fh.getc \\ 0}.join, 2)
+
+    var table = []
+    for i in (0..256) {
+        cf_low{i} \\ next
+        for j in (cf_low{i} ..^ cf_high{i}) {
+            table[j] = i
+        }
+    }
+
+    loop {
+        var w  = (high - low + 1)
+        var ss = idiv(T*(enc - low + 1) - 1, w)
+
+        var i = table[ss]
+        break if (i == 256)
+
+        dec << i.chr
+
+        high = (low + idiv(w * cf_high{i}, T))
+        low  = (low + idiv(w * cf_low{i}, T))
+
+        if (high > MAX) {
+            die "high > MAX: #{high} > #{MAX}"
+        }
+
+        if (low >= high) { die "#{low} >= #{high}" }
+
+        loop {
+
+            if ((low & MSB) == (high & MSB)) {
+
+                if ((low & MSB) == MSB) {
+                    low  ^= MSB
+                    high ^= MSB
+                }
+
+                low  <<= 1
+                high <<= 1
+                high |= 1
+
+                if ((enc & MSB) == MSB) {
+                    enc ^= MSB
+                }
+
+                enc <<= 1
+                enc |= (fh.getc \\ 0)
+            }
+            elsif (((low & SMSB) == SMSB) && ((high & SMSB) == 0)) {
+
+                low ^= SMSB
+                #low = (((low & MSB) >> 1) | (low & (SMSB - 1)))
+
+                high -= SMSB;
+                #high = (((high & MSB) >> 1) | (high & (SMSB - 1)))
+
+                enc -= SMSB if (enc >= SMSB)
+                #enc = (((enc & MSB) >> 1) | (enc & (SMSB - 1)))
+
+                low  <<= 1;
+                high <<= 1;
+                high |= 1;
+                enc <<= 1;
+                enc |= (fh.getc \\ 0)
+            }
+            else {
+                break
+            }
+        }
+    }
+
+    return dec.parent
+}
+
+var str = "ABRACADABRA AND A VERY SAD SALAD"
+
+if (ARGV) {
+    if (File(ARGV[0]).exists) {
+        str = File(ARGV[0]).read(:raw)
+    }
+    else {
+        str = ARGV[0]
+    }
+}
+
+var (enc, freq) = encode(str)
+
+say enc
+say ("String length: ", str.len)
+say ("Encoded bytes length: ", length(enc)/8)
+say ("Ratio: ", (enc.len/8)/str.len * 100)
+
+var dec = decode(enc, freq)
+assert_eq(str.len, dec.len)
+assert_eq(dec, str)
+
+__END__
+0001100000000111000010011001111111110100110001100010000111011000000001110000111110100011110111001011010111010110110000011
+String length: 32
+Encoded bytes length: 15.125
+Ratio: 47.265625

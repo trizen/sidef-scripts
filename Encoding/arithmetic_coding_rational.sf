@@ -1,0 +1,103 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 12 July 2023
+# https://github.com/trizen
+
+# The Arithmetic Coding algorithm, implemented using rational numbers (impractical).
+
+# Reference:
+#   Data Compression (Summer 2023) - Lecture 14 - Arithmetic Coding
+#   https://youtube.com/watch?v=xt3uNibQWlQ
+
+func create_cfreq(freq) {
+
+    var c_low = Hash()
+    var c_high = Hash()
+
+    var T = 0
+    var len = freq.values.sum
+
+    for i in (0..256) {
+        freq{i} \\ next
+        c_low{i} = T/len
+        T += freq{i}
+        c_high{i} = T/len
+    }
+
+    return (c_low, c_high, T)
+}
+
+func encode (str) {
+
+    var bytes = str.bytes+[256]
+    var freq = bytes.freq
+
+    var(c_low, c_high) = create_cfreq(freq)
+
+    var low = 0
+    var high = 1
+
+    for c in (bytes) {
+        var w = (high - low)
+        high = (low + w*c_high{c})
+        low = (low + w*c_low{c})
+    }
+
+    return (low, freq)
+}
+
+func decode(v, freq) {
+
+    var low = 0
+    var high = 1
+    var dec = FileHandle.new_buf(:raw)
+
+    var(c_low, c_high, T) = create_cfreq(freq)
+
+    var table = []
+    for i in (0..256) {
+        c_low{i} \\ next
+        for j in (c_low{i}*T ..^ T*c_high{i}) {
+            table[j] = i
+        }
+    }
+
+    loop {
+        var w = (high - low)
+        var sv = (v - low)/w
+        var c = table[sv * T]
+
+        break if (c == 256)
+
+        dec << c.chr
+        high = (low + w*c_high{c})
+        low = (low + w*c_low{c})
+    }
+
+    return dec.parent
+}
+
+var str = "ABRACADABRA AND A VERY SAD SALAD"
+
+if (ARGV) {
+    if (File(ARGV[0]).exists) {
+        str = File(ARGV[0]).read(:raw)
+    }
+    else {
+        str = ARGV[0]
+    }
+}
+
+var (enc, freq) = encode(str)
+
+say enc
+say enc.as_rat
+var dec = decode(enc, freq)
+
+assert_eq(str.len, dec.len)
+assert_eq(str, dec)
+
+__END__
+0.303688064925694067996504375985214402219198685615
+1452191786545590180270161383342926848824010927665/4781853336583741771837630738320908723679154940019

@@ -20,6 +20,8 @@ A nice collection of day-to-day Sidef scripts.
     * [Md5](./Digest/md5.sf)
 * Encoding
     * [Arithmetic coding](./Encoding/arithmetic_coding.sf)
+    * [Arithmetic coding in fixed bits](./Encoding/arithmetic_coding_in_fixed_bits.sf)
+    * [Arithmetic coding rational](./Encoding/arithmetic_coding_rational.sf)
     * [Binary variable length run encoding](./Encoding/binary_variable_length_run_encoding.sf)
     * [Burrows wheeler transform](./Encoding/burrows_wheeler_transform.sf)
     * [Burrows wheeler transform fast](./Encoding/burrows_wheeler_transform_fast.sf)
