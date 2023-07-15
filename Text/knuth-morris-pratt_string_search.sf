@@ -1,0 +1,98 @@
+#!/usr/bin/ruby
+
+# https://rosettacode.org/wiki/Knuth-Morris-Pratt_string_search#Sidef
+
+func kmp_search (String S, String W) {
+
+    S.graphemes!
+    W.graphemes!
+
+    func kmp_table {
+        var (pos, cnd, *T) = (1, 0, -1)
+        for (nil; pos < W.len; (++pos; ++cnd)) {
+            if (W[pos] == W[cnd]) {
+                T[pos] = T[cnd]
+            }
+            else {
+                T[pos] = cnd
+                while ((cnd >= 0) && (W[pos] != W[cnd])) {
+                    cnd = T[cnd]
+                }
+            }
+        }
+        T[pos] = cnd
+        return T
+    }
+
+    var (k, T, *I) = (0, kmp_table())
+
+    for (var j = 0; j < S.len; nil) {
+        if (W[k] == S[j]) {
+            ++j
+            ++k
+            if (k == W.len) {
+                I << (j - k)
+                k = T[k]
+            }
+        }
+        elsif ((k = T[k]) < 0) {
+            ++j
+            ++k
+        }
+    }
+
+    return I
+}
+
+var texts = [
+    "GCTAGCTCTACGAGTCTA",
+    "GGCTATAATGCGTA",
+    "there would have been a time for such a word",
+    "needle need noodle needle",
+    "BharôtভাৰতBharôtভারতIndiaBhāratભારતBhāratभारतBhārataಭಾರತBhāratभारतBhārat"+
+    "amഭാരതംBhāratभारतBhāratभारतBharôtôଭାରତBhāratਭਾਰਤBhāratamभारतम्Bārataபாரத"+
+    "ம்BhāratamഭാരതംBhāratadēsamభారతదేశం",
+    "InhisbookseriesTheArtofComputerProgrammingpublishedbyAddisonWesleyDKnu"+
+    "thusesanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblyl"+
+    "anguagestoillustratetheconceptsandalgorithmsastheyarepresented",
+    "Nearby farms grew a half acre of alfalfa on the dairy's behalf, with ba"+
+    "les of all that alfalfa exchanged for milk.",
+]
+
+var pats = ["TCTA", "TAATAAA", "word", "needle", "ഭാരതം", "put", "and", "alfalfa"]
+
+texts.each_kv {|k,v| say "text#{k} = #{v}" }; say ''
+
+pats.each_kv {|k,v|
+    var j = (k < 6 ? k : k-1)
+    say ("Found '#{v}' in 'text#{j}' at indices ", kmp_search(texts[j], v))
+}
+
+func string_search(pat, str) {
+    kmp_search(str, pat)
+}
+
+say(string_search("bar",      "foobartestbarend"))          #=> [3, 10]
+say(string_search("bar",      "foo-bar-test-bar-end"))      #=> [4, 13]
+say(string_search("Bar",      "foo-bar-test-Bar-end-Bar"))  #=> [13, 21]
+say(string_search("-test-",   "foo-bar-test-Bar-end-Bar"))  #=> [7]
+say(string_search("-Bar-end", "foo-Bar-test-Bar-end-Bar"))  #=> [12]
+say(string_search("-Bar",     "foo-Bar-test-Bar-end-Bar"))  #=> [3, 12, 20]
+
+__END__
+text0 = GCTAGCTCTACGAGTCTA
+text1 = GGCTATAATGCGTA
+text2 = there would have been a time for such a word
+text3 = needle need noodle needle
+text4 = BharôtভাৰতBharôtভারতIndiaBhāratભારતBhāratभारतBhārataಭಾರತBhāratभारतBhāratamഭാരതംBhāratभारतBhāratभारतBharôtôଭାରତBhāratਭਾਰਤBhāratamभारतम्Bārataபாரதம்BhāratamഭാരതംBhāratadēsamభారతదేశం
+text5 = InhisbookseriesTheArtofComputerProgrammingpublishedbyAddisonWesleyDKnuthusesanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguagestoillustratetheconceptsandalgorithmsastheyarepresented
+text6 = Nearby farms grew a half acre of alfalfa on the dairy's behalf, with bales of all that alfalfa exchanged for milk.
+
+Found 'TCTA' in 'text0' at indices [6, 14]
+Found 'TAATAAA' in 'text1' at indices []
+Found 'word' in 'text2' at indices [40]
+Found 'needle' in 'text3' at indices [0, 19]
+Found 'ഭാരതം' in 'text4' at indices [68, 138]
+Found 'put' in 'text5' at indices [26, 90]
+Found 'and' in 'text5' at indices [101, 128, 171]
+Found 'alfalfa' in 'text6' at indices [33, 87]

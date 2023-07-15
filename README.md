@@ -738,6 +738,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Boyer-moore string search algorithm](./Text/boyer-moore_string_search_algorithm.sf)
     * [Brace expansion](./Text/brace_expansion.sf)
     * [Jaro distance](./Text/jaro_distance.sf)
+    * [Knuth-morris-pratt string search](./Text/knuth-morris-pratt_string_search.sf)
     * [Longest common prefix](./Text/longest_common_prefix.sf)
     * [Longest common subsequence](./Text/longest_common_subsequence.sf)
     * [Markov chain text generator](./Text/markov_chain_text_generator.sf)
