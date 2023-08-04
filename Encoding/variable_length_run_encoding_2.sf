@@ -1,4 +1,3 @@
-
 #!/usr/bin/ruby
 
 # Implementation of the Variable Length Run Encoding.

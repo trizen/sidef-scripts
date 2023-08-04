@@ -12,7 +12,7 @@
 
 func cipolla(n, p) {
 
-    legendre(n, p) == 1 || return nil
+    kronecker(n, p) == 1 || return nil
 
     var (a, ω) = (
         0..Inf -> lazy.map {|a|
