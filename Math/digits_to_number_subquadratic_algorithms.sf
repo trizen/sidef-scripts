@@ -19,7 +19,7 @@ func FastIntegerInput(digits, B) {
             defined(ly) ? (lx + b*ly) : (lx)
         })
 
-        (b, k) = (b*b, ceil(k/2))
+        (b, k) = (b*b, (k>>1)+(k&1))
     }
 
     l[0]
@@ -40,7 +40,7 @@ func FastIntegerOutput(A, B) {
 }
 
 for B in (2..100) {     # run some tests
-    var N = 1e20.irand
+    var N = 1e30.irand
 
     var a = N.digits(B)
     var b = FastIntegerOutput(N, B)
