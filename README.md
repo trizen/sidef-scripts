@@ -29,6 +29,9 @@ A nice collection of day-to-day Sidef scripts.
     * [Binomial hash function](./Digest/binomial_hash_function.sf)
     * [Md5](./Digest/md5.sf)
 * Encoding
+    * [Adaptive huffman coding](./Encoding/adaptive_huffman_coding.sf)
+    * [Adaptive huffman coding with escape symbols](./Encoding/adaptive_huffman_coding_with_escape_symbols.sf)
+    * [Adaptive huffman coding with escape symbols 2](./Encoding/adaptive_huffman_coding_with_escape_symbols_2.sf)
     * [Arithmetic coding](./Encoding/arithmetic_coding.sf)
     * [Arithmetic coding in fixed bits](./Encoding/arithmetic_coding_in_fixed_bits.sf)
     * [Arithmetic coding integer](./Encoding/arithmetic_coding_integer.sf)
@@ -48,6 +51,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Lzw+huffman compression](./Encoding/lzw+huffman_compression.sf)
     * [Lzw compression](./Encoding/lzw_compression.sf)
     * [Move-to-front transform](./Encoding/move-to-front_transform.sf)
+    * [Ppm encoding](./Encoding/ppm_encoding.sf)
     * [Run length encoding](./Encoding/run_length_encoding.sf)
     * [Substitution cipher](./Encoding/substitution_cipher.sf)
     * [Variable length run encoding](./Encoding/variable_length_run_encoding.sf)

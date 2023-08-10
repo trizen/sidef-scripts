@@ -1,0 +1,122 @@
+#!/usr/bin/ruby
+
+# Implementation of the Adaptive Huffman Coding with escape symbols.
+
+# See also:
+#   https://rosettacode.org/wiki/huffman_coding
+
+# Reference:
+#   Data Compression (Summer 2023) - Lecture 16 - Adaptive Methods
+#   https://youtube.com/watch?v=YKv-w8bXi9c
+
+define(
+    ESCAPE_SYMBOL => 256,      # escape symbol
+)
+
+func walk(Hash n, String s, Hash h) {
+    if (n.has(:a)) {
+        h{n{:a}} = s
+        return nil
+    }
+    walk(n{:0}, s+'0', h) if n.has(:0)
+    walk(n{:1}, s+'1', h) if n.has(:1)
+}
+
+func mktree_from_freq(Hash freqs) {
+
+    var nodes = freqs.sort.map_2d { |b,f|
+        Hash(a => b, freq => f)
+    }
+
+    loop {
+        nodes.sort_by!{|h| h{:freq} }
+        var(x, y) = (nodes.shift, nodes.shift)
+        if (defined(x)) {
+            if (defined(y)) {
+                nodes << Hash(:0 => x, :1 => y, :freq => x{:freq}+y{:freq})
+            }
+            else {
+                nodes << Hash(:0 => x, :freq => x{:freq})
+            }
+        }
+        nodes.len > 1 || break
+    }
+
+    var n = nodes.first
+    walk(n, '', n{:tree} = Hash())
+    return n
+}
+
+func encode(Array bytes, Array alphabet) {
+
+    var freq  = alphabet.freq
+    var freq2 = [ESCAPE_SYMBOL].freq
+
+    var enc = []
+    var tree = mktree_from_freq(freq)
+
+    bytes.each {|b|
+        var tree2 = mktree_from_freq(freq2)
+
+        if (freq2.has(b)) {
+            enc << tree2{:tree}{b}
+            ++freq2{b}
+        }
+        else {
+            freq2{b} = 1
+            enc << tree2{:tree}{ESCAPE_SYMBOL}
+            enc << tree{:tree}{b}
+        }
+    }
+
+    return enc.join
+}
+
+func decode(String enc, Array alphabet) {
+    var out = []
+    var prefix = ''
+
+    var freq  = alphabet.freq
+    var freq2 = [ESCAPE_SYMBOL].freq
+
+    var tree  = mktree_from_freq(freq){:tree}.flip
+    var tree2 = mktree_from_freq(freq2){:tree}.flip
+
+    var escape = false
+
+    enc.each {|bit|
+
+        prefix += bit
+
+        if (!escape && tree2.has(prefix)) {
+            var b = Num(tree2{prefix})
+            if (b == ESCAPE_SYMBOL) {
+                escape = true
+            }
+            else {
+                out << b
+                ++freq2{b}
+                tree2 = mktree_from_freq(freq2){:tree}.flip
+            }
+            prefix = ''
+        }
+        elsif (escape && tree.has(prefix)) {
+            var b = tree{prefix}
+            out << b
+            freq2{b} = 1
+            tree2 = mktree_from_freq(freq2){:tree}.flip
+            prefix = ''
+            escape = false
+        }
+    }
+
+    return out
+}
+
+var text  = "this is an example for huffman encoding"
+var bytes = text.bytes
+
+say var enc = encode(bytes, bytes.uniq)
+say var dec = decode(enc, bytes.uniq).pack('C*')
+
+assert_eq(dec, text)

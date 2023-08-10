@@ -1,20 +1,22 @@
 #!/usr/bin/ruby
 
-# https://rosettacode.org/wiki/huffman_coding
+# Implementation of the Adaptive Huffman Coding.
+
+# See also:
+#   https://rosettacode.org/wiki/huffman_coding
 
 func walk(Hash n, String s, Hash h) {
     if (n.has(:a)) {
         h{n{:a}} = s
-        printf("%3s: %s\n", n{:a}, s)
         return nil
     }
     walk(n{:0}, s+'0', h) if n.has(:0)
     walk(n{:1}, s+'1', h) if n.has(:1)
 }
 
-func make_tree(Array bytes) {
+func mktree_from_freq(Hash freqs) {
 
-    var nodes = bytes.freq.sort.map_2d { |b,f|
+    var nodes = freqs.sort.flip.map_2d { |b,f|
         Hash(a => b, freq => f)
     }
 
@@ -37,19 +39,33 @@ func make_tree(Array bytes) {
     return n
 }
 
-func encode(bytes, t) {
-    t = t{:tree}
-    bytes.map { t{_} }.join
+func encode(Array bytes, Array alphabet) {
+
+    var freq = alphabet.freq
+    var enc = []
+
+    bytes.each {|b|
+        var tree = mktree_from_freq(freq)
+        ++freq{b}
+        enc << tree{:tree}{b}
+    }
+
+    return enc.join
 }
 
-func decode(enc, tree) {
+func decode(String enc, Array alphabet) {
     var out = []
     var prefix = ''
+
+    var freq = alphabet.freq
+    var tree = mktree_from_freq(freq){:tree}.flip
 
     enc.each {|bit|
         prefix += bit
         if (tree.has(prefix)) {
             out << tree{prefix}
+            ++freq{tree{prefix}}
+            tree = mktree_from_freq(freq){:tree}.flip
             prefix = ''
         }
     }
@@ -59,8 +75,8 @@ func decode(enc, tree) {
 
 var text  = "this is an example for huffman encoding"
 var bytes = text.bytes
-var tree  = make_tree(bytes)
-var enc   = encode(bytes, tree)
 
-say enc
-say decode(enc, tree{:tree}.flip).decode('utf8')
+say var enc = encode(bytes, bytes.uniq)
+say var dec = decode(enc, bytes.uniq).pack('C*')
+
+assert_eq(dec, text)

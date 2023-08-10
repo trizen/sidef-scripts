@@ -1,0 +1,169 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 10 August 2023
+# https://github.com/trizen
+
+# Implementation of a PPM (prediction by partial-matching) encoder, using Huffman Coding.
+
+# See also:
+#   https://rosettacode.org/wiki/huffman_coding
+
+# Reference:
+#   Data Compression (Summer 2023) - Lecture 16 - Adaptive Methods
+#   https://youtube.com/watch?v=YKv-w8bXi9c
+
+define(
+    ESCAPE_SYMBOL => 256,      # escape symbol
+    CONTEXTS_NUM  => 4,        # maximum number of contexts
+)
+
+func walk(Hash n, String s, Hash h) {
+    if (n.has(:a)) {
+        h{n{:a}} = s
+        return nil
+    }
+    walk(n{:0}, s+'0', h) if n.has(:0)
+    walk(n{:1}, s+'1', h) if n.has(:1)
+}
+
+func mktree_from_freq(Hash freqs) {
+
+    var nodes = freqs.sort_by{.to_i}.map_2d { |b,f|
+        Hash(a => b, freq => f)
+    }
+
+    loop {
+        nodes.sort_by!{|h| h{:freq} }
+        var(x, y) = (nodes.shift, nodes.shift)
+        if (defined(x)) {
+            if (defined(y)) {
+                nodes << Hash(:0 => x, :1 => y, :freq => x{:freq}+y{:freq})
+            }
+            else {
+                nodes << Hash(:0 => x, :freq => x{:freq})
+            }
+        }
+        nodes.len > 1 || break
+    }
+
+    var n = nodes.first
+    walk(n, '', n{:tree} = Hash())
+    return n
+}
+
+func encode(Array bytes, Array alphabet) {
+
+    var enc = []
+    var prev = []
+
+    var ctx = [
+        Hash(prev, Hash(freq => alphabet.freq)),
+    ]
+
+    for i in (1..CONTEXTS_NUM) {
+        ctx << Hash(prev, Hash(freq => [ESCAPE_SYMBOL].freq)),
+    }
+
+    for c in ctx {
+        c{prev}{:tree} = mktree_from_freq(c{prev}{:freq}){:tree}
+    }
+
+    bytes.each {|b|
+
+        for k in (0..ctx.end -> flip) {
+            var s = prev.last(max(k-1, 0))
+
+            if (!ctx[k].has(s)) {
+                ctx[k]{s}{:freq} = [ESCAPE_SYMBOL].freq
+            }
+
+            if (ctx[k]{s}{:freq}.has(b)) {
+
+                if (k != 0) {
+                    ctx[k]{s}{:tree} = mktree_from_freq(ctx[k]{s}{:freq}){:tree}
+                    ++ctx[k]{s}{:freq}{b}
+                }
+
+                enc << ctx[k]{s}{:tree}{b}
+
+                prev << b
+                prev.shift if (prev.len >= CONTEXTS_NUM)
+                break
+            }
+
+            ctx[k]{s}{:tree} = mktree_from_freq(ctx[k]{s}{:freq}){:tree}
+            enc << ctx[k]{s}{:tree}{ESCAPE_SYMBOL}
+            ctx[k]{s}{:freq}{b} = 1
+        }
+    }
+
+    return enc.join
+}
+
+func decode(String enc, Array alphabet) {
+
+    var out = []
+    var prev = []
+    var prefix = ''
+
+    var ctx = [
+        Hash(prev, Hash(freq => alphabet.freq)),
+    ]
+
+    for i in (1..CONTEXTS_NUM) {
+        ctx << Hash(prev, Hash(freq => [ESCAPE_SYMBOL].freq)),
+    }
+
+    for c in ctx {
+        c{prev}{:tree} = mktree_from_freq(c{prev}{:freq}){:tree}.flip
+    }
+
+    var context = CONTEXTS_NUM
+    var key = prev.last(max(context-1, 0))
+
+    enc.each {|bit|
+
+        prefix += bit
+
+        if (!ctx[context].has(key)) {
+            ctx[context]{key}{:freq} = [ESCAPE_SYMBOL].freq
+            ctx[context]{key}{:tree} = mktree_from_freq(ctx[context]{key}{:freq}){:tree}.flip
+        }
+
+        if (ctx[context]{key}{:tree}.has(prefix)) {
+            var b = Num(ctx[context]{key}{:tree}{prefix})
+            if (b == ESCAPE_SYMBOL) {
+                --context
+                key.shift if (key.len >= context)
+            }
+            else {
+                out << b
+                for k in (max(context, 1) .. CONTEXTS_NUM) {
+                    var s = prev.last(k-1)
+                    ctx[k]{s}{:freq} := [ESCAPE_SYMBOL].freq
+                    ctx[k]{s}{:freq}{b} := 0 ++
+                    ctx[k]{s}{:tree} = mktree_from_freq(ctx[k]{s}{:freq}){:tree}.flip
+                }
+                context = CONTEXTS_NUM
+                prev << b
+                prev.shift if (prev.len >= CONTEXTS_NUM)
+                key = prev.last(max(context-1, 0))
+            }
+            prefix = ''
+        }
+    }
+
+    return out
+}
+
+#var text  = "this is an example for huffman encoding"
+var text = "A SAD DAD; A SAD SALSA"
+var bytes = text.bytes
+
+say var enc = encode(bytes, bytes.uniq)
+say var dec = decode(enc, bytes.uniq).pack('C*')
+
+assert_eq(dec, text)
+
+printf("Saved: %.3f%%\n", ((dec.len - enc.len/8f) / dec.len * 100))
