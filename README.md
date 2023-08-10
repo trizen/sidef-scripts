@@ -52,6 +52,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Lzw compression](./Encoding/lzw_compression.sf)
     * [Move-to-front transform](./Encoding/move-to-front_transform.sf)
     * [Ppm encoding](./Encoding/ppm_encoding.sf)
+    * [Ppm encoding dynamic](./Encoding/ppm_encoding_dynamic.sf)
     * [Run length encoding](./Encoding/run_length_encoding.sf)
     * [Substitution cipher](./Encoding/substitution_cipher.sf)
     * [Variable length run encoding](./Encoding/variable_length_run_encoding.sf)
