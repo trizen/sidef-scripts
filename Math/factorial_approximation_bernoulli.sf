@@ -1,0 +1,45 @@
+#!/usr/bin/ruby
+
+# Approximation formula for log(n!), with correction terms based on Bernoulli numbers.
+
+# See also:
+#   https://arxiv.org/pdf/1002.3894.pdf
+#   https://en.wikipedia.org/wiki/Stirling%27s_approximation
+
+func approx_log_factorial(n, terms=10) {
+    n*(log(n) - 1) + log(Num.tau*n)/2 + sum(1..terms, {|k|
+        bernreal(2*k) / (2*k * (2*k - 1) * n**(2*k - 1))
+    })
+}
+
+func approx_factorial(n, terms=10) {
+    (n/Num.e)**n * sqrt(Num.tau*n) * prod(1..terms, {|k|
+        exp(bernreal(2*k) / (2*k * (2*k - 1) * n**(2*k - 1)))
+    })
+}
+
+func log_factorial_correction_terms(terms=10) {
+    sum(1..terms, {|k|
+        bernoulli(2*k) / (2*k * (2*k - 1) * Poly(2*k - 1))
+    })
+}
+
+say log(10!)                    #=> 15.1044125730755152952257093292510703718822507443
+say approx_log_factorial(10)    #=> 15.1044125730755152952136860557170535087521444435
+say ''
+
+say 20!                         #=> 2432902008176640000
+say approx_factorial(20)        #=> 2432902008176639999.99999998489098511686006355696
+say ''
+
+for k in (1..6) {
+    say log_factorial_correction_terms(k).pretty
+}
+
+__END__
+(1/6)/(2*x)
+(2*x^3 - 1/15*x)/(24*x^4)
+(60*x^8 - 2*x^6 + 4/7*x^4)/(720*x^9)
+(3360*x^15 - 112*x^13 + 32*x^11 - 24*x^9)/(40320*x^16)
+(302400*x^24 - 10080*x^22 + 2880*x^20 - 2160*x^18 + 33600/11*x^16)/(3628800*x^25)
+(39916800*x^35 - 1330560*x^33 + 380160*x^31 - 285120*x^29 + 403200*x^27 - 11940480/13*x^25)/(479001600*x^36)

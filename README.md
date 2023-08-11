@@ -268,6 +268,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Exponential divisors](./Math/exponential_divisors.sf)
     * [Exponential inverse](./Math/exponential_inverse.sf)
     * [Extended greatest common divisor](./Math/extended_greatest_common_divisor.sf)
+    * [Factorial approximation bernoulli](./Math/factorial_approximation_bernoulli.sf)
     * [Factorial approximation from incomplete gamma](./Math/factorial_approximation_from_incomplete_gamma.sf)
     * [Factorial approximations](./Math/factorial_approximations.sf)
     * [Factorial dsc algorithm](./Math/factorial_dsc_algorithm.sf)

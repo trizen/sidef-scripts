@@ -371,8 +371,7 @@ func rle_encode (Array bytes) {    # RLE2
         }
 
         if (run >= 1) {
-            var t = (run+1).as_bin
-            rle << t.substr(1).chars.map{.to_i}...
+            rle << (run+1).bits.slice(1)...
         }
 
         if (i <= end) {
