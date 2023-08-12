@@ -74,6 +74,13 @@ func ac_decode (bits, pow, freq) {
     # Base value == length of decoded input
     var base = freq.values.sum
 
+    if (base == 0) {
+        return []
+    }
+    elsif (base == 1) {
+        return freq.keys
+    }
+
     # Create the cumulative frequency table
     var cf = cumulative_freq(freq)
 
@@ -118,7 +125,7 @@ func ac_decode (bits, pow, freq) {
 ## Run some tests
 #
 for str in ([
-        'this is a message for you to encode and to decode correctly!',
+        '', 'a', 'this is a message for you to encode and to decode correctly!',
         ['a'..'z', 0..9, 'A'..'Z', 0..9].map{.join}.join,
         %w(DABDDB DABDDBBDDBA ABBDDD ABRACADABRA CoMpReSSeD Sidef Trizen google TOBEORNOTTOBEORTOBEORNOT)...,
         'In a positional numeral system the radix, or base, is numerically equal to a number of different symbols '+
