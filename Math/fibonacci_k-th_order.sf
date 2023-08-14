@@ -4,7 +4,7 @@
 # Date: 23 January 2019
 # https://github.com/trizen
 
-# Efficient algorithm for computing the k-th order Fibonacci numbers.
+# Algorithm for computing the n-th k-th order Fibonacci number, running in O(n) steps.
 
 # OEIS sequences:
 #   https://oeis.org/A000045    (2-nd order: Fibonacci numbers)

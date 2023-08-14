@@ -305,6 +305,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Fibonacci first and last k digits](./Math/fibonacci_first_and_last_k_digits.sf)
     * [Fibonacci first k digits in base b](./Math/fibonacci_first_k_digits_in_base_b.sf)
     * [Fibonacci k-th order](./Math/fibonacci_k-th_order.sf)
+    * [Fibonacci k-th order 2](./Math/fibonacci_k-th_order_2.sf)
     * [Fibonacci k-th order efficient algorithm](./Math/fibonacci_k-th_order_efficient_algorithm.sf)
     * [Fibonacci k-th order period](./Math/fibonacci_k-th_order_period.sf)
     * [Fibonacci number divisible by n](./Math/fibonacci_number_divisible_by_n.sf)
