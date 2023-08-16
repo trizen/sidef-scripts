@@ -6,7 +6,7 @@
 #   Some applications of the Lagrange inversion formula for the k-Fibonacci numbers, by Bakir FARHI
 
 func fibonacci_kth_order(n,k=2) {
-    1<<(n - k) + sum(1 .. idiv(n - k + 1, k+1), {|l|
+    1<<(n-k) + sum(1 .. idiv(n - k + 1, k+1), {|l|
         (-1)**l * (binomial(n - k*(l+1) + 1, l) + binomial(n - k*(l+1), l-1)) << (n - l*(k+1) - k)
     })
 }

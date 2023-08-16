@@ -1,0 +1,82 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 16 August 2023
+# https://github.com/trizen
+
+# Sum of k-almost primes <= n.
+
+# Definition:
+#   A number is k-almost prime if it is the product of k prime numbers (not necessarily distinct).
+#   In other works, a number n is k-almost prime iff: bigomega(n) = k.
+
+# See also:
+#   https://mathworld.wolfram.com/AlmostPrime.html
+
+# OEIS:
+#   https://oeis.org/A072000 -- count of 2-almost primes
+#   https://oeis.org/A072114 -- count of 3-almost primes
+#   https://oeis.org/A082996 -- count of 4-almost primes
+
+func almost_prime_sum(n,k) {
+
+    if (k == 1) {
+        return prime_sum(n)
+    }
+
+    var total = 0
+
+    func (m, lo, k, j = 0) {
+
+        var hi = idiv(n,m).iroot(k)
+
+        if (k == 2) {
+
+            each_prime(lo, hi, {|p|
+                total += m*p*(prime_sum(idiv(n, m*p)) - j)
+                j += p
+            })
+
+            return nil
+        }
+
+        each_prime(lo, hi, {|p|
+            __FUNC__(m*p, p, k-1, j)
+            j += p
+        })
+    }(1, 2, k)
+
+    return total
+}
+
+# Run some tests
+
+for k in (1..7) {
+
+    var upto = k.pn_primorial+1e5.irand
+
+    var x = almost_prime_sum(upto, k)
+    var y = k.almost_primes(upto).sum
+
+    say "Testing: #{k} with n = #{upto} -> #{x}"
+
+    assert_eq(x, y)
+}
+
+say ''
+
+for k in (1..10) {
+    say ("Sum of #{'%2d' % k}-almost primes <= 10^n: ", 7.of { almost_prime_sum(10**_, k) })
+}
+
+__END__
+Sum of  1-almost primes <= 10^n: [0, 17, 1060, 76127, 5736396, 454396537, 37550402023]
+Sum of  2-almost primes <= 10^n: [0, 29, 1707, 146158, 12736914, 1138479765, 102604509687]
+Sum of  3-almost primes <= 10^n: [0, 8, 1161, 124876, 12939222, 1275930804, 124819485809]
+Sum of  4-almost primes <= 10^n: [0, 0, 729, 77741, 8739835, 951798942, 100065307074]
+Sum of  5-almost primes <= 10^n: [0, 0, 232, 40968, 5032703, 575917205, 63529784625]
+Sum of  6-almost primes <= 10^n: [0, 0, 160, 21137, 2558463, 307657387, 35484932921]
+Sum of  7-almost primes <= 10^n: [0, 0, 0, 7636, 1236949, 155890574, 18423713995]
+Sum of  8-almost primes <= 10^n: [0, 0, 0, 4576, 565225, 74384387, 9132396957]
+Sum of  9-almost primes <= 10^n: [0, 0, 0, 1280, 261820, 35803504, 4442851049]
+Sum of 10-almost primes <= 10^n: [0, 0, 0, 0, 133216, 16363682, 2108820668]

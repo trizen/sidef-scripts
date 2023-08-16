@@ -17,24 +17,22 @@ func squarefree_almost_prime_count(n, k) {
 
     var count = 0
 
-    func (m, p, k, j = 1) {
+    func (m, lo, k, j = 1) {
 
-        var s = idiv(n,m).iroot(k)
+        var hi = idiv(n,m).iroot(k)
 
         if (k == 2) {
 
-            for(true; p <= s; p.next_prime!) {
+            each_prime(lo, hi, {|p|
                 count += (prime_count(idiv(n, m*p)) - j++)
-            }
+            })
 
             return nil
         }
 
-        for (true; p <= s; ++j) {
-            var r = p.next_prime
-            __FUNC__(m*p, r, k-1, j+1)
-            p = r
-        }
+        each_prime(lo, hi, {|p|
+            __FUNC__(m*p, p+1, k-1, ++j)
+        })
     }(1, 2, k)
 
     return count
@@ -48,10 +46,12 @@ for k in (1..10) {
 
     var x = squarefree_almost_prime_count(upto, k)
     var y = k.squarefree_almost_primes(upto).len
+    var z = k.squarefree_almost_prime_count(upto)
 
     say "Testing: #{k} with n = #{upto} -> #{x}"
 
     assert_eq(x, y)
+    assert_eq(x, z)
 }
 
 say ''

@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
 
-# Daniel "Trizen" Șuteu
-# Date: 14 March 2021
+# Author: Trizen
+# Date: 16 August 2023
 # https://github.com/trizen
 
-# Count the number of k-omega primes <= n.
+# Sum of k-omega primes <= n.
 
 # Definition:
 #   k-omega primes are numbers n such that omega(n) = k.
@@ -13,27 +13,28 @@
 #   https://en.wikipedia.org/wiki/Almost_prime
 #   https://en.wikipedia.org/wiki/Prime_omega_function
 
-func omega_prime_count(n, k=1) {
+func omega_prime_sum(n, k=1) {
 
     if (k == 1) {
-        return prime_power_count(n)
+        return prime_powers(n).sum
     }
 
-    var count = 0
+    var total = 0
 
-    func (m, p, k, j = 1, s = idiv(n,m).iroot(k)) {
+    func (m, p, k, j = 0, s = idiv(n,m).iroot(k)) {
 
         if (k == 2) {
 
-            for (true; p <= s; ++j) {
+            while (p <= s) {
 
+                j += p
                 var r = p.next_prime
 
                 for (var t = m*p ; t <= n; t *= p) {
 
                     var w = idiv(n, t)
                     break if (p > w)
-                    count += (prime_count(w) - j)
+                    total += t*(w.prime_sum - j)
 
                     for (var r2 = r; r2 <= w; r2.next_prime!) {
 
@@ -41,7 +42,7 @@ func omega_prime_count(n, k=1) {
                         break if (u > n)
 
                         for (true; u <= n; u *= r2) {
-                            ++count
+                            total += u
                         }
                     }
                 }
@@ -52,14 +53,15 @@ func omega_prime_count(n, k=1) {
             return nil
         }
 
-        for (true; p <= s; ++j) {
+        while (p <= s) {
 
+            j += p
             var r = p.next_prime
 
             for (var t = m*p ; t <= n; t *= p) {
                 var s = idiv(n,t).iroot(k-1)
                 break if (s < r)
-                __FUNC__(t, r, k-1, j+1, s)
+                __FUNC__(t, r, k-1, j, s)
             }
 
             p = r
@@ -67,7 +69,7 @@ func omega_prime_count(n, k=1) {
 
     }(1, 2, k)
 
-    return count
+    return total
 }
 
 # Run some tests
@@ -76,26 +78,24 @@ for k in (1..10) {
 
     var upto = k.pn_primorial+1e5.irand
 
-    var x = omega_prime_count(upto, k)
-    var y = k.omega_primes(upto).len
-    var z = k.omega_prime_count(upto)
+    var x = omega_prime_sum(upto, k)
+    var y = k.omega_primes(upto).sum
 
     say "Testing: #{k} with n = #{upto} -> #{x}"
 
     assert_eq(x, y)
-    assert_eq(x, z)
 }
 
 say ''
 
 for k in (1..6) {
-    say ("Count of #{'%2d' % k}-omega primes for 10^n: ", 7.of {|n| omega_prime_count(10**n, k) })
+    say ("Sum of #{'%d' % k}-omega primes <= 10^n: ", 7.of {|n| omega_prime_sum(10**n, k) })
 }
 
 __END__
-Count of  1-omega primes for 10^n: [0, 7, 35, 193, 1280, 9700, 78734]
-Count of  2-omega primes for 10^n: [0, 2, 56, 508, 4097, 33759, 288726]
-Count of  3-omega primes for 10^n: [0, 0, 8, 275, 3695, 38844, 379720]
-Count of  4-omega primes for 10^n: [0, 0, 0, 23, 894, 15855, 208034]
-Count of  5-omega primes for 10^n: [0, 0, 0, 0, 33, 1816, 42492]
-Count of  6-omega primes for 10^n: [0, 0, 0, 0, 0, 25, 2285]
+Sum of 1-omega primes <= 10^n: [0, 38, 1375, 82674, 5850315, 457028152, 37610438089]
+Sum of 2-omega primes <= 10^n: [0, 16, 3154, 246957, 19482806, 1617408111, 139609332607]
+Sum of 3-omega primes <= 10^n: [0, 0, 520, 155100, 19186879, 1950808962, 188528132884]
+Sum of 4-omega primes <= 10^n: [0, 0, 0, 15768, 5253939, 862088040, 108760507666]
+Sum of 5-omega primes <= 10^n: [0, 0, 0, 0, 231060, 110903324, 24034871493]
+Sum of 6-omega primes <= 10^n: [0, 0, 0, 0, 0, 1813410, 1451112560]

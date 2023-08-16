@@ -26,21 +26,21 @@ func almost_prime_count(n,k) {
 
     var count = 0
 
-    func (m, p, k, j = 0) {
+    func (m, lo, k, j = 0) {
 
-        var s = idiv(n,m).iroot(k)
+        var hi = idiv(n,m).iroot(k)
 
         if (k == 2) {
 
-            each_prime(p, s, {|r|
-                count += (prime_count(idiv(n, m*r)) - j++)
+            each_prime(lo, hi, {|p|
+                count += (prime_count(idiv(n, m*p)) - j++)
             })
 
             return nil
         }
 
-        each_prime(p, s, {|q|
-            __FUNC__(m*q, q, k-1, j++)
+        each_prime(lo, hi, {|p|
+            __FUNC__(m*p, p, k-1, j++)
         })
     }(1, 2, k)
 
@@ -55,10 +55,12 @@ for k in (1..7) {
 
     var x = almost_prime_count(upto, k)
     var y = k.almost_primes(upto).len
+    var z = k.almost_prime_count(upto)
 
     say "Testing: #{k} with n = #{upto} -> #{x}"
 
     assert_eq(x, y)
+    assert_eq(x, z)
 }
 
 say ''

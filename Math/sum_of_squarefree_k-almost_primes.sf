@@ -1,0 +1,69 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 16 August 2023
+# https://github.com/trizen
+
+# Sum of squarefree k-almost primes <= n.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+
+func squarefree_almost_prime_sum(n, k) {
+
+    if (k == 1) {
+        return n.prime_sum
+    }
+
+    var total = 0
+
+    func (m, lo, k, j = 0) {
+
+        var hi = idiv(n,m).iroot(k)
+
+        if (k == 2) {
+
+            each_prime(lo, hi, {|p|
+                j += p
+                total += m*p*(prime_sum(idiv(n, m*p)) - j)
+            })
+
+            return nil
+        }
+
+        each_prime(lo, hi, {|p|
+            j += p
+            __FUNC__(m*p, p+1, k-1, j)
+        })
+    }(1, 2, k)
+
+    return total
+}
+
+# Run some tests
+
+for k in (1..10) {
+
+    var upto = k.pn_primorial+1e5.irand
+
+    var x = squarefree_almost_prime_sum(upto, k)
+    var y = k.squarefree_almost_primes(upto).sum
+
+    say "Testing: #{k} with n = #{upto} -> #{x}"
+
+    assert_eq(x, y)
+}
+
+say ''
+
+for k in (1..6) {
+    say ("Sum of squarefree #{'%d' % k}-almost primes <= 10^n: ", 8.of {|n| squarefree_almost_prime_sum(10**n, k) })
+}
+
+__END__
+Sum of squarefree 1-almost primes <= 10^n: [0, 17, 1060, 76127, 5736396, 454396537, 37550402023, 3203324994356]
+Sum of squarefree 2-almost primes <= 10^n: [0, 16, 1620, 142800, 12671118, 1136592401, 102555164308, 9320987760054]
+Sum of squarefree 3-almost primes <= 10^n: [0, 0, 286, 73624, 9415168, 1013522662, 104063487517, 10437330922560]
+Sum of squarefree 4-almost primes <= 10^n: [0, 0, 0, 10524, 2434091, 379717493, 48777045480, 5695891373909]
+Sum of squarefree 5-almost primes <= 10^n: [0, 0, 0, 0, 163260, 54077985, 10247415009, 1545644072692]
+Sum of squarefree 6-almost primes <= 10^n: [0, 0, 0, 0, 0, 1404120, 761443872, 186672163072]
