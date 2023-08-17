@@ -670,6 +670,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Sum of polygonal numbers function recursive](./Math/sum_of_polygonal_numbers_function_recursive.sf)
     * [Sum of prime-power exponents of factorial](./Math/sum_of_prime-power_exponents_of_factorial.sf)
     * [Sum of prime-power exponents of product of binomials](./Math/sum_of_prime-power_exponents_of_product_of_binomials.sf)
+    * [Sum of prime powers](./Math/sum_of_prime_powers.sf)
     * [Sum of primes](./Math/sum_of_primes.sf)
     * [Sum of remainders](./Math/sum_of_remainders.sf)
     * [Sum of squarefree k-almost primes](./Math/sum_of_squarefree_k-almost_primes.sf)

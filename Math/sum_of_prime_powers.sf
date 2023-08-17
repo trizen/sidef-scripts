@@ -1,0 +1,58 @@
+#!/usr/bin/ruby
+
+# Sublinear algorithm for computing the sum of prime powers <= n, based on the sublinear algorithm for computing the sum of primes <= n.
+
+func sum_of_primes(n, j=1) {
+
+    return 0 if (n <= 1)
+
+    var r = n.isqrt
+    var V = (1..r -> map {|k| idiv(n,k) })
+    V << range(V.last-1, 1, -1).to_a...
+
+    var S = Hash(V.map{|k| (k, faulhaber(k,j)) }...)
+
+    for p in (2..r) {
+        S{p} > S{p-1} || next
+        var sp = S{p-1}
+        var p2 = p*p
+        V.each {|v|
+            break if (v < p2)
+            S{v} -= ipow(p,j)*(S{idiv(v,p)} - sp)
+        }
+    }
+
+    return S{n}-1
+}
+
+func sum_of_prime_powers(n) {
+
+    # a(n) = Sum_{p prime <= n} p
+    # b(n) = Sum_{n^(1/3) < p prime <= n^(1/2)} p^2
+    # c(n) = Sum_{p prime <= n^(1/3)} f(p)
+
+    # sum_of_prime_powers(n) = a(n) + b(n) + c(n)
+
+    var sr = n.isqrt
+    var cr = n.icbrt
+
+    var ps1 = sum_of_primes(n)
+    var ps2 = (sum_of_primes(sr, 2) - sum_of_primes(cr, 2))
+
+    # f(p) = sum(1..n.ilog(p), {|k| p**k }) - p
+    #      = (1 - p**(n.ilog(p)+1))/(1-p) - p - 1
+
+    var ps3 = cr.primes.sum {|p|
+        (p**(n.ilog(p)+1) - 1)/(p-1) - p - 1
+    }
+
+    ps1 + ps2 + ps3
+}
+
+say sum_of_prime_powers(1e5)        #=> 457028152
+say sum_of_prime_powers(43**3)      #=> 294752679
+
+for k in (1..100) {
+    var n = 1e3.irand
+    assert_eq(sum_of_prime_powers(n), n.prime_powers.sum)
+}

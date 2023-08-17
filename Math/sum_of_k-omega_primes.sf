@@ -80,10 +80,12 @@ for k in (1..10) {
 
     var x = omega_prime_sum(upto, k)
     var y = k.omega_primes(upto).sum
+    var z = k.omega_prime_sum(upto)
 
     say "Testing: #{k} with n = #{upto} -> #{x}"
 
     assert_eq(x, y)
+    assert_eq(x, z)
 }
 
 say ''
