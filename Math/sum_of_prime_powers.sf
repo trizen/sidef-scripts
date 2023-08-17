@@ -10,7 +10,7 @@
 
 f(n) = if(n <= 1, return(0)); my(r=sqrtint(n)); my(V=vector(r, k, n\k)); my(L=n\r-1); V=concat(V, vector(L, k, L-k+1)); my(T=vector(#V, k, V[k]*(V[k]+1)\2)); my(S=Map(matrix(#V, 2, x, y, if(y==1, V[x], T[x])))); forprime(p=2, r, my(sp=mapget(S, p-1), p2=p*p); for(k=1, #V, if(V[k] < p2, break); mapput(S, V[k], mapget(S, V[k]) - p*(mapget(S, V[k]\p) - sp)))); mapget(S, n)-1;
 g(n, j=2) = if(n <= 1, return(0)); my(r=sqrtint(n)); my(V=vector(r, k, n\k)); my(F(n, j)=(subst(bernpol(j+1), x, n+1) - subst(bernpol(j+1), x, 1)) / (j+1)); my(L=n\r-1); V=concat(V, vector(L, k, L-k+1)); my(T=vector(#V, k, F(V[k], j))); my(S=Map(matrix(#V, 2, x, y, if(y==1, V[x], T[x])))); forprime(p=2, r, my(sp=mapget(S, p-1), p2=p*p); for(k=1, #V, if(V[k] < p2, break); mapput(S, V[k], mapget(S, V[k]) - p^j*(mapget(S, V[k]\p) - sp)))); mapget(S, n)-1;
-a(n) = my(s=0); forprime(p=2, sqrtnint(n,3), s += (p^(logint(n, p)+1) - 1)/(p-1) - p - 1); f(n) + g(sqrtint(n)) - g(sqrtnint(n, 3)) + s;
+a(n) = my(s=0); forprime(p=2, sqrtnint(n,3), s += (p^(logint(n, p)+1) - 1)/(p-1) - p*p - p - 1); f(n) + g(sqrtint(n)) + s;
 b(n) = my(s=0); forprime(p=2, sqrtint(n), s += (p^(logint(n, p)+1) - 1)/(p-1) - p - 1); f(n) + s;
 
 )
@@ -41,7 +41,7 @@ func sum_of_primes(n, j=1) {
 func sum_of_prime_powers(n) {
 
     # a(n) = Sum_{p prime <= n} p
-    # b(n) = Sum_{n^(1/3) < p prime <= n^(1/2)} p^2
+    # b(n) = Sum_{p prime <= n^(1/2)} p^2
     # c(n) = Sum_{p prime <= n^(1/3)} f(p)
 
     # sum_of_prime_powers(n) = a(n) + b(n) + c(n)
@@ -50,13 +50,13 @@ func sum_of_prime_powers(n) {
     var cr = n.icbrt
 
     var ps1 = sum_of_primes(n)
-    var ps2 = (sum_of_primes(sr, 2) - sum_of_primes(cr, 2))
+    var ps2 = sum_of_primes(sr, 2)
 
-    # f(p) = sum(1..n.ilog(p), {|k| p**k }) - p
-    #      = (1 - p**(n.ilog(p)+1))/(1-p) - p - 1
+    # f(p) = sum(1..n.ilog(p), {|k| p**k }) - p*p - p
+    #      = (1 - p**(n.ilog(p)+1))/(1-p) - p*p - p - 1
 
     var ps3 = cr.primes.sum {|p|
-        (p**(n.ilog(p)+1) - 1)/(p-1) - p - 1
+        (p**(n.ilog(p)+1) - 1)/(p-1) - p*p - p - 1
     }
 
     ps1 + ps2 + ps3
