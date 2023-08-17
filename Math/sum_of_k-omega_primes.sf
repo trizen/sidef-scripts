@@ -16,7 +16,7 @@
 func omega_prime_sum(n, k=1) {
 
     if (k == 1) {
-        return prime_powers(n).sum
+        return n.prime_power_sum
     }
 
     var total = 0

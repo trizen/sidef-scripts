@@ -21,7 +21,7 @@
 func almost_prime_sum(n,k) {
 
     if (k == 1) {
-        return prime_sum(n)
+        return n.prime_sum
     }
 
     var total = 0
