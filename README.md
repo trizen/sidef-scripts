@@ -667,6 +667,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Sum of nth power digits](./Math/sum_of_nth_power_digits.sf)
     * [Sum of number of divisors of gcd x y](./Math/sum_of_number_of_divisors_of_gcd_x_y.sf)
     * [Sum of number of unitary divisors](./Math/sum_of_number_of_unitary_divisors.sf)
+    * [Sum of perfect powers](./Math/sum_of_perfect_powers.sf)
     * [Sum of polygonal numbers function recursive](./Math/sum_of_polygonal_numbers_function_recursive.sf)
     * [Sum of prime-power exponents of factorial](./Math/sum_of_prime-power_exponents_of_factorial.sf)
     * [Sum of prime-power exponents of product of binomials](./Math/sum_of_prime-power_exponents_of_product_of_binomials.sf)
