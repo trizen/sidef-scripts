@@ -160,6 +160,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Bi-unitary divisors](./Math/bi-unitary_divisors.sf)
     * [Binary exponentiation](./Math/binary_exponentiation.sf)
     * [Binary gcd algorithm](./Math/binary_gcd_algorithm.sf)
+    * [Binomial real](./Math/binomial_real.sf)
     * [Binomial theorem](./Math/binomial_theorem.sf)
     * [Binomial transform](./Math/binomial_transform.sf)
     * [Bisected hypotenuse](./Math/bisected_hypotenuse.sf)

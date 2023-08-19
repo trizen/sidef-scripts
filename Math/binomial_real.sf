@@ -1,0 +1,11 @@
+#!/usr/bin/ruby
+
+# Compute binomial(n,k) as a floating-point value, for arbitrary large n and k.
+
+func binomial_real(n,k) {
+    local Num!PREC = max(2*int(log2(n+2)), 192)
+    exp(lgamma(n+1) - (lgamma(k+1) + lgamma(n - k + 1)))
+}
+
+say binomial(100!, 100).f       #=> 1.07241237505844504438047039025154993084902991441e15639
+say binomial_real(100!, 100)    #=> 1.07241237505844504438047039025154993084902991441e15639

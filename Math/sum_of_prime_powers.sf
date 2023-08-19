@@ -12,6 +12,7 @@ f(n) = if(n <= 1, return(0)); my(r=sqrtint(n)); my(V=vector(r, k, n\k)); my(L=n\
 g(n, j=2) = if(n <= 1, return(0)); my(r=sqrtint(n)); my(V=vector(r, k, n\k)); my(F(n, j)=(subst(bernpol(j+1), x, n+1) - subst(bernpol(j+1), x, 1)) / (j+1)); my(L=n\r-1); V=concat(V, vector(L, k, L-k+1)); my(T=vector(#V, k, F(V[k], j))); my(S=Map(matrix(#V, 2, x, y, if(y==1, V[x], T[x])))); forprime(p=2, r, my(sp=mapget(S, p-1), p2=p*p); for(k=1, #V, if(V[k] < p2, break); mapput(S, V[k], mapget(S, V[k]) - p^j*(mapget(S, V[k]\p) - sp)))); mapget(S, n)-1;
 a(n) = my(s=0); forprime(p=2, sqrtnint(n,3), s += (p^(logint(n, p)+1) - 1)/(p-1) - p*p - p - 1); f(n) + g(sqrtint(n)) + s;
 b(n) = my(s=0); forprime(p=2, sqrtint(n), s += (p^(logint(n, p)+1) - 1)/(p-1) - p - 1); f(n) + s;
+c(n) = sum(k=1, logint(n,2), g(sqrtnint(n,k), k));
 
 )
 
@@ -62,10 +63,25 @@ func sum_of_prime_powers(n) {
     ps1 + ps2 + ps3
 }
 
+func sum_of_prime_powers_2(n) {
+
+    # a(n) = Sum_{k=1..floor(log_2(n))} Sum_{p prime <= n^(1/k)} p^k.
+
+    sum(1..n.ilog2, {|k|
+        sum_of_primes(n.iroot(k), k)
+    })
+}
+
 say sum_of_prime_powers(1e5)        #=> 457028152
 say sum_of_prime_powers(43**3)      #=> 294752679
 
 for k in (1..100) {
     var n = 1e3.irand
-    assert_eq(sum_of_prime_powers(n), n.prime_powers.sum)
+
+    var x = sum_of_prime_powers(n)
+    var y = sum_of_prime_powers_2(n)
+    var z = n.prime_powers.sum
+
+    assert_eq(x,y)
+    assert_eq(x,z)
 }
