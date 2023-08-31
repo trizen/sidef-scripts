@@ -13,6 +13,9 @@
 #
 # where k has many divisors.
 
+# See also:
+#   https://trizenx.blogspot.com/2019/08/special-purpose-factorization-algorithms.html
+
 define MIN_FACTOR = 1e6  # ignore small factors
 
 func diff_power_factorization (n) {

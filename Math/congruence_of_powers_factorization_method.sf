@@ -12,6 +12,9 @@
 #
 # for some k >= 2, then gcd(a-b, n) may be a non-trivial factor of n.
 
+# See also:
+#   https://trizenx.blogspot.com/2019/08/special-purpose-factorization-algorithms.html
+
 define MIN_FACTOR = 1e6  # ignore small factors
 
 func cgpow_factor (n) {
