@@ -31,12 +31,12 @@ func delta_encode (Array integers, Bool double = false) {
             bitstring << '0'
         }
         elsif (double) {
-            var t = sprintf('%b', d.abs)
-            var l = sprintf('%b', t.len + 1)
+            var t = d.abs.as_bin
+            var l = t.len.inc.as_bin
             bitstring << join('', '1', ((d < 0) ? '0' : '1'), ('1' * (l.len-1)), '0', l.substr(1), t.substr(1))
         }
         else {
-            var t = sprintf('%b', d.abs)
+            var t = d.abs.as_bin
             bitstring << join('', '1', ((d < 0) ? '0' : '1'), ('1' * (t.len-1)), '0', t.substr(1))
         }
     }

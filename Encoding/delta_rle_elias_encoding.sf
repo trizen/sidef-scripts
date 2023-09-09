@@ -1,0 +1,123 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 09 September 2023
+# https://github.com/trizen
+
+# Implementation of Delta + Run-length + Elias coding, for encoding arbitrary integers.
+
+# References:
+#   Data Compression (Summer 2023) - Lecture 5 - Basic Techniques
+#   https://youtube.com/watch?v=TdFWb8mL5Gk
+#
+#   Data Compression (Summer 2023) - Lecture 6 - Delta Compression and Prediction
+#   https://youtube.com/watch?v=-3H_eDbWNEU
+
+func read_bit (FileHandle fh, Ref bitstring) {
+
+    if ((*bitstring \\ '').is_empty) {
+        *bitstring = unpack('b*', fh.getc \\ die "error")
+    }
+
+    var bit = (*bitstring).substr(-1)
+    *bitstring = (*bitstring).substr(0, -1)
+    return bit
+}
+
+func DRE_encode (Array integers, Bool double = false) {
+
+    var deltas = [0, integers.len, integers...].diffs.run_length
+    var bitstring = FileHandle.new_buf(:raw)
+
+    for c,v in (deltas) {
+        if (c == 0) {
+            bitstring << '0'
+        }
+        elsif (double) {
+            var t = c.abs.as_bin
+            var l = t.len.inc.as_bin
+            bitstring << join('', '1', ((c < 0) ? '0' : '1'), ('1' * (l.len-1)), '0', l.substr(1), t.substr(1))
+        }
+        else {
+            var t = c.abs.as_bin
+            bitstring << join('', '1', ((c < 0) ? '0' : '1'), ('1' * (t.len-1)), '0', t.substr(1))
+        }
+
+        if (v == 1) {
+            bitstring << '0'
+        }
+        else {
+            var t = v.as_bin
+            bitstring << join('', ('1' * (t.len-1)), '0', t.substr(1))
+        }
+    }
+
+    pack('B*', bitstring.parent)
+}
+
+func DRE_decode (FileHandle fh, Bool double = false) {
+
+    var deltas = []
+    var buffer = ''
+    var len    = 0
+
+    for (var k = 0 ; k <= len ; ++k) {
+        var bit = read_bit(fh, \buffer)
+
+        if (bit == '0') {
+            deltas << 0
+        }
+        elsif (double) {
+            var bit = read_bit(fh, \buffer)
+            var bl = (^Inf -> first { read_bit(fh, \buffer) != '1' })
+
+            var bl2 = Num('1' + bl.of { read_bit(fh, \buffer) }.join, 2)-1
+            var int = Num('1' + (bl2-1).of { read_bit(fh, \buffer) }.join, 2)
+
+            deltas << (bit == '1' ? int : -int)
+        }
+        else {
+            var bit = read_bit(fh, \buffer)
+            var n = (^Inf -> first { read_bit(fh, \buffer) != '1' })
+            var d = Num('1' + n.of { read_bit(fh, \buffer) }.join, 2)
+            deltas << (bit == '1' ? d : -d)
+        }
+
+        var bl = (^Inf -> first { read_bit(fh, \buffer) != '1' })
+
+        if (bl > 0) {
+            var run = Num('1' + bl.of { read_bit(fh, \buffer) }.join, 2)-1
+            k += run
+            deltas << run.of(deltas[-1])...
+        }
+
+        if (k == 0) {
+            len = deltas.pop
+        }
+    }
+
+    var acc = [len, deltas...].acc
+    acc.shift
+    return acc
+}
+
+var str = %n[6 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 1 1 3 3 1 2 3 0 0 1 2 4 2 1 0 1 2 1 1 0 0 1].pack('C*')
+
+var enc = DRE_encode(str.bytes, false)
+var dec = DRE_decode(enc.open_r(:raw), false)
+
+say "Encoded: #{unpack('B*', enc)}"
+say "Decoded: #{dec}"
+
+assert_eq(dec.pack('C*'), str)
+
+do {
+    var str     = File(__FILE__).read(:raw)
+    var encoded = DRE_encode(str.bytes, true)
+    var decoded = DRE_decode(encoded.open_r(:raw), true)
+    assert_eq(str, decoded.pack('C*'))
+}
+
+__END__
+Encoded: 111111110011001010111111001001101011010001111101111111101010101011000011100000101000110100101010001101001110001010001001001101001000001000001100
+Decoded: [6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 1, 3, 3, 1, 2, 3, 0, 0, 1, 2, 4, 2, 1, 0, 1, 2, 1, 1, 0, 0, 1]
