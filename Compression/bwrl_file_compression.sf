@@ -123,7 +123,7 @@ func delta_encode (Array integers) {
             bitstring << '0'
         }
         else {
-            var t = sprintf('%b', d.abs)
+            var t = d.abs.as_bin
             bitstring << join('', '1', ((d < 0) ? '0' : '1'), ('1' * (t.len-1)), '0', t.substr(1))
         }
     }

@@ -2,16 +2,17 @@
 
 # Author: Trizen
 # Date: 15 December 2022
-# Edit: 08 May 2023
+# Edit: 10 September 2023
 # https://github.com/trizen
 
-# Compress/decompress files using LZ77 compression + integers encoding + Huffman coding.
+# Compress/decompress files using LZ77 compression + fixed-width integers encoding + Huffman coding.
 
 define(
     CHUNK_SIZE        = (1 << 16),
     COMPRESSED_BYTE   = 1.chr,
     UNCOMPRESSED_BYTE = 0.chr,
-    SIGNATURE         = ('LZIH' + 2.chr),
+    FORMAT            = 'lzih',
+    SIGNATURE         = ('LZIH' + 4.chr),
 )
 
 func read_bits (FileHandle fh, Number bits_len) {
@@ -29,6 +30,64 @@ func read_bits (FileHandle fh, Number bits_len) {
     }
 
     return str
+}
+
+func read_bit (FileHandle fh, Ref bitstring) {
+
+    if ((*bitstring \\ '').is_empty) {
+        *bitstring = unpack('b*', fh.getc \\ die "error")
+    }
+
+    var bit = (*bitstring).substr(-1)
+    *bitstring = (*bitstring).substr(0, -1)
+    return bit
+}
+
+func delta_encode (Array integers) {
+
+    var deltas = [0, integers.len, integers...].diffs
+    var bitstring = FileHandle.new_buf(:raw)
+
+    for d in (deltas) {
+        if (d == 0) {
+            bitstring << '0'
+        }
+        else {
+            var t = d.abs.as_bin
+            bitstring << join('', '1', ((d < 0) ? '0' : '1'), ('1' * (t.len-1)), '0', t.substr(1))
+        }
+    }
+
+    pack('B*', bitstring.parent)
+}
+
+func delta_decode (FileHandle fh) {
+
+    var deltas = []
+    var buffer = ''
+    var len    = 0
+
+    for (var k = 0 ; k <= len ; ++k) {
+        var bit = read_bit(fh, \buffer)
+
+        if (bit == '0') {
+            deltas << 0
+        }
+        else {
+            var bit = read_bit(fh, \buffer)
+            var n = (^Inf -> first { read_bit(fh, \buffer) != '1' })
+            var d = Num('1' + n.of { read_bit(fh, \buffer) }.join, 2)
+            deltas << (bit == '1' ? d : -d)
+        }
+
+        if (k == 0) {
+            len = deltas.pop
+        }
+    }
+
+    var acc = [len, deltas...].acc
+    acc.shift
+    return acc
 }
 
 func encode_integers (Array integers) {
@@ -54,13 +113,7 @@ func encode_integers (Array integers) {
 
     counts << [[bits_per_symbol.len(2)-1, integers.len - processed_len]].grep { .tail > 0 }...
 
-    var clen = counts.len
-    var header = clen.chr
-
-    for b,len in (counts) {
-        header += chr(b)
-        header += pack('N', len)
-    }
+    var header = delta_encode([counts.map{.head}..., counts.map{.tail}...]);
 
     var bits = []
 
@@ -73,15 +126,17 @@ func encode_integers (Array integers) {
 
 func decode_integers (FileHandle str_fh) {
 
-    var count_len = str_fh.getc.ord
-    var counts = []
-    var bits_len = 0
+    var ints = delta_decode(str_fh)
+    var half = (ints.len >> 1)
 
-    count_len.times {
-        var b = str_fh.getc.ord
-        var l = Num(unpack('N', 4.of { str_fh.getc }.join))
-        counts << [b, l] if (l > 0)
-        bits_len += b*l
+    var counts = []
+    for i in (0 .. (half - 1)) {
+        counts << [ints[$i], ints[half + i]]
+    }
+
+    var bits_len = 0
+    for blen,len in (counts) {
+        bits_len += (blen * len)
     }
 
     var chunks = []
@@ -105,9 +160,9 @@ func walk(Hash n, String s, Hash h) {
     walk(n{:1}, s+'1', h) if n.has(:1)
 }
 
-func make_tree(Array bytes) {
+func mktree_from_freq(Hash freqs) {
 
-    var nodes = bytes.freq.sort.map_2d { |b,f|
+    var nodes = freqs.sort_by {|k| k.to_i }.map_2d { |b,f|
         Hash(a => b, freq => f)
     }
 
@@ -131,7 +186,7 @@ func make_tree(Array bytes) {
 }
 
 func huffman_encode(Array bytes, Hash t) {
-    bytes.map { t{_} }.join
+    join('', t{bytes...})
 }
 
 func huffman_decode (String bits, Hash tree) {
@@ -140,59 +195,50 @@ func huffman_decode (String bits, Hash tree) {
 
 func create_huffman_entry (Array bytes, FileHandle out_fh) {
 
-    var h   = make_tree(bytes){:tree}
+    var freq = bytes.freq
+
+    var h   = mktree_from_freq(freq){:tree}
     var enc = huffman_encode(bytes, h)
 
-    var max_symbol = bytes.max.ord
+    var max_symbol = (bytes.max \\ 0)
 
-    var codes = ''
-    var lengths = []
-
-    for i in (0..max_symbol) {
-        var c = (h{i.chr} \\ '')
-        codes += c
-        lengths << c.len
+    var freqs = []
+    for i in (0 .. max_symbol) {
+        freqs << (freq{i} \\ 0)
     }
 
-    out_fh.print(encode_integers(lengths))
-    out_fh.print(pack("B*", codes))
-    out_fh.print(pack("N",  enc.len))
-    out_fh.print(pack("B*", enc))
+    out_fh << delta_encode(freqs)
+    out_fh << pack("N",  enc.len)
+    out_fh << pack("B*", enc)
 }
 
 func decode_huffman_entry (FileHandle fh) {
 
-    var codes = []
-    var codes_len = 0
-    var lengths = decode_integers(fh)
+    var freqs = delta_decode(fh)
 
-    lengths.each_kv {|i,l|
-        if (l > 0) {
-            codes_len += l
-            codes << [i, l]
+    var freq = Hash()
+    freqs.each_kv {|k,v|
+        if (v != 0) {
+            freq{k} = v
         }
     }
 
-    var codes_bin = read_bits(fh, codes_len)
+    var rev_dict = mktree_from_freq(freq){:tree}.flip
 
-    var rev_dict = Hash()
-    for c,l in (codes) {
-        var code = substr(codes_bin, 0, l)
-        codes_bin.substr!(l)
-        rev_dict{code} = c.chr
+    for k in (rev_dict.keys) {
+        rev_dict{k} = "#{rev_dict{k}} "
     }
 
-    var enc_len = Num(unpack('N', 4.of{ fh.getc }.join))
+    var enc_len = unpack('N', 4.of { fh.getc }.join).to_i
 
     if (enc_len > 0) {
-        var enc_data = read_bits(fh, enc_len)
-        return huffman_decode(enc_data, rev_dict)
+        return huffman_decode(read_bits(fh, enc_len), rev_dict).nums
     }
 
-    return ''
+    return []
 }
 
-func lz77_compress (String str, Array uncompressed, Array indices, Array lengths) {
+func lz77_compression (String str, Array uncompressed, Array indices, Array lengths) {
 
     var la = 0
 
@@ -203,20 +249,21 @@ func lz77_compress (String str, Array uncompressed, Array indices, Array lengths
     while (la <= end) {
 
         var n = 1
-        var p = 0
+        var p = prefix.len
 
+        var tmp = nil
         var token = chars[la]
 
-        while ((n < 255) && (la+n <= end) && ((var tmp = prefix.index(token, p)) >= 0)) {
+        while ((n < 255) && (la+n <= end) && ((tmp = prefix.rindex(token, p)) >= 0)) {
             p = tmp
             token += chars[la + n]
             ++n
         }
 
         --n
-        indices << p
+        indices << la-p
         lengths << n
-        uncompressed << chars[la+n]
+        uncompressed << chars[la+n].ord
         la += n+1
         prefix += token
     }
@@ -224,8 +271,21 @@ func lz77_compress (String str, Array uncompressed, Array indices, Array lengths
     return nil
 }
 
+func lz77_decompression (Array uncompressed, Array indices, Array lengths) {
+
+    var (fh, str) = FileHandle.new_buf(:raw)
+    var offset = 0
+
+    [uncompressed, indices, lengths].zip {|c,i,l|
+        fh << (str.substr(offset - i, l), c.chr)
+        offset += (l + 1)
+    }
+
+    return str
+}
+
 # Compress file
-func lz77h_compress_file(File input, File output) {
+func compress_file(File input, File output) {
 
     var in_fh  =  input.open('<:raw') || die "Can't open file <<#{input}>> for reading"
     var out_fh = output.open('>:raw') || die "Can't open file <<#{output}>> for writing"
@@ -238,21 +298,21 @@ func lz77h_compress_file(File input, File output) {
     # Compress data
     while (in_fh.read(\var chunk, CHUNK_SIZE)) {
         var (uncompressed, indices, lengths) = ([], [], [])
-        lz77_compress(chunk, uncompressed, indices, lengths)
+        lz77_compression(chunk, uncompressed, indices, lengths)
 
         var est_ratio = (chunk.len / (4 * uncompressed.len))
 
         say (uncompressed.len, " -> ", est_ratio)
 
-        if (est_ratio > 1) {
+        if (est_ratio > 0.85) {
             out_fh.print(COMPRESSED_BYTE)
-            create_huffman_entry(uncompressed,      out_fh)
-            create_huffman_entry(lengths.map{.chr}, out_fh)
+            create_huffman_entry(uncompressed, out_fh)
+            create_huffman_entry(lengths, out_fh)
             out_fh.print(encode_integers(indices))
         }
         else {
             out_fh.print(UNCOMPRESSED_BYTE)
-            create_huffman_entry(chunk.chars, out_fh)
+            create_huffman_entry(chunk.bytes, out_fh)
         }
     }
 
@@ -262,7 +322,7 @@ func lz77h_compress_file(File input, File output) {
 }
 
 # Decompress file
-func lz77h_decompress_file(File input, File output) {
+func decompress_file(File input, File output) {
 
     var in_fh = input.open('<:raw') || die "Can't open file <<#{input}>> for reading"
 
@@ -278,25 +338,14 @@ func lz77h_decompress_file(File input, File output) {
 
         if (compression_byte == COMPRESSED_BYTE) {
 
-            var uncompressed = decode_huffman_entry(in_fh).chars
-            var *lengths     = unpack('C*', decode_huffman_entry(in_fh))
+            var uncompressed = decode_huffman_entry(in_fh)
+            var lengths      = decode_huffman_entry(in_fh)
             var indices      = decode_integers(in_fh)
 
-            var chunk = ''
-            [uncompressed, indices, lengths].zip {|c,i,l|
-
-                chunk += (chunk.substr(i, l) + c)
-
-                if (chunk.len >= CHUNK_SIZE) {
-                    out_fh.print(chunk)
-                    chunk = ''
-                }
-            }
-
-            out_fh.print(chunk)
+            out_fh.print(lz77_decompression(uncompressed, indices, lengths))
         }
         elsif (compression_byte == UNCOMPRESSED_BYTE) {
-            out_fh.print(decode_huffman_entry(in_fh))
+            out_fh.print(decode_huffman_entry(in_fh).pack('C*'))
         }
         else {
             die "Invalid compression..."
@@ -314,9 +363,9 @@ var file = File(ARGV.shift) || do {
     Sys.exit(2)
 }
 
-if (decode || file.match(/\.lzih\.enc\z/)) {
-    lz77h_decompress_file(file, File("output.lzih.dec"))
+if (decode || file.match(Regex('\.' + FORMAT + '\.enc\z'))) {
+    decompress_file(file, File("output.#{FORMAT}.dec"))
 }
 else {
-    lz77h_compress_file(file, File("output.lzih.enc"))
+    compress_file(file, File("output.#{FORMAT}.enc"))
 }
