@@ -34,8 +34,8 @@ func DRE_encode (Array integers, Bool double = false) {
             bitstring << '0'
         }
         elsif (double) {
-            var t = c.abs.as_bin
-            var l = t.len.inc.as_bin
+            var t = c.abs.inc.as_bin
+            var l = t.len.as_bin
             bitstring << join('', '1', ((c < 0) ? '0' : '1'), ('1' * (l.len-1)), '0', l.substr(1), t.substr(1))
         }
         else {
@@ -71,8 +71,8 @@ func DRE_decode (FileHandle fh, Bool double = false) {
             var bit = read_bit(fh, \buffer)
             var bl = (^Inf -> first { read_bit(fh, \buffer) != '1' })
 
-            var bl2 = Num('1' + bl.of { read_bit(fh, \buffer) }.join, 2)-1
-            var int = Num('1' + (bl2-1).of { read_bit(fh, \buffer) }.join, 2)
+            var bl2 = Num('1' + bl.of { read_bit(fh, \buffer) }.join, 2)
+            var int = Num('1' + (bl2-1).of { read_bit(fh, \buffer) }.join, 2)-1
 
             deltas << (bit == '1' ? int : -int)
         }
