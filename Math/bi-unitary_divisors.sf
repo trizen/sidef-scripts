@@ -43,7 +43,6 @@ func bi_unitary_divisors(n) is cached {
 
 for n in (1..20) {
     say "bi-divisors of #{n} = #{bi_unitary_divisors(n)}"
-
     assert_eq(bi_unitary_divisors(n).len, n.bsigma0)
     assert_eq(bi_unitary_divisors(n).sum, n.bsigma)
 }

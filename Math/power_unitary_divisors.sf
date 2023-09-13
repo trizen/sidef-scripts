@@ -5,12 +5,12 @@
 # See also:
 #   https://oeis.org/A056624
 
-func power_udivisors(n, k) {
+func power_udivisors(n, k=1) {
 
     var d = [1]
 
     for p,e in (n.factor_exp) {
-        d << {|r| d.map {|u| u*r }...}(p**e) if (e % k == 0)
+        d << with(p**e) {|r| d.map {|u| u*r }... } if (e % k == 0)
     }
 
     return d.sort
@@ -19,11 +19,11 @@ func power_udivisors(n, k) {
 for n in (1..20) {
     say "2-power unitary divisors of #{n} = #{power_udivisors(n, 2)}"
 
-    #~ assert_eq(power_udivisors(n, 2).len, 2.power_usigma0(n))
-    #~ assert_eq(power_udivisors(n, 2).sum, 2.power_usigma(n))
+    assert_eq(power_udivisors(n, 2).len, 2.power_usigma0(n))
+    assert_eq(power_udivisors(n, 2).sum, 2.power_usigma(n))
 
-    #~ assert_eq(power_udivisors(n, 3).len, 3.power_usigma0(n))
-    #~ assert_eq(power_udivisors(n, 3).sum, 3.power_usigma(n))
+    assert_eq(power_udivisors(n, 3).len, 3.power_usigma0(n))
+    assert_eq(power_udivisors(n, 3).sum, 3.power_usigma(n))
 
     assert_eq(power_udivisors(n, 2), 2.power_udivisors(n))
     assert_eq(power_udivisors(n, 3), 3.power_udivisors(n))

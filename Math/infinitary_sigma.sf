@@ -1,0 +1,31 @@
+#!/usr/bin/ruby
+
+# Sum of infinitary divisors of n.
+
+# Multiplicative with:
+#   If e = Sum_{k >= 0} d_k 2^k (binary representation of e), then
+#   isigma(p^e, r) = Product_{k >= 0} (p^(r*2^k*{d_k+1}) - 1)/(p^(r*2^k) - 1)
+
+# Simplified formula, where d_k is odd in the binary representation of e (ignore even d_k):
+#   isigma(p^e, r) = Product_{k >= 0} (p^(r * 2^k) + 1)
+
+# See also:
+#   https://oeis.org/A049417
+
+func infinitary_sigma(n, k=1) {
+    n.factor_prod {|p,e|
+        e.digits(2).prod_kv {|j,d|
+            d.is_odd ? (p**((1<<j) * k) + 1) : 1
+            #(p**(k*(1<<j)*(d+1)) - 1)/(p**(k*(1<<j)) - 1)
+        }
+    }
+}
+
+say map(1..20, {infinitary_sigma(_, 1)})
+say map(1..20, {infinitary_sigma(_, 2)})
+say map(1..20, {infinitary_sigma(_, 3)})
+
+__END__
+[1, 3, 4, 5, 6, 12, 8, 15, 10, 18, 12, 20, 14, 24, 24, 17, 18, 30, 20, 30]
+[1, 5, 10, 17, 26, 50, 50, 85, 82, 130, 122, 170, 170, 250, 260, 257, 290, 410, 362, 442]
+[1, 9, 28, 65, 126, 252, 344, 585, 730, 1134, 1332, 1820, 2198, 3096, 3528, 4097, 4914, 6570, 6860, 8190]

@@ -1,0 +1,24 @@
+#!/usr/bin/ruby
+
+# Sum of exponential divisors (or e-divisors) of n.
+
+# Multiplicative with:
+#   a(p^e, k) = Sum_{d|e} p^(d*k)
+
+# See also:
+#   https://oeis.org/A051377
+
+func exponential_sigma(n, k=1) {
+    n.factor_prod {|p,e|
+        e.divisors.sum {|d| p**(d*k) }
+    }
+}
+
+say map(1..20, {exponential_sigma(_, 1)})
+say map(1..20, {exponential_sigma(_, 2)})
+say map(1..20, {exponential_sigma(_, 3)})
+
+__END__
+[1, 2, 3, 6, 5, 6, 7, 10, 12, 10, 11, 18, 13, 14, 15, 22, 17, 24, 19, 30]
+[1, 4, 9, 20, 25, 36, 49, 68, 90, 100, 121, 180, 169, 196, 225, 276, 289, 360, 361, 500]
+[1, 8, 27, 72, 125, 216, 343, 520, 756, 1000, 1331, 1944, 2197, 2744, 3375, 4168, 4913, 6048, 6859, 9000]

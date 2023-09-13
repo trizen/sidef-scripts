@@ -7,10 +7,10 @@
 func is_even_perfect(n) {
 
     var square = (8*n + 1)
-    square.is_sqr || return false
+    square.is_square || return false
 
     var tp = ((square.isqrt + 1) / 2)
-    tp.is_pow || return false
+    tp.is_power || return false
 
     (tp-1).is_prime ? true : false
 }
