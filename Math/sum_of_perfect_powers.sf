@@ -3,8 +3,8 @@
 # Efficient formula for computing the sum of perfect powers <= n.
 
 # Formula:
-#
 #   a(n) = faulhaber(n,1) - Sum_{1..floor(log_2(n))} mu(k) * (faulhaber(floor(n^(1/k)), k) - 1)
+#        = 1 - Sum_{2..floor(log_2(n))} mu(k) * (faulhaber(floor(n^(1/k)), k) - 1)
 #
 # where:
 #   faulhaber(n,k) = Sum_{j=1..n} j^k.
@@ -13,13 +13,14 @@
 #   https://oeis.org/A069623
 
 func perfect_power_sum(n) {
-    n.faulhaber(1) - sum(1..n.ilog(2), {|k|
+    1 - sum(2..n.ilog(2), {|k|
         mu(k) * (n.iroot(k).faulhaber(k) - 1)
     })
 }
 
 for n in (0..15) {
     printf("a(10^%d) = %s\n", n, perfect_power_sum(10**n))
+    assert_eq(perfect_power_sum(10**n), 10**n -> perfect_power_sum)
 }
 
 __END__

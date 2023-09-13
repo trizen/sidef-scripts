@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
 
-# Daniel "Trizen" Șuteu
+# Author: Trizen
 # Date: 05 October 2021
 # https://github.com/trizen
 
-# Generate all the k-powerfree divisors of n.
+# Generate the k-powerfree divisors of n.
 
 func powerfree_divisors (n, k=2) {
 

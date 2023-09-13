@@ -16,15 +16,16 @@ c(n) = sum(k=1, logint(n,2), g(sqrtnint(n,k), k));
 
 )
 
-func sum_of_primes(n, j=1) {
+func sum_of_primes(n, j=1) {    # Sum_{p prime <= n} p^k
 
+    return n.sum_primes if (j == 1)     # optimization
     return 0 if (n <= 1)
 
     var r = n.isqrt
     var V = (1..r -> map {|k| idiv(n,k) })
     V << range(V.last-1, 1, -1).to_a...
 
-    var S = Hash(V.map{|k| (k, faulhaber(k,j)) }...)
+    var S = Hash(V.map{|k| (k, faulhaber_sum(k,j)) }...)
 
     for p in (2..r) {
         S{p} > S{p-1} || next
@@ -47,23 +48,40 @@ func sum_of_prime_powers(n) {
 
     # sum_of_prime_powers(n) = a(n) + b(n) + c(n)
 
-    var sr = n.isqrt
-    var cr = n.icbrt
-
     var ps1 = sum_of_primes(n)
-    var ps2 = sum_of_primes(sr, 2)
+    var ps2 = sum_of_primes(n.isqrt, 2)
 
-    # f(p) = sum(1..n.ilog(p), {|k| p**k }) - p*p - p
-    #      = (1 - p**(n.ilog(p)+1))/(1-p) - p*p - p - 1
+    # f(p) = (Sum_{k=1..floor(log_p(n))} p^k) - p^2 - p
+    #      = (p^(1+floor(log_p(n))) - 1)/(p-1) - p^2 - p - 1
 
-    var ps3 = cr.primes.sum {|p|
-        (p**(n.ilog(p)+1) - 1)/(p-1) - p*p - p - 1
+    var ps3 = n.icbrt.primes.sum {|p|
+        (ipow(p, n.ilog(p)+1) - 1)/(p-1) - p*p - p - 1
     }
 
     ps1 + ps2 + ps3
 }
 
 func sum_of_prime_powers_2(n) {
+
+    # a(n) = Sum_{p prime <= n} p
+    # b(n) = Sum_{p prime <= n^(1/2)} f(p)
+
+    # sum_of_prime_powers(n) = a(n) + b(n)
+
+    var ps1 = sum_of_primes(n)
+
+    # f(p) = (Sum_{k=1..floor(log_p(n))} p^k) - p
+    #      = (p^(1+floor(log_p(n))) - 1)/(p-1) - p - 1
+
+    var ps2 = 0
+    n.isqrt.each_prime {|p|
+        ps2 += ((ipow(p, n.ilog(p)+1) - 1)/(p-1) - p - 1)
+    }
+
+    ps1 + ps2
+}
+
+func sum_of_prime_powers_3(n) {
 
     # a(n) = Sum_{k=1..floor(log_2(n))} Sum_{p prime <= n^(1/k)} p^k.
 
@@ -80,8 +98,10 @@ for k in (1..100) {
 
     var x = sum_of_prime_powers(n)
     var y = sum_of_prime_powers_2(n)
-    var z = n.prime_powers.sum
+    var z = sum_of_prime_powers_3(n)
+    var w = n.prime_powers.sum
 
     assert_eq(x,y)
     assert_eq(x,z)
+    assert_eq(x,w)
 }

@@ -31,7 +31,7 @@ func exponential_divisors_2(n) {     # faster algorithm
     for p,e in (n.factor_exp) {
         d = gather {
             for k in (e.divisors) {
-                take({|r| d.map {|u| u*r }...}(p**k))
+                take(with(p**k){|r| d.map {|u| u*r }... })
             }
         }
     }
@@ -44,9 +44,11 @@ for n in (1..20) {
 
     assert_eq(exponential_divisors(n).len, n.esigma0)
     assert_eq(exponential_divisors(n).sum, n.esigma)
+    assert_eq(exponential_divisors(n),     n.edivisors)
 
     assert_eq(exponential_divisors_2(n).len, n.esigma0)
     assert_eq(exponential_divisors_2(n).sum, n.esigma)
+    assert_eq(exponential_divisors_2(n),     n.edivisors)
 }
 
 __END__
