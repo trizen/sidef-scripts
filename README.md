@@ -482,6 +482,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Multiplicative order](./Math/multiplicative_order.sf)
     * [Multiplicative order from phi](./Math/multiplicative_order_from_phi.sf)
     * [N-bit random prime](./Math/n-bit_random_prime.sf)
+    * [Narcisistic harmonic numbers](./Math/narcisistic_harmonic_numbers.sf)
     * [Near-power factorization method](./Math/near-power_factorization_method.sf)
     * [Newton's method for polynomials](./Math/newton_s_method_for_polynomials.sf)
     * [Next palindrome in base](./Math/next_palindrome_in_base.sf)
