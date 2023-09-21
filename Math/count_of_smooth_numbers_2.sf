@@ -20,7 +20,9 @@ func smooth_count(n, k) {
 }
 
 for p in (primes(15)) {
-    say ("Ψ(10^n, #{p}) for n < 10: ", 10.range.map { smooth_count(10**_, p) })
+    var arr = 10.range.map {|n| smooth_count(10**n, p) }
+    assert_eq(arr, 10.range.map {|n| p.smooth_count(10**n) })
+    say ("Ψ(10^n, #{p}) for n < 10: ", arr)
 }
 
 __END__
