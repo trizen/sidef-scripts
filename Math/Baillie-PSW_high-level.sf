@@ -11,6 +11,7 @@
 # See also:
 #   https://oeis.org/A217255 -- Strong Lucas pseudoprimes
 #   https://oeis.org/A217719 -- Extra strong Lucas pseudoprimes
+#   https://arxiv.org/pdf/2006.14425.pdf -- STRENGTHENING THE BAILLIE-PSW PRIMALITY TEST
 
 # Find Q for P = 1, such that kronecker(1 - 4Q, n) = -1.
 func findQ(N) {

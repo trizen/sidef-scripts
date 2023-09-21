@@ -453,6 +453,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Lucas sequences of k-th order](./Math/lucas_sequences_of_k-th_order.sf)
     * [Lucas sequences U V](./Math/lucas_sequences_U_V.sf)
     * [Lucas theorem](./Math/lucas_theorem.sf)
+    * [Lucas V pseudoprime test](./Math/lucas_V_pseudoprime_test.sf)
     * [LUP decomposition](./Math/LUP_decomposition.sf)
     * [Mandelbrot set](./Math/mandelbrot_set.sf)
     * [Mathematical formulas](./Math/mathematical_formulas.sf)
