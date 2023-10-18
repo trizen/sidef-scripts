@@ -5,10 +5,10 @@
 # Date: 14 October 2017
 # https://github.com/trizen
 
-# A very high-level computation of the nth-Bernoulli number, using prime numbers.
+# A fast algorithm for computing the n-th Bernoulli number, using prime numbers.
 
-# Algorithm due to Kevin J. McGown (December 8, 2005)
-# See his paper: "Computing Bernoulli Numbers Quickly"
+# Reference:
+#   "Computing Bernoulli Numbers Quickly", by Kevin J. McGown (December 8, 2005)
 
 func bern_from_primes(n) {
 

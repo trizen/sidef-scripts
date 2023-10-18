@@ -1,0 +1,34 @@
+#!/usr/bin/ruby
+
+# A nice recursive formula for computing the n-th Bernoulli number (modulo another integer).
+
+# Formula presented in the following Numberphile video:
+#   Faulhaber's Fabulous Formula (and Bernoulli Numbers) - Numberphile
+#   https://youtube.com/watch?v=83NFR7JDlww
+
+func modular_bernoulli_numberphile(n, m) is cached {
+
+    return 1          if (n == 0)
+    return ((1/2)%m)  if (n == 1)
+    return 0          if (n.is_odd)
+
+    var x = PolyMod(1, m)
+    var t = ((x - 1)**(n+1) - x**(n+1))
+
+    var cf = t.coeffs
+    var lt = cf.pop
+
+    var term = cf.sum_2d {|a,b|
+        mulmod(__FUNC__(a, m), b, m)
+    }
+
+    divmod(term, -lt[1], m)
+}
+
+var m = next_prime(1e9)
+
+for n in (0..20) {
+    var B = modular_bernoulli_numberphile(n, m)
+    assert_eq(B, n.bernoulli % m)
+    say "B_#{n} = #{B.as_rat}"
+}

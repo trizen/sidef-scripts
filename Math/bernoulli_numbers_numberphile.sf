@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+
+# A nice recursive formula for computing the n-th Bernoulli number.
+
+# Formula presented in the following Numberphile video:
+#   Faulhaber's Fabulous Formula (and Bernoulli Numbers) - Numberphile
+#   https://youtube.com/watch?v=83NFR7JDlww
+
+func bernoulli_numberphile(n) is cached {
+
+    return 1    if (n == 0)
+    return 1/2  if (n == 1)
+    return 0    if (n.is_odd)
+
+    var x = Poly(1)
+    var t = ((x - 1)**(n+1) - x**(n+1))
+
+    var cf = t.coeffs
+    var lt = cf.pop
+
+    var term = cf.sum_2d {|a,b|
+        __FUNC__(a) * b
+    }
+
+    term / -lt[1]
+}
+
+for n in (0..20) {
+    var B = bernoulli_numberphile(n)
+    assert_eq(B, n.bernoulli)
+    say "B_#{n} = #{B.as_rat}"
+}
