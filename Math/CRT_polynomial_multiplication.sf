@@ -1,0 +1,79 @@
+#!/usr/bin/ruby
+
+# Polynomial multiplication, using the Chinese Remainder Theorem (CRT).
+
+# Reference:
+#   Lecture 14, Week 8 (2hrs) - Towards polynomial factorization
+#   https://youtube.com/watch?v=KNyHz0eoAMA (from 1 hour and 7 minutes)
+
+func CRT (*congruences) {
+
+    var c = 0
+    var m = congruences.lcm { _[1] }
+
+    for a,n in (congruences) {
+
+        var t = m/n
+        var u = (t * invmod(t, n))
+
+        c += ((a.lift*u) % m)
+    }
+
+    return (c % m)
+}
+
+func poly_height(x) {
+    x.coeffs.map { .tail.abs }.max
+}
+
+func CRT_poly_mul(a,b) {
+    var c_height = 2*(poly_height(a) * poly_height(b) * min(a.coeffs.len, b.coeffs.len))
+
+    var m = 1
+    var P = []
+
+    Math.seq(3, {.tail.next_prime}).each {|p|
+        m *= p
+        P << p
+        break if (m > c_height)
+    }
+
+    var c = lift(CRT(P.map{|p| [Mod(a,p) * Mod(b,p), p] }...))
+    var t = (m>>1)
+
+    return Poly(c.coeffs.map_2d {|x,y| [x, (y > t) ? (y-m) : y] })
+}
+
+func CRT_poly_mul_space_optimized(a,b) {
+    var c_height = 2*(poly_height(a) * poly_height(b) * min(a.coeffs.len, b.coeffs.len))
+
+    var m = 1
+    var c = [0, 1]
+
+    Math.seq(3, {.tail.next_prime}).each {|p|
+        m *= p
+        c = [CRT(c, [Mod(a,p)*Mod(b,p), p]), m]
+        break if (m > c_height)
+    }
+
+    c = c[0].lift
+
+    var t = (m>>1)
+    return Poly(c.coeffs.map_2d {|x,y| [x, (y > t) ? (y-m) : y] })
+}
+
+assert_eq(CRT([2, 3], [3, 5], [2, 7]), 23)
+
+var x = Poly(1)
+
+assert_eq(CRT_poly_mul(3*x - 4, 6*x + 5), (3*x - 4)*(6*x + 5))
+
+var a = (17*x**3 + 7*x**2 - x + 65)
+var b = (34*x**4 - 23*x**2 + 8*x - 12)
+
+say (a*b)
+say CRT_poly_mul(a,b)
+say CRT_poly_mul_space_optimized(a,b)
+
+__END__
+578*x^7 + 238*x^6 - 425*x^5 + 2185*x^4 - 125*x^3 - 1587*x^2 + 532*x - 780

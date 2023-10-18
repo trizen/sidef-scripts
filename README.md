@@ -234,6 +234,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Count of squarefree k-almost primes](./Math/count_of_squarefree_k-almost_primes.sf)
     * [Count of squarefree numbers](./Math/count_of_squarefree_numbers.sf)
     * [Cousin mersenne primes lucas-lehmer](./Math/cousin_mersenne_primes_lucas-lehmer.sf)
+    * [CRT polynomial multiplication](./Math/CRT_polynomial_multiplication.sf)
     * [Cuban primes](./Math/cuban_primes.sf)
     * [Cube-full numbers](./Math/cube-full_numbers.sf)
     * [Cyclops numbers](./Math/cyclops_numbers.sf)
