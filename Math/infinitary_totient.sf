@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+# Infinitary analog of Euler's phi function.
+
+# Let e = Sum_{k >= 0} d_k 2^k (binary representation of e).
+
+# Multiplicative with, where d_k is odd in the binary representation of e (ignore even d_k):
+#   iphi(p^e, r) = Product_{k >= 0} (p^(r * 2^k) - 1)
+
+# See also:
+#   https://oeis.org/A091732
+
+func infinitary_totient(n,k=1) {
+    n.factor_prod {|p,e|
+        e.digits(2).prod_kv {|j,d|
+            d.is_odd ? (p**(k * (1<<j)) - 1) : 1
+        }
+    }
+}
+
+say map(1..30, {|k| infinitary_totient(k, 1) })
+say map(1..30, {|k| infinitary_totient(k, 2) })
+
+__END__
+[1, 1, 2, 3, 4, 2, 6, 3, 8, 4, 10, 6, 12, 6, 8, 15, 16, 8, 18, 12, 12, 10, 22, 6, 24, 12, 16, 18, 28, 8]
+[1, 3, 8, 15, 24, 24, 48, 45, 80, 72, 120, 120, 168, 144, 192, 255, 288, 240, 360, 360, 384, 360, 528, 360, 624, 504, 640, 720, 840, 576]

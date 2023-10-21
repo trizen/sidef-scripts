@@ -372,6 +372,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Home primes](./Math/home_primes.sf)
     * [Infinitary divisors](./Math/infinitary_divisors.sf)
     * [Infinitary sigma](./Math/infinitary_sigma.sf)
+    * [Infinitary totient](./Math/infinitary_totient.sf)
     * [Integer root](./Math/integer_root.sf)
     * [Integer root binary search](./Math/integer_root_binary_search.sf)
     * [Integer square root](./Math/integer_square_root.sf)
