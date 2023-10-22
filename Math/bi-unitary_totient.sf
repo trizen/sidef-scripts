@@ -1,0 +1,21 @@
+#!/usr/bin/ruby
+
+# The bi-unitary analog of Euler's totient function of n.
+
+# Formula:
+#   a(n) = Sum{d|n, d is unitary} (-1)^omega(d) * Sum{k|d, k is squarefree, k <= n/d} mu(k) * floor(n/(d*k)).
+
+# See also:
+#   https://oeis.org/A116550
+
+func bphi(n) {
+    n.udivisors.sum{|d|
+        var x = n/d
+        (-1)**omega(d) * d.squarefree_divisors.grep { _ <= x }.sum {|k| mu(k) * floor(x/k) }
+    }
+}
+
+say bphi.map(1..30)
+
+__END__
+[1, 1, 2, 3, 4, 3, 6, 7, 8, 6, 10, 8, 12, 9, 9, 15, 16, 12, 18, 14, 14, 15, 22, 17, 24, 18, 26, 21, 28, 15]
