@@ -22,6 +22,7 @@ A nice collection of day-to-day Sidef scripts.
 * Converters
     * [Any2audio](./Converters/any2audio.sf)
     * [Any2mp3](./Converters/any2mp3.sf)
+    * [Extract audio](./Converters/extract_audio.sf)
 * Decoding
     * [Base64 decoder](./Decoding/base64_decoder.sf)
     * [Cnp](./Decoding/cnp.sf)

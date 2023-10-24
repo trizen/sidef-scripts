@@ -5,10 +5,10 @@
 # Edit: 24 October 2023
 # https://github.com/trizen
 
-# Convert any media file with ffmpeg, using `n` parallel processes.
+# Extra audio from video files with ffmpeg, using `n` parallel processes.
 
-func ffmpeg_convert(input, output, bitrate) {
-    Sys.run("ffmpeg", "-loglevel", "warning", "-i", input, "-vn", "-sn", "-dn", "-b:a", "#{bitrate}K", output)
+func ffmpeg_convert(input, output) {
+    Sys.run("ffmpeg", "-loglevel", "warning", "-i", input, "-vn", "-sn", "-dn", "-c:a", "copy", output)
 }
 
 func prepare_file(file, outdir, ext) {
@@ -34,7 +34,6 @@ func prepare_file(file, outdir, ext) {
 var threads = 2
 var format  = 'opus'
 var outdir  = Dir.cwd
-var bitrate = 96
 var delete_original = false
 
 func print_help(exit_code=0) {
@@ -45,14 +44,13 @@ func print_help(exit_code=0) {
 usage: #{name} [options] [files]
 
 options:
-    -b  --bitrate=i : output bitrate in kbps (default: #{bitrate})
     -f  --format=s  : output format (default: #{format})
     -d  --delete!   : delete the original files (default: #{delete_original})
     -o  --outdir=s  : output directory (default: .)
     -t  --threads=i : number of threads to use (default: #{threads})
 
 example:
-    #{name} -b 40 -f opus -t 4 *.mp3    # convert MP3 to OPUS at 40kbps
+    #{name} -f opus -t 4 *.webm    # extract OPUS audio from WEBM videos
 EOT
 
     Sys.exit(exit_code)
@@ -60,7 +58,6 @@ EOT
 
 ARGV.getopt!(
     'f|format=s'  => \format,
-    'b|bitrate=i' => \bitrate,
     't|threads=i' => \threads,
     'o|outdir=s'  => \outdir,
     'd|delete!'   => \delete_original,
@@ -90,7 +87,7 @@ ARGV.each_slice(threads, {|*slice|
     }
 
     var forks = conversions.map_2d {|input, output|
-        ffmpeg_convert.fork(input, output, bitrate)
+        ffmpeg_convert.fork(input, output)
     }
 
     forks.each {|t|
