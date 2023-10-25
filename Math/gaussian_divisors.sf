@@ -17,42 +17,44 @@
 
 func gaussian_factors(Gauss z) {
 
-    return [] if z.is_zero
-
     var n = z.norm
     var factors = []
 
     for p,e in (n.factor_exp) {
         if (p == 2) {
-            while (z % Gauss(1, 1) == 0) {
-                factors << Gauss(1,1)
-                z /= Gauss(1,1)
+            var t = Gauss(1,1)
+            while (z % t == 0) {
+                factors << t
+                z /= t
             }
         }
         elsif (p % 4 == 3) {
-            while (z % Gauss(p,0) == 0) {
-                factors << Gauss(p,0)
-                z /= Gauss(p,0)
+            var t = Gauss(p)
+            while (z % t == 0) {
+                factors << t
+                z /= t
             }
         }
-        elsif (p % 4 == 1) {
+        else {
             for a,b in (sum_of_squares(p)) {
 
-                while (z % Gauss(a, b) == 0) {
-                    factors << Gauss(a,b)
-                    z /= Gauss(a,b)
+                var t1 = Gauss(a,b)
+                var t2 = Gauss(b,a)
+
+                while (z % t1 == 0) {
+                    factors << t1
+                    z /= t1
                 }
 
-                while (z % Gauss(a,-b) == 0) {
-                    factors << Gauss(a,-b)
-                    z /= Gauss(a,-b)
+                while (z % t2 == 0) {
+                    factors << t2
+                    z /= t2
                 }
             }
         }
     }
 
     if (z != Gauss(1)) {
-        assert_eq(z.abs, 1)
         factors << z
     }
 
@@ -64,6 +66,12 @@ func gaussian_divisors(Gauss n) {
     var d  = [Gauss(1), Gauss(-1), Gauss(0,1), Gauss(0,-1)]
 
     for p,e in (gaussian_factors(n)) {
+        if ((p.imag == 0) && (p.real.abs == 1)) {
+            next
+        }
+        if ((p.real == 0) && (p.imag.abs == 1)) {
+            next
+        }
         var r = Gauss(1)
         d << gather {
             e.times {
@@ -75,7 +83,7 @@ func gaussian_divisors(Gauss n) {
         }...
     }
 
-    d.sort.uniq
+    return d
 }
 
 for n in (1..5) {

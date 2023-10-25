@@ -5,7 +5,7 @@
 # Edit: 24 October 2023
 # https://github.com/trizen
 
-# Extra audio from video files with ffmpeg, using `n` parallel processes.
+# Extract audio from video files with ffmpeg, using `n` parallel processes.
 
 func ffmpeg_convert(input, output) {
     Sys.run("ffmpeg", "-loglevel", "warning", "-i", input, "-vn", "-sn", "-dn", "-c:a", "copy", output)

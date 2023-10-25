@@ -12,49 +12,45 @@
 
 func gaussian_factors(Gauss z) {
 
-    return [] if z.is_zero
-
     var Z = z
     var n = z.norm
     var factors = []
 
     for p,e in (n.factor_exp) {
         if (p == 2) {
-
-            while (z % Gauss(1, 1) == 0) {
-                factors << Gauss(1,1)
-                z /= Gauss(1,1)
-            }
-
-            while (z % Gauss(1,-1) == 0) {     # not needed
-                factors << Gauss(1,-1)
-                z /= Gauss(1,-1)
+            var t = Gauss(1,1)
+            while (z % t == 0) {
+                factors << t
+                z /= t
             }
         }
         elsif (p % 4 == 3) {
-            while (z % Gauss(p,0) == 0) {
-                factors << Gauss(p,0)
-                z /= Gauss(p,0)
+            var t = Gauss(p)
+            while (z % t == 0) {
+                factors << t
+                z /= t
             }
         }
-        elsif (p % 4 == 1) {
+        else {
             for a,b in (sum_of_squares(p)) {
 
-                while (z % Gauss(a, b) == 0) {
-                    factors << Gauss(a,b)
-                    z /= Gauss(a,b)
+                var t1 = Gauss(a,b)
+                var t2 = Gauss(b,a)
+
+                while (z % t1 == 0) {
+                    factors << t1
+                    z /= t1
                 }
 
-                while (z % Gauss(a,-b) == 0) {
-                    factors << Gauss(a,-b)
-                    z /= Gauss(a,-b)
+                while (z % t2 == 0) {
+                    factors << t2
+                    z /= t2
                 }
             }
         }
     }
 
     if (z != Gauss(1,0)) {
-        assert_eq(z.abs, 1)
         factors << z
     }
 
@@ -67,5 +63,5 @@ func gaussian_factors(Gauss z) {
 var z = Gauss(440, -55)
 var factors  = gaussian_factors(z)
 
-say factors                             #=> [[Gauss(1, -2), 2], [Gauss(1, 2), 1], [Gauss(2, 3), 1], [Gauss(11, 0), 1]]
+say factors                             #=> [[Gauss(-1, 0), 1], [Gauss(1, 2), 1], [Gauss(2, 1), 2], [Gauss(2, 3), 1], [Gauss(11, 0), 1]]
 say factors.prod_2d {|p,e| p**e }       #=> Gauss(440, -55)
