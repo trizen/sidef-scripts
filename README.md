@@ -266,6 +266,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Elementary cellular automaton](./Math/elementary_cellular_automaton.sf)
     * [Elementary cellular automaton generalized](./Math/elementary_cellular_automaton_generalized.sf)
     * [Elliptic-curve factorization method](./Math/elliptic-curve_factorization_method.sf)
+    * [Elliptic-curve factorization method with B2 stage](./Math/elliptic-curve_factorization_method_with_B2_stage.sf)
     * [Equally spaced squares solutions](./Math/equally_spaced_squares_solutions.sf)
     * [Esthetic numbers](./Math/esthetic_numbers.sf)
     * [Euler-maclaurin formula](./Math/euler-maclaurin_formula.sf)

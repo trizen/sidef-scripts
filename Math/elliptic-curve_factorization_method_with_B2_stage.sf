@@ -1,0 +1,175 @@
+#!/usr/bin/ruby
+
+# The elliptic-curve factorization method (ECM), due to Hendrik Lenstra, with B2 stage.
+
+# Code translated from the SymPy file "ntheory/ecm.py" (version 1.11.1).
+
+class Point(x_cord, z_cord, a_24, mod) {
+
+    -> eq(Point other) {
+        # Two points are equal if X/Z of both points are equal
+        if ((a_24 != other.a_24) || (mod != other.mod)) {
+            return false
+        }
+
+        divmod(x_cord, z_cord, mod) == divmod(other.x_cord, other.z_cord, mod)
+    }
+
+    -> add(Q, diff) {
+        var u = mulmod(submod(x_cord, z_cord, mod), addmod(Q.x_cord, Q.z_cord, mod), mod)
+        var v = mulmod(addmod(x_cord, z_cord, mod), submod(Q.x_cord, Q.z_cord, mod), mod)
+        var (add, subt) = (addmod(u, v, mod), submod(u, v, mod))
+        var new_x_cord = mulmod(diff.z_cord, mulmod(add, add, mod), mod)
+        var new_z_cord = mulmod(diff.x_cord, mulmod(subt, subt, mod), mod)
+        return Point(new_x_cord, new_z_cord, a_24, mod)
+    }
+
+    -> double {
+        var (u, v) = (addmod(x_cord, z_cord, mod), submod(x_cord, z_cord, mod))
+        (u, v) = (mulmod(u, u, mod), mulmod(v, v, mod))
+        var diff = submod(u, v, mod)
+        var new_x_cord = mulmod(u, v, mod)
+        var new_z_cord = mulmod(diff, muladdmod(a_24, diff, v, mod), mod)
+        return Point(new_x_cord, new_z_cord, a_24, mod)
+    }
+
+    -> mont_ladder(k) {
+
+        var Q = self
+        var R = self.double()
+
+        for i in (k.as_bin.substr(1).chars) {
+            if  (i `eq` '1') {
+                Q = R.add(Q, self)
+                R = R.double()
+            }
+            else {
+                R = Q.add(R, self)
+                Q = Q.double()
+            }
+        }
+        return Q
+    }
+}
+
+func ecm_one_factor(n, B1=10000, B2=100000, max_curves=200) {
+
+    if (B1.is_odd || B2.is_odd) {
+        die "The Bounds should be even integers"
+    }
+
+    n.is_prime && return n
+
+    var D = B2.isqrt
+    var beta = [0]*(D + 1)
+    var S = [0]*(D + 1)
+
+    var k = primes(1, B1).prod {|p|
+        p**B1.ilog(p)
+    }
+
+    max_curves.times {
+
+        # Suyama's paramatrization
+        var sigma = irand(6, n - 1)
+        var u = mulsubmod(sigma, sigma, 5, n)
+        var v = mulmod(sigma, 4, n)
+        var diff = submod(v, u, n)
+        var u_3 = powmod(u, 3, n)
+
+        var inv = invmod(mulmod(mulmod(u_3, v, n), 4, n), n) || return gcd(u_3*v, n)
+        var C   = mulsubmod(mulmod(powmod(diff, 3, n), muladdmod(3, u, v, n), n), inv, 2, n)
+
+        var a24 = divmod(C + 2, 4, n)
+        var Q = Point(u_3, powmod(v, 3, n), a24, n)
+        Q = Q.mont_ladder(k)
+        var g = gcd(Q.z_cord, n)
+
+        # Stage 1 factor
+        if (g.is_ntf(n)) {  # g is a non-trivial factor of n
+            return g
+        }
+
+        # Stage 1 failure. Q.z = 0, Try another curve
+        elsif (g == n) {
+            next
+        }
+
+        # Stage 2 - Improved Standard Continuation
+        S[1] = Q.double()
+        S[2] = S[1].double()
+        beta[1] = mulmod(S[1].x_cord, S[1].z_cord, n)
+        beta[2] = mulmod(S[2].x_cord, S[2].z_cord, n)
+
+        for d in (3..D) {
+            S[d] = S[d-1].add(S[1], S[d-2])
+            beta[d] = mulmod(S[d].x_cord, S[d].z_cord, n)
+        }
+
+        g = 1
+        var B = (B1 - 1)
+        var T = Q.mont_ladder(B - 2*D)
+        var R = Q.mont_ladder(B)
+
+        for r in (B .. B2 `by` 2*D) {
+            var alpha = mulmod(R.x_cord, R.z_cord, n)
+            for q in (primes(r+2, 2*D + r)) {
+                var delta = idiv(q - r, 2)
+                # XXX: In the SymPy code (v1.11.1), there is a mistake which uses `S[d]` instead of `S[delta]`.
+                g = mulmod(g, addmod(submod(mulmod(submod(R.x_cord, S[delta].x_cord, n), addmod(R.z_cord, S[delta].z_cord, n), n), alpha, n), beta[delta], n), n)
+            }
+            # Swap
+            (T, R) = (R, R.add(S[D], T))
+        }
+
+        g = gcd(n, g)
+
+        # Stage 2 Factor found
+        if (g.is_ntf(n)) {
+            return g
+        }
+    }
+
+    # ECM failed, Increase the bounds
+    die "Increase the bounds"
+}
+
+func ecm(n, B1=10000, B2=100000, max_curves=200, seed = nil) {
+
+    n <= 1 && die "n must be greater than 1"
+
+    var f = n.trial_factor(100_000)
+    n = f.pop
+    var factors = Set(f...)
+
+    if (defined(seed)) {
+        iseed(seed)
+    }
+
+    while(n > 1) {
+        var factor = try   { ecm_one_factor(n, B1, B2, max_curves) }
+                     catch {|msg| die msg }
+        factors << factor
+        n.remdiv!(factor)
+    }
+
+    var final_factors = Set()
+    for factor in (factors) {
+        if (factor.is_prime) {
+            final_factors << factor
+        }
+        else {
+            final_factors << __FUNC__(factor)...
+        }
+    }
+    return final_factors.sort
+}
+
+say ecm(314159265358979323, 100, 1000)      #=> [317213509, 990371647]
+say ecm(14304849576137459, 100, 1000)       #=> [16100431, 888476189]
+say ecm(9804659461513846513, 100, 1000)     #=> [4641991, 2112166839943]
+say ecm(25645121643901801, 100, 1000)       #=> [5394769, 4753701529]
+
+say ecm(2**64 + 1, 100, 1000)       #=> [274177, 67280421310721]
+say ecm(2**128 - 1, 100, 1000)      #=> [3, 5, 17, 257, 641, 65537, 274177, 6700417, 67280421310721]
+#say ecm(2**128 + 1, 10000)         # takes ~30 seconds

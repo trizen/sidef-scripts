@@ -2,6 +2,7 @@
 
 # Author: Trizen
 # Date: 27 April 2022
+# Edit: 26 October 2023
 # https://github.com/trizen
 
 # Solve modular quadratic equations of the form:
@@ -9,27 +10,30 @@
 
 # Solving method:
 #   D = b^2 - 4*a*c
-#   t^2 == D (mod 4*m)
+#   t^2 == D (mod 4*a*m)
 
-# By finding all the solutions to `t`, using `sqrtmod(D, 4*m)`, the candidate values for `x` are given by:
+# By finding all the solutions to `t`, using `sqrtmod(D, 4*a*m)`, the candidate values for `x` are given by:
 #   x_1 = (-b + t)/(2*a)
 #   x_2 = (-b - t)/(2*a)
 
 func modular_quadratic_equation (a,b,c,m) {
 
-    var D = (b**2 - 4*a*c).mod(4*m)
+    a %= m
+    b %= m
+    c %= m
+
+    var D = (b**2 - 4*a*c).mod(4*a*m)
     var S = []
 
-    for t in (sqrtmod_all(D, 4*m)) {
-        for u,v in ([[-b + t, 2*a], [-b - t, 2*a]]) {
+    for t in (sqrtmod_all(D, 4*a*m)) {
+        for u,v in ([[-b + t, 2*a]]) {
             var x = (u/v)%m
-            if ((a*x*x + b*x + c)%m == 0) {
-                S << x
-            }
+            assert_eq((a*x*x + b*x + c)%m, 0)
+            S << x
         }
     }
 
-    return S.sort.uniq
+    return S.uniq.sort
 }
 
 say modular_quadratic_equation(1,1,-1e10 + 8,1e10)
@@ -42,6 +46,7 @@ assert_eq(modular_quadratic_equation(3/13, 112, 13, 124), %n[9, 43, 71, 105])
 assert_eq(modular_quadratic_equation(3/13, 4, 13*5, 124), %n[33, 53, 95, 115])
 assert_eq(modular_quadratic_equation(3/13, 4, 5, 124),    %n[3, 21, 65, 83])
 assert_eq(modular_quadratic_equation(3/13, 4/7, 5, 124),  %n[5, 25, 67, 87])
+assert_eq(modular_quadratic_equation(400, 85, 125, 1600), [1983/80, 2035/16, 963/5, 295, 27583/80, 7155/16, 2563/5, 615, 53183/80, 12275/16, 4163/5, 935, 78783/80, 17395/16, 5763/5, 1255, 104383/80, 22515/16, 7363/5, 1575])
 
 __END__
 [1810486343, 2632873031, 7367126968, 8189513656]
