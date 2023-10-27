@@ -6,15 +6,6 @@
 
 class Point(x_cord, z_cord, a_24, mod) {
 
-    -> eq(Point other) {
-        # Two points are equal if X/Z of both points are equal
-        if ((a_24 != other.a_24) || (mod != other.mod)) {
-            return false
-        }
-
-        divmod(x_cord, z_cord, mod) == divmod(other.x_cord, other.z_cord, mod)
-    }
-
     -> add(Q, diff) {
         var u = mulmod(submod(x_cord, z_cord, mod), addmod(Q.x_cord, Q.z_cord, mod), mod)
         var v = mulmod(addmod(x_cord, z_cord, mod), submod(Q.x_cord, Q.z_cord, mod), mod)
@@ -52,10 +43,14 @@ class Point(x_cord, z_cord, a_24, mod) {
     }
 }
 
-func ecm_one_factor(n, B1=10000, B2=100000, max_curves=200) {
+func ecm_one_factor(n, B1=10000, B2=100000, max_curves=200, seed = nil) {
 
     if (B1.is_odd || B2.is_odd) {
-        die "The Bounds should be even integers"
+        die "The bounds must be both even integers"
+    }
+
+    if (defined(seed)) {
+        iseed(seed)
     }
 
     n.is_prime && return n
@@ -77,7 +72,7 @@ func ecm_one_factor(n, B1=10000, B2=100000, max_curves=200) {
         var diff = submod(v, u, n)
         var u_3 = powmod(u, 3, n)
 
-        var inv = invmod(mulmod(mulmod(u_3, v, n), 4, n), n) || return gcd(u_3*v, n)
+        var inv = invmod(mulmod(mulmod(u_3, v, n), 4, n), n) || return gcd(lcm(u_3, v), n)
         var C   = mulsubmod(mulmod(powmod(diff, 3, n), muladdmod(3, u, v, n), n), inv, 2, n)
 
         var a24 = divmod(C + 2, 4, n)
@@ -115,8 +110,15 @@ func ecm_one_factor(n, B1=10000, B2=100000, max_curves=200) {
             var alpha = mulmod(R.x_cord, R.z_cord, n)
             for q in (primes(r+2, 2*D + r)) {
                 var delta = idiv(q - r, 2)
-                # XXX: In the SymPy code (v1.11.1), there is a mistake which uses `S[d]` instead of `S[delta]`.
-                g = mulmod(g, addmod(submod(mulmod(submod(R.x_cord, S[delta].x_cord, n), addmod(R.z_cord, S[delta].z_cord, n), n), alpha, n), beta[delta], n), n)
+                g = mulmod(
+                        addmod(
+                            submod(
+                                mulmod(
+                                    submod(R.x_cord, S[delta].x_cord, n),
+                                    addmod(R.z_cord, S[delta].z_cord, n), n),
+                                alpha, n),
+                            beta[delta], n),
+                        g, n)
             }
             # Swap
             (T, R) = (R, R.add(S[D], T))
@@ -147,7 +149,7 @@ func ecm(n, B1=10000, B2=100000, max_curves=200, seed = nil) {
     }
 
     while(n > 1) {
-        var factor = try   { ecm_one_factor(n, B1, B2, max_curves) }
+        var factor = try   { ecm_one_factor(n, B1, B2, max_curves, seed) }
                      catch {|msg| die msg }
         factors << factor
         n.remdiv!(factor)
@@ -159,7 +161,7 @@ func ecm(n, B1=10000, B2=100000, max_curves=200, seed = nil) {
             final_factors << factor
         }
         else {
-            final_factors << __FUNC__(factor)...
+            final_factors << __FUNC__(factor, B1, B2, max_curves, seed)...
         }
     }
     return final_factors.sort
