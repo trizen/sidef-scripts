@@ -1,0 +1,138 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 31 October 2023
+# https://github.com/trizen
+
+# A new primality test, using only the Lucas V sequence.
+
+# This test is a simplification of the strengthen BPSW test:
+# https://arxiv.org/abs/2006.14425
+
+define USE_METHOD_A_STAR = false    # true to use the A* method in finding (P,Q)
+
+func check_lucasV(P,Q,n,m) {
+
+    var d = n+1
+    var s = valuation(d, 2)
+
+    var(V1=2, V2=P, Q1=1, Q2=1)
+
+    for bit in ((d >> (s+1)) -> bits) {
+
+        Q1 = mulmod(Q1, Q2, m)
+
+        if (bit) {
+            Q2 = mulmod(Q1, Q, m)
+            V1 = mulsubmulmod(V2, V1, P, Q1, m)
+            V2 = mulsubmulmod(V2, V2, 2, Q2, m)
+        }
+        else {
+            Q2 = Q1
+            V2 = mulsubmulmod(V2, V1, P, Q1, m)
+            V1 = mulsubmulmod(V1, V1, 2, Q2, m)
+        }
+    }
+
+    Q1 = mulmod(Q1, Q2, m)
+    Q2 = mulmod(Q1, Q, m)
+    V1 = mulsubmulmod(V1, V2, P, Q1, m)
+    Q2 = mulmod(Q2, Q1, m)
+
+    s.times {
+        V1 = mulsubmulmod(V1, V1, 2, Q2, m)
+        Q2 = mulmod(Q2, Q2, m)
+    }
+
+    V1.is_congruent(2*Q, m) || return false
+    Q2.is_congruent(Q*Q, m) || return false
+
+    return true
+}
+
+func findQ(N) {
+    for k in (2 .. Inf) {
+
+        var D = ((-1)**k * (2*k + 1))
+        var K = kronecker(D, N)
+
+        if (K.is_zero && gcd(D, N).is_between(2, N-1)) {
+            return nil
+        }
+        elsif ((k == 20) && N.is_square) {
+            return nil
+        }
+
+        return ((1-D)/4) if (K == -1)
+    }
+}
+
+func findP (N, Q) {
+    for P in (2..Inf) {
+
+        var D = (P*P - 4*Q)
+        var K = kronecker(D, N)
+
+        if (K == -1) {
+            return P
+        }
+        elsif (K.is_zero && gcd(D, N).is_between(2, N-1)) {
+            return nil
+        }
+        elsif ((P == 20) && N.is_square) {
+            return nil
+        }
+    }
+}
+
+func is_bfsw_psp(n) {
+
+    n <= 1    && return false
+    n == 2    && return true
+    n.is_even && return false
+
+    var(P,Q)
+    if (USE_METHOD_A_STAR) {
+        P = 1
+        Q = findQ(n) \\ return false
+
+        if (Q == -1) {
+            P = 5
+            Q = 5
+        }
+    }
+    else {  # this is faster
+        Q = -2
+        P = findP(n, Q) \\ return false
+    }
+
+    check_lucasV(P,Q,n,n)
+}
+
+say 25.by(is_bfsw_psp)
+assert([913, 150267335403, 430558874533, 14760229232131, 936916995253453].none(is_bfsw_psp))
+
+for n in (1..1e3) {
+    if (is_bfsw_psp(n)) {
+        if (!n.is_prime) {
+            say "Counter-example: #{n}"
+        }
+    }
+    elsif (n.is_prime) {
+        say "Missed-prime: #{n}"
+    }
+}
+
+__END__
+Inspired by the paper "Strengthening the Baillie-PSW primality test", I propose a simplified test based on Lucas V-pseudoprimes, that requires computing only the Lucas V sequence, making it faster than the full BPSW test, while being about as strong.
+
+The first observation was that none of the 5 vpsp terms < 10^15 satisfy:
+
+Q^(n+1) == Q^2 (mod n)
+
+This gives us a simple test:
+
+V_{n+1}(P,Q) == 2*Q (mod n)
+Q^(n+1) == Q^2 (mod n)
+
+where (P,Q) are selected using Method A*.

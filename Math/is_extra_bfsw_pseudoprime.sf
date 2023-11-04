@@ -1,0 +1,210 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 31 October 2023
+# https://github.com/trizen
+
+# A new primality test, using only the Lucas V sequence.
+
+# This test is a simplification of the strengthen BPSW test:
+# https://arxiv.org/abs/2006.14425
+
+define USE_METHOD_A_STAR = false    # true to use the A* method in finding (P,Q)
+
+func partial_lucasVmod_pow2(P, Q, two_val, m, V1=2, V2=P, Q1=1, Q2=1) {
+
+    Q1 = mulmod(Q1, Q2, m)
+    Q2 = mulmod(Q1, Q, m)
+    V1 = mulsubmulmod(V1, V2, P, Q1, m)
+    Q2 = mulmod(Q2, Q1, m)
+
+    two_val.times {
+        V1 = mulsubmulmod(V1, V1, 2, Q2, m)
+        Q2 = mulmod(Q2, Q2, m)
+    }
+
+    return (V1, Q2)
+}
+
+func partial_lucasVmod(P, Q, bits, m, V1=2, V2=P, Q1=1, Q2=1) {
+
+    for bit in bits {
+
+        Q1 = mulmod(Q1, Q2, m)
+
+        if (bit) {
+            Q2 = mulmod(Q1, Q, m)
+            V1 = mulsubmulmod(V2, V1, P, Q1, m)
+            V2 = mulsubmulmod(V2, V2, 2, Q2, m)
+        }
+        else {
+            Q2 = Q1
+            V2 = mulsubmulmod(V2, V1, P, Q1, m)
+            V1 = mulsubmulmod(V1, V1, 2, Q2, m)
+        }
+    }
+
+    return (V1,V2,Q1,Q2)
+}
+
+func check_lucasV(P,Q,n,m) {
+
+    var b1 = n.bits
+    var b2 = n.inc.bits
+
+    var k = 0
+    if (b1.len == b2.len) {
+        k = b1.range.first{|i| b1[i] != b2[i] }
+    }
+
+    var(V1,V2,Q1,Q2) = partial_lucasVmod(P, Q, b1.first(k), m)
+    var(V1_a,Q2_a)   = partial_lucasVmod_pow2(P, Q, b2.end - k, m, V1, V2, Q1, Q2)
+
+    V1_a.is_congruent(2*Q, m) || return false
+    Q2_a.is_congruent(Q*Q, m) || return false
+
+    var(V1_b,_,_,Q2_b) = partial_lucasVmod(P, Q, b1.slice(k), m, V1, V2, Q1, Q2)
+
+    V1_b.is_congruent(P,m)                  || return false
+    Q2_b.is_congruent(Q*kronecker(Q, m), m) || return false
+
+    return true
+}
+
+func findQ(N) {
+    for k in (2 .. Inf) {
+
+        var D = ((-1)**k * (2*k + 1))
+        var K = kronecker(D, N)
+
+        if (K.is_zero && gcd(D, N).is_between(2, N-1)) {
+            return nil
+        }
+        elsif ((k == 20) && N.is_square) {
+            return nil
+        }
+
+        return ((1-D)/4) if (K == -1)
+    }
+}
+
+func findP (N, Q) {
+    for P in (2..Inf) {
+
+        var D = (P*P - 4*Q)
+        var K = kronecker(D, N)
+
+        if (K == -1) {
+            return P
+        }
+        elsif (K.is_zero && gcd(D, N).is_between(2, N-1)) {
+            return nil
+        }
+        elsif ((P == 20) && N.is_square) {
+            return nil
+        }
+    }
+}
+
+func is_extra_bfsw_psp(n) {
+
+    n <= 1    && return false
+    n == 2    && return true
+    n.is_even && return false
+
+    var(P,Q)
+    if (USE_METHOD_A_STAR) {
+        P = 1
+        Q = findQ(n) \\ return false
+
+        if (Q == -1) {
+            P = 5
+            Q = 5
+        }
+    }
+    else {  # this is faster
+        Q = -2
+        P = findP(n, Q) \\ return false
+    }
+
+    check_lucasV(P,Q,n,n)
+}
+
+say 25.by(is_extra_bfsw_psp)
+assert([913, 150267335403, 430558874533, 14760229232131, 936916995253453].none(is_extra_bfsw_psp))
+
+for n in (1..1e3) {
+    if (is_extra_bfsw_psp(n)) {
+        if (!n.is_prime) {
+            say "Counter-example: #{n}"
+        }
+    }
+    elsif (n.is_prime) {
+        say "Missed-prime: #{n}"
+    }
+}
+
+__END__
+Inspired by the paper "Strengthening the Baillie-PSW primality test", I propose a simplified test based on Lucas V-pseudoprimes, that requires computing only the Lucas V sequence, making it faster than the full BPSW test, while being about as strong.
+
+The first observation was that none of the 5 vpsp terms < 10^15 satisfy:
+
+Q^(n+1) == Q^2 (mod n)
+
+This gives us a simple test:
+
+V_{n+1}(P,Q) == 2*Q (mod n)
+Q^(n+1) == Q^2 (mod n)
+
+where (P,Q) are selected using Method A*.
+
+At very little additional computational cost (on average), we can make the test even stronger, by also checking:
+
+V_n(P,Q) == P (mod n)
+
+Notice that also none of the 5 vpsp terms < 10^15 satisfy the above congruence.
+
+The trick for computing V_n with very little additional computational cost (on average), is to compute the partial value of the Lucas V sequence, using the most significant overlapping bits of n and n+1.
+
+First we compute:
+
+V_d(P,Q) mod n
+
+where d is the "most significant overlapping binary part" of n and n+1.
+
+For example, if n = 43, we have:
+
+n   = 101011_2
+n+1 = 101100_2
+
+The most significant overlapping bits of n and n+1 are: "101", therefore d = 101_2 = 5.
+
+From V_d(P,Q) mod n, we compute V_{n+1}(P,Q) mod n, using the remaining bits of n+1: "100".
+
+Notice that the remaining bits of n+1 always form a power of two, allowing us to optimize the computation of V_{n+1}(P,Q) mod n.
+
+At this stage, we check the necessary congruences trying to return early:
+
+V_{n+1}(P,Q) == 2*Q (mod n)
+Q^(n+1) == Q^2 (mod n)
+
+If the number passed the above congruences, we compute V_n(P,Q) mod n from V_d(P,Q) mod n, using the remaining bits of n: "011", then we check:
+
+V_n(P,Q) == P (mod n)
+Q^((n+1)/2) == Q*(Q|n) (mod n)
+
+Finally, we return true if the number satisfied all the congruences, indicating that it is probably prime.
+
+There are no known counter-examples to the presented test.
+
+Remarks:
+
+- For numbers of the form n = 4*x + 1, only the last last two bits differ from n and n+1, therefore only two extra steps in the "partial_lucasVmod()" function are needed to also compute V_n(P,Q) mod n, which is very cheap.
+- On the other hand, for numbers of the form n = 2^k - 1, all the bits of n and n+1 are different, which makes the computation of V_n(P,Q) quite expensive. But we can use the Lucas-Lehmer test for such numbers.
+- Numbers of the form x*2^k - 1, with x < 2^k, also take longer to check, but we can use the Lucas-Lehmer-Riesel (LLR) test for those.
+
+Optimization ideas:
+
+- To ensure that the test is always fast, we can skip the computation of V_n(P,Q) if the length of the remaining bits of n is too large (e.g. larger than the number of bits of d). This bounds the running time of the test to: 1.5 * (the cost of computing V_n(P,Q) mod n), while still having no known counter-examples.
+- In the selection of parameters (P,Q), we can start with Q = -2 and finding the first P >= 2 that satisfies jacobi(P^2 - 4*Q, n) = -1. The reason being that it is faster for computers to multiply by powers of two, and thus it makes the computation of the Lucas V sequence a bit faster, since |Q| is a power of two and, most of the time, P is also a power of 2.
+- In a general-purpose "is_prime(n)" function, for performance reasons, we should also do a little bit of trial-division (or gcd with primorials) and then a strong pseudoprime test to base 2, trying to return early if possible.
