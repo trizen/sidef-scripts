@@ -179,6 +179,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Carmichael factorization method](./Math/carmichael_factorization_method.sf)
     * [Carmichael factorization method generalized](./Math/carmichael_factorization_method_generalized.sf)
     * [Carmichael generation erdos method](./Math/carmichael_generation_erdos_method.sf)
+    * [Carmichael generation erdos method dynamic programming](./Math/carmichael_generation_erdos_method_dynamic_programming.sf)
     * [Carmichael numbers in range](./Math/carmichael_numbers_in_range.sf)
     * [Carmichael strong fermat pseudoprimes in range](./Math/carmichael_strong_fermat_pseudoprimes_in_range.sf)
     * [Cartesian product](./Math/cartesian_product.sf)

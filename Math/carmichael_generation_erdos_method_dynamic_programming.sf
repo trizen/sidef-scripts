@@ -1,0 +1,89 @@
+#!/usr/bin/ruby
+
+# Three approaches at implementing the Erdos method for constructing Carmichael numbers, using dynamic programming.
+
+# Erdos construction method for Carmichael numbers:
+#   1. Choose an integer L with many prime factors.
+#   2. Let P be the set of primes d+1, where d|L and d+1 does not divide L.
+#   3. Find a subset S of P such that prod(S) == 1 (mod L). Then prod(S) is a Carmichael number.
+
+# Alternatively:
+#   3. Find a subset S of P such that prod(S) == prod(P) (mod L). Then prod(P) / prod(S) is a Carmichael number.
+
+func carmichael_numbers_from_lambda(L, callback) {    # smallest numbers first
+
+    var P = L.divisors.map { .inc }.grep {|p| p.is_odd && p.is_prime && L.is_coprime(p) }
+
+    var d = [1]
+
+    P.each {|p|
+        d << gather {
+            d.each { |u|
+                take(var c = u*p)
+                if (c.is_congruent(1, L)) {
+                    callback(c)
+                }
+            }
+        }...
+    }
+
+    return nil
+}
+
+func carmichael_numbers_from_lambda_large(L, callback) {  # largest numbers first
+
+    var P = L.divisors.map { .inc }.grep {|p| p.is_odd && p.is_prime && L.is_coprime(p) }
+
+    var T = P.prod
+    var s = T%L
+    var d = [1]
+
+    P.each {|p|
+        d << gather {
+            d.each { |u|
+                take(var c = u*p)
+                if (c.is_congruent(s, L)) {
+                    callback(idiv(T, c)) if (T > c)
+                }
+            }
+        }...
+    }
+
+    return nil
+}
+
+func carmichael_numbers_from_lambda_lazy(L, callback) {    # on-demand version
+
+    var d1 = [1]
+    var d2 = [1]
+
+    for p,e in (L.factor_exp) {
+        var r = 1
+        d1 << gather {
+            e.times {
+                r *= p
+                d1.each { |u|
+                    take(var t = u*r)
+
+                    var q = t+1
+                    next if !(q.is_odd && q.is_prime && L.is_coprime(q))
+
+                    d2 << gather {
+                        d2.each { |u|
+                            take(var c = u*q)
+                            if (c.is_congruent(1, L)) {
+                                callback(c)
+                            }
+                        }
+                    }...
+                }
+            }
+        }...
+    }
+
+    return nil
+}
+
+carmichael_numbers_from_lambda(720, {|c| say c })
+carmichael_numbers_from_lambda_lazy(720, {|c| say c })
+carmichael_numbers_from_lambda_large(720, {|c| say c })

@@ -5,16 +5,48 @@
 #   2. Let P be the set of primes d+1, where d|L and d+1 does not divide L.
 #   3. Find a subset S of P such that prod(S) == 1 (mod L). Then prod(S) is a Carmichael number.
 
-var L = 720
-var P = L.divisors.map { .inc }.grep { .is_odd && .is_prime }.grep {|p| L%p != 0 }
+# Alternatively:
+#   3. Find a subset S of P such that prod(S) == prod(P) (mod L). Then prod(P) / prod(S) is a Carmichael number.
 
-for k in (3..P.len) {
-    P.combinations(k, {|*S|
-        if (S.prod % L == 1) {
-            say S.prod
-        }
-    })
+func lambda_primes(L) {
+    L.divisors.map { .inc }.grep { .is_odd && .is_coprime(L) && .is_prime }
 }
+
+func method_1(L, callback) {        # small numbers first
+
+    var P = lambda_primes(L)
+
+    for k in (3..P.len) {
+        P.combinations(k, {|*S|
+            if (S.prodmod(L) == 1) {
+                callback(S.prod)
+            }
+        })
+    }
+
+    return nil
+}
+
+func method_2(L, callback) {        # large numbers first
+
+    var P = lambda_primes(L)
+    var T = P.prod
+    var B = T%L
+
+    for k in (1 .. (P.len-3)) {
+        P.combinations(k, {|*S|
+            if (S.prodmod(L) == B) {
+                var c = idiv(T, S.prod)
+                callback(c) if (c > 1)
+            }
+        })
+    }
+
+    return nil
+}
+
+method_1(720, {|c| say c })
+method_2(720, {|c| say c })
 
 __END__
 15841
