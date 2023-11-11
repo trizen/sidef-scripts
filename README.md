@@ -655,6 +655,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Solve recursive sequence](./Math/solve_recursive_sequence.sf)
     * [Solve sequence](./Math/solve_sequence.sf)
     * [Sophie germain factorization method](./Math/sophie_germain_factorization_method.sf)
+    * [Sophie germain factorization method fast](./Math/sophie_germain_factorization_method_fast.sf)
     * [Special factorization identity](./Math/special_factorization_identity.sf)
     * [Split summation](./Math/split_summation.sf)
     * [Sqrt 2 approximation](./Math/sqrt_2_approximation.sf)
