@@ -8,7 +8,7 @@
 
 func lucas_carmichael_numbers_from_multiple(A, B, m, L, lo, k, callback) {
 
-    var hi = idiv(B,m).iroot(k)
+    var hi = min(idiv(B,m).iroot(k), B.isqrt)
 
     return nil if (lo > hi)
 

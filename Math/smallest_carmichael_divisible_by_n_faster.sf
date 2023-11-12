@@ -8,7 +8,10 @@
 
 func carmichael_numbers_from_multiple(A, B, m, L, lo, k, callback) {
 
-    var hi = idiv(B,m).iroot(k)
+    # Largest possisble prime factor for Carmichael numbers <= b
+    var max_p = ((1 + isqrt(8*B + 1))>>2)
+
+    var hi = min(max_p, idiv(B,m).iroot(k))
 
     return nil if (lo > hi)
 

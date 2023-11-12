@@ -17,9 +17,12 @@ func carmichael_strong_fermat_in_range(A, B, k, base, callback) {
 
     A = max(k.pn_primorial, A)
 
+    # Largest possisble prime factor for Carmichael numbers <= B
+    var max_p = ((1 + isqrt(8*B + 1))>>2)
+
     var generator = func (m, L, lo, k, k_exp, congr) {
 
-        var hi = idiv(B,m).iroot(k)
+        var hi = min(max_p, idiv(B,m).iroot(k))
 
         if (lo > hi) {
             return nil
