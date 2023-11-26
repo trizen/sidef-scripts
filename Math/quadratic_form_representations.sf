@@ -1,0 +1,51 @@
+#!/usr/bin/ruby
+
+# Represent an odd prime number p as x^2 + d*y^2 using the Cornacchia–Smith method.
+
+# Given an odd prime p and a positive integer d not divisible by p, this algorithm
+# either reports that p = x^2 + d*y^2 has no integral solution, or returns a solution.
+
+# Implementation of "Algorithm 2.3.12" from the book "Prime Numbers - A Computational Perspective".
+
+# Algorithm extended to any composite number n, returning multiple positive solutions. (it may not return ALL solutions)
+
+func quadratic_form_representations(d, n) {
+
+    if ((kronecker(-d, n) == -1) && n.is_prime) {
+        return []
+    }
+
+    var solutions = []
+
+    for x in (sqrtmod_all(-d, n)) {
+
+        if (2*x < n) {
+            x = (n - x)
+        }
+
+        var (a, b, c) = (n, x, n.isqrt)
+
+        while (b > c) {
+            (a,b) = (b, a % b)
+        }
+
+        var t = (n - b**2)
+
+        d.divides(t) || next
+        idiv(t,d).is_square || next
+
+        solutions << [b, isqrt(idiv(t,d))]
+    }
+
+    solutions.uniq!
+    solutions.map_2d {|x,y| x**2 + d*y**2 }.each {|v| assert_eq(v, n) }
+    return solutions
+}
+
+say quadratic_form_representations(12, 97)           #=> [[7, 2]]
+say quadratic_form_representations(14, 3*5*7)        #=> [[7, 2]]
+say quadratic_form_representations(18, 43*97)        #=> [[61, 5], [11, 15]]
+say quadratic_form_representations( 5, 3*5*7)        #=> [[10, 1], [5, 4]]
+say quadratic_form_representations(1234, 1810585219) #=> [[41087, 315]]
+say quadratic_form_representations(14, 2**127 - 1)   #=> [[10229855171020855649, 2162856025860368397]]
+say quadratic_form_representations( 1, 99025)        #=> [[256, 183], [297, 104], [312, 41], [311, 48]]

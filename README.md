@@ -604,6 +604,7 @@ A nice collection of day-to-day Sidef scripts.
     * [PSW primality test](./Math/PSW_primality_test.sf)
     * [Pythagorean means](./Math/pythagorean_means.sf)
     * [Quadratic-integer factorization method](./Math/quadratic-integer_factorization_method.sf)
+    * [Quadratic form representations](./Math/quadratic_form_representations.sf)
     * [Quadratic formula solution approx](./Math/quadratic_formula_solution_approx.sf)
     * [Quadratic frobenius primality test](./Math/quadratic_frobenius_primality_test.sf)
     * [Quadratic frobenius primality test explicit](./Math/quadratic_frobenius_primality_test_explicit.sf)
