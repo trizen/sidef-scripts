@@ -563,6 +563,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Pisano periods efficient algorithm](./Math/pisano_periods_efficient_algorithm.sf)
     * [Pisano periods of lucas U sequence](./Math/pisano_periods_of_lucas_U_sequence.sf)
     * [Pocklington-pratt primality proving](./Math/pocklington-pratt_primality_proving.sf)
+    * [Pollard-brent rho factor](./Math/pollard-brent_rho_factor.sf)
     * [Pollard-gauss factorization method](./Math/pollard-gauss_factorization_method.sf)
     * [Pollard-strassen factorization method](./Math/pollard-strassen_factorization_method.sf)
     * [Pollard-strassen factorization method no polynomials](./Math/pollard-strassen_factorization_method_no_polynomials.sf)

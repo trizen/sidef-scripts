@@ -1,0 +1,31 @@
+#!/usr/bin/ruby
+
+# Pollard-Brent rho integer factorization algorithm.
+
+# See also:
+#   https://facthacks.cr.yp.to/rho.html
+#   https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm
+#   https://en.algorithmica.org/hpc/algorithms/factorization/
+
+func pollard_brent_factor(n, tries = (1 << 20), M = 2048) {
+
+    var x = 1
+
+    for (var l = M; l < tries; l *= 2) {
+        var (y,p) = (x,1)
+        for i in (^l `by` M) {
+            for j in (^M) {
+                x = (powmod(x, 2, n) + 1)
+                p = mulmod(p, x-y, n)
+            }
+            is_coprime(n, p) || return gcd(p, n)
+        }
+    }
+
+    return 1
+}
+
+say pollard_brent_factor(503*863)                   #=> 863
+say pollard_brent_factor(33670570905491953)         #=> 36169843
+say pollard_brent_factor(314159265358979323)        #=> 317213509
+say pollard_brent_factor(242363923520394591022973)  #=> 786757556719
