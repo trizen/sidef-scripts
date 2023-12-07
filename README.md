@@ -124,6 +124,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Sierpinski triangle](./Image/sierpinski_triangle.sf)
     * [Voronoi diagram](./Image/voronoi_diagram.sf)
 * Math
+    * [Achilles numbers](./Math/achilles_numbers.sf)
     * [AGM calculate pi](./Math/AGM_calculate_pi.sf)
     * [Aitken's array](./Math/aitken_s_array.sf)
     * [Akiyama-tanigawa numerators](./Math/akiyama-tanigawa_numerators.sf)
@@ -666,6 +667,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Sqrt convergents](./Math/sqrt_convergents.sf)
     * [Square-full numbers](./Math/square-full_numbers.sf)
     * [Square congruence lookup factorization](./Math/square_congruence_lookup_factorization.sf)
+    * [Square form factorization method](./Math/square_form_factorization_method.sf)
     * [Square product subsets](./Math/square_product_subsets.sf)
     * [Square root arithmetic-harmonic mean](./Math/square_root_arithmetic-harmonic_mean.sf)
     * [Square root good rational approximations](./Math/square_root_good_rational_approximations.sf)
