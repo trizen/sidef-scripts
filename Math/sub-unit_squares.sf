@@ -6,6 +6,7 @@
 
 # See also:
 #   https://oeis.org/A061844
+#   https://rosettacode.org/wiki/Sub-unit_squares
 
 local Num!USE_FACTORDB = true
 
@@ -23,6 +24,7 @@ func difference_of_two_squares(n) {     # x solutions to n = x^2 - y^2
 
 var N   = 20      # how many terms to compute
 var arr = Set(1)
+
 var index = 1
 say (index, ' ', 1)
 
