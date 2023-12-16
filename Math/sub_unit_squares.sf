@@ -1,0 +1,44 @@
+#!/usr/bin/ruby
+
+# Efficient algorithm for generating sub-unit squares.
+
+# A sub-unit square is a square number that remains a square after having a 1 subtracted from each digit in the square.
+
+# See also:
+#   https://oeis.org/A061844
+
+local Num!USE_FACTORDB = true
+
+func difference_of_two_squares(n) {     # x solutions to n = x^2 - y^2
+    divisors(n, n.isqrt).map {|d|
+
+        var a = d
+        var b = n/d
+
+        (a+b).is_even || next
+
+        (a + b)>>1
+    }.flip
+}
+
+var N   = 20      # how many terms to compute
+var arr = Set(1)
+var index = 1
+say (index, ' ', 1)
+
+for n in (1..Inf) {
+    var r = (10**n - 1)/9
+
+    var new = difference_of_two_squares(r).grep {|k|
+        var d = k.sqr.digits
+        (d[-1] != 1) && d.none{.is_zero} && d.map{.dec}.digits2num.is_square
+    }.map{.sqr}
+
+    new.each {|v|
+        next if arr.has(v)
+        say (++index, ' ', v)
+        arr << v
+    }
+
+    break if (arr.len >= N)
+}

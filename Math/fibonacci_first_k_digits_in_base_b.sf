@@ -10,6 +10,11 @@
 #   https://en.wikipedia.org/wiki/Fibonacci_number
 #   https://rosettacode.org/wiki/Fibonacci_matrix-exponentiation
 
+# Based on the following identities (where b is the base):
+#   f / exp(log(b)*floor(log(f) / log(b) + 1)) = exp(log(f) - log(b)*floor(log(f) / log(b) + 1))
+#                                              = b^(-1 - floor(log(f^(1/log(b))))) * f
+#                                              = exp(log(b)*(-1 - floor(log(f) / log(b))) + log(f))
+
 func f(n) {
     n*log((1+sqrt(5))/2) - log(5)/2
 }
