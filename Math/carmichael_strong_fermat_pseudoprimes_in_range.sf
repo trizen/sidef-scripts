@@ -22,7 +22,7 @@ func carmichael_strong_fermat_in_range(A, B, k, base, callback) {
 
     var generator = func (m, L, lo, k, k_exp, congr) {
 
-        var hi = min(max_p, idiv(B,m).iroot(k))
+        var hi = idiv(B,m).iroot(k)
 
         if (lo > hi) {
             return nil
@@ -30,6 +30,7 @@ func carmichael_strong_fermat_in_range(A, B, k, base, callback) {
 
         if (k == 1) {
 
+            hi = max_p if (hi > max_p)
             lo = max(lo, idiv_ceil(A, m))
             lo > hi && return nil
 

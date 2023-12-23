@@ -28,20 +28,20 @@ func almost_prime_count(a,b,k) {
 
     var count = 0
 
-    func (m, p, k) {
+    func (m, lo, k) {
 
-        var s = idiv(b,m).iroot(k)
+        var hi = idiv(b,m).iroot(k)
 
         if (k == 2) {
 
-            each_prime(p, s, {|r|
+            each_prime(lo, hi, {|r|
                 count += pi(max(r, idiv_ceil(a, m*r)), idiv(b, m*r))
             })
 
             return nil
         }
 
-        each_prime(p, s, {|p|
+        each_prime(lo, hi, {|p|
 
             var t = m*p
             var u = idiv_ceil(a, t)

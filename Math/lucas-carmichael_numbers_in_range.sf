@@ -40,7 +40,7 @@ func lucas_carmichael_numbers_in_range(A, B, k, callback) {
 
     func (m, L, lo, k) {
 
-        var hi = min(max_p, idiv(B,m).iroot(k))
+        var hi = idiv(B,m).iroot(k)
 
         if (lo > hi) {
             return nil
@@ -48,6 +48,7 @@ func lucas_carmichael_numbers_in_range(A, B, k, callback) {
 
         if (k == 1) {
 
+            hi = max_p if (hi > max_p)
             lo = max(lo, idiv_ceil(A, m))
             lo > hi && return nil
 
