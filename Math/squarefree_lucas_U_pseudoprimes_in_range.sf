@@ -36,7 +36,7 @@ func squarefree_lucas_U_pseudoprimes_in_range(a, b, k, P, Q, callback) {
                 var t = mulmod(m.invmod(L), j, L)
 
                 t > hi && next
-                t += L while (t < lo)
+                t += L*idiv_ceil(lo - t, L) if (t < lo)
                 t > hi && next
 
                 for p in (range(t, hi, L)) {

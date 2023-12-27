@@ -55,7 +55,7 @@ func lucas_carmichael_numbers_in_range(A, B, k, callback) {
             var t = mulmod(m.invmod(L), -1, L)
 
             t > hi && return nil
-            t += L while (t < lo)
+            t += L*idiv_ceil(lo - t, L) if (t < lo)
             t > hi && return nil
 
             for p in (range(t, hi, L)) {

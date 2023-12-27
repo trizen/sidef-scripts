@@ -37,7 +37,7 @@ func carmichael_strong_fermat_in_range(A, B, k, base, callback) {
             var t = m.invmod(L)
 
             t > hi && return nil
-            t += L while (t < lo)
+            t += L*idiv_ceil(lo - t, L) if (t < lo)
             t > hi && return nil
 
             for p in (range(t, hi, L)) {
