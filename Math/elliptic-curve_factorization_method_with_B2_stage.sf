@@ -2,7 +2,7 @@
 
 # The elliptic-curve factorization method (ECM), due to Hendrik Lenstra, with B2 stage.
 
-# Code translated from the SymPy file "ntheory/ecm.py" (version 1.11.1).
+# Code translated from the SymPy file "ntheory/ecm.py".
 
 class Point(x_cord, z_cord, a_24, mod) {
 
@@ -16,8 +16,8 @@ class Point(x_cord, z_cord, a_24, mod) {
     }
 
     -> double {
-        var (u, v) = (addmod(x_cord, z_cord, mod), submod(x_cord, z_cord, mod))
-        (u, v) = (mulmod(u, u, mod), mulmod(v, v, mod))
+        var u = powmod(addmod(x_cord, z_cord, mod), 2, mod)
+        var v = powmod(submod(x_cord, z_cord, mod), 2, mod)
         var diff = submod(u, v, mod)
         var new_x_cord = mulmod(u, v, mod)
         var new_z_cord = mulmod(diff, muladdmod(a_24, diff, v, mod), mod)
@@ -63,19 +63,26 @@ func ecm_one_factor(n, B1=10000, B2=100000, max_curves=200, seed = nil) {
         p**B1.ilog(p)
     }
 
+    var deltas_list = []
+    for r in (range(B1 + 2*D, B2 + 2*D, 4*D)) {
+        var deltas = Set()
+        for q in (primes(r - 2*D, r + 2*D)) {
+            deltas << ((abs(q - r) - 1) >> 1)
+        }
+        deltas_list << deltas
+    }
+
     max_curves.times {
 
-        # Suyama's paramatrization
-        var sigma = irand(6, n - 1)
+        # Suyama's parametrization
+        var sigma = urand(6, n - 1)
         var u = mulsubmod(sigma, sigma, 5, n)
         var v = mulmod(sigma, 4, n)
-        var diff = submod(v, u, n)
         var u_3 = powmod(u, 3, n)
 
-        var inv = invmod(mulmod(mulmod(u_3, v, n), 4, n), n) || return gcd(lcm(u_3, v), n)
-        var C   = mulsubmod(mulmod(powmod(diff, 3, n), muladdmod(3, u, v, n), n), inv, 2, n)
+        var inv = invmod(mulmod(u_3 << 4, v, n), n) || return gcd(lcm(u_3, v), n)
+        var a24 = mulmod(mulmod(powmod(submod(v, u, n), 3, n), muladdmod(3, u, v, n), n), inv, n)
 
-        var a24 = divmod(C + 2, 4, n)
         var Q = Point(u_3, powmod(v, 3, n), a24, n)
         Q = Q.mont_ladder(k)
         var g = gcd(Q.z_cord, n)
@@ -91,37 +98,35 @@ func ecm_one_factor(n, B1=10000, B2=100000, max_curves=200, seed = nil) {
         }
 
         # Stage 2 - Improved Standard Continuation
-        S[1] = Q.double()
-        S[2] = S[1].double()
+        S[0] = Q
+        var Q2 = Q.double()
+        S[1] = Q2.add(Q, Q)
+        beta[0] = mulmod(S[0].x_cord, S[0].z_cord, n)
         beta[1] = mulmod(S[1].x_cord, S[1].z_cord, n)
-        beta[2] = mulmod(S[2].x_cord, S[2].z_cord, n)
 
-        for d in (3..D) {
-            S[d] = S[d-1].add(S[1], S[d-2])
+        for d in (2 ..^ D) {
+            S[d] = S[d-1].add(Q2, S[d-2])
             beta[d] = mulmod(S[d].x_cord, S[d].z_cord, n)
         }
 
         g = 1
-        var B = (B1 - 1)
-        var T = Q.mont_ladder(B - 2*D)
-        var R = Q.mont_ladder(B)
+        var W = Q.mont_ladder(4*D)
+        var T = Q.mont_ladder(B1 - 2*D)
+        var R = Q.mont_ladder(B1 + 2*D)
 
-        for r in (B .. B2 `by` 2*D) {
+        for deltas in (deltas_list) {
             var alpha = mulmod(R.x_cord, R.z_cord, n)
-            for q in (primes(r+2, 2*D + r)) {
-                var delta = idiv(q - r, 2)
-                g = mulmod(
-                        addmod(
+            for delta in (deltas) {
+                var f = addmod(
                             submod(
                                 mulmod(
                                     submod(R.x_cord, S[delta].x_cord, n),
                                     addmod(R.z_cord, S[delta].z_cord, n), n),
                                 alpha, n),
-                            beta[delta], n),
-                        g, n)
+                        beta[delta], n)
+                g = mulmod(g, f, n)
             }
-            # Swap
-            (T, R) = (R, R.add(S[D], T))
+            (T, R) = (R, R.add(W, T))
         }
 
         g = gcd(n, g)
@@ -174,4 +179,4 @@ say ecm(25645121643901801, 100, 1000)       #=> [5394769, 4753701529]
 
 say ecm(2**64 + 1, 100, 1000)       #=> [274177, 67280421310721]
 say ecm(2**128 - 1, 100, 1000)      #=> [3, 5, 17, 257, 641, 65537, 274177, 6700417, 67280421310721]
-#say ecm(2**128 + 1, 10000)         # takes ~30 seconds
+#say ecm(2**128 + 1, 10000)         # takes ~17 seconds

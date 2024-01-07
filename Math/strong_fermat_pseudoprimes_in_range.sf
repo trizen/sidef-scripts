@@ -146,6 +146,7 @@ if (false) {    # true to run some tests
         for base in (2..100) {
 
             var this = k.strong_fermat_psp(base, lo, hi)
+            #var this = k.omega_primes(lo,hi).grep{.is_strong_psp(base) && .is_composite }
             var that = gather {
                 strong_fermat_pseudoprimes_in_range(lo, hi, k, base, func (n) { take(n) })
             }.sort
