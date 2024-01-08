@@ -65,11 +65,11 @@ func ecm_one_factor(n, B1=10000, B2=B1*100, max_curves=200, seed = nil) {
 
     var deltas_list = []
     for r in (range(B1 + 2*D, B2 + 2*D, 4*D)) {
-        var deltas = Set()
+        var deltas = []
         for q in (primes(r - 2*D, r + 2*D)) {
             deltas << ((abs(q - r) - 1) >> 1)
         }
-        deltas_list << deltas
+        deltas_list << deltas.uniq
     }
 
     max_curves.times {
@@ -80,7 +80,7 @@ func ecm_one_factor(n, B1=10000, B2=B1*100, max_curves=200, seed = nil) {
         var v = mulmod(sigma, 4, n)
         var u_3 = powmod(u, 3, n)
 
-        var inv = invmod(mulmod(u_3 << 4, v, n), n) || return gcd(lcm(u_3, v), n)
+        var inv = invmod(mulmod(mulmod(u_3, v, n), 16, n), n) || return gcd(lcm(u_3, v), n)
         var a24 = mulmod(mulmod(powmod(submod(v, u, n), 3, n), muladdmod(3, u, v, n), n), inv, n)
 
         var Q = Point(u_3, powmod(v, 3, n), a24, n)
@@ -117,14 +117,15 @@ func ecm_one_factor(n, B1=10000, B2=B1*100, max_curves=200, seed = nil) {
         for deltas in (deltas_list) {
             var alpha = mulmod(R.x_cord, R.z_cord, n)
             for delta in (deltas) {
-                var f = addmod(
+                g = mulmod(
+                        addmod(
                             submod(
                                 mulmod(
                                     submod(R.x_cord, S[delta].x_cord, n),
                                     addmod(R.z_cord, S[delta].z_cord, n), n),
                                 alpha, n),
-                        beta[delta], n)
-                g = mulmod(g, f, n)
+                        beta[delta], n),
+                    g, n)
             }
             (T, R) = (R, R.add(W, T))
         }
@@ -168,7 +169,7 @@ func ecm(n, B1=nil, B2=nil, max_curves=nil, seed = nil) {
 
     if (!defined(B1)) {
         for d, B1, curves in ECM_PARAMS {
-            say ":: Trying to find a prime factor with #{d} digits using B1 = #{B1} with #{curves} curves"
+            #say ":: Trying to find a prime factor with #{d} digits using B1 = #{B1} with #{curves} curves"
             var f = try { __FUNC__(n, B1, B1*50, curves, seed) }
             return f if defined(f)
         }

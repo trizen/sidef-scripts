@@ -14,7 +14,7 @@
 # where `gamma` is the Euler-Mascheroni constant.
 
 # See also:
-#   https://trizenx.blogspot.ro/2016/11/euler-mascheroni-constant.html
+#   https://trizenx.blogspot.com/2016/11/euler-mascheroni-constant.html
 
 var p = 2
 var n = 1e5
