@@ -43,7 +43,7 @@ class Point(x_cord, z_cord, a_24, mod) {
     }
 }
 
-func ecm_one_factor(n, B1=10000, B2=100000, max_curves=200, seed = nil) {
+func ecm_one_factor(n, B1=10000, B2=B1*100, max_curves=200, seed = nil) {
 
     if (B1.is_odd || B2.is_odd) {
         die "The bounds must be both even integers"
@@ -55,11 +55,11 @@ func ecm_one_factor(n, B1=10000, B2=100000, max_curves=200, seed = nil) {
 
     n.is_prime && return n
 
-    var D = B2.isqrt
-    var beta = [0]*(D + 1)
-    var S = [0]*(D + 1)
+    var D = min(B2.isqrt, (B1>>1)-1)
+    var beta = []
+    var S = []
 
-    var k = primes(1, B1).prod {|p|
+    var k = B1.primes.prod {|p|
         p**B1.ilog(p)
     }
 
@@ -105,7 +105,7 @@ func ecm_one_factor(n, B1=10000, B2=100000, max_curves=200, seed = nil) {
         beta[1] = mulmod(S[1].x_cord, S[1].z_cord, n)
 
         for d in (2 ..^ D) {
-            S[d] = S[d-1].add(Q2, S[d-2])
+            S[d]    = S[d-1].add(Q2, S[d-2])
             beta[d] = mulmod(S[d].x_cord, S[d].z_cord, n)
         }
 
@@ -141,9 +141,38 @@ func ecm_one_factor(n, B1=10000, B2=100000, max_curves=200, seed = nil) {
     die "Increase the bounds"
 }
 
-func ecm(n, B1=10000, B2=100000, max_curves=200, seed = nil) {
+# Parameters from:
+#   https://www.rieselprime.de/ziki/Elliptic_curve_method
+
+var ECM_PARAMS = [
+
+    # d   B1  curves
+    [10, 360,  7]
+    [15, 2000, 25]
+    [20, 11000, 90]
+    [25, 50000, 300]
+    [30, 250000, 700]
+    [35, 1000000, 1800]
+    [40, 3000000, 5100]
+    [45, 11000000, 10600]
+    [50, 43000000, 19300]
+    [55, 110000000, 49000]
+    [60, 260000000, 124000]
+    [65, 850000000, 210000]
+    [70, 2900000000, 340000]
+]
+
+func ecm(n, B1=nil, B2=nil, max_curves=nil, seed = nil) {
 
     n <= 1 && die "n must be greater than 1"
+
+    if (!defined(B1)) {
+        for d, B1, curves in ECM_PARAMS {
+            say ":: Trying to find a prime factor with #{d} digits using B1 = #{B1} with #{curves} curves"
+            var f = try { __FUNC__(n, B1, B1*50, curves, seed) }
+            return f if defined(f)
+        }
+    }
 
     var f = n.trial_factor(100_000)
     n = f.pop
@@ -172,11 +201,15 @@ func ecm(n, B1=10000, B2=100000, max_curves=200, seed = nil) {
     return final_factors.sort
 }
 
-say ecm(314159265358979323, 100, 1000)      #=> [317213509, 990371647]
-say ecm(14304849576137459, 100, 1000)       #=> [16100431, 888476189]
-say ecm(9804659461513846513, 100, 1000)     #=> [4641991, 2112166839943]
-say ecm(25645121643901801, 100, 1000)       #=> [5394769, 4753701529]
+const SEED = 42
 
-say ecm(2**64 + 1, 100, 1000)       #=> [274177, 67280421310721]
-say ecm(2**128 - 1, 100, 1000)      #=> [3, 5, 17, 257, 641, 65537, 274177, 6700417, 67280421310721]
-#say ecm(2**128 + 1, 10000)         # takes ~17 seconds
+say ecm(314159265358979323,             seed:SEED)    #=> [317213509, 990371647]
+say ecm(14304849576137459,              seed:SEED)    #=> [16100431, 888476189]
+say ecm(9804659461513846513,            seed:SEED)    #=> [4641991, 2112166839943]
+say ecm(25645121643901801,              seed:SEED)    #=> [5394769, 4753701529]
+say ecm(17177619065692036843,           seed:SEED)    #=> [2957613037, 5807933239]
+say ecm(195905123644566489241411490581, seed:SEED)    #=> [259719190596553, 754295911652077]
+
+say ecm(2**64 + 1, seed:SEED)       #=> [274177, 67280421310721]
+say ecm(2**128 - 1, seed:SEED)      #=> [3, 5, 17, 257, 641, 65537, 274177, 6700417, 67280421310721]
+#say ecm(2**128 + 1, seed:SEED)     # takes ~26 seconds
