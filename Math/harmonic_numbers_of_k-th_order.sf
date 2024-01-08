@@ -3,7 +3,7 @@
 # Formula in terms of the Harmonic numbers, due to Conway and Guy (1996), for computing the Harmonic numbers of the k-th order.
 
 # See also:
-#   http://mathworld.wolfram.com/HarmonicNumber.html
+#   https://mathworld.wolfram.com/HarmonicNumber.html
 
 func harmonic_kth_order(n, k) {
     binomial(n + k - 1, k - 1) * (harmonic(n + k - 1) - harmonic(k - 1))

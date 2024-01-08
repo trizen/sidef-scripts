@@ -4,7 +4,7 @@
 
 # See also:
 #   https://en.wikipedia.org/wiki/Laguerre_polynomials
-#   http://mathworld.wolfram.com/LaguerrePolynomial.html
+#   https://mathworld.wolfram.com/LaguerrePolynomial.html
 
 func laguerre_polynomial(n, x) {
     sum(0..n, {|k|

@@ -3,7 +3,7 @@
 # Execute Brain**** code, by first translating it into Sidef code.
 
 # Translation of:
-#   http://rosettacode.org/wiki/Execute_Brain****/Ruby
+#   https://rosettacode.org/wiki/Execute_Brain****/Ruby
 
 var code = ('var(p=0,m=[]);' + ARGF.slurp.gsub(
         /(.)/s, {|c|

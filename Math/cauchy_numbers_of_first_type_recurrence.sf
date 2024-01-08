@@ -15,8 +15,8 @@
 #   C_n = a(n) * n!
 
 # See also:
-#   http://oeis.org/A006232    (numerators)
-#   http://oeis.org/A006233    (denominators)
+#   https://oeis.org/A006232    (numerators)
+#   https://oeis.org/A006233    (denominators)
 
 func a((0)) { 1 }
 

@@ -3,7 +3,7 @@
 # Hart’s One-Line Factoring Algorithm.
 
 # See also:
-#   http://wrap.warwick.ac.uk/54707/1/WRAP_Hart_S1446788712000146a.pdf
+#   https://wrap.warwick.ac.uk/54707/1/WRAP_Hart_S1446788712000146a.pdf
 #   https://programmingpraxis.com/2014/01/28/harts-one-line-factoring-algorithm/
 
 func HOLF_factor(n, iter=100000) {

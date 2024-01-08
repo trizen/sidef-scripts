@@ -3,7 +3,7 @@
 # Daniel "Trizen" Șuteu
 # Date: 17 June 2014
 # Edit: 21 March 2020
-# Website: http://github.com/trizen
+# Website: https://github.com/trizen
 
 # Convert any media file to MP3, using `n` parallel processes of ffmpeg.
 

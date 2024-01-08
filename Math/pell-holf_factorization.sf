@@ -8,7 +8,7 @@
 
 # See also:
 #   https://en.wikipedia.org/wiki/Pell%27s_equation
-#   http://wrap.warwick.ac.uk/54707/1/WRAP_Hart_S1446788712000146a.pdf
+#   https://wrap.warwick.ac.uk/54707/1/WRAP_Hart_S1446788712000146a.pdf
 
 func pell_holf_factorization(n) {
 

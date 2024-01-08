@@ -3,7 +3,7 @@
 # Generates a Curlicue Fractal
 
 # See also:
-#   http://mathworld.wolfram.com/CurlicueFractal.html
+#   https://mathworld.wolfram.com/CurlicueFractal.html
 
 require('GD::Simple')
 

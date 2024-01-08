@@ -7,7 +7,7 @@
 # where p is a positive integer.
 
 # See also:
-#   http://mathworld.wolfram.com/PowerSum.html
+#   https://mathworld.wolfram.com/PowerSum.html
 #   https://en.wikipedia.org/wiki/Faulhaber's_formula
 
 func faulhaber_double_series(n, p) {

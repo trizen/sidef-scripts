@@ -9,7 +9,7 @@
 # See also:
 #   https://en.wikipedia.org/wiki/Pocklington_primality_test
 #   https://en.wikipedia.org/wiki/Primality_certificate
-#   http://mathworld.wolfram.com/PrattCertificate.html
+#   https://mathworld.wolfram.com/PrattCertificate.html
 
 func pocklington_pratt_primality_test(n, lim=2**64) is cached {
 

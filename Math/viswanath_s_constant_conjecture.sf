@@ -19,8 +19,8 @@
 # See also:
 #   https://oeis.org/A078416
 #   https://en.wikipedia.org/wiki/Random_Fibonacci_sequence
-#   http://www.wolframalpha.com/input/?i=Viswanath%27s+constant
-#   http://www.wolframalpha.com/input/?i=18497.440650652720515613516713415750667794722534171
+#   https://www.wolframalpha.com/input/?i=Viswanath%27s+constant
+#   https://www.wolframalpha.com/input/?i=18497.440650652720515613516713415750667794722534171
 
 func a((0)) { 1 }
 

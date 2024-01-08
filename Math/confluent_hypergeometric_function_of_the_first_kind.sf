@@ -4,7 +4,7 @@
 
 # See also:
 #   https://en.wikipedia.org/wiki/Confluent_hypergeometric_function
-#   http://mathworld.wolfram.com/ConfluentHypergeometricFunctionoftheFirstKind.html
+#   https://mathworld.wolfram.com/ConfluentHypergeometricFunctionoftheFirstKind.html
 
 func F1(a, b, z, limit=1000) {
     sum(0..limit, {|k|

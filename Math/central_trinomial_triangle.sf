@@ -2,7 +2,7 @@
 
 # See also:
 #   https://oeis.org/A097893
-#   http://mathworld.wolfram.com/CentralTrinomialCoefficient.html
+#   https://mathworld.wolfram.com/CentralTrinomialCoefficient.html
 
 func central_trinomial_triangle(num, callback) {
     var row = [1]

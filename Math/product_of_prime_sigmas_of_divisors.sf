@@ -15,9 +15,9 @@ func a(n) is cached {
 }
 
 say (0..50    -> grep {|n| a(n) == 1   })           # ?
-say (0..100   -> grep {|n| a(n) == 3   })           # http://oeis.org/A039956
+say (0..100   -> grep {|n| a(n) == 3   })           # https://oeis.org/A039956
 say (0..350   -> grep {|n| a(n) == 13  })           # ?
-say (0..130   -> grep {|n| a(n) == 21  })           # http://oeis.org/A133466
+say (0..130   -> grep {|n| a(n) == 21  })           # https://oeis.org/A133466
 say (0..950   -> grep {|n| a(n) == 31  })           # ?
 say (0..650   -> grep {|n| a(n) == 39  })           # ?
 say (0..1750  -> grep {|n| a(n) == 93  })           # ?

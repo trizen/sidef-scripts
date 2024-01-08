@@ -8,7 +8,7 @@
 # See also:
 #   https://oeis.org/A166226 -- Bell number n modulo n.
 #   https://oeis.org/A325630 -- Numbers k such that Bell(k) is divisible by k.
-#   http://mathworld.wolfram.com/BellNumber.html
+#   https://mathworld.wolfram.com/BellNumber.html
 
 func modular_binomial(n, k, m) is cached {
 

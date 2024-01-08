@@ -3,7 +3,7 @@
 # A new algorithm for computing the first n Fubini numbers.
 
 # See also:
-#   http://oeis.org/A000670
+#   https://oeis.org/A000670
 
 func fubini_numbers(n) {
 

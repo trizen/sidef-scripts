@@ -8,7 +8,7 @@
 
 # See also:
 #   https://en.wikipedia.org/wiki/Diophantine_equation
-#   http://mathworld.wolfram.com/DiophantineEquation.html
+#   https://mathworld.wolfram.com/DiophantineEquation.html
 
 func solve(a, b, c) {
 

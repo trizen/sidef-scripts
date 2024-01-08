@@ -4,7 +4,7 @@
 # https://github.com/trizen/sidef/issues/37
 
 # Computing Logarithms Digit-by-Digit:
-#   http://brics.dk/RS/04/17/BRICS-RS-04-17.pdf
+#   https://brics.dk/RS/04/17/BRICS-RS-04-17.pdf
 
 func Log10 (x, prec=48) {
   var k = x.float

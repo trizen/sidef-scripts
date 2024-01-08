@@ -3,7 +3,7 @@
 # The AGM method for efficiently computing an arbitrary number of digits of PI.
 
 # See also:
-#   http://rosettacode.org/wiki/Arithmetic-geometric_mean/Calculate_Pi
+#   https://rosettacode.org/wiki/Arithmetic-geometric_mean/Calculate_Pi
 #   https://en.wikipedia.org/wiki/Arithmetic%E2%80%93geometric_mean#The_number_%CF%80
 
 func AGM_PI(digits=100) {
