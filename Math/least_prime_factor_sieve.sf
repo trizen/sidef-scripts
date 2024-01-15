@@ -1,0 +1,18 @@
+#!/usr/bin/ruby
+
+# Sieve for the least prime of factor of each composite integer <= N.
+
+func lpf_sieve(N) {
+    var LPF = [0, 1]
+
+    for i in (2..N.isqrt) {
+        defined(LPF[i]) && next
+        for j in (range(i**2, N, i)) {
+            LPF[j] := i
+        }
+    }
+
+    return LPF
+}
+
+say lpf_sieve(15)   #=> [0, 1, nil, nil, 2, nil, 2, nil, 2, 3, 2, nil, 2, nil, 2, 3]

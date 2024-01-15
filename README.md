@@ -428,6 +428,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Lanczos approximation](./Math/lanczos_approximation.sf)
     * [Largest factorial less than 10 to the 10 to the n](./Math/largest_factorial_less_than_10_to_the_10_to_the_n.sf)
     * [Largest palindrome product](./Math/largest_palindrome_product.sf)
+    * [Least prime factor sieve](./Math/least_prime_factor_sieve.sf)
     * [Left-right truncatable primes](./Math/left-right_truncatable_primes.sf)
     * [Left truncatable primes](./Math/left_truncatable_primes.sf)
     * [Left truncatable primes in base](./Math/left_truncatable_primes_in_base.sf)

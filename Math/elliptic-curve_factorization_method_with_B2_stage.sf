@@ -147,20 +147,22 @@ func ecm_one_factor(n, B1=10000, B2=B1*100, max_curves=200, seed = nil) {
 
 var ECM_PARAMS = [
 
-    # d   B1  curves
-    [10, 360,  7]
-    [15, 2000, 25]
-    [20, 11000, 90]
-    [25, 50000, 300]
-    [30, 250000, 700]
-    [35, 1000000, 1800]
-    [40, 3000000, 5100]
-    [45, 11000000, 10600]
-    [50, 43000000, 19300]
-    [55, 110000000, 49000]
-    [60, 260000000, 124000]
-    [65, 850000000, 210000]
-    [70, 2900000000, 340000]
+    # d      B1     curves
+    [5,  200,        4],
+    [10, 360,        7],
+    [13, 600,        20],
+    [15, 2000,       10],
+    [20, 11000,      90],
+    [25, 50000,      300],
+    [30, 250000,     700],
+    [35, 1000000,    1800],
+    [40, 3000000,    5100],
+    [45, 11000000,   10600],
+    [50, 43000000,   19300],
+    [55, 110000000,  49000],
+    [60, 260000000,  124000],
+    [65, 850000000,  210000],
+    [70, 2900000000, 340000],
 ]
 
 func ecm(n, B1=nil, B2=nil, max_curves=nil, seed = nil) {
@@ -170,7 +172,7 @@ func ecm(n, B1=nil, B2=nil, max_curves=nil, seed = nil) {
     if (!defined(B1)) {
         for d, B1, curves in ECM_PARAMS {
             #say ":: Trying to find a prime factor with #{d} digits using B1 = #{B1} with #{curves} curves"
-            var f = try { __FUNC__(n, B1, B1*50, curves, seed) }
+            var f = try { __FUNC__(n, B1, B1*20, curves, seed) }
             return f if defined(f)
         }
     }
