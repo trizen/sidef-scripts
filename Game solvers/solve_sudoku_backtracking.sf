@@ -1,0 +1,91 @@
+#!/usr/bin/ruby
+
+# Solve Sudoku puzzle (recursive solution).
+
+func is_valid(board, row, col, num) {
+
+    # Check if the number is not present in the current row and column
+    for i in ^9 {
+        if ((board[row][i] == num) || (board[i][col] == num)) {
+            return false
+        }
+    }
+
+    # Check if the number is not present in the current 3x3 subgrid
+    var (start_row, start_col) = (3*idiv(row, 3), 3*idiv(col, 3))
+
+    for i in ^3, j in ^3 {
+        if (board[start_row + i][start_col + j] == num) {
+            return false
+        }
+    }
+
+    return true
+}
+
+func find_empty_location(board) {
+
+    # Find an empty position (cell with 0)
+    for i in ^9, j in ^9 {
+        if (board[i][j] == 0) {
+            return (i, j)
+        }
+    }
+
+    return (nil, nil)  # If the board is filled
+}
+
+func solve_sudoku(board) {
+    var (row, col) = find_empty_location(board)
+
+    if (!defined(row) && !defined(col)) {
+        return true  # Puzzle is solved
+    }
+
+    for num in (1..9) {
+        if (is_valid(board, row, col, num)) {
+            # Try placing the number
+            board[row][col] = num
+
+            # Recursively try to solve the rest of the puzzle
+            if (solve_sudoku(board)) {
+                return true
+            }
+
+            # If placing the current number doesn't lead to a solution, backtrack
+            board[row][col] = 0
+        }
+    }
+
+    return false  # No solution found
+}
+
+# Example usage:
+# Define the Sudoku puzzle as a 9x9 list with 0 representing empty cells
+var sudoku_board = [
+    [5, 3, 0, 0, 2, 4, 7, 0, 0],
+    [0, 0, 2, 0, 0, 0, 8, 0, 0],
+    [1, 0, 0, 7, 0, 3, 9, 0, 2],
+    [0, 0, 8, 0, 7, 2, 0, 4, 9],
+    [0, 2, 0, 9, 8, 0, 0, 7, 0],
+    [7, 9, 0, 0, 0, 0, 0, 8, 0],
+    [0, 0, 0, 0, 3, 0, 5, 0, 6],
+    [9, 6, 0, 0, 1, 0, 3, 0, 0],
+    [0, 5, 0, 6, 9, 0, 0, 1, 0],
+]
+
+func display_grid(grid) {
+    for i in ^grid {
+        print "#{grid[i]} "
+        print " "  if ( 3 -> divides(i+1))
+        print "\n" if ( 9 -> divides(i+1))
+        print "\n" if (27 -> divides(i+1))
+    }
+}
+
+if (solve_sudoku(sudoku_board)) {
+    display_grid(sudoku_board.flat)
+}
+else {
+    say "No solution exists."
+}

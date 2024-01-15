@@ -77,6 +77,8 @@ A nice collection of day-to-day Sidef scripts.
     * [Chess960 initial positions](./Game%20solvers/chess960_initial_positions.sf)
     * [Generate sudoku](./Game%20solvers/generate_sudoku.sf)
     * [Solve sudoku](./Game%20solvers/solve_sudoku.sf)
+    * [Solve sudoku backtracking](./Game%20solvers/solve_sudoku_backtracking.sf)
+    * [Solve sudoku iterative](./Game%20solvers/solve_sudoku_iterative.sf)
 * Games
     * [Asciiplanes](./Games/asciiplanes.sf)
     * [Bulls and cows](./Games/bulls_and_cows.sf)

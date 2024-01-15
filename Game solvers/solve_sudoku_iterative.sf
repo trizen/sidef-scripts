@@ -1,0 +1,93 @@
+#!/usr/bin/ruby
+
+# Solve Sudoku puzzle (iterative solution // stack-based).
+
+func is_valid(board, row, col, num) {
+
+    # Check if the number is not present in the current row and column
+    for i in ^9 {
+        if ((board[row][i] == num) || (board[i][col] == num)) {
+            return false
+        }
+    }
+
+    # Check if the number is not present in the current 3x3 subgrid
+    var (start_row, start_col) = (3*idiv(row, 3), 3*idiv(col, 3))
+
+    for i in ^3, j in ^3 {
+        if (board[start_row + i][start_col + j] == num) {
+            return false
+        }
+    }
+
+    return true
+}
+
+func find_empty_location(board) {
+
+    # Find an empty position (cell with 0)
+    for i in ^9, j in ^9 {
+        if (board[i][j] == 0) {
+            return (i, j)
+        }
+    }
+
+    return (nil, nil)  # If the board is filled
+}
+
+func solve_sudoku(board) {
+
+    var stack = [board]
+
+    while (stack) {
+
+        var current_board = stack.pop
+        var (row, col) = find_empty_location(current_board)
+
+        if (!defined(row) && !defined(col)) {
+            return current_board
+        }
+
+        for num in (1..9) {
+            if (is_valid(current_board, row, col, num)) {
+                var new_board = current_board.map { .clone }
+                new_board[row][col] = num
+                stack << new_board
+            }
+        }
+    }
+
+    return nil
+}
+
+# Example usage:
+# Define the Sudoku puzzle as a 9x9 list with 0 representing empty cells
+var sudoku_board = [
+    [5, 3, 0, 0, 7, 0, 0, 0, 0],
+    [6, 0, 0, 1, 9, 5, 0, 0, 0],
+    [0, 9, 8, 0, 0, 0, 0, 6, 0],
+    [8, 0, 0, 0, 6, 0, 0, 0, 3],
+    [4, 0, 0, 8, 0, 3, 0, 0, 1],
+    [7, 0, 0, 0, 2, 0, 0, 0, 6],
+    [0, 6, 0, 0, 0, 0, 2, 8, 0],
+    [0, 0, 0, 4, 1, 9, 0, 0, 5],
+    [0, 0, 0, 0, 8, 0, 0, 7, 9],
+]
+
+func display_grid(grid) {
+    for i in ^grid {
+        print "#{grid[i]} "
+        print " "  if ( 3 -> divides(i+1))
+        print "\n" if ( 9 -> divides(i+1))
+        print "\n" if (27 -> divides(i+1))
+    }
+}
+
+var solution = solve_sudoku(sudoku_board)
+
+if (solution) {
+    display_grid(solution.flat)
+}
+else {
+    say "No solution exists."
+}
