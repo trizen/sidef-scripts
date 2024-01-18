@@ -1,0 +1,268 @@
+#!/usr/bin/ruby
+
+# Compress/decompress the prime numbers in a given range, using Huffman coding.
+
+# Arbitrary large ranges are supported.
+
+# See also:
+#   Efficient storage of all primes up to some n
+#   https://www.mersenneforum.org/showthread.php?t=24417
+
+#   One half of largest prime gap up to 10^n.
+#   https://oeis.org/A213949
+
+define(
+    SIGNATURE = ('PHFM' + 1.chr),
+)
+
+func read_bit (FileHandle fh, Ref bitstring) {
+
+    if ((*bitstring \\ '').is_empty) {
+        *bitstring = unpack('b*', fh.getc \\ die "error")
+    }
+
+    var bit = (*bitstring).substr(-1)
+    *bitstring = (*bitstring).substr(0, -1)
+    return bit
+}
+
+func read_bits (FileHandle fh, Number bits_len) {
+
+    var str = ''
+    fh.read(\str, bits_len>>3)
+    str = unpack('B*', str)
+
+    while (str.len < bits_len) {
+        str += unpack('B*', fh.getc \\ die "error")
+    }
+
+    if (str.len > bits_len) {
+        str.substr!(0, bits_len)
+    }
+
+    return str
+}
+
+func delta_encode (Array integers, Bool double = false) {
+
+    var deltas = [0, integers.len, integers...].diffs
+    var bitstring = FileHandle.new_buf(:raw)
+
+    for d in (deltas) {
+        if (d == 0) {
+            bitstring << '0'
+        }
+        elsif (double) {
+            var t = d.abs.inc.as_bin
+            var l = t.len.as_bin
+            bitstring << join('', '1', ((d < 0) ? '0' : '1'), ('1' * (l.len-1)), '0', l.substr(1), t.substr(1))
+        }
+        else {
+            var t = d.abs.as_bin
+            bitstring << join('', '1', ((d < 0) ? '0' : '1'), ('1' * (t.len-1)), '0', t.substr(1))
+        }
+    }
+
+    pack('B*', bitstring.parent)
+}
+
+func delta_decode (FileHandle fh, Bool double = false) {
+
+    var deltas = []
+    var buffer = ''
+    var len    = 0
+
+    for (var k = 0 ; k <= len ; ++k) {
+        var bit = read_bit(fh, \buffer)
+
+        if (bit == '0') {
+            deltas << 0
+        }
+        elsif (double) {
+            var bit = read_bit(fh, \buffer)
+            var bl = (^Inf -> first { read_bit(fh, \buffer) != '1' })
+
+            var bl2 = Num('1' + bl.of { read_bit(fh, \buffer) }.join, 2)
+            var int = Num('1' + (bl2-1).of { read_bit(fh, \buffer) }.join, 2)-1
+
+            deltas << (bit == '1' ? int : -int)
+        }
+        else {
+            var bit = read_bit(fh, \buffer)
+            var n = (^Inf -> first { read_bit(fh, \buffer) != '1' })
+            var d = Num('1' + n.of { read_bit(fh, \buffer) }.join, 2)
+            deltas << (bit == '1' ? d : -d)
+        }
+
+        if (k == 0) {
+            len = deltas.pop
+        }
+    }
+
+    var acc = [len, deltas...].acc
+    acc.shift
+    return acc
+}
+
+func walk(Hash n, String s, Hash h) {
+    if (n.has(:a)) {
+        h{n{:a}} = s
+        return nil
+    }
+    walk(n{:0}, s+'0', h) if n.has(:0)
+    walk(n{:1}, s+'1', h) if n.has(:1)
+}
+
+func mktree_from_freq(Hash freqs) {
+
+    var nodes = freqs.sort_by {|k| k.to_i }.map_2d { |b,f|
+        Hash(a => b, freq => f)
+    }
+
+    loop {
+        nodes.sort_by!{|h| h{:freq} }
+        var(x, y) = (nodes.shift, nodes.shift)
+        if (defined(x)) {
+            if (defined(y)) {
+                nodes << Hash(:0 => x, :1 => y, :freq => x{:freq}+y{:freq})
+            }
+            else {
+                nodes << Hash(:0 => x, :freq => x{:freq})
+            }
+        }
+        nodes.len > 1 || break
+    }
+
+    var n = nodes.first
+    walk(n, '', n{:tree} = Hash())
+    return n
+}
+
+func huffman_encode(Array bytes, Hash t) {
+    join('', t{bytes...})
+}
+
+func huffman_decode (String bits, Hash tree) {
+    bits.gsub(Regex('(' + tree.keys.sort_by { .len }.join('|') + ')'), {|s| tree{s} })
+}
+
+func create_huffman_entry (Array bytes, FileHandle out_fh) {
+
+    var freq = bytes.freq
+
+    var h   = mktree_from_freq(freq){:tree}
+    var enc = huffman_encode(bytes, h)
+
+    var max_symbol = (bytes.max \\ 0)
+    say "Max symbol: #{max_symbol}";
+
+    var freqs = []
+    for i in (0 .. max_symbol) {
+        freqs << (freq{i} \\ 0)
+    }
+
+    out_fh << delta_encode(freqs)
+    out_fh << pack("N",  enc.len)
+    out_fh << pack("B*", enc)
+}
+
+func decode_huffman_entry (FileHandle fh) {
+
+    var freqs = delta_decode(fh)
+
+    var freq = Hash()
+    freqs.each_kv {|k,v|
+        if (v != 0) {
+            freq{k} = v
+        }
+    }
+
+    var rev_dict = mktree_from_freq(freq){:tree}.flip
+
+    for k in (rev_dict.keys) {
+        rev_dict{k} = "#{rev_dict{k}} "
+    }
+
+    var enc_len = unpack('N', 4.of { fh.getc }.join).to_i
+    say "Encoded length: #{enc_len}"
+
+    if (enc_len > 0) {
+        return huffman_decode(read_bits(fh, enc_len), rev_dict).nums
+    }
+
+    return []
+}
+
+# Compress file
+func huffman_compress_primes(from, to, output) {
+
+    var out_fh = output.open('>:raw') || die "Can't open file <<#{output}>> for writing"
+
+    var header = SIGNATURE
+
+    out_fh << header
+    out_fh << delta_encode([from])
+
+    if (from == 2) {
+        from = 3
+    }
+
+    var diffs = primes(from, to).diffs.map{ _ >> 1 }
+    create_huffman_entry(diffs, out_fh)
+
+    # Close the files
+    out_fh.close
+}
+
+# Decompress file
+func huffman_decompress_primes(File input, File output) {
+
+    var in_fh = input.open('<:raw') || die "Can't open file <<#{input}>> for reading"
+
+    if (SIGNATURE.len.of { in_fh.getc }.join != SIGNATURE) {
+        die "Not a HFM archive!\n"
+    }
+
+    var out_fh = output.open('>:raw') || die "Can't open file <<#{output}>> for writing"
+
+    var from = delta_decode(in_fh)[0]
+    var diffs = decode_huffman_entry(in_fh)
+
+    say "Initial prime is: #{from}"
+    say "Number of primes: #{diffs.len + 1 + (from == 2 ? 1 : 0)}"
+
+    if (from == 2) {
+        out_fh.say(2)
+        from = 3
+    }
+
+    out_fh.say(diffs.map{_ << 1}.unshift(from).acc.join("\n"))
+
+    in_fh.close
+    out_fh.close
+}
+
+ARGV.getopt!('d=s', \var decode)
+
+if (decode) {
+    huffman_decompress_primes(File(decode), File("output.phfm.dec"))
+    Sys.exit
+}
+
+var from = Number(ARGV.shift) || do {
+    say "usage: #{File(__MAIN__).basename} [-d file] | [from] [upto]"
+    Sys.exit(2)
+}
+
+var upto = Number(ARGV.shift)
+
+if (!upto) {
+    upto = from
+    from = 2
+}
+
+from = next_prime(from-1)
+upto = prev_prime(upto+1)
+
+say "Encoding primes in the range: [#{from}, #{upto}]"
+huffman_compress_primes(from, upto, File("output.phfm.enc"))

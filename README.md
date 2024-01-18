@@ -48,6 +48,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Delta encoding with unary coding](./Encoding/delta_encoding_with_unary_coding.sf)
     * [Delta rle elias encoding](./Encoding/delta_rle_elias_encoding.sf)
     * [Huffman coding](./Encoding/huffman_coding.sf)
+    * [Huffman prime encoding](./Encoding/huffman_prime_encoding.sf)
     * [Integers binary encoding](./Encoding/integers_binary_encoding.sf)
     * [Log encode](./Encoding/log_encode.sf)
     * [Lz77 compression](./Encoding/lz77_compression.sf)
