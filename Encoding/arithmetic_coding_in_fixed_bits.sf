@@ -2,29 +2,32 @@
 
 # Author: Trizen
 # Date: 12 July 2023
+# Edit: 05 February 2024
 # https://github.com/trizen
 
 # The Arithmetic Coding algorithm, implemented using native integers.
 
-# Reference:
+# References:
 #   Data Compression (Summer 2023) - Lecture 15 - Infinite Precision in Finite Bits
 #   https://youtube.com/watch?v=EqKbT3QdtOI
+#
+#   Basic arithmetic coder in C++
+#   https://github.com/billbird/arith32
 
-define(
-    BITS = 31,
-    MAX  = ((1 << BITS) - 1),
-    MSB  = (1 << (BITS - 1)),
-    SMSB = (1 << (BITS - 2)),
+define (
+    BITS = 32,
+    EOF_SYMBOL = 256,
+    MAX = 0xffffffff,
 )
 
 func create_cfreq(freq) {
 
-    var c_low = Hash()
+    var c_low  = Hash()
     var c_high = Hash()
 
     var T = 0
 
-    for i in (0..256) {
+    for i in (0 .. EOF_SYMBOL) {
         freq{i} \\ next
         c_low{i} = T
         T += freq{i}
@@ -36,14 +39,9 @@ func create_cfreq(freq) {
 
 func encode (String str) {
 
-    var bytes = str.bytes+[256]
-    var enc = FileHandle.new_buf(:raw)
-    var freq = bytes.freq
-
-    # Workaround for low frequencies
-    for k in (freq.keys) {
-        freq{k} += 256 if (freq{k} < 256)
-    }
+    var bytes = str.bytes+[EOF_SYMBOL]
+    var enc   = FileHandle.new_buf(:raw)
+    var freq  = bytes.freq
 
     var(cf_low, cf_high, T) = create_cfreq(freq)
 
@@ -59,8 +57,8 @@ func encode (String str) {
 
         var w = (high - low + 1)
 
-        high = (low + idiv(w * cf_high{c}, T))
-        low  = (low + idiv(w * cf_low{c}, T))
+        high = (low + idiv(w * cf_high{c}, T) - 1)&MAX
+        low  = (low + idiv(w * cf_low{c}, T))&MAX
 
         if (high > MAX) {
             die "high > MAX: #{high} > #{MAX}"
@@ -70,10 +68,9 @@ func encode (String str) {
 
         loop {
 
-            if ((low & MSB) == (high & MSB)) {
+            if ((high>>31) == (low>>31)) {
 
-                var bit = ((low & MSB) >> (BITS - 1))
-
+                var bit = (high>>31)
                 enc << bit
 
                 if (uf_count > 0) {
@@ -81,47 +78,33 @@ func encode (String str) {
                     uf_count = 0
                 }
 
-                if (bit == 1) {
-                    low  ^= MSB
-                    high ^= MSB
-                }
-
                 low  <<= 1
-                high <<= 1
-                high |= 1
+                high <<= 1 |= 1
             }
-            elsif (((low & SMSB) == SMSB) && ((high & SMSB) == 0)) {
+            elsif ((((low>>30)&0x1) == 1) && (((high>>30)&0x1) == 0)) {
 
-                low ^= SMSB
-                #low = (((low & MSB) >> 1) | (low & (SMSB - 1)))
+                high <<= 1 |= (1 << 31) |= 1
+                low <<= 1
+                low &= ((1<<31) - 1)
 
-                high -= SMSB if (high >= SMSB)
-                #high = (((high & MSB) >> 1) | (high & (SMSB - 1)))
-
-                low  <<= 1
-                high <<= 1
-                high |= 1
-
-                uf_count += 1
+                ++uf_count
             }
             else {
                 break
             }
+
+            low  &= MAX
+            high &= MAX
         }
     }
 
-    if (enc.parent == '') {
-        var bit = ((low & MSB) >> (BITS - 1))
+    enc.print(0)
+    enc.print(1)
 
-        enc << bit
-
-        if (uf_count > 0) {
-            enc << uf_count.of(1 - bit).join
-            uf_count = 0
-        }
+    while (enc.parent.len % 8 != 0) {
+        enc.print(1)
     }
 
-    enc << '1'
     return (enc.parent, freq)
 }
 
@@ -130,10 +113,14 @@ func decode (bits, freq) {
 
     var(cf_low, cf_high, T) = create_cfreq(freq)
 
+    if (T > MAX) {
+        die "Too large value: #{T} > #{MAX}"
+    }
+
     var dec  = FileHandle.new_buf(:raw)
     var low  = 0
     var high = MAX
-    var enc  = Num(BITS.of {fh.getc \\ 0}.join, 2)
+    var enc = Num(BITS.of { fh.getc \\ 1 }.join, 2)
 
     var table = []
     for i in (0..256) {
@@ -147,13 +134,12 @@ func decode (bits, freq) {
         var w  = (high - low + 1)
         var ss = idiv(T*(enc - low + 1) - 1, w)
 
-        var i = table[ss]
-        break if (i == 256)
-
+        var i = table[ss] \\ break
+        break if (i == EOF_SYMBOL)
         dec << i.chr
 
-        high = (low + idiv(w * cf_high{i}, T))
-        low  = (low + idiv(w * cf_low{i}, T))
+        high = (low + idiv(w * cf_high{i}, T) - 1)&MAX
+        low  = (low + idiv(w * cf_low{i}, T))&MAX
 
         if (high > MAX) {
             die "high > MAX: #{high} > #{MAX}"
@@ -163,44 +149,28 @@ func decode (bits, freq) {
 
         loop {
 
-            if ((low & MSB) == (high & MSB)) {
-
-                if ((low & MSB) == MSB) {
-                    low  ^= MSB
-                    high ^= MSB
-                }
-
+            if ((high>>31) == (low>>31)) {
+                high <<= 1 |= 1
                 low  <<= 1
-                high <<= 1
-                high |= 1
-
-                if ((enc & MSB) == MSB) {
-                    enc ^= MSB
-                }
-
-                enc <<= 1
-                enc |= (fh.getc \\ 0)
+                enc  <<= 1 |= (fh.getc \\ 1)
             }
-            elsif (((low & SMSB) == SMSB) && ((high & SMSB) == 0)) {
+            elsif ((((low>>30)&0x1) == 1) && (((high>>30)&0x1) == 0)) {
 
-                low ^= SMSB
-                #low = (((low & MSB) >> 1) | (low & (SMSB - 1)))
+                high <<= 1 |= (1 << 31) |= 1
+                low <<= 1
+                low &= ((1<<31) - 1)
 
-                high -= SMSB;
-                #high = (((high & MSB) >> 1) | (high & (SMSB - 1)))
-
-                enc -= SMSB if (enc >= SMSB)
-                #enc = (((enc & MSB) >> 1) | (enc & (SMSB - 1)))
-
-                low  <<= 1;
-                high <<= 1;
-                high |= 1;
-                enc <<= 1;
-                enc |= (fh.getc \\ 0)
+                var msb = enc>>31
+                var rest = enc&0x3fffffff
+                enc = (msb<<31)|(rest<<1)|(fh.getc \\ 1)
             }
             else {
                 break
             }
+
+            low  &= MAX
+            high &= MAX
+            enc  &= MAX
         }
     }
 
@@ -230,7 +200,7 @@ assert_eq(str.len, dec.len)
 assert_eq(dec, str)
 
 __END__
-0001100000000111000010011001111111110100110001100010000111011000000001110000111110100011110111001011010111010110110000011
+0100110110111110100000000100000111110000110110011111000010110011011001000101100011011101001110000000010001111111
 String length: 32
-Encoded bytes length: 15.125
-Ratio: 47.265625
+Encoded bytes length: 14
+Ratio: 43.75
