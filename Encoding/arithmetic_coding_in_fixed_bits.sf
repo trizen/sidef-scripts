@@ -2,7 +2,7 @@
 
 # Author: Trizen
 # Date: 12 July 2023
-# Edit: 05 February 2024
+# Edit: 06 February 2024
 # https://github.com/trizen
 
 # The Arithmetic Coding algorithm, implemented using native integers.
@@ -15,9 +15,9 @@
 #   https://github.com/billbird/arith32
 
 define (
-    BITS = 32,
+    BITS       = 32,                # can be modified
+    MAX        = (1 << BITS)-1,
     EOF_SYMBOL = 256,
-    MAX = 0xffffffff,
 )
 
 func create_cfreq(freq) {
@@ -68,24 +68,23 @@ func encode (String str) {
 
         loop {
 
-            if ((high>>31) == (low>>31)) {
+            if ((high>>(BITS-1)) == (low>>(BITS-1))) {
 
-                var bit = (high>>31)
+                var bit = high>>(BITS-1)
                 enc << bit
 
                 if (uf_count > 0) {
-                    enc << uf_count.of(1 - bit).join
+                    enc << Str(1 - bit)*uf_count
                     uf_count = 0
                 }
 
                 low  <<= 1
                 high <<= 1 |= 1
             }
-            elsif ((((low>>30)&0x1) == 1) && (((high>>30)&0x1) == 0)) {
+            elsif ((((low>>(BITS-2))&0x1) == 1) && (((high>>(BITS-2))&0x1) == 0)) {
 
-                high <<= 1 |= (1 << 31) |= 1
-                low <<= 1
-                low &= ((1<<31) - 1)
+                high <<= 1 |= (1 << (BITS-1)) |= 1
+                low <<= 1 &= ((1 << (BITS-1)) - 1)
 
                 ++uf_count
             }
@@ -123,7 +122,7 @@ func decode (bits, freq) {
     var enc = Num(BITS.of { fh.getc \\ 1 }.join, 2)
 
     var table = []
-    for i in (0..256) {
+    for i in (0..EOF_SYMBOL) {
         cf_low{i} \\ next
         for j in (cf_low{i} ..^ cf_high{i}) {
             table[j] = i
@@ -149,20 +148,17 @@ func decode (bits, freq) {
 
         loop {
 
-            if ((high>>31) == (low>>31)) {
+            if ((high>>(BITS-1)) == (low>>(BITS-1))) {
                 high <<= 1 |= 1
                 low  <<= 1
                 enc  <<= 1 |= (fh.getc \\ 1)
             }
-            elsif ((((low>>30)&0x1) == 1) && (((high>>30)&0x1) == 0)) {
+            elsif ((((low>>(BITS-2))&0x1) == 1) && (((high>>(BITS-2))&0x1) == 0)) {
 
-                high <<= 1 |= (1 << 31) |= 1
-                low <<= 1
-                low &= ((1<<31) - 1)
+                high <<= 1 |= (1 << (BITS-1)) |= 1
+                low <<= 1 &= ((1 << (BITS-1)) - 1)
 
-                var msb = enc>>31
-                var rest = enc&0x3fffffff
-                enc = (msb<<31)|(rest<<1)|(fh.getc \\ 1)
+                enc = ((enc>>(BITS-1))<<(BITS-1))|((enc&((1<<(BITS-2))-1))<<1)|(fh.getc \\ 1)
             }
             else {
                 break
