@@ -1,6 +1,10 @@
 #!/usr/bin/ruby
 
-# Solve Sudoku puzzle (iterative solution // stack-based).
+# Author: Trizen
+# Date: 12 February 2024
+# https://github.com/trizen
+
+# Fast algorithm to solve a Sudoku puzzle (iterative solution).
 
 func is_valid(board, row, col, num) {
 
@@ -23,30 +27,30 @@ func is_valid(board, row, col, num) {
     return true
 }
 
-func find_empty_location(board) {
+func find_empty_locations(board) {
 
-    # Find an empty position (cell with 0)
+    var locations = []
+
+    # Find all empty positions (cells with 0)
     for i in ^9, j in ^9 {
         if (board[i][j] == 0) {
-            return (i, j)
+            locations << [i, j]
         }
     }
 
-    return (nil, nil)  # If the board is filled
+    return locations
 }
 
-func solve_sudoku(board) {
+func solve_sudoku_stack(board) {    # fallback method
 
     var stack = [board]
 
     while (stack) {
 
         var current_board = stack.pop
-        var (row, col) = find_empty_location(current_board)
+        var empty_locations = find_empty_locations(current_board) || return current_board
 
-        if (!defined(row) && !defined(col)) {
-            return current_board
-        }
+        var (row, col) = empty_locations.shift...
 
         for num in (1..9) {
             if (is_valid(current_board, row, col, num)) {
@@ -60,19 +64,100 @@ func solve_sudoku(board) {
     return nil
 }
 
+func solve_sudoku(board) {
+
+    var prev_len = 0
+
+    loop {
+        var empty_locations = find_empty_locations(board) || break
+
+        var found = false
+
+        # Solve easy cases
+        for i,j in empty_locations {
+            var(count=0, value=0)
+            for n in (1..9) {
+                is_valid(board, i, j, n) || next
+                break if (++count > 1)
+                value = n
+            }
+            if (count == 1) {
+                board[i][j] = value
+                found ||= true
+            }
+        }
+
+        next if found
+
+        # Solve more complex cases
+        var stats = []
+        for i,j in empty_locations {
+            stats[i][j] = (1..9 -> grep{|n| is_valid(board, i, j, n) })
+        }
+
+        var cols = []
+        var rows = []
+
+        stats.range.each {|i|
+            stats[i] \\ next
+            rows[i] := []
+            stats[i].range.each {|j|
+                stats[i][j] \\ next
+                cols[j] := []
+                stats[i][j].each {|v|
+                    cols[j][v] := 0 ++
+                    rows[i][v] := 0 ++
+                }
+            }
+        }
+
+        found = false
+
+        stats.range.each {|i|
+            stats[i] \\ next
+            stats[i].range.each {|j|
+                stats[i][j] \\ next
+                stats[i][j].each {|v|
+                    if (cols[j][v] == 1) {
+                        board[i][j] = v
+                        found ||= true
+                    }
+                    elsif (rows[i][v] == 1) {
+                        board[i][j] = v
+                        found ||= true
+                    }
+                }
+            }
+        }
+
+        next if found
+
+        # Give up and use brute-force
+        if (empty_locations.len == prev_len) {
+            return solve_sudoku_stack(board)
+        }
+
+        prev_len = empty_locations.len
+    }
+
+    return board
+}
+
 # Example usage:
 # Define the Sudoku puzzle as a 9x9 list with 0 representing empty cells
-var sudoku_board = [
-    [5, 3, 0, 0, 7, 0, 0, 0, 0],
-    [6, 0, 0, 1, 9, 5, 0, 0, 0],
-    [0, 9, 8, 0, 0, 0, 0, 6, 0],
-    [8, 0, 0, 0, 6, 0, 0, 0, 3],
-    [4, 0, 0, 8, 0, 3, 0, 0, 1],
-    [7, 0, 0, 0, 2, 0, 0, 0, 6],
-    [0, 6, 0, 0, 0, 0, 2, 8, 0],
-    [0, 0, 0, 4, 1, 9, 0, 0, 5],
-    [0, 0, 0, 0, 8, 0, 0, 7, 9],
-]
+var sudoku_board = %n(
+    2 0 0  0 7 0  0 0 3
+    1 0 0  0 0 0  0 8 0
+    0 0 4  2 0 9  0 0 5
+
+    9 4 0  0 0 0  6 0 8
+    0 0 0  8 0 0  0 9 0
+    0 0 0  0 0 0  0 7 0
+
+    7 2 1  9 0 8  0 6 0
+    0 3 0  0 2 7  1 0 0
+    4 0 0  0 0 3  0 0 0
+).slices(9)
 
 func display_grid(grid) {
     for i in ^grid {
@@ -89,5 +174,5 @@ if (solution) {
     display_grid(solution.flat)
 }
 else {
-    say "No solution exists."
+    warn "No unique solution exists."
 }

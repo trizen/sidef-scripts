@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# Solve Sudoku puzzle (recursive solution).
+# Solve Sudoku puzzle (iterative solution // stack-based).
 
 func is_valid(board, row, col, num) {
 
@@ -36,28 +36,28 @@ func find_empty_location(board) {
 }
 
 func solve_sudoku(board) {
-    var (row, col) = find_empty_location(board)
 
-    if (!defined(row) && !defined(col)) {
-        return true  # Puzzle is solved
-    }
+    var stack = [board]
 
-    for num in (1..9) {
-        if (is_valid(board, row, col, num)) {
-            # Try placing the number
-            board[row][col] = num
+    while (stack) {
 
-            # Recursively try to solve the rest of the puzzle
-            if (__FUNC__(board)) {
-                return true
+        var current_board = stack.pop
+        var (row, col) = find_empty_location(current_board)
+
+        if (!defined(row) && !defined(col)) {
+            return current_board
+        }
+
+        for num in (1..9) {
+            if (is_valid(current_board, row, col, num)) {
+                var new_board = current_board.map { .clone }
+                new_board[row][col] = num
+                stack << new_board
             }
-
-            # If placing the current number doesn't lead to a solution, backtrack
-            board[row][col] = 0
         }
     }
 
-    return false  # No solution found
+    return nil
 }
 
 # Example usage:
@@ -85,8 +85,10 @@ func display_grid(grid) {
     }
 }
 
-if (solve_sudoku(sudoku_board)) {
-    display_grid(sudoku_board.flat)
+var solution = solve_sudoku(sudoku_board)
+
+if (solution) {
+    display_grid(solution.flat)
 }
 else {
     say "No solution exists."

@@ -80,6 +80,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Sudoku solver](./Game%20solvers/sudoku_solver.sf)
     * [Sudoku solver backtracking](./Game%20solvers/sudoku_solver_backtracking.sf)
     * [Sudoku solver iterative](./Game%20solvers/sudoku_solver_iterative.sf)
+    * [Sudoku solver stack](./Game%20solvers/sudoku_solver_stack.sf)
 * Games
     * [Asciiplanes](./Games/asciiplanes.sf)
     * [Bulls and cows](./Games/bulls_and_cows.sf)
