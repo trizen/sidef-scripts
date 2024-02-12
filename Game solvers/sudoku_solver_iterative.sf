@@ -41,27 +41,41 @@ func find_empty_locations(board) {
     return locations
 }
 
-func solve_sudoku_stack(board) {    # fallback method
+func find_empty_location(board) {
 
-    var stack = [board]
-
-    while (stack) {
-
-        var current_board = stack.pop
-        var empty_locations = find_empty_locations(current_board) || return current_board
-
-        var (row, col) = empty_locations.shift...
-
-        for num in (1..9) {
-            if (is_valid(current_board, row, col, num)) {
-                var new_board = current_board.map { .clone }
-                new_board[row][col] = num
-                stack << new_board
-            }
+    # Find an empty position (cell with 0)
+    for i in ^9, j in ^9 {
+        if (board[i][j] == 0) {
+            return (i, j)
         }
     }
 
-    return nil
+    return (nil, nil)  # If the board is filled
+}
+
+func solve_sudoku_fallback(board) {
+    var (row, col) = find_empty_location(board)
+
+    if (!defined(row) && !defined(col)) {
+        return true  # Puzzle is solved
+    }
+
+    for num in (1..9) {
+        if (is_valid(board, row, col, num)) {
+            # Try placing the number
+            board[row][col] = num
+
+            # Recursively try to solve the rest of the puzzle
+            if (__FUNC__(board)) {
+                return true
+            }
+
+            # If placing the current number doesn't lead to a solution, backtrack
+            board[row][col] = 0
+        }
+    }
+
+    return false  # No solution found
 }
 
 func solve_sudoku(board) {
@@ -120,7 +134,9 @@ func solve_sudoku(board) {
 
         next if found
 
-        return solve_sudoku_stack(board)
+        # Give up and try brute-force
+        solve_sudoku_fallback(board)
+        return board
     }
 
     return board
@@ -129,18 +145,18 @@ func solve_sudoku(board) {
 # Example usage:
 # Define the Sudoku puzzle as a 9x9 list with 0 representing empty cells
 var sudoku_board = %n(
-    2 0 0  0 7 0  0 0 3
-    1 0 0  0 0 0  0 8 0
-    0 0 4  2 0 9  0 0 5
+        2 0 0  0 7 0  0 0 3
+        1 0 0  0 0 0  0 8 0
+        0 0 4  2 0 9  0 0 5
 
-    9 4 0  0 0 0  6 0 8
-    0 0 0  8 0 0  0 9 0
-    0 0 0  0 0 0  0 7 0
+        9 4 0  0 0 0  6 0 8
+        0 0 0  8 0 0  0 9 0
+        0 0 0  0 0 0  0 7 0
 
-    7 2 1  9 0 8  0 6 0
-    0 3 0  0 2 7  1 0 0
-    4 0 0  0 0 3  0 0 0
-).slices(9)
+        7 2 1  9 0 8  0 6 0
+        0 3 0  0 2 7  1 0 0
+        4 0 0  0 0 3  0 0 0
+).slices(9),
 
 func display_grid(grid) {
     for i in ^grid {
