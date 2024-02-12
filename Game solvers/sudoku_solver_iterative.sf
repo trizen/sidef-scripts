@@ -66,8 +66,6 @@ func solve_sudoku_stack(board) {    # fallback method
 
 func solve_sudoku(board) {
 
-    var prev_len = 0
-
     loop {
         var empty_locations = find_empty_locations(board) || break
 
@@ -98,46 +96,31 @@ func solve_sudoku(board) {
         var cols = []
         var rows = []
 
-        stats.range.each {|i|
-            stats[i] \\ next
-            rows[i] := []
-            stats[i].range.each {|j|
-                stats[i][j] \\ next
-                cols[j] := []
-                stats[i][j].each {|v|
-                    cols[j][v] := 0 ++
-                    rows[i][v] := 0 ++
-                }
+        for i,j in empty_locations {
+            stats[i][j].each {|v|
+                cols[j][v] := 0 ++
+                rows[i][v] := 0 ++
             }
         }
 
         found = false
 
-        stats.range.each {|i|
-            stats[i] \\ next
-            stats[i].range.each {|j|
-                stats[i][j] \\ next
-                stats[i][j].each {|v|
-                    if (cols[j][v] == 1) {
-                        board[i][j] = v
-                        found ||= true
-                    }
-                    elsif (rows[i][v] == 1) {
-                        board[i][j] = v
-                        found ||= true
-                    }
+        for i,j in empty_locations {
+            stats[i][j].each {|v|
+                if (cols[j][v] == 1) {
+                    board[i][j] = v
+                    found ||= true
+                }
+                elsif (rows[i][v] == 1) {
+                    board[i][j] = v
+                    found ||= true
                 }
             }
         }
 
         next if found
 
-        # Give up and use brute-force
-        if (empty_locations.len == prev_len) {
-            return solve_sudoku_stack(board)
-        }
-
-        prev_len = empty_locations.len
+        return solve_sudoku_stack(board)
     }
 
     return board
