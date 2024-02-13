@@ -222,6 +222,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Continued fraction factorization method simple](./Math/continued_fraction_factorization_method_simple.sf)
     * [Continued fraction to fraction](./Math/continued_fraction_to_fraction.sf)
     * [Continued fractions convergents](./Math/continued_fractions_convergents.sf)
+    * [Continued fractions convergents fast](./Math/continued_fractions_convergents_fast.sf)
     * [Continued fractions for nth roots](./Math/continued_fractions_for_nth_roots.sf)
     * [Convergents to cube root of 2](./Math/convergents_to_cube_root_of_2.sf)
     * [Count of composite numbers](./Math/count_of_composite_numbers.sf)

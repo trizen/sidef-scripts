@@ -54,6 +54,7 @@ func find_empty_location(board) {
 }
 
 func solve_sudoku_fallback(board) {
+
     var (row, col) = find_empty_location(board)
 
     if (!defined(row) && !defined(col)) {
@@ -109,23 +110,22 @@ func solve_sudoku(board) {
 
         var cols = []
         var rows = []
+        var subgrid = []
 
         for i,j in empty_locations {
             stats[i][j].each {|v|
                 cols[j][v] := 0 ++
                 rows[i][v] := 0 ++
+                subgrid[3*idiv(i,3)][3*idiv(j,3)][v] := 0 ++
             }
         }
 
-        found = false
-
         for i,j in empty_locations {
             stats[i][j].each {|v|
-                if (cols[j][v] == 1) {
-                    board[i][j] = v
-                    found ||= true
-                }
-                elsif (rows[i][v] == 1) {
+                if ((cols[j][v] == 1) ||
+                    (rows[i][v] == 1) ||
+                    (subgrid[3*idiv(i,3)][3*idiv(j,3)][v] == 1)
+                ) {
                     board[i][j] = v
                     found ||= true
                 }
@@ -145,18 +145,60 @@ func solve_sudoku(board) {
 # Example usage:
 # Define the Sudoku puzzle as a 9x9 list with 0 representing empty cells
 var sudoku_board = %n(
-        2 0 0  0 7 0  0 0 3
-        1 0 0  0 0 0  0 8 0
-        0 0 4  2 0 9  0 0 5
+    2 0 0  0 7 0  0 0 3
+    1 0 0  0 0 0  0 8 0
+    0 0 4  2 0 9  0 0 5
 
-        9 4 0  0 0 0  6 0 8
-        0 0 0  8 0 0  0 9 0
-        0 0 0  0 0 0  0 7 0
+    9 4 0  0 0 0  6 0 8
+    0 0 0  8 0 0  0 9 0
+    0 0 0  0 0 0  0 7 0
 
-        7 2 1  9 0 8  0 6 0
-        0 3 0  0 2 7  1 0 0
-        4 0 0  0 0 3  0 0 0
-).slices(9),
+    7 2 1  9 0 8  0 6 0
+    0 3 0  0 2 7  1 0 0
+    4 0 0  0 0 3  0 0 0
+).slices(9)
+
+sudoku_board = %n(
+    0 0 0  8 0 1  0 0 0
+    0 0 0  0 0 0  0 4 3
+    5 0 0  0 0 0  0 0 0
+
+    0 0 0  0 7 0  8 0 0
+    0 0 0  0 0 0  1 0 0
+    0 2 0  0 3 0  0 0 0
+
+    6 0 0  0 0 0  0 7 5
+    0 0 3  4 0 0  0 0 0
+    0 0 0  2 0 0  6 0 0
+).slices(9) if true
+
+sudoku_board = %n(
+    8 0 0  0 0 0  0 0 0
+    0 0 3  6 0 0  0 0 0
+    0 7 0  0 9 0  2 0 0
+
+    0 5 0  0 0 7  0 0 0
+    0 0 0  0 4 5  7 0 0
+    0 0 0  1 0 0  0 3 0
+
+    0 0 1  0 0 0  0 6 8
+    0 0 8  5 0 0  0 1 0
+    0 9 0  0 0 0  4 0 0
+).slices(9) if false
+
+sudoku_board = %n(
+    0 0 1  0 6 0  0 5 9
+    0 0 0  0 0 3  0 2 0
+    0 6 0  0 8 0  0 0 0
+
+    4 0 0  0 0 0  5 0 0
+    0 2 0  0 0 0  0 0 0
+    0 7 0  2 0 0  4 8 0
+
+    8 0 0  0 0 0  9 0 5
+    7 0 0  6 0 9  0 3 0
+    0 0 5  0 0 0  0 4 0
+).slices(9) if false
 
 func display_grid(grid) {
     for i in ^grid {

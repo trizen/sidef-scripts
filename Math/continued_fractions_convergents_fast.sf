@@ -1,0 +1,47 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 13 February 2024
+# https://github.com/trizen
+
+# A fast algorithm to compute the continued fraction convergents for a given real value.
+
+func num2cfrac(n, r) {
+    gather {
+        r.times {
+            n = 1/((n - take(n.floor.int)) || break)
+        }
+    }
+}
+
+func convergents(x, n) {
+    var cfrac = num2cfrac(x, n)
+
+    var(n1, n2) = (0, 1)
+    var(d1, d2) = (1, 0)
+
+    gather {
+        cfrac.each {|z|
+            (n1, n2) = (n2, n2*z + n1)
+            (d1, d2) = (d2, d2*z + d1)
+            take(n2/d2)
+        }
+    }
+}
+
+var tests = ["415/93", 415/93, "649/200", 649/200, "sqrt(2)", sqrt(2),
+             "sqrt(5)", sqrt(5), "golden ratio", (sqrt(5) + 1) / 2   ]
+
+var terms = 8
+say "The continued fraction convergents for the following (maximum #{terms} terms) are:"
+tests.each_slice(2, {|s,x|
+    printf("%15s = %s\n", s, convergents(x, terms).map { .as_frac }.join(' '))
+})
+
+__END__
+The continued fraction convergents for the following (maximum 8 terms) are:
+         415/93 = 4/1 9/2 58/13 415/93
+        649/200 = 3/1 13/4 159/49 649/200
+        sqrt(2) = 1/1 3/2 7/5 17/12 41/29 99/70 239/169 577/408
+        sqrt(5) = 2/1 9/4 38/17 161/72 682/305 2889/1292 12238/5473 51841/23184
+   golden ratio = 1/1 2/1 3/2 5/3 8/5 13/8 21/13 34/21
