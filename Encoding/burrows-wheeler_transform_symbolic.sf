@@ -12,8 +12,6 @@
 #   Data Compression (Summer 2023) - Lecture 12 - The Burrows-Wheeler Transform (BWT)
 #   https://youtube.com/watch?v=rQ7wwh4HRZM
 
-define LOOKAHEAD_LEN = 128    # lower values are faster (on average)
-
 func bwt_cyclic (s) {    # O(n) space
 
     var len = s.len
@@ -50,7 +48,6 @@ func bwt_encode_quadratic(Array s) {  # O(n^2) space
 func bwt_encode(Array s) {
 
     var bwt = bwt_cyclic(s)
-
     var ret = bwt.map {|i| s.slice(i-1, 1)... }
     var idx = bwt.first_index_by { .is_zero }
 

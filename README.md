@@ -419,6 +419,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Julia set](./Math/julia_set.sf)
     * [K-imperfect numbers](./Math/k-imperfect_numbers.sf)
     * [K-non-powerfree numbers in range](./Math/k-non-powerfree_numbers_in_range.sf)
+    * [K-odd-powerful numbers in range](./Math/k-odd-powerful_numbers_in_range.sf)
     * [K-powerful numbers](./Math/k-powerful_numbers.sf)
     * [K-powerful numbers in range](./Math/k-powerful_numbers_in_range.sf)
     * [Karatsuba multiplication](./Math/karatsuba_multiplication.sf)
