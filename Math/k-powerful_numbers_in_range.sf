@@ -19,38 +19,46 @@
 #   https://oeis.org/A069492 -- 5-powerful numbers
 #   https://oeis.org/A069493 -- 6-powerful numbers
 
-func powerful_numbers(a, b, k=2) {
+func powerful_numbers(A, B, k=2) {
 
     var powerful = []
 
     func (m,r) {
 
-        if (r < k) {
-            powerful << m
-            return nil
-        }
-
         var from = 1
-        var upto = iroot(idiv(b,m), r)
+        var upto = iroot(idiv(B, m), r)
 
-        if ((r <= k) && (a > m)) {
-            from = idiv_ceil(a,m).iroot(r)
+        if (r <= k) {
+
+            if (A > m) {
+
+                # Optimization by Dana Jacobsen (from Math::Prime::Util::PP)
+                with (idiv_ceil(A,m)) {|l|
+                    if ((l >> r) == 0) {
+                        from = 2
+                    }
+                    else {
+                        from = l.iroot(r)
+                        from++ if (ipow(from, r) != l)
+                    }
+                }
+            }
+
+            return nil if (from > upto)
+
+            for j in (from .. upto) {
+                powerful << (m * ipow(j, r))
+            }
+
+            return nil
         }
 
         for j in (from .. upto) {
 
-            if (r > k) {
-                j.is_coprime(m) || next
-                j.is_squarefree || next
-            }
+            j.is_coprime(m) || next
+            j.is_squarefree || next
 
-            var t = (m * j**r)
-
-            if ((r <= k) && (t < a)) {
-                next
-            }
-
-            __FUNC__(t, r-1)
+            __FUNC__(m * ipow(j, r), r-1)
         }
     }(1, 2*k - 1)
 
@@ -64,7 +72,7 @@ for k in (2..5) {
     say "Testing: k = #{k}"
     assert_eq(
         powerful_numbers(a, b, k),
-        powerful_numbers(1, b, k).grep { _>= a }
+        k.powerful(a, b)
     )
 }
 

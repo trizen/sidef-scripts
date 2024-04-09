@@ -16,40 +16,47 @@
 # See also:
 #   https://oeis.org/A062739
 
-func odd_powerful_numbers(a, b, k=2) {
+func odd_powerful_numbers(A, B, k=2) {
 
     var odd_powerful = []
 
     func (m,r) {
 
-        if (r < k) {
-            odd_powerful << m
-            return nil
-        }
-
         var from = 1
-        var upto = iroot(idiv(b,m), r)
+        var upto = iroot(idiv(B, m), r)
 
-        if ((r <= k) && (a > m)) {
-            from = idiv_ceil(a,m).iroot(r)
+        if (r <= k) {
+
+            if (A > m) {
+
+                # Optimization by Dana Jacobsen (from Math::Prime::Util::PP)
+                with (idiv_ceil(A,m)) {|l|
+                    if ((l >> r) == 0) {
+                        from = 2
+                    }
+                    else {
+                        from = l.iroot(r)
+                        from++ if (ipow(from, r) != l)
+                    }
+                }
+            }
+
+            return nil if (from > upto)
+
+            for j in (from .. upto) {
+                odd_powerful << (m * ipow(j, r)) if j.is_odd
+            }
+
+            return nil
         }
 
         for j in (from .. upto) {
 
-            j.is_even && next
+            j.is_even       && next
+            j.is_coprime(m) || next
+            j.is_squarefree || next
 
-            if (r > k) {
-                j.is_coprime(m) || next
-                j.is_squarefree || next
-            }
-
-            var t = (m * j**r)
-
-            if ((r <= k) && (t < a)) {
-                next
-            }
-
-            __FUNC__(t, r-1)
+            __FUNC__(m * ipow(j, r), r-1)
         }
     }(1, 2*k - 1)
 

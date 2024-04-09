@@ -24,7 +24,7 @@
 
 func powerful_count_in_range(A, B, k=2) {
 
-    if (A > B) { return 0 }
+    return 0 if (A > B)
 
     var count = 0
 
@@ -36,10 +36,20 @@ func powerful_count_in_range(A, B, k=2) {
         if (r <= k) {
 
             if (A > m) {
-                from = idiv_ceil(A,m).iroot(r)
-                while (m * from**r < A) { ++from }
+
+                # Optimization by Dana Jacobsen (from Math::Prime::Util::PP)
+                with (idiv_ceil(A,m)) {|l|
+                    if ((l >> r) == 0) {
+                        from = 2
+                    }
+                    else {
+                        from = l.iroot(r)
+                        from++ if (ipow(from, r) != l)
+                    }
+                }
             }
 
+            return nil if (from > upto)
             count += (upto - from + 1)
             return nil
         }
@@ -57,16 +67,16 @@ for k in (2..10) {
     var lo = irand(10**(k-1))
     var hi = irand(10**k)
     assert_eq(powerful_count_in_range(lo, hi, k), k.powerful_count(lo, hi))
-    printf("Number of %2d-powerful in range 10^(j-1) .. 10^j: {%s}\n", k, (8+k).of {|j| powerful_count_in_range(10**(j-1), 10**j, k) }.join(', '))
+    printf("Number of %2d-powerful in range 10^j .. 10^(j+1): {%s}\n", k, (7+k).of {|j| powerful_count_in_range(10**j, 10**(j+1), k) }.join(', '))
 }
 
 __END__
-Number of  2-powerful in range 10^(j-1) .. 10^j: {1, 4, 10, 41, 132, 435, 1409, 4527, 14492, 46188}
-Number of  3-powerful in range 10^(j-1) .. 10^j: {1, 2, 5, 13, 32, 79, 179, 407, 933, 2077, 4628}
-Number of  4-powerful in range 10^(j-1) .. 10^j: {1, 1, 4, 6, 14, 33, 61, 119, 230, 443, 836, 1572}
-Number of  5-powerful in range 10^(j-1) .. 10^j: {1, 1, 2, 5, 8, 16, 32, 55, 95, 165, 285, 495, 848}
-Number of  6-powerful in range 10^(j-1) .. 10^j: {1, 1, 1, 4, 6, 9, 17, 33, 52, 86, 130, 217, 350, 552}
-Number of  7-powerful in range 10^(j-1) .. 10^j: {1, 1, 0, 3, 6, 6, 10, 20, 32, 53, 76, 115, 178, 267, 412}
-Number of  8-powerful in range 10^(j-1) .. 10^j: {1, 1, 0, 2, 5, 5, 6, 13, 20, 34, 51, 77, 105, 153, 223, 328}
-Number of  9-powerful in range 10^(j-1) .. 10^j: {1, 1, 0, 1, 4, 5, 5, 8, 14, 21, 36, 52, 73, 101, 137, 192, 276}
-Number of 10-powerful in range 10^(j-1) .. 10^j: {1, 1, 0, 0, 4, 4, 5, 7, 7, 15, 25, 37, 52, 73, 96, 126, 175, 238}
+Number of  2-powerful in range 10^j .. 10^(j+1): {4, 10, 41, 132, 435, 1409, 4527, 14492, 46188}
+Number of  3-powerful in range 10^j .. 10^(j+1): {2, 5, 13, 32, 79, 179, 407, 933, 2077, 4628}
+Number of  4-powerful in range 10^j .. 10^(j+1): {1, 4, 6, 14, 33, 61, 119, 230, 443, 836, 1572}
+Number of  5-powerful in range 10^j .. 10^(j+1): {1, 2, 5, 8, 16, 32, 55, 95, 165, 285, 495, 848}
+Number of  6-powerful in range 10^j .. 10^(j+1): {1, 1, 4, 6, 9, 17, 33, 52, 86, 130, 217, 350, 552}
+Number of  7-powerful in range 10^j .. 10^(j+1): {1, 0, 3, 6, 6, 10, 20, 32, 53, 76, 115, 178, 267, 412}
+Number of  8-powerful in range 10^j .. 10^(j+1): {1, 0, 2, 5, 5, 6, 13, 20, 34, 51, 77, 105, 153, 223, 328}
+Number of  9-powerful in range 10^j .. 10^(j+1): {1, 0, 1, 4, 5, 5, 8, 14, 21, 36, 52, 73, 101, 137, 192, 276}
+Number of 10-powerful in range 10^j .. 10^(j+1): {1, 0, 0, 4, 4, 5, 7, 7, 15, 25, 37, 52, 73, 96, 126, 175, 238}
