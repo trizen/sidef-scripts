@@ -1,0 +1,104 @@
+#!/usr/bin/ruby
+
+# Sieve for Chernick's "universal form" Carmichael number with n prime factors.
+
+# Inspired by the PARI program by David A. Corneth from OEIS A372238.
+
+# See also:
+#   https://oeis.org/A318646
+#   https://oeis.org/A372238/a372238.gp.txt
+
+func isrem(m, p, n) {
+
+    p `divides` ( 6*m + 1) && return false
+    p `divides` (12*m + 1) && return false
+    p `divides` (18*m + 1) && return false
+
+    2 .. n-2 -> none {|k|
+        p `divides` (9*m << k + 1)
+    }
+}
+
+func remaindersmodp(p, n) {
+    ^p -> grep {|m| isrem(m, p, n) }
+}
+
+func remaindersuptop(n, maxp=31) {
+
+    var res = [[0, 1]]
+
+    for p in (maxp.primes) {
+
+        var rems = remaindersmodp(p, n)
+        var nres = []
+
+        for r in res {
+            for rem in rems {
+                nres << [Math.chinese(r, [rem, p]), lcm(p, r[1])]
+            }
+        }
+        res = nres
+    }
+
+    res.map{.[0]}.sort
+}
+
+func is(m, n) {
+
+    m.is_even || return false
+    m.valuation(2) >= n-4 || return false
+
+    is_prime( 6*m + 1) || return false
+    is_prime(12*m + 1) || return false
+    is_prime(18*m + 1) || return false
+
+    2 .. n-2 -> all {|k|
+        is_prime(9*m << k + 1)
+    }
+}
+
+func chernick_carmichael_factors(m, n) {
+    [6*m + 1, 12*m + 1, 1 .. n-2 -> map{|k| 9*m << k + 1 }...]
+}
+
+func chernick_carmichael_with_n_factors(n) {
+
+    var maxp = 11
+
+    maxp = 17 if (n >= 8)
+    maxp = 23 if (n >= 10)
+
+    var r = remaindersuptop(n, maxp)
+
+    var d = r.diffs
+    var s = maxp.primes.prod
+
+    d += [r[0] + s - r[-1]]
+
+    var m = r[0]
+    var d_len = d.len
+
+    for j in (0 .. Inf) {
+
+        if (is(m, n)) {
+            return m
+        }
+
+        m += d[j % d_len]
+    }
+}
+
+for n in (3..9) {
+    var m = chernick_carmichael_with_n_factors(n)
+    say ("#{n}) m = ", m)
+    assert(chernick_carmichael_factors(m, n).prod.is_carmichael)
+}
+
+__END__
+3) m = 6
+4) m = 56
+5) m = 380
+6) m = 380
+7) m = 780320
+8) m = 950560
+9) m = 950560

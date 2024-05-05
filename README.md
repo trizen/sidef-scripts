@@ -196,6 +196,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Champernowne constant nth digit](./Math/champernowne_constant_nth_digit.sf)
     * [Chebyshev factorization method](./Math/chebyshev_factorization_method.sf)
     * [Chernick-carmichael numbers](./Math/chernick-carmichael_numbers.sf)
+    * [Chernick-carmichael with n factors sieve](./Math/chernick-carmichael_with_n_factors_sieve.sf)
     * [Chinese factorization method](./Math/chinese_factorization_method.sf)
     * [Chinese factorization method 2](./Math/chinese_factorization_method_2.sf)
     * [Chinese modular exponentiation](./Math/chinese_modular_exponentiation.sf)
