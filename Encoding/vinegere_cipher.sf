@@ -1,0 +1,93 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 05 May 2024
+# https://github.com/trizen
+
+# Simple implementation of the Vinegere cipher.
+
+# Inspired by:
+#   ‎The Unbreakable Kryptos Code
+#   https://youtube.com/watch?v=jVpsLMCIB0Y
+
+func vinegere_cipher_encode(text, key, alphabet_key = '', alphabet = @('A' .. 'Z')) {
+
+    key.chars!
+
+    alphabet_key.flip.each {|c|
+        alphabet.delete(c)
+        alphabet.unshift(c)
+    }
+
+    var table = [alphabet]
+
+    for (2 .. alphabet.len) {
+        table.push(table[-1].rotate(1))
+    }
+
+    var lookup_table = Hash()
+
+    table.each_kv {|k,v|
+        lookup_table{v[0]} = k
+    }
+
+    var ciphertext = []
+    var key_len = key.len
+
+    text.chars.each_kv {|k,v|
+        if (lookup_table.has(v)) {
+            ciphertext << table[lookup_table{key[k % key_len]}][lookup_table{v}]
+        }
+        else {
+            die "error: character #{'0x%02x' % v.ord} is not included in the alphabet"
+        }
+    }
+
+    return ciphertext.join
+}
+
+func vinegere_cipher_decode(ciphertext, key, alphabet_key = '', alphabet = @('A' .. 'Z')) {
+
+    key.chars!
+
+    alphabet_key.flip.each {|c|
+        alphabet.delete(c)
+        alphabet.unshift(c)
+    }
+
+    var table = [alphabet]
+
+    for (2 .. alphabet.len) {
+        table.push(table[-1].rotate(1))
+    }
+
+    var lookup_table = Hash()
+
+    table.each {|row|
+        lookup_table{row[0]} = Hash(row.kv.map { .flip... }...)
+    }
+
+    var text = []
+    var key_len = key.len
+
+    ciphertext.chars.each_kv {|k,v|
+        if (lookup_table.has(v)) {
+            text << table[lookup_table{key[k % key_len]}{v}][0]
+        }
+        else {
+            die "error: character #{'0x%02x' % v.ord} is not included in the alphabet"
+        }
+    }
+
+    return text.join
+}
+
+say vinegere_cipher_encode("SECRETMESSAGE", "HIDDEN", "KRYPTOS")   #=> QKNEVWSKJJMSZ
+say vinegere_cipher_decode("QKNEVWSKJJMSZ", "HIDDEN", "KRYPTOS")   #=> SECRETMESSAGE
+
+var data = File(__FILE__).read(:raw)
+
+var enc = vinegere_cipher_encode(data, "HIDDEN", "KRYPTOS", @(0..255).map{.chr})
+var dec = vinegere_cipher_decode(enc,  "HIDDEN", "KRYPTOS", @(0..255).map{.chr})
+
+assert_eq(dec, data)

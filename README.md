@@ -61,6 +61,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Substitution cipher](./Encoding/substitution_cipher.sf)
     * [Variable length run encoding](./Encoding/variable_length_run_encoding.sf)
     * [Variable length run encoding 2](./Encoding/variable_length_run_encoding_2.sf)
+    * [Vinegere cipher](./Encoding/vinegere_cipher.sf)
 * Encryption
     * [Age-lf](./Encryption/age-lf.sf)
     * [Backdoored rsa with x25519](./Encryption/backdoored_rsa_with_x25519.sf)
