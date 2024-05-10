@@ -23,11 +23,11 @@ func remaindersmodp(p, n) {
     ^p -> grep {|m| isrem(m, p, n) }
 }
 
-func remaindersuptop(n, maxp=31) {
+func remainder_for_primes(n, primes) {
 
     var res = [[0, 1]]
 
-    for p in (maxp.primes) {
+    for p in (primes) {
 
         var rems = remaindersmodp(p, n)
         var nres = []
@@ -68,10 +68,11 @@ func chernick_carmichael_with_n_factors(n) {
     maxp = 17 if (n >= 8)
     maxp = 23 if (n >= 10)
 
-    var r = remaindersuptop(n, maxp)
+    var primes = maxp.primes
 
+    var r = remainder_for_primes(n, primes)
     var d = r.diffs
-    var s = maxp.primes.prod
+    var s = primes.prod
 
     d += [r[0] + s - r[-1]]
 
