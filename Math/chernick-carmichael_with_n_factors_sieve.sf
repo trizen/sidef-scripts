@@ -32,6 +32,10 @@ func remainder_for_primes(n, primes) {
         var rems = remaindersmodp(p, n)
         var nres = []
 
+        if (rems.len == 0) {
+            rems = [0]
+        }
+
         for r in res {
             for rem in rems {
                 nres << [Math.chinese(r, [rem, p]), lcm(p, r[1])]

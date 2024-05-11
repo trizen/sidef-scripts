@@ -103,10 +103,20 @@ func is_extra_strong_lucas_pseudoprime(n) {
 }
 
 func strong_Baillie_PSW (n) {
+
+    return false if (n <= 1)
+    return true  if (n == 2)
+    return false if (n.is_even)
+
     n.is_strong_pseudoprime(2) && is_strong_lucas_pseudoprime(n)
 }
 
 func extra_strong_Baillie_PSW (n) {
+
+    return false if (n <= 1)
+    return true  if (n == 2)
+    return false if (n.is_even)
+
     n.is_strong_pseudoprime(2) && is_extra_strong_lucas_pseudoprime(n)
 }
 

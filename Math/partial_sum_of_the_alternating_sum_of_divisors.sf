@@ -1,0 +1,86 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 11 May 2024
+# https://github.com/trizen
+
+# A sublinear formula for computing the partial sums alternating sum of divisors function (A206369), using Dirichlet's hyperbola method.
+
+# Formula:
+#
+#   a(n) = Sum_{k=1..n} Sum_{d|k} (-1)^bigomega(k/d) * d
+#        = Sum_{k=1..n} Sum_{d|k, d is a perfect square} phi(k/d)
+#        = (1/2) * Sum_{k=1..n} (-1)^bigomega(k) * floor(n/k) * floor(n/k + 1)
+#        = (Sum_{k=1..floor(n^(1/4))} S(floor(n/k^2))) + (Sum_{k=1..floor(sqrt(n))} phi(k) * floor(sqrt(floor(n/k)))) - S(floor(sqrt(n))) * floor(n^(1/4))
+#
+# where S(n) = Sum_{k=1..n} phi(k), where `phi` is the Euler totient function.
+
+# Example:
+#   a(10^1)  = 35
+#   a(10^2)  = 3311
+#   a(10^3)  = 329283
+#   a(10^4)  = 32900704
+#   a(10^5)  = 3289890783
+#   a(10^6)  = 328986877961
+#   a(10^7)  = 32898683779520
+#   a(10^8)  = 3289868149892131
+#   a(10^9)  = 328986813691207320
+#   a(10^10) = 32898681337806276406
+
+# Asymptotic formula due to Tóth, 2013:
+#   a(n) ~ (Pi^2/30) * n^2.
+
+# OEIS sequences:
+#   https://oeis.org/A370905 -- Partial sums of the alternating sum of divisors function (A206369).
+#   https://oeis.org/A002088 -- Sum of totient function: a(n) = Sum_{k=1..n} phi(k), cf. A000010.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Dirichlet_hyperbola_method
+#   https://trizenx.blogspot.com/2018/11/partial-sums-of-arithmetical-functions.html
+
+func euler_totient_partial_sum (n) {      # using Dirichlet's hyperbola method
+
+    var total = 0
+    var s = n.isqrt
+
+    for k in (1..s) {
+        total += k*mertens(idiv(n,k))
+    }
+
+    s.each_squarefree {|k|
+        total += moebius(k)*faulhaber(idiv(n,k), 1)
+    }
+
+    total -= mertens(s)*faulhaber(s, 1)
+
+    return total
+}
+
+func partial_sums_of_asod(n) {   # sublinear complexity
+
+    func S(n) {
+        return euler_totient_partial_sum(n)
+    }
+
+    sum(1..n.iroot(4), {|k|
+        S(floor(n / k**2))
+    }) + sum(1..n.isqrt, {|k|
+        phi(k) * isqrt(floor(n/k))
+    }) - S(n.isqrt)*n.iroot(4)
+}
+
+func partial_sums_of_asod_test(n) {           # just for testing
+    sum(1..n, {|k| liouville(k) * faulhaber(idiv(n,k), 1) })
+}
+
+for m in (0..10) {
+
+    var n = 1000.irand
+
+    var t1 = partial_sums_of_asod(n)
+    var t2 = partial_sums_of_asod_test(n)
+
+    assert_eq(t1, t2, [n, t1, t2])
+
+    say "Sum_{k=1..#{n}} Sum_{d|k} λ(k/d) * d = #{t2}"
+}

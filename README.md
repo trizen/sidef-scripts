@@ -532,6 +532,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Omega prime numbers in range](./Math/omega_prime_numbers_in_range.sf)
     * [Ore's harmonic numbers](./Math/ore_s_harmonic_numbers.sf)
     * [Palindromic primes](./Math/palindromic_primes.sf)
+    * [Partial sum of the alternating sum of divisors](./Math/partial_sum_of_the_alternating_sum_of_divisors.sf)
     * [Partial sums of 2 to the bigomega of n](./Math/partial_sums_of_2_to_the_bigomega_of_n.sf)
     * [Partial sums of core function](./Math/partial_sums_of_core_function.sf)
     * [Partial sums of dedekind psi function](./Math/partial_sums_of_dedekind_psi_function.sf)
