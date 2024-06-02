@@ -1,0 +1,135 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 02 May 2024
+# Translated: 02 June 2024
+# https://github.com/trizen
+
+# Implementation of LZSS encoding, using an hash table.
+
+# A non-optimal, but very fast approach.
+
+func lzss_encode (str) {
+
+    var la = 0
+
+    var chars = str.chars
+    var end   = chars.end
+
+    var min_len  = 4                # minimum match length
+    var max_len  = 255              # maximum match length
+    var max_dist = ((1 << 16) - 1)  # maximum match distance
+
+    var (*literals, *distances, *lengths, :table)
+
+    while (la <= end) {
+
+        var best_n = 1
+        var best_p = la
+
+        var lookahead = str.substr(la, min_len)
+
+        if (table.has(lookahead) && (la - table{lookahead} <= max_dist)) {
+
+            var p = table{lookahead}
+            var n = min_len
+
+            while ((n <= max_len) && (la+n <= end) && (chars[la + n - 1] == chars[p + n - 1])) {
+                ++n
+            }
+
+            best_p = p
+            best_n = n
+
+            table{lookahead} = la
+        }
+        else {
+            table{lookahead} = la
+        }
+
+        if (best_n > min_len) {
+
+            lengths   << (best_n - 1)
+            distances << (la - best_p)
+            literals  << nil
+
+            la += (best_n - 1)
+        }
+        else {
+
+            lengths   << best_n.of(0)...
+            distances << best_n.of(0)...
+            literals  << chars[best_p .. (best_p + best_n - 1)]
+
+            la += best_n
+        }
+    }
+
+    return (literals, distances, lengths)
+}
+
+func lzss_decode (literals, distances, lengths) {
+
+    var data = []
+    var data_len = 0
+
+    for i in (^lengths) {
+
+        if (lengths[i] == 0) {
+            data << literals[i]
+            data_len += 1
+            next
+        }
+
+        var length = lengths[i];
+        var dist   = distances[i];
+
+        for j in (1 .. length) {
+            data << data[data_len + j - dist - 1]
+        }
+
+        data_len += length
+    }
+
+    data.join
+}
+
+var string = "abbaabbaabaabaaaa"
+
+var (literals, distances, lengths) = lzss_encode(string)
+var decoded = lzss_decode(literals, distances, lengths)
+
+assert_eq(string, decoded)
+
+for i  in (^literals) {
+    if (lengths[i] == 0) {
+        say literals[i]
+    }
+    else {
+        say "[#{distances[i]}, #{lengths[i]}]"
+    }
+}
+
+for file in ([__FILE__, $^PERL]) {    # several tests
+
+    var string = File(file).read(:raw)
+
+    var (literals, distances, lengths) = lzss_encode(string)
+    var decoded = lzss_decode(literals, distances, lengths)
+
+    say("Ratio: ", literals.len / literals.grep{defined(_)}.len)
+
+    assert_eq(string, decoded)
+}
+
+__END__
+a
+b
+b
+a
+[4, 6]
+[3, 5]
+a
+a
+Ratio: 1.35733333333333
+Ratio: 1.44651830581479

@@ -52,6 +52,8 @@ A nice collection of day-to-day Sidef scripts.
     * [Integers binary encoding](./Encoding/integers_binary_encoding.sf)
     * [Log encode](./Encoding/log_encode.sf)
     * [Lz77 compression](./Encoding/lz77_compression.sf)
+    * [Lzss encoding hash table](./Encoding/lzss_encoding_hash_table.sf)
+    * [Lzss encoding hash table fast](./Encoding/lzss_encoding_hash_table_fast.sf)
     * [Lzw compression](./Encoding/lzw_compression.sf)
     * [Move-to-front transform](./Encoding/move-to-front_transform.sf)
     * [Ppm encoding](./Encoding/ppm_encoding.sf)
