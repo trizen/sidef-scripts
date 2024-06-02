@@ -56,6 +56,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Move-to-front transform](./Encoding/move-to-front_transform.sf)
     * [Ppm encoding](./Encoding/ppm_encoding.sf)
     * [Ppm encoding dynamic](./Encoding/ppm_encoding_dynamic.sf)
+    * [RANS encoding](./Encoding/rANS_encoding.sf)
     * [Run length encoding](./Encoding/run_length_encoding.sf)
     * [Run length with elias coding](./Encoding/run_length_with_elias_coding.sf)
     * [Substitution cipher](./Encoding/substitution_cipher.sf)

@@ -56,7 +56,7 @@ func euler_totient_partial_sum (n) {      # using Dirichlet's hyperbola method
     return total
 }
 
-func partial_sums_of_asod(n) {   # sublinear complexity
+func partial_sums_of_asod_1(n) {   # sublinear complexity
 
     func S(n) {
         return euler_totient_partial_sum(n)
@@ -69,6 +69,12 @@ func partial_sums_of_asod(n) {   # sublinear complexity
     }) - S(n.isqrt)*n.iroot(4)
 }
 
+func partial_sums_of_asod_2(n) {    # sublinear time (slow-ish)
+    sum(1..n.isqrt, {|k|
+        k*liouville_sum(idiv(n,k)) + liouville(k)*faulhaber_sum(idiv(n,k), 1)
+    }) - liouville_sum(n.isqrt)*faulhaber_sum(n.isqrt, 1)
+}
+
 func partial_sums_of_asod_test(n) {           # just for testing
     sum(1..n, {|k| liouville(k) * faulhaber(idiv(n,k), 1) })
 }
@@ -77,10 +83,12 @@ for m in (0..10) {
 
     var n = 1000.irand
 
-    var t1 = partial_sums_of_asod(n)
-    var t2 = partial_sums_of_asod_test(n)
+    var t1 = partial_sums_of_asod_1(n)
+    var t2 = partial_sums_of_asod_2(n)
+    var t3 = partial_sums_of_asod_test(n)
 
     assert_eq(t1, t2, [n, t1, t2])
+    assert_eq(t1, t3, [n, t1, t3])
 
     say "Sum_{k=1..#{n}} Sum_{d|k} λ(k/d) * d = #{t2}"
 }

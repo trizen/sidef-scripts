@@ -1,0 +1,69 @@
+#!/usr/bin/ruby
+
+# Basic implementation of rANS encoding.
+
+# Reference:
+#   ‎Stanford EE274: Data Compression I 2023 I Lecture 7 - ANS
+#   https://youtube.com/watch?v=5Hp4bnvSjng
+
+class rANS(input) {
+
+    has M = 0
+    has freq = Hash()
+    has cumul = Hash()
+    has alphabet = []
+
+    method init {
+        freq = input.freq
+        var t = 0
+        alphabet = input.uniq.sort
+        alphabet.each {|s|
+            cumul{s} = t
+            t += freq{s}
+        }
+        M = t
+    }
+
+    method rans_base_enc(x_prev, s) {
+          var block_id = idiv(x_prev, freq{s})
+          var slot = cumul{s}+(x_prev % freq{s})
+          var x = (block_id*M + slot)
+          return x
+    }
+
+    method encode() {
+        var x = 0
+        input.each{|s|
+            x = self.rans_base_enc(x,s)
+        }
+        return x
+    }
+
+    method rans_base_dec(x) {
+        var(block_id, slot) = divmod(x,M)
+        var s = alphabet.bsearch_le{|v| cumul{v} <=> slot }
+        var x_prev = (block_id*freq{s} + slot - cumul{s})
+        return (s,x_prev)
+    }
+
+    method decode(x, n) {
+        var dec = []
+        var s = nil
+        n.times {
+            (s,x) = self.rans_base_dec(x)
+            dec << s
+        }
+        return dec.reverse
+    }
+}
+
+var seq = [1,2,1,7,8,2,2,1,3,3,1,1,1,2]
+var obj = rANS(seq)
+
+var enc = obj.encode
+var dec = obj.decode(enc, seq.len)
+
+say enc
+say dec
+
+assert_eq(dec, seq)
