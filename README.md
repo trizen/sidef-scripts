@@ -502,6 +502,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Modular square root all solutions](./Math/modular_square_root_all_solutions.sf)
     * [Modular tetration](./Math/modular_tetration.sf)
     * [Moebius transform](./Math/moebius_transform.sf)
+    * [Moebius transform fast](./Math/moebius_transform_fast.sf)
     * [Moessner miracle](./Math/moessner_miracle.sf)
     * [Motzkin numbers](./Math/motzkin_numbers.sf)
     * [Motzkin triangle](./Math/motzkin_triangle.sf)

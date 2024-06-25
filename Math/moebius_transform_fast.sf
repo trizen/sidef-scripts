@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+
+# Decently efficient implementations of the Möbius inversion formula.
+
+# Formula definition:
+#   g(n) = Sum_{d|n} mu(d) * f(n/d)
+#   f(n) = Sum_{d|n} g(d)
+
+# See also:
+#   https://en.wikipedia.org/wiki/M%C3%B6bius_inversion_formula
+
+func moebius_transform(n, f) {
+
+    var a = n.factor_prod {|p,e| ipow(p, e-1) }
+    var b = idiv(n, a)
+
+    b.divisors.sum {|d|
+        moebius(idiv(b, d)) * f(a * d)
+    }
+}
+
+func moebius_transform_alt(n, f) {
+    n.squarefree_divisors.sum {|d|
+        moebius(d) * f(idiv(n, d))
+    }
+}
+
+var f = { .phi }
+
+say 30.of {|n| moebius_transform(n, f) }        # OEIS: A007431
+say 30.of {|n| moebius_transform_alt(n, f) }    # OEIS: A007431
+
+assert_eq(
+    30.of {|n| f(n) },
+    30.of {|n| n.divisors.sum{|d| moebius_transform(d,f) } }
+)
+
+assert_eq(
+    30.of {|n| f(n) },
+    30.of {|n| n.divisors.sum{|d| moebius_transform_alt(d,f) } }
+)
