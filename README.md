@@ -516,6 +516,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Next palindrome in base](./Math/next_palindrome_in_base.sf)
     * [Non-bouncy numbers](./Math/non-bouncy_numbers.sf)
     * [Nth composite](./Math/nth_composite.sf)
+    * [Nth digit of fraction](./Math/nth_digit_of_fraction.sf)
     * [Nth k-powerfree](./Math/nth_k-powerfree.sf)
     * [Nth prime](./Math/nth_prime.sf)
     * [Nth prime power](./Math/nth_prime_power.sf)
