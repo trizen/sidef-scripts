@@ -1,0 +1,157 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 08 July 2024
+# https://github.com/trizen
+
+# A simple LZ4 decompressor.
+
+# References:
+#   https://github.com/lz4/lz4/blob/dev/doc/lz4_Frame_format.md
+#   https://github.com/lz4/lz4/blob/dev/doc/lz4_Block_format.md
+
+var file = ARGV[0] \\ die "usage: #{__MAIN__} [file.lz4]\n";
+var fh   = File(file).open('<:raw') || die "Can't open file <<#{file}>> for reading: #{$!}";
+
+func bytes2int_lsb(fh, n) {
+    Num(unpack('b*', n.of{fh.getc}.join).flip, 2)
+}
+
+bytes2int_lsb(fh, 4) == 0x184D2204 || die "Not an LZ4 file\n";
+
+var FLG = fh.getc.ord
+var BD  = fh.getc.ord
+
+var version    = (FLG & 0b11_00_00_00)
+var B_indep    = (FLG & 0b00_10_00_00)
+var B_checksum = (FLG & 0b00_01_00_00)
+var C_size     = (FLG & 0b00_00_10_00)
+var C_checksum = (FLG & 0b00_00_01_00)
+var DictID     = (FLG & 0b00_00_00_01)
+
+var Block_MaxSize = (BD & 0b0_111_0000)
+
+STDERR.say("Block max size: ", Block_MaxSize)
+
+if (version != 0b01_00_00_00) {
+    die "Error: Invalid version number";
+}
+
+if (C_size) {
+    var content_size = bytes2int_lsb(fh, 8)
+    STDERR.say("Content size: ", content_size)
+}
+
+if (DictID) {
+    var dict_id = bytes2int_lsb(fh, 4);
+    STDERR.say("Dictionary ID: ", dict_id)
+}
+
+var header_checksum = fh.getc.ord
+STDERR.say("Header checksum: ", header_checksum)
+
+var decoded = FileHandle.new_buf(:raw)
+
+STDOUT.binmode(:raw)
+
+while (!fh.eof) {
+
+    var block_size = bytes2int_lsb(fh, 4)
+
+    if (block_size == 0x00000000) {    # signifies an EndMark
+        STDERR.say("Block size == 0")
+        break
+    }
+
+    STDERR.say("Block size: #{block_size}")
+
+    if (block_size >> 31) {
+        STDERR.say("Highest bit set: ", block_size)
+        block_size &= ((1 << 31) - 1)
+        STDERR.say("Block size: ", block_size)
+        var uncompressed = ''
+        fh.read(\uncompressed, block_size)
+        decoded << uncompressed
+    }
+    else {
+
+        var compressed = ''
+        fh.read(\compressed, block_size)
+        var block_fh = compressed.open_r(:raw)
+
+        while (!block_fh.eof) {
+            var len_byte = block_fh.getc.ord
+
+            var literals_length = (len_byte >> 4)
+            var match_len       = (len_byte & 0b1111)
+
+            if (literals_length == 15) {
+                loop {
+                    var byte_len = block_fh.getc.ord
+                    literals_length += byte_len
+                    break if (byte_len != 255)
+                }
+            }
+
+            var literals = ''
+
+            if (literals_length > 0) {
+                block_fh.read(\literals, literals_length)
+            }
+
+            if (block_fh.eof) {    # end of block
+                decoded << literals
+                break
+            }
+
+            var offset = bytes2int_lsb(block_fh, 2)
+
+            if (offset == 0) {
+                die "Corrupted block";
+            }
+
+            if (match_len == 15) {
+                loop {
+                    var byte_len = block_fh.getc.ord
+                    match_len += byte_len
+                    break if (byte_len != 255)
+                }
+            }
+
+            decoded << literals
+            match_len += 4
+
+            if (offset >= match_len) {    # non-overlapping matches
+                decoded << decoded.parent.substr(decoded.parent.length - offset, match_len)
+            }
+            elsif (offset == 1) {
+                decoded << (decoded.parent.last * match_len)
+            }
+            else {                          # overlapping matches
+                for i in (1 .. match_len) {
+                    decoded << decoded.parent.substr(decoded.parent.length - offset, 1)
+                }
+            }
+        }
+    }
+
+    if (B_checksum) {
+        var content_checksum = bytes2int_lsb(fh, 4)
+        STDERR.say("Block checksum: #{content_checksum}")
+    }
+
+    if (B_indep) {    # blocks are independent of each other
+        STDOUT.print(decoded.parent)
+        decoded = FileHandle.new_buf(:raw)
+    }
+    elsif (decoded.parent.length > 2**16) {    # blocks are dependent
+        # TODO: keep only the last 2**16 bytes
+    }
+}
+
+if (C_checksum) {
+    var content_checksum = bytes2int_lsb(fh, 4)
+    STDERR.say("Content checksum: #{content_checksum}")
+}
+
+STDOUT.print(decoded.parent)
