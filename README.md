@@ -29,6 +29,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Cnp](./Decoding/cnp.sf)
 * Digest
     * [Binomial hash function](./Digest/binomial_hash_function.sf)
+    * [Crc32](./Digest/crc32.sf)
     * [Md5](./Digest/md5.sf)
 * Encoding
     * [Adaptive huffman coding](./Encoding/adaptive_huffman_coding.sf)
