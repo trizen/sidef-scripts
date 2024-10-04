@@ -12,6 +12,7 @@ A nice collection of day-to-day Sidef scripts.
 * Compression
     * [Bwrl file compression](./Compression/bwrl_file_compression.sf)
     * [Bwt file compression](./Compression/bwt_file_compression.sf)
+    * [Bzip2 compressor](./Compression/bzip2_compressor.sf)
     * [Compress](./Compression/compress.sf)
     * [Huffman file compression](./Compression/huffman_file_compression.sf)
     * [Lz4 decompressor](./Compression/lz4_decompressor.sf)
