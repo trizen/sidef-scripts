@@ -1,0 +1,223 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 19 August 2024
+# Translated: 6 October 2024
+# https://github.com/trizen
+
+# A very basic Bzip2 decompressor.
+
+# References:
+#   BZIP2: Format Specification, by Joe Tsai
+#   https://github.com/dsnet/compress/blob/master/doc/bzip2-format.pdf
+#
+#   Pyflate, by Paul Sladen
+#   http://www.paul.sladen.org/projects/pyflate/
+
+require('Compression::Util')
+
+define CompUtil = %S<Compression::Util>
+
+STDIN.binmode(:raw)
+STDOUT.binmode(:raw)
+
+var s = ''
+
+s += "BZh91AY&SY\xEA\xE0\x8D\xEB\0\0\0\xC1\0\0\x100\0 \0!\x98\31\x84aw\$S\x85\t\16\xAE\b\xDE\xB0";                                          # "ab\n"
+s += "BZh91AY&SY\x99\xAC\"V\0\0\2W\x80\0\20`\4\0@\0\x80\6\4\x90\0 \0\"\6\x81\x90\x80i\xA6\x89\30j\xCE\xA4\31o\x8B\xB9\"\x9C(HL\xD6\21+\0";  # "Hello, World!\n"
+
+s +=
+    "BZh91AY&SY\xE9\xA6L\xBE\0\0\20\xC9\x80\n\20\2\xE0?\xFB\x8B0"\
+  + " \0\x89\fE2i\xA3&\x9A\3A)\xEA\"'\xA8h\3\xD4\xD3gxRZ\4\x8C\xDA'g,\x88\xD5\xA6"\
+  + "\x9C\xEA\xC4\30wWy\xE4\xD7\xC0\x95\xF9L\x89\5\x936'\xED\x95a\22o%B\x90\x93"\
+  + "T\xAF\xFD\xE6\xEA)\x8D\x90\x82\xB5\x9E\x89Z\xD7X\xB19\x9D0\xC9\21s\x9E\x95"\
+  + "\1\xB2F\xE9\x98\xFD\x8A+O\xAD\xBDi\x96s\e\0\4\xA3G\xC0\xB2\4\xA6_\x8B\xB9\"\x9C(Ht\xD3&_\0";    # some bigger string
+
+var fh = (STDIN.is_on_tty ? s.open_r(:raw) : STDIN)
+
+while (!fh.eof) {
+
+    var buffer = *Str()
+
+    (CompUtil.bytes2int(fh, 2) == 0x425a && (fh.getc == 'h')) ->
+      || die "Not a valid Bzip2 archive"
+
+   var level = fh.getc.to_i
+
+    if (!level) {
+        die "invalid level"
+    }
+
+    STDERR << "Compression level: #{level}\n"
+
+    var stream_crc32 = 0
+
+    while (!fh.eof) {
+
+        var block_magic = pack("B48", 48.of { CompUtil.read_bit(fh, \buffer) }.join)
+
+        if (block_magic == "1AY&SY") {    # BlockHeader
+            STDERR << "Block header detected\n"
+
+            var crc32 = CompUtil.bits2int(fh, 32, \buffer)
+            STDERR << "CRC32 = #{crc32}\n"
+
+            var randomized = CompUtil.read_bit(fh, \buffer)
+            randomized == 0 || die "randomized not supported"
+
+            var bwt_idx = CompUtil.bits2int(fh, 24, \buffer)
+            STDERR << "BWT index: #{bwt_idx}\n"
+
+            var alphabet = []
+            var l1 = CompUtil.bits2int(fh, 16, \buffer)
+            for i in (0 .. 15) {
+                if (l1 & (0x8000 >> i)) {
+                    var l2 = CompUtil.bits2int(fh, 16, \buffer);
+                    for j in (0 .. 15) {
+                        if (l2 & (0x8000 >> j)) {
+                            alphabet << (16*i + j)
+                        }
+                    }
+                }
+            }
+
+            STDERR << "MTF alphabet: #{alphabet}\n"
+
+            var num_trees = CompUtil.bits2int(fh, 3, \buffer)
+            STDERR `say` "Number or trees: #{num_trees}"
+
+            var num_sels = CompUtil.bits2int(fh, 15, \buffer)
+            STDERR `say` "Number of selectors: #{num_sels}"
+
+            var idxs = []
+            for (1 .. num_sels) {
+                var i = 0
+                while (CompUtil.read_bit(fh, \buffer)) {
+                    i += 1
+                    (i < num_trees) || die "error"
+                }
+                idxs << i
+            }
+
+            var sels = CompUtil.mtf_decode(idxs, @(^num_trees));
+            STDERR `say` "Selectors: #{sels}";
+
+            const MaxHuffmanBits = 20
+            const num_syms       = (alphabet.len + 2)
+
+            var trees = []
+            for (1 .. num_trees) {
+                var clens = []
+                var clen = CompUtil.bits2int(fh, 5, \buffer)
+                for (1 .. num_syms) {
+                    loop {
+
+                        ((clen > 0) && (clen <= MaxHuffmanBits)) ->
+                          || warn "Invalid code length: #{clen}!\n"
+
+                        if (!CompUtil.read_bit(fh, \buffer)) {
+                            break
+                        }
+
+                        clen -= (CompUtil.read_bit(fh, \buffer) ? 1 : -1)
+                    }
+
+                    clens << clen
+                }
+                trees << clens;
+                STDERR `say` "Code lengths: #{clens}"
+            }
+
+            for tree in (trees) {
+                var maxLen = tree.max
+                var sum    = (1 << maxLen)
+                for clen in (tree) {
+                    sum -= ((1 << maxLen) >> clen)
+                }
+
+                sum == 0 || warn "incomplete tree detected: #{tree}\n";
+            }
+
+            var huffman_trees = trees.map { [CompUtil.huffman_from_code_lengths(_)][1] }
+
+            var eob = alphabet.len+1
+
+            var zrle = []
+            var code = ''
+
+            var sel_idx = 0
+            var tree    = huffman_trees[sels[sel_idx]]
+            var decoded = 50
+
+            while (!fh.eof) {
+                code += CompUtil.read_bit(fh, \buffer)
+
+                if (code.len > MaxHuffmanBits) {
+                    die "[!] Something went wrong: length of LL code `#{code}` is > #{MaxHuffmanBits}.\n";
+                }
+
+                if (tree.has(code)) {
+
+                    var sym = tree{code}
+
+                    if (sym == eob) {    # end of block marker
+                        STDERR `say` "EOB detected: #{sym}"
+                        break
+                    }
+
+                    zrle << sym
+                    code = ''
+
+                    if (--decoded <= 0) {
+                        if (++sel_idx <= sels.end) {
+                            tree = huffman_trees[sels[sel_idx]]
+                        }
+                        else {
+                            die "No more selectors"    # should not happen
+                        }
+                        decoded = 50
+                    }
+                }
+            }
+
+            var mtf = CompUtil.zrle_decode(zrle.flip).flip
+            var bwt = CompUtil.symbols2string(CompUtil.mtf_decode(mtf, alphabet))
+
+            var rle4 = CompUtil.string2symbols(CompUtil.bwt_decode(bwt, bwt_idx))
+            var data = CompUtil.rle4_decode(rle4)
+            var dec  = CompUtil.symbols2string(data)
+
+            var new_crc32 = Num(CompUtil.int2bits_lsb(CompUtil.crc32(pack('b*', unpack('B*', dec))), 32), 2)
+
+            STDERR `say` "Computed CRC32: #{new_crc32}"
+
+            if (crc32 != new_crc32) {
+                warn "CRC32 error: #{crc32} (stored) != #{new_crc32} (actual)\n";
+            }
+
+            stream_crc32 = ((new_crc32 ^ (0xffffffff & (((stream_crc32 << 1)) | ((stream_crc32 >> 31) & 0x1)))) & 0xffffffff)
+
+            print dec
+        }
+        elsif (block_magic == "\27rE8P\x90") {    # BlockFooter
+            STDERR `say` "Block footer detected";
+            var stored_stream_crc32 = CompUtil.bits2int(fh, 32, \buffer);
+            STDERR `say` "Stream CRC32: #{stored_stream_crc32}";
+
+            if (stream_crc32 != stored_stream_crc32) {
+                warn "Stream CRC32 error: #{stored_stream_crc32} (stored) != #{stream_crc32} (actual)\n";
+            }
+
+            buffer = *Str()
+            break
+        }
+        else {
+            die "Unknown block magic: #{block_magic}";
+        }
+
+    }
+
+    STDERR `say` "End of container";
+}
+
+STDERR `say` "End of input";
