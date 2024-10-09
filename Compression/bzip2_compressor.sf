@@ -93,14 +93,14 @@ print level
 var block_header_bitstring = unpack("B48", "1AY&SY")
 var block_footer_bitstring = unpack("B48", "\27rE8P\x90")
 
-var bitstring    = ''
+var bitstring    = FileHandle.new_buf(:raw)
 var stream_crc32 = 0
 
 while (!fh.eof) {
 
     fh.read(\var chunk, CHUNK_SIZE)
 
-    bitstring += block_header_bitstring
+    bitstring << block_header_bitstring
 
     var crc32 = CompUtil.crc32(pack('B*', unpack('b*', chunk)))
     STDERR.say("CRC32: #{crc32}")
@@ -109,22 +109,22 @@ while (!fh.eof) {
     STDERR.say("Bzip2-CRC32: #{crc32}")
 
     stream_crc32 = ((crc32 ^ ((stream_crc32 << 1) | ((stream_crc32 >> 31) & 0x1))) & 0xffffffff)
-    bitstring += CompUtil.int2bits(crc32, 32)
-    bitstring += '0'                    # not randomized
+    bitstring << CompUtil.int2bits(crc32, 32)
+    bitstring << '0'                    # not randomized
 
     var rle4 = CompUtil.rle4_encode(chunk)
     var (bwt, bwt_idx) = CompUtil.bwt_encode(CompUtil.symbols2string(rle4))
 
-    bitstring += CompUtil.int2bits(bwt_idx, 24)
+    bitstring << CompUtil.int2bits(bwt_idx, 24)
 
     var (mtf, alphabet) = CompUtil.mtf_encode(bwt)
     STDERR.say("MTF Alphabet: #{alphabet}")
 
     var (populated, marked) = encode_mtf_alphabet(alphabet)
 
-    bitstring += CompUtil.int2bits(populated, 16)
+    bitstring << CompUtil.int2bits(populated, 16)
     marked.each {|v|
-        bitstring += CompUtil.int2bits_lsb(v, 16)
+        bitstring << CompUtil.int2bits_lsb(v, 16)
     }
 
     var zrle = CompUtil.zrle_encode(mtf.flip).flip
@@ -137,15 +137,15 @@ while (!fh.eof) {
     var num_sels = ceil(zrle.len / 50)
     STDERR.say("Number of selectors: #{num_sels}")
 
-    bitstring += CompUtil.int2bits(2,         3)
-    bitstring += CompUtil.int2bits(num_sels, 15)
-    bitstring += ('0' * num_sels)
+    bitstring << CompUtil.int2bits(2,         3)
+    bitstring << CompUtil.int2bits(num_sels, 15)
+    bitstring << ('0' * num_sels)
 
-    bitstring += (encode_code_lengths(dict) * 2)
-    bitstring += join('', dict{zrle...})
+    bitstring << (encode_code_lengths(dict) * 2)
+    bitstring << join('', dict{zrle...})
 }
 
-bitstring += block_footer_bitstring
-bitstring += CompUtil.int2bits(stream_crc32, 32)
+bitstring << block_footer_bitstring
+bitstring << CompUtil.int2bits(stream_crc32, 32)
 
-print pack("B*", bitstring)
+print pack("B*", bitstring.parent)
