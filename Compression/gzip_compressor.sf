@@ -1,0 +1,193 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 13 January 2024
+# Edit: 09 April 2024
+# Translated: 9 October 2024
+# https://github.com/trizen
+
+# Create a valid Gzip container, using DEFLATE's Block Type 2: LZSS + dynamic prefix codes.
+
+# Reference:
+#   Data Compression (Summer 2023) - Lecture 11 - DEFLATE (gzip)
+#   https://youtube.com/watch?v=SJPvNi4HrWQ
+
+require('Compression::Util')
+
+define CompUtil = %S<Compression::Util>
+define CHUNK_SIZE = ((1 << 15) - 1)
+
+const MAGIC  = pack('C*', 0x1f, 0x8b);                           # magic MIME type
+const CM     = chr(0x08);                                        # 0x08 = DEFLATE
+const FLAGS  = chr(0x00);                                        # flags
+const MTIME  = pack('C*', [0x00] * 4 -> ...);                    # modification time
+const XFLAGS = chr(0x00);                                        # extra flags
+const OS     = chr(0x03);                                        # 0x03 = Unix
+
+STDOUT.binmode(:raw)
+STDIN.binmode(:raw)
+
+var str = "Hello, world!\n"
+var in_fh = (STDIN.is_on_tty ? str.open_r(:raw) : STDIN)
+
+print join('', MAGIC, CM, FLAGS, MTIME, XFLAGS, OS)
+
+var total_length = 0
+var crc32        = 0
+
+var bitstring  = FileHandle.new_buf(:raw)
+var block_type = '01';                                                                 # 00 = store; 10 = LZSS + Fixed codes; 01 = LZSS + Dynamic codes
+var CL_order   = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]
+
+var (DISTANCE_SYMBOLS, LENGTH_SYMBOLS, LENGTH_INDICES) = CompUtil.make_deflate_tables(1<<15, 258)
+
+if (in_fh.eof) {    # empty file
+    bitstring << ('1' + '10' + '0000000')
+}
+
+while (!in_fh.eof) {
+
+    in_fh.read(\var chunk, CHUNK_SIZE)
+
+    var chunk_len    = chunk.len
+    var is_last      = (in_fh.eof ? '1' : '0')
+    var block_header = FileHandle.new_buf(:raw)
+
+    block_header << join('', is_last, block_type)
+
+    var (literals, distances, lengths) = CompUtil.lzss_encode(chunk,
+        min_len => 4,
+        max_len => 258,
+        max_dist => ((1 << 15)-1),
+        max_chain_len => 64,
+    )
+
+    var len_symbols = []
+    var dist_symbols = []
+    var offset_bits = FileHandle.new_buf(:raw)
+
+    for k in (^literals) {
+
+        if (lengths[k] == 0) {
+            len_symbols << literals[k]
+            next
+        }
+
+        var len  = lengths[k];
+        var dist = distances[k];
+
+        do {
+            var len_idx = LENGTH_INDICES[len]
+            var (min, bits) = LENGTH_SYMBOLS[len_idx]...
+
+            len_symbols << [len_idx + 256 - 1, bits]
+            offset_bits << CompUtil.int2bits_lsb(len - min, bits) if (bits > 0)
+        }
+
+        do {
+            var dist_idx = CompUtil.find_deflate_index(dist, DISTANCE_SYMBOLS)
+            var (min, bits) = DISTANCE_SYMBOLS[dist_idx]...
+
+            dist_symbols << [dist_idx - 1, bits]
+            offset_bits << CompUtil.int2bits_lsb(dist - min, bits) if (bits > 0);
+        }
+    }
+
+    len_symbols << 256;    # end-of-block marker
+
+    var (dict)      = CompUtil.huffman_from_symbols(len_symbols.map{.kind_of(Arr) ? .first : _})
+    var (dist_dict) = CompUtil.huffman_from_symbols(dist_symbols.map{.first})
+
+    var LL_code_lengths = []
+    for symbol in (0 .. 285) {
+        if (dict.has(symbol)) {
+            LL_code_lengths << dict{symbol}.len
+        }
+        else {
+            LL_code_lengths << 0
+        }
+    }
+
+    LL_code_lengths.pop_while { LL_code_lengths.len > 1 && LL_code_lengths.last.is_zero }
+
+    var distance_code_lengths = []
+    for symbol in (0 .. 29) {
+        if (dist_dict.has(symbol)) {
+            distance_code_lengths << dist_dict{symbol}.len
+        }
+        else {
+            distance_code_lengths << 0
+        }
+    }
+
+    distance_code_lengths.pop_while { distance_code_lengths.len > 1 && distance_code_lengths.last.is_zero }
+
+    var CL_code = [LL_code_lengths..., distance_code_lengths...].uniq
+    var (cl_dict) = CompUtil.huffman_from_symbols(CL_code)
+
+    var CL_code_lenghts = []
+    for symbol in (0 .. 18) {
+        if (cl_dict.has(symbol)) {
+            CL_code_lenghts << cl_dict{symbol}.len
+        }
+        else {
+            CL_code_lenghts << 0
+        }
+    }
+
+    # Put the CL codes in the required order
+    CL_code_lenghts = [CL_code_lenghts[CL_order...]]
+
+    CL_code_lenghts.pop_while { CL_code_lenghts.len > 4 && CL_code_lenghts.last.is_zero }
+
+    var CL_code_lengths_bitstring       = CL_code_lenghts.map { CompUtil.int2bits_lsb(_, 3) }.join
+    var LL_code_lengths_bitstring       = join('', cl_dict{LL_code_lengths...})
+    var distance_code_lengths_bitstring = join('', cl_dict{distance_code_lengths...})
+
+    # (5 bits) HLIT = (number of LL code entries present) - 257
+    var HLIT = (LL_code_lengths.len - 257)
+
+    # (5 bits) HDIST = (number of distance code entries present) - 1
+    var HDIST = (distance_code_lengths.len - 1)
+
+    # (4 bits) HCLEN = (number of CL code entries present) - 4
+    var HCLEN = (CL_code_lenghts.len - 4)
+
+    block_header << CompUtil.int2bits_lsb(HLIT,  5)
+    block_header << CompUtil.int2bits_lsb(HDIST, 5)
+    block_header << CompUtil.int2bits_lsb(HCLEN, 4)
+
+    block_header << CL_code_lengths_bitstring
+    block_header << LL_code_lengths_bitstring
+    block_header << distance_code_lengths_bitstring
+
+    bitstring << block_header.parent
+
+    offset_bits.seek(0,0)
+
+    for symbol in (len_symbols) {
+        if (symbol.kind_of(Arr)) {
+
+            var (len, len_offset) = symbol...
+            bitstring << dict{len}
+            bitstring << len_offset.of { offset_bits.getc }.join
+
+            var (dist, dist_offset) = dist_symbols.shift...
+            bitstring << dist_dict{dist}
+            bitstring << dist_offset.of { offset_bits.getc }.join
+        }
+        else {
+            bitstring << dict{symbol}
+        }
+    }
+
+    crc32 = CompUtil.crc32(chunk, crc32)
+    total_length += chunk_len
+}
+
+if (bitstring.parent != '') {
+    print pack('b*', bitstring.parent)
+}
+
+print pack('b*', CompUtil.int2bits_lsb(crc32,        32))
+print pack('b*', CompUtil.int2bits_lsb(total_length, 32))
