@@ -16,6 +16,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Bzip2 decompressor](./Compression/bzip2_decompressor.sf)
     * [Compress](./Compression/compress.sf)
     * [Gzip compressor](./Compression/gzip_compressor.sf)
+    * [Gzip decompressor](./Compression/gzip_decompressor.sf)
     * [Huffman file compression](./Compression/huffman_file_compression.sf)
     * [Lz4 decompressor](./Compression/lz4_decompressor.sf)
     * [Lz77 file compression](./Compression/lz77_file_compression.sf)

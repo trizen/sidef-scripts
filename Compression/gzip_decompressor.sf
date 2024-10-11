@@ -1,0 +1,361 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 13 January 2024
+# Edit: 14 April 2024
+# Translated: 11 October 2024
+# https://github.com/trizen
+
+# Decompress GZIP files (.gz).
+
+# DEFLATE's block type 0, 1 and 2 are all supported.
+
+# Reference:
+#   Data Compression (Summer 2023) - Lecture 11 - DEFLATE (gzip)
+#   https://youtube.com/watch?v=SJPvNi4HrWQ
+
+require('Compression::Util')
+
+define CompUtil = %S<Compression::Util>
+
+STDOUT.binmode(:raw)
+STDIN.binmode(:raw)
+
+func extract_block_type_0 (in_fh, buffer) {
+
+    var len           = CompUtil.bits2int_lsb(in_fh, 16, buffer);
+    var nlen          = CompUtil.bits2int_lsb(in_fh, 16, buffer);
+    var expected_nlen = ((~len) & 0xffff);
+
+    if (expected_nlen != nlen) {
+        die "[!] The ~length value is not correct: #{nlen} (actual) != #{expected_nlen} (expected)\n";
+    }
+    else {
+        STDERR << ":: Chunk length: #{len}\n";
+    }
+
+    in_fh.read(\var chunk, len);
+    return chunk;
+}
+
+var (DISTANCE_SYMBOLS, LENGTH_SYMBOLS) = CompUtil.make_deflate_tables(1 << 15, 258);
+
+func decode_huffman(in_fh, buffer, rev_dict, dist_rev_dict, search_window) {
+
+    var data = FileHandle.new_buf(:raw)
+    var code = '';
+
+    var max_ll_code_len   = rev_dict.keys.map{.len}.max
+    var max_dist_code_len = dist_rev_dict.keys.map{.len}.max
+
+    loop {
+        code += CompUtil.read_bit_lsb(in_fh, buffer)
+
+        if (code.len > max_ll_code_len) {
+            die "[!] Something went wrong: length of LL code `#{code}` is > #{max_ll_code_len}.\n";
+        }
+
+        if (rev_dict.has(code)) {
+
+            var symbol = rev_dict{code}
+
+            if (symbol <= 255) {
+                data          << chr(symbol);
+                *search_window += chr(symbol);
+            }
+            elsif (symbol == 256) {    # end-of-block marker
+                code = '';
+                break
+            }
+            else {                      # LZSS decoding
+                var (length, LL_bits) = LENGTH_SYMBOLS[symbol - 256 + 1]...
+                length += CompUtil.bits2int_lsb(in_fh, LL_bits, buffer) if (LL_bits > 0)
+
+                var dist_code = '';
+
+                loop {
+                    dist_code += CompUtil.read_bit_lsb(in_fh, buffer);
+
+                    if (dist_code.len > max_dist_code_len) {
+                        die "[!] Something went wrong: length of distance code `#{dist_code}` is > #{max_dist_code_len}.\n";
+                    }
+
+                    if (dist_rev_dict.has(dist_code)) {
+                        break
+                    }
+                }
+
+                var (dist, dist_bits) = DISTANCE_SYMBOLS[dist_rev_dict{dist_code} + 1]...
+                dist += CompUtil.bits2int_lsb(in_fh, dist_bits, buffer) if (dist_bits > 0)
+
+                if (dist == 1) {
+                    *search_window += ((*search_window).last * length);
+                }
+                elsif (dist >= length) {    # non-overlapping matches
+                    *search_window += (*search_window).substr((*search_window).len - dist, length)
+                }
+                else {                        # overlapping matches
+                    for i in (1 .. length) {
+                        *search_window += (*search_window).substr((*search_window).len - dist, 1)
+                    }
+                }
+
+                data << (*search_window).substr(-length)
+            }
+
+            code = ''
+        }
+    }
+
+    if (code != '') {
+        die "[!] Something went wrong: code `#{code}` is not empty!\n";
+    }
+
+    return data.parent
+}
+
+func extract_block_type_1 (in_fh, buffer, search_window) {
+
+    static rev_dict;
+    static dist_rev_dict;
+
+    if (!defined(rev_dict)) {
+
+        var code_lengths = [0]*288
+        for i in (0 .. 143) {
+            code_lengths[i] = 8;
+        }
+        for i in (144 .. 255) {
+            code_lengths[i] = 9;
+        }
+        for i in (256 .. 279) {
+            code_lengths[i] = 7;
+        }
+        for i in (280 .. 287) {
+            code_lengths[i] = 8;
+        }
+
+        rev_dict      = [CompUtil.huffman_from_code_lengths(code_lengths)][1]
+        dist_rev_dict = [CompUtil.huffman_from_code_lengths([5]*32)][1]
+    }
+
+    decode_huffman(in_fh, buffer, rev_dict, dist_rev_dict, search_window);
+}
+
+func decode_CL_lengths(in_fh, buffer, CL_rev_dict, size) {
+
+    var lengths = []
+    var code = '';
+
+    loop {
+        code += CompUtil.read_bit_lsb(in_fh, buffer);
+
+        if (code.len > 7) {
+            die "[!] Something went wrong: length of CL code `#{code}` is > 7.\n";
+        }
+
+        if (CL_rev_dict.has(code)) {
+            var CL_symbol = CL_rev_dict{code}
+
+            if (CL_symbol <= 15) {
+                lengths << CL_symbol;
+            }
+            elsif (CL_symbol == 16) {
+                lengths << (3 + CompUtil.bits2int_lsb(in_fh, 2, buffer)).of(lengths.last)...
+            }
+            elsif (CL_symbol == 17) {
+                lengths << (3 + CompUtil.bits2int_lsb(in_fh, 3, buffer)).of(0)...
+            }
+            elsif (CL_symbol == 18) {
+                lengths << (11 + CompUtil.bits2int_lsb(in_fh, 7, buffer)).of(0)...
+            }
+            else {
+                die "Unknown CL symbol: #{CL_symbol}\n";
+            }
+
+            code = '';
+            break if (lengths.len >= size);
+        }
+    }
+
+    if (lengths.len != size) {
+        die "Something went wrong: size #{size} (expected) != #{lengths.len}";
+    }
+
+    if (code != '') {
+        die "Something went wrong: code `#{code}` is not empty!";
+    }
+
+    return lengths;
+}
+
+func extract_block_type_2 (in_fh, buffer, search_window) {
+
+    # (5 bits) HLIT = (number of LL code entries present) - 257
+    var HLIT = (CompUtil.bits2int_lsb(in_fh, 5, buffer) + 257)
+
+    # (5 bits) HDIST = (number of distance code entries present) - 1
+    var HDIST = (CompUtil.bits2int_lsb(in_fh, 5, buffer) + 1)
+
+    # (4 bits) HCLEN = (number of CL code entries present) - 4
+    var HCLEN = (CompUtil.bits2int_lsb(in_fh, 4, buffer) + 4)
+
+    STDERR << ":: Number of LL codes: #{HLIT}\n";
+    STDERR << ":: Number of dist codes: #{HDIST}\n";
+    STDERR << ":: Number of CL codes: #{HCLEN}\n";
+
+    var CL_code_lenghts = 19.of(0)
+    var CL_order        = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]
+
+    for i in (^HCLEN) {
+        CL_code_lenghts[CL_order[i]] = CompUtil.bits2int_lsb(in_fh, 3, buffer)
+    }
+
+    STDERR << ":: CL code lengths: #{CL_code_lenghts}\n";
+
+    var CL_rev_dict = [CompUtil.huffman_from_code_lengths(CL_code_lenghts)][1]
+
+    var LL_CL_lengths   = decode_CL_lengths(in_fh, buffer, CL_rev_dict, HLIT);
+    var dist_CL_lengths = decode_CL_lengths(in_fh, buffer, CL_rev_dict, HDIST);
+
+    var LL_rev_dict   = [CompUtil.huffman_from_code_lengths(LL_CL_lengths)][1]
+    var dist_rev_dict = [CompUtil.huffman_from_code_lengths(dist_CL_lengths)][1]
+
+    decode_huffman(in_fh, buffer, LL_rev_dict, dist_rev_dict, search_window);
+}
+
+func extract (in_fh, out_fh) {
+
+    var MAGIC = 2.of { in_fh.getc \\ die "error" }.join
+
+    if (MAGIC != pack('C*', 0x1f, 0x8b)) {
+        die "Not a valid Gzip container!\n";
+    }
+
+    var CM     = in_fh.getc \\ die "error";                             # 0x08 = DEFLATE
+    var FLAGS  = ord(in_fh.getc \\ die "error");                        # flags
+    var _MTIME  = 4.of { in_fh.getc \\ die "error" }.join                # modification time
+    var _XFLAGS = in_fh.getc \\ die "error";                             # extra flags
+    var _OS     = in_fh.getc \\ die "error";                             # 0x03 = Unix
+
+    if (CM != 0x08.chr) {
+        die ("Only DEFLATE compression method is supported (0x08)! Got: 0x", sprintf('%02x', CM.ord));
+    }
+
+    # Reference:
+    #   https://web.archive.org/web/20240221024029/https://forensics.wiki/gzip/
+
+    var has_filename        = false
+    var has_comment         = false
+    var has_header_checksum = false
+    var has_extra_fields    = false
+
+    if (FLAGS & 0x08) {
+        has_filename = true
+    }
+
+    if (FLAGS & 0x10) {
+        has_comment = true
+    }
+
+    if (FLAGS & 0x02) {
+        has_header_checksum = true
+    }
+
+    if (FLAGS & 0x04) {
+        has_extra_fields = true
+    }
+
+    if (has_extra_fields) {
+        var size = CompUtil.bytes2int_lsb(in_fh, 2);
+        in_fh.read(\var extra_field_data, size) \\ die "can't read extra field data: #{$!}";
+        STDERR << ":: Extra field data: #{extra_field_data}\n";
+    }
+
+    if (has_filename) {
+        var filename = CompUtil.read_null_terminated(in_fh);    # filename
+        STDERR << ":: Filename: #{filename}\n"
+    }
+
+    if (has_comment) {
+        var comment = CompUtil.read_null_terminated(in_fh);     # comment
+        STDERR << ":: Comment: #{comment}\n";
+    }
+
+    if (has_header_checksum) {
+        var header_checksum = CompUtil.bytes2int_lsb(in_fh, 2);
+        STDERR << ":: Header checksum: #{header_checksum}\n";
+    }
+
+    var crc32         = 0;
+    var actual_length = 0;
+    var buffer        = *Str()
+    var search_window = '';
+    var window_size   = (1<<15)-1
+
+    loop {
+
+        var is_last    = CompUtil.read_bit_lsb(in_fh, \buffer);
+        var block_type = CompUtil.bits2int_lsb(in_fh, 2, \buffer);
+
+        var chunk = '';
+
+        if (block_type == 0) {
+            STDERR << "\n:: Extracting block of type 0\n";
+            buffer = *Str();                                       # pad to a byte
+            chunk  = extract_block_type_0(in_fh, \buffer);
+            search_window += chunk;
+        }
+        elsif (block_type == 1) {
+            STDERR << "\n:: Extracting block of type 1\n";
+            chunk = extract_block_type_1(in_fh, \buffer, \search_window);
+        }
+        elsif (block_type == 2) {
+            STDERR << "\n:: Extracting block of type 2\n";
+            chunk = extract_block_type_2(in_fh, \buffer, \search_window);
+        }
+        else {
+            die "[!] Unknown block of type: #{block_type}";
+        }
+
+        out_fh << chunk
+        crc32 = CompUtil.crc32(chunk, crc32)
+        actual_length += chunk.len
+        search_window = search_window.last(window_size) if (search_window.len > 2*window_size)
+
+        break if is_last
+    }
+
+    buffer = *Str();    # discard any padding bits
+
+    var stored_crc32 = CompUtil.bits2int_lsb(in_fh, 32, \buffer);
+    var actual_crc32 = crc32;
+
+    STDERR << "\n";
+
+    if (stored_crc32 != actual_crc32) {
+        STDERR << "[!] The CRC32 does not match: #{actual_crc32} (actual) != #{stored_crc32} (stored)\n";
+    }
+    else {
+        STDERR << ":: CRC32 value: #{actual_crc32}\n";
+    }
+
+    var stored_length = CompUtil.bits2int_lsb(in_fh, 32, \buffer);
+
+    if (stored_length != actual_length) {
+        STDERR << "[!] The length does not match: #{actual_length} (actual) != #{stored_length} (stored)\n";
+    }
+    else {
+        STDERR << ":: Total length: #{actual_length}\n";
+    }
+
+    if (in_fh.eof) {
+        STDERR << "\n:: Reached the end of the file.\n";
+    }
+    else {
+        STDERR << "\n:: There is something else in the container! Trying to recurse!\n\n";
+        __FUNC__(in_fh, out_fh)
+    }
+}
+
+extract(STDIN, STDOUT)
