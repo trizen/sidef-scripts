@@ -43,7 +43,7 @@ var (DISTANCE_SYMBOLS, LENGTH_SYMBOLS) = CompUtil.make_deflate_tables(1 << 15, 2
 func decode_huffman(in_fh, buffer, rev_dict, dist_rev_dict, search_window) {
 
     var data = FileHandle.new_buf(:raw)
-    var code = '';
+    var code = ''
 
     var max_ll_code_len   = rev_dict.keys.map{.len}.max
     var max_dist_code_len = dist_rev_dict.keys.map{.len}.max
@@ -60,11 +60,12 @@ func decode_huffman(in_fh, buffer, rev_dict, dist_rev_dict, search_window) {
             var symbol = rev_dict{code}
 
             if (symbol <= 255) {
-                data          << chr(symbol);
-                *search_window += chr(symbol);
+                var byte = symbol.chr
+                data          << byte
+                search_window << byte
             }
             elsif (symbol == 256) {    # end-of-block marker
-                code = '';
+                code = ''
                 break
             }
             else {                      # LZSS decoding
@@ -89,18 +90,19 @@ func decode_huffman(in_fh, buffer, rev_dict, dist_rev_dict, search_window) {
                 dist += CompUtil.bits2int_lsb(in_fh, dist_bits, buffer) if (dist_bits > 0)
 
                 if (dist == 1) {
-                    *search_window += ((*search_window).last * length);
+                    search_window << (search_window.parent.last * length);
                 }
                 elsif (dist >= length) {    # non-overlapping matches
-                    *search_window += (*search_window).substr((*search_window).len - dist, length)
+                    search_window << search_window.parent.substr(search_window.parent.len - dist, length)
                 }
                 else {                        # overlapping matches
-                    for i in (1 .. length) {
-                        *search_window += (*search_window).substr((*search_window).len - dist, 1)
+                    var len = search_window.parent.len
+                    for i in (^length) {
+                        search_window << search_window.parent.char(len + i - dist)
                     }
                 }
 
-                data << (*search_window).substr(-length)
+                data << search_window.parent.substr(-length)
             }
 
             code = ''
@@ -290,7 +292,7 @@ func extract (in_fh, out_fh) {
     var crc32         = 0;
     var actual_length = 0;
     var buffer        = *Str()
-    var search_window = '';
+    var search_window = FileHandle.new_buf(:raw)
     var window_size   = (1<<15)-1
 
     loop {
@@ -304,15 +306,15 @@ func extract (in_fh, out_fh) {
             STDERR << "\n:: Extracting block of type 0\n";
             buffer = *Str();                                       # pad to a byte
             chunk  = extract_block_type_0(in_fh, \buffer);
-            search_window += chunk;
+            search_window << chunk;
         }
         elsif (block_type == 1) {
             STDERR << "\n:: Extracting block of type 1\n";
-            chunk = extract_block_type_1(in_fh, \buffer, \search_window);
+            chunk = extract_block_type_1(in_fh, \buffer, search_window);
         }
         elsif (block_type == 2) {
             STDERR << "\n:: Extracting block of type 2\n";
-            chunk = extract_block_type_2(in_fh, \buffer, \search_window);
+            chunk = extract_block_type_2(in_fh, \buffer, search_window);
         }
         else {
             die "[!] Unknown block of type: #{block_type}";
@@ -321,7 +323,7 @@ func extract (in_fh, out_fh) {
         out_fh << chunk
         crc32 = CompUtil.crc32(chunk, crc32)
         actual_length += chunk.len
-        search_window = search_window.last(window_size) if (search_window.len > 2*window_size)
+        search_window = FileHandle.new_buf(:raw, search_window.parent.last(window_size))
 
         break if is_last
     }
