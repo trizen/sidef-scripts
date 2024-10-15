@@ -83,7 +83,7 @@ func prime_bigomega_partial_sum(n, m) {     # O(sqrt(n)) complexity
     var total = 0
 
     for k in (1..s) {
-        total += faulhaber_sum(k, m)*(prime_power_count(floor(n/(k+1))+1, floor(n/k)))
+        total += faulhaber_sum(k,m)*(prime_power_count(floor(n/(k+1))+1, floor(n/k)))
     }
 
     for k in (1..u) {
@@ -99,9 +99,12 @@ func prime_bigomega_partial_sum_2(n, m) {
     var total = 0
 
     for k in (1..s) {
-        total += (k**m * prime_power_count(floor(n/k)))
-        total += faulhaber_sum(floor(n/k), m) if k.is_prime_power
+        total += (ipow(k,m) * prime_power_count(floor(n/k)))
     }
+
+    each_prime_power(1, s, {|k|
+        total += faulhaber_sum(floor(n/k), m)
+    })
 
     total -= prime_power_count(s)*faulhaber_sum(s, m)
 
