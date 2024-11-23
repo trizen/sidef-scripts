@@ -427,6 +427,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Is smooth over product](./Math/is_smooth_over_product.sf)
     * [Is squarefree over product](./Math/is_squarefree_over_product.sf)
     * [Jacobi symbol](./Math/jacobi_symbol.sf)
+    * [Jordan polya numbers](./Math/jordan_polya_numbers.sf)
     * [Julia set](./Math/julia_set.sf)
     * [K-imperfect numbers](./Math/k-imperfect_numbers.sf)
     * [K-non-powerfree numbers in range](./Math/k-non-powerfree_numbers_in_range.sf)
