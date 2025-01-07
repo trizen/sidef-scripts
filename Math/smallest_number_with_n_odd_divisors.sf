@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+
+# Generate the smallest number with n odd divisors.
+# Algorithm by Chai Wah Wu, Aug 17 2024, from OEIS A038547.
+
+# See also:
+#   https://oeis.org/A038547
+
+func smallest_number_with_n_odd_divisors(n) {
+
+    func mult_factors(n) is cached {
+
+        if (n.is_prime) {
+            return [[n]]
+        }
+
+        var c = []
+        n.divisors.each {|d|
+            if (d.is_between(2, n-1)) {
+                for a in (__FUNC__(idiv(n,d))) {
+                    c << a.clone.binsert(d)
+                }
+            }
+        }
+
+        c.uniq
+    }
+
+    mult_factors(n).map {|d|
+        d.flip.prod_kv{|k,v|
+            prime(k+2)**(v-1)
+        }
+    }.min \\ 1
+}
+
+say smallest_number_with_n_odd_divisors(1024)   #=> 25097947875
+
+assert_eq(
+    smallest_number_with_n_odd_divisors.map(1..34),
+    %n[1, 3, 9, 15, 81, 45, 729, 105, 225, 405, 59049, 315, 531441, 3645, 2025, 945, 43046721, 1575, 387420489, 2835, 18225, 295245, 31381059609, 3465, 50625, 2657205, 11025, 25515, 22876792454961, 14175, 205891132094649, 10395, 1476225, 215233605]
+)
