@@ -303,6 +303,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Factorial approximations](./Math/factorial_approximations.sf)
     * [Factorial dsc algorithm](./Math/factorial_dsc_algorithm.sf)
     * [Factorial expansion](./Math/factorial_expansion.sf)
+    * [Factorial valuation generalized](./Math/factorial_valuation_generalized.sf)
     * [Factorization of fibonacci numbers](./Math/factorization_of_fibonacci_numbers.sf)
     * [Farey factorization method](./Math/farey_factorization_method.sf)
     * [Farey fraction approximations](./Math/farey_fraction_approximations.sf)

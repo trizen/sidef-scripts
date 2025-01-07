@@ -1,0 +1,17 @@
+#!/usr/bin/ruby
+
+# Return the number of times n! is divided by k, without computing n!.
+
+# Algorithm from SymPy:
+#   https://github.com/sympy/sympy/blob/d7938cbc2f703801413075c147f54db350d29bff/sympy/ntheory/factor_.py#L227
+
+func factorial_valuation_generalized(n, p) {
+    p.factor_exp.flip.uniq_by{.tail}.map_2d {|k,v|
+       idiv(n - n.sumdigits(k), (k-1)*v)
+    }.min \\ 0
+}
+
+say factorial_valuation_generalized(25, 10)                 #=> 6
+say factorial_valuation_generalized(2**100, factorial(25))  #=> 52818775009509558395695966887
+
+assert_eq(10!.divisors.sum{|d| factorial_valuation_generalized(10, d) }, 312)
