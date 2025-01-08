@@ -421,6 +421,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Is extra bfsw pseudoprime](./Math/is_extra_bfsw_pseudoprime.sf)
     * [Is infinitary divisor](./Math/is_infinitary_divisor.sf)
     * [Is lucas-carmichael number](./Math/is_lucas-carmichael_number.sf)
+    * [Is omega prime](./Math/is_omega_prime.sf)
     * [Is perfect power](./Math/is_perfect_power.sf)
     * [Is perfect power fast](./Math/is_perfect_power_fast.sf)
     * [Is practical number](./Math/is_practical_number.sf)
