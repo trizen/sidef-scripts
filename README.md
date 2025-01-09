@@ -413,6 +413,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Inverse znorder](./Math/inverse_znorder.sf)
     * [Invmod of coprime factorials](./Math/invmod_of_coprime_factorials.sf)
     * [Irregular triangle of n AND k](./Math/irregular_triangle_of_n_AND_k.sf)
+    * [Is almost prime](./Math/is_almost_prime.sf)
     * [Is bfsw pseudoprime](./Math/is_bfsw_pseudoprime.sf)
     * [Is both truncatable prime](./Math/is_both_truncatable_prime.sf)
     * [Is carmichael number](./Math/is_carmichael_number.sf)

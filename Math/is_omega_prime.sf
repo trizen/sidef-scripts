@@ -23,7 +23,7 @@ func my_is_omega_prime (n, k) {
         t > r || return false
         r = t
 
-        f = factor_upto(f.last, r*100).uniq
+        f = factor_upto(f.last, r).uniq
 
         if (f.len == 1) {
             return false
@@ -55,6 +55,7 @@ for n in (1..100) {
 }
 
 # These tests may randomly fail
+assert(my_is_omega_prime(944911386291, 5))
 assert(my_is_omega_prime(1762610652661, 4))
 assert(my_is_omega_prime(17295389739104958689918, 6))
 assert(my_is_omega_prime(3194569977264671866214863610, 4))
