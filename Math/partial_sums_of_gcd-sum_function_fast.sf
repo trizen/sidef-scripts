@@ -86,7 +86,38 @@ func partial_sums_of_gcd_sum_function(n) {
     return (A - T*C)
 }
 
+func partial_sums_of_gcd_sum_function_dirichlet(n) {
+    dirichlet_hyperbola(n, { .euler_phi }, { _ }, { .totient_sum }, { .faulhaber(1) })
+}
+
+func sigma_ktm_partial_sum(n, m) {      # O(sqrt(n)) complexity
+
+    var total = 0
+
+    var s = n.isqrt
+
+    for k in (1 .. s) {
+        total += 2*(k**m * faulhaber_sum(idiv(n,k), m))
+    }
+
+    total -= faulhaber_sum(s, m)**2
+
+    return total
+}
+
+func partial_sums_of_gcd_sum_function_dirichlet_2(n) {
+
+    # See also:
+    #   https://oeis.org/A372931
+
+    dirichlet_hyperbola(n, { .mu }, { _ * .tau }, { .mertens }, { sigma_ktm_partial_sum(_, 1) })
+}
+
 say 20.of { partial_sums_of_gcd_sum_function(_) }
+say 20.of { partial_sums_of_gcd_sum_function_dirichlet(_) }
+say 20.of { partial_sums_of_gcd_sum_function_dirichlet_2(_) }
 
 __END__
+[0, 1, 4, 9, 17, 26, 41, 54, 74, 95, 122, 143, 183, 208, 247, 292, 340, 373, 436, 473]
+[0, 1, 4, 9, 17, 26, 41, 54, 74, 95, 122, 143, 183, 208, 247, 292, 340, 373, 436, 473]
 [0, 1, 4, 9, 17, 26, 41, 54, 74, 95, 122, 143, 183, 208, 247, 292, 340, 373, 436, 473]
