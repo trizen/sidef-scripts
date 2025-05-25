@@ -558,6 +558,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Partial sums of exponential prime omega functions](./Math/partial_sums_of_exponential_prime_omega_functions.sf)
     * [Partial sums of gcd-sum function](./Math/partial_sums_of_gcd-sum_function.sf)
     * [Partial sums of gcd-sum function fast](./Math/partial_sums_of_gcd-sum_function_fast.sf)
+    * [Partial sums of generalized gcd-sum function](./Math/partial_sums_of_generalized_gcd-sum_function.sf)
     * [Partial sums of gpf](./Math/partial_sums_of_gpf.sf)
     * [Partial sums of inverse moebius transform of dedekind function](./Math/partial_sums_of_inverse_moebius_transform_of_dedekind_function.sf)
     * [Partial sums of jordan totient function](./Math/partial_sums_of_jordan_totient_function.sf)
