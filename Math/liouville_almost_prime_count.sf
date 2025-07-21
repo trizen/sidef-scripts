@@ -1,0 +1,29 @@
+#!/usr/bin/ruby
+
+# Author: Trizen
+# Date: 21 July 2025
+# https://github.com/trizen
+
+# Compute the number of k-almost primes <= n, based on L(n) = the summatory function of the Liouville function.
+
+func liouville_almost_prime_count(n, k) {
+
+    var t = liouville_sum(n)
+
+    for j in (0..n.ilog2) {
+
+        if (j == k) {
+            next
+        }
+
+        t -= ((-1)**j * j.almost_prime_count(n))
+    }
+
+    return t.abs
+}
+
+# Number of 13-almost primes <= 10^n
+
+for n in (1..14) {
+    say [n, liouville_almost_prime_count(10**n, 13)]
+}

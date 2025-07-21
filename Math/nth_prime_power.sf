@@ -75,7 +75,7 @@ func nth_prime_power(n) {
     return k
 }
 
-for n in (1..10) {
+for n in (1 .. ((Bool(Number.HAS_PRIME_UTIL) && Num(Num.INTSIZE) == 64) ? 10 : 8)) {
     var pp = nth_prime_power(10**n)
     assert(pp.is_prime_power)
     assert_eq(pp.prime_power_count, 10**n)
