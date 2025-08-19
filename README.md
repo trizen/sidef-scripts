@@ -793,6 +793,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Cocktail sort](./Sort/cocktail_sort.sf)
     * [Comb sort](./Sort/comb_sort.sf)
     * [Counting sort](./Sort/counting_sort.sf)
+    * [Dream sort](./Sort/dream_sort.sf)
     * [Gnome sort](./Sort/gnome_sort.sf)
     * [Heapsort](./Sort/heapsort.sf)
     * [Insertion sort](./Sort/insertion_sort.sf)

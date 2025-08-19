@@ -1,0 +1,54 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 19 August 2025
+# https://github.com/trizen
+
+# A recursive sorting algorithm for strings, based on a dream that I had, similar to Radix sort.
+
+# The running time of the algorithm is:
+#   O(n * len(s))
+# where `n` is the number of strings being sorted and `s` is the longest string in the array.
+
+func dream_sort(arr, i = 0) {
+
+    var buckets = []
+
+    arr.each {|item|
+        buckets[(item.char(i).ord \\ -1)+1] := [] << item
+    }
+
+    var sorted = []
+
+    if (defined(buckets[0])) {
+        sorted << buckets[0]...
+    }
+
+    1..buckets.end -> each {|k|
+        var entry = buckets[k]
+        if (defined(entry)) {
+            if (entry.len == 1) {
+                sorted << entry...
+            }
+            else {
+                sorted << __FUNC__(entry, i+1)...
+            }
+        }
+    }
+
+    return sorted
+}
+
+func sort_test(arr) {
+    var sorted = arr.sort
+    assert_eq(dream_sort(arr), sorted)
+    assert_eq(dream_sort(arr.flip), sorted)
+    assert_eq(dream_sort(arr.sort), sorted)
+    assert_eq(dream_sort(arr.shuffle), sorted)
+}
+
+sort_test(["abc", "abd"])
+sort_test(["abc", "abc"])
+sort_test(["abcd", "abc"])
+sort_test(["John", "Kate", "Zerg", "Alice", "Joe", "Jane"])
+sort_test(File(__FILE__).read(:raw).words)
