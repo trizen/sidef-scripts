@@ -1,0 +1,36 @@
+#!/usr/bin/ruby
+
+# Crack the code?
+# A numeric lock has a 3 digit key.
+
+# Hint:
+#   682 - one number is correct and well placed
+#   614 - one number is correct but wrongly placed
+#   206 - two numbers are correct but wrongly placed
+#   738 - nothing is correct
+#   780 - one number is correct but wrongly placed
+
+for n in (0 .. 999) {
+
+    var s = sprintf("%03s", n)
+
+    # Hint 1
+    s ^ "682" -> count("\0") == 1 || next
+
+    # Hint 2
+    s ^ "614" -> count("\0") == 0 || next
+    s.count(/[614]/) == 1         || next
+
+    # Hint 3
+    s ^ "206" -> count("\0") == 0 || next
+    s.count(/[206]/) == 2         || next
+
+    # Hint 4
+    s =~ /[738]/ && next
+
+    # Hint 5
+    s ^ "780" -> count("\0") == 0 || next
+    s.count(/[780]/) == 1         || next
+
+    say s
+}

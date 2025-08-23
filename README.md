@@ -96,6 +96,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Bulls and cows](./Games/bulls_and_cows.sf)
     * [Bulls and cows player](./Games/bulls_and_cows_player.sf)
     * [Conway's game of life](./Games/conway_s_game_of_life.sf)
+    * [Crack the code](./Games/crack_the_code.sf)
     * [Dice game solver](./Games/dice_game_solver.sf)
     * [Forest fire](./Games/forest_fire.sf)
     * [Forest fire oo](./Games/forest_fire_oo.sf)
