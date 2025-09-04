@@ -11,7 +11,7 @@
 
 func meissel_lehmer_prime_count(){}
 
-func f(n, a, p_a) {
+func P2(n, a, p_a) {
 
     var j = a
     var lo = p_a+1
@@ -25,21 +25,35 @@ func f(n, a, p_a) {
     return count
 }
 
+func recursive_rough_count(n,k) {
+
+    var P = k.dec.primes
+
+    func (n,a) is cached {
+
+        if (a == 0) {
+            return n
+        }
+
+        __FUNC__(n, a-1) - __FUNC__(idiv(n, P[a-1]), a-1)
+    }(n, P.len)
+}
+
 func meissel_lehmer_prime_count(n) is cached {
 
     if (n <= 10) {
         return [0, 0, 1, 2, 2, 3, 3, 4, 4, 4, 4][n]
     }
 
-    var P = n.icbrt.primes
+    var P = n.icbrt.primes      # all primes <= n^(1/3)
     var p_a = P[-1]
-    var phi = p_a.inc.rough_count(n)
+    var phi = recursive_rough_count(n, p_a+1)
     var a = P.len
 
-    phi + a - 1 - f(n, a, p_a)
+    phi + a - 1 - P2(n, a, p_a)
 }
 
-for n in (1..7) {
+for n in (1..6) {
     say "pi(10^#{n}) = #{meissel_lehmer_prime_count(10**n)}"
     var x = (10**n -> irand)
     assert_eq(meissel_lehmer_prime_count(x), x.pi)
