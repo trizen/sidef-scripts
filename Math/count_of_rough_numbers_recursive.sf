@@ -8,46 +8,27 @@
 
 func rough_count (n,k) {
 
-    if (n <= 0) {
-        return 0
+    var P = k.dec.primes
+
+    if (P.len == 0) {
+        return n
     }
 
-    func (n,p) is cached {
+    func (n,a) is cached {
 
-        if (p > n.isqrt) {
-            return 1
+        var count = (n - (n >> 1))
+
+        for j in (1 ..^ a) {
+            count -= __FUNC__(idiv(n, P[j]), j)
         }
 
-        if (p == 2) {
-            return (n >> 1)
-        }
-
-        if (p == 3) {
-            var t = idiv(n,3)
-            return (t - (t >> 1))
-        }
-
-        var u = 0
-        var t = idiv(n,p)
-
-        for (var q = 2; q < p; q.next_prime!) {
-
-            var v = __FUNC__(t - (t % q), q)
-
-            if (v == 1) {
-                u += prime_count(q, p-1)
-                break
-            }
-
-            u += v
-        }
-
-        t - u
-    }(n*k, k)
+        return count
+    }(n, P.len)
 }
 
 for p in (primes(23)) {
     say ("Φ(10^n, #{p}) for n < 15: ", 15.range.map { rough_count(10**_, p) })
+    assert_eq(15.range.map { rough_count(10**_, p) }, 15.range.map { p.rough_count(10**_) })
 }
 
 __END__

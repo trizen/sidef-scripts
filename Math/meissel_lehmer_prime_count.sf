@@ -25,9 +25,7 @@ func P2(n, a, p_a) {
     return count
 }
 
-func recursive_rough_count(n,k) {
-
-    var P = k.dec.primes
+func recursive_rough_count(n,P) {
 
     func (n,a) is cached {
 
@@ -47,7 +45,7 @@ func meissel_lehmer_prime_count(n) is cached {
 
     var P = n.icbrt.inc.primes      # all primes <= n^(1/3)
     var p_a = P[-1]
-    var phi = recursive_rough_count(n, p_a+1)
+    var phi = recursive_rough_count(n, P)
     var a = P.len
 
     phi + a - 1 - P2(n, a, p_a)
