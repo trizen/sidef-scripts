@@ -1,0 +1,93 @@
+#!/usr/bin/ruby
+
+# Sieve for Dickson primes: primes of the form `m*k + a`, for `k = 1..n` and fixed `a`.
+# Inspired by the PARI program by David A. Corneth from OEIS A372238.
+
+# See also:
+#   https://oeis.org/A088250
+#   https://oeis.org/A318646
+#   https://oeis.org/A372238/a372238.gp.txt
+#   https://en.wikipedia.org/wiki/Dickson%27s_conjecture
+
+func isrem(m, p, terms, alpha) {
+
+    terms.each {|k|
+        if (k*m + alpha -> is_div(p)) {
+            return false
+        }
+    }
+
+    return true
+}
+
+func remaindersmodp(p, terms, alpha) {
+    ^p -> grep {|k| isrem(k, p, terms, alpha) }
+}
+
+func remainders_for_primes(primes, terms, alpha) {
+
+    var res = [[0, 1]]
+
+    primes.each {|p|
+
+        var rems = remaindersmodp(p, terms, alpha)
+
+        if (rems.is_empty) {
+            rems = [0]
+        }
+
+        var nres = []
+        res.each {|r|
+            rems.each {|rem|
+                nres << [Math.chinese(r, [rem, p]), lcm(p, r[1])]
+            }
+        }
+
+        res = nres
+    }
+
+    res.map { .head }.sort
+}
+
+func linear_form_primes(terms, alpha = 1, maxp = 3*terms.len) {
+
+    var primes = maxp.primes
+
+    var r = remainders_for_primes(primes, terms, alpha)
+    var d = r.diffs
+    var s = primes.prod
+
+    while (d[0] == 0) {
+        d.shift
+    }
+
+    d << (r[0] + s - r[-1])
+
+    var m      = r[0]
+    var d_len  = d.len
+
+    for j in (0..Inf) {
+
+        if (terms.all {|k| is_prime(k*m + alpha) }) {
+            return m
+        }
+
+        m += d[j % d_len]
+    }
+}
+
+for n in (4..8) {
+    var terms = @(1..n)
+    var alpha = 1
+    var m = linear_form_primes(terms, alpha)
+    say "a(#{n}) = #{m}"
+}
+
+__END__
+a(4) = 330
+a(5) = 10830
+a(6) = 25410
+a(7) = 512820
+a(8) = 512820
+a(9) = 12960606120
+a(10) = 434491727670

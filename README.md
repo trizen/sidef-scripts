@@ -270,6 +270,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Cyclotomic polynomials expansion](./Math/cyclotomic_polynomials_expansion.sf)
     * [Cyclotomic polynomials expansion native](./Math/cyclotomic_polynomials_expansion_native.sf)
     * [Derivative numerical approximation](./Math/derivative_numerical_approximation.sf)
+    * [Dickson linear forms prime sieve](./Math/dickson_linear_forms_prime_sieve.sf)
     * [Difference of matrices factorization method](./Math/difference_of_matrices_factorization_method.sf)
     * [Difference of powers factorization method](./Math/difference_of_powers_factorization_method.sf)
     * [Difference of two rectangles solutions](./Math/difference_of_two_rectangles_solutions.sf)
