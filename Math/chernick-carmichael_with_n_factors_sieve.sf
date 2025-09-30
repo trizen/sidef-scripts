@@ -14,9 +14,13 @@ func isrem(m, p, n) {
     p `divides` (12*m + 1) && return false
     p `divides` (18*m + 1) && return false
 
-    2 .. n-2 -> none {|k|
-        p `divides` (9*m << k + 1)
+    2 .. n-2 -> each {|k|
+        if (p `divides` (9*m << k + 1)) {
+            return false
+        }
     }
+
+    return true
 }
 
 func remaindersmodp(p, n) {
@@ -44,7 +48,7 @@ func remainder_for_primes(n, primes) {
         res = nres
     }
 
-    res.map{.[0]}.sort
+    res.map{ .head }.sort
 }
 
 func is(m, n) {
@@ -65,12 +69,7 @@ func chernick_carmichael_factors(m, n) {
     [6*m + 1, 12*m + 1, 1 .. n-2 -> map{|k| 9*m << k + 1 }...]
 }
 
-func chernick_carmichael_with_n_factors(n) {
-
-    var maxp = 11
-
-    maxp = 17 if (n >= 8)
-    maxp = 23 if (n >= 10)
+func chernick_carmichael_with_n_factors(n, maxp = n.prime) {
 
     var primes = maxp.primes
 

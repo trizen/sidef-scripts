@@ -49,9 +49,9 @@ func remainders_for_primes(primes, terms, alpha) {
     res.map { .head }.sort
 }
 
-func linear_form_primes(terms, alpha = 1, maxp = 3*terms.len) {
+func linear_form_primes(terms, alpha = 1, callback) {
 
-    var primes = maxp.primes
+    var primes = terms.len.prime.primes
 
     var r = remainders_for_primes(primes, terms, alpha)
     var d = r.diffs
@@ -69,25 +69,66 @@ func linear_form_primes(terms, alpha = 1, maxp = 3*terms.len) {
     for j in (0..Inf) {
 
         if (terms.all {|k| is_prime(k*m + alpha) }) {
-            return m
+            callback(m)
         }
 
         m += d[j % d_len]
     }
 }
 
+say "=> a(n) is the smallest number k such that r*k + 1 is prime for all r = 1 to n"
+
 for n in (4..8) {
+
     var terms = @(1..n)
     var alpha = 1
-    var m = linear_form_primes(terms, alpha)
+    var m = nil
+
+    linear_form_primes(terms, alpha, {|k|
+        m = k
+        break
+    })
+
     say "a(#{n}) = #{m}"
 }
 
+say "\n=> The least Chernick's \"universal form\" Carmichael number with n prime factors"
+
+for n in (3..8) {
+
+    var terms = [6, 12, 1 .. n-2 -> map{|k| 9 * 2**k }...]
+    var alpha = 1
+    var m = nil
+
+    linear_form_primes(terms, alpha, {|k|
+        if (k.valuation(2) >= n-4) {
+            m = k
+            break
+        }
+    })
+
+    say "a(#{n}) = #{m}"
+    say terms.map {|b| m*b + alpha }.prod
+}
+
 __END__
+=> a(n) is the smallest number k such that r*k + 1 is prime for all r = 1 to n
 a(4) = 330
 a(5) = 10830
 a(6) = 25410
 a(7) = 512820
 a(8) = 512820
-a(9) = 12960606120
-a(10) = 434491727670
+
+=> The least Chernick's "universal form" Carmichael number with n prime factors
+a(3) = 1
+1729
+a(4) = 45
+192739365541
+a(5) = 380
+26641259752490421121
+a(6) = 380
+1457836374916028334162241
+a(7) = 780320
+24541683183872873851606952966798288052977151461406721
+a(8) = 950560
+53487697914261966820654105730041031613370337776541835775672321
