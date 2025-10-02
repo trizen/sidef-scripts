@@ -9,28 +9,13 @@
 #   https://oeis.org/A372238/a372238.gp.txt
 #   https://en.wikipedia.org/wiki/Dickson%27s_conjecture
 
-func isrem(m, p, terms, alpha) {
-
-    terms.each {|k|
-        if (k*m + alpha -> is_div(p)) {
-            return false
-        }
-    }
-
-    return true
-}
-
-func remaindersmodp(p, terms, alpha) {
-    ^p -> grep {|k| isrem(k, p, terms, alpha) }
-}
-
-func remainders_for_primes(primes, terms, alpha) {
+func remainders_for_primes(primes, terms, alpha) is cached {
 
     var res = [[0, 1]]
 
     primes.each {|p|
 
-        var rems = remaindersmodp(p, terms, alpha)
+        var rems = (^p -> grep {|m| terms.none {|k| k*m + alpha -> is_div(p) } })
 
         if (rems.is_empty) {
             rems = [0]
@@ -51,7 +36,7 @@ func remainders_for_primes(primes, terms, alpha) {
 
 func linear_form_primes(terms, alpha = 1, callback) {
 
-    var primes = terms.len.prime.primes
+    var primes = terms.len.pn_primes
 
     var r = remainders_for_primes(primes, terms, alpha)
     var d = r.diffs
