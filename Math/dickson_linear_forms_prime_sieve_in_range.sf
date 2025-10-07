@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# Sieve for Dickson primes: primes of the form `m*k + a`, for `k = 1..n` and fixed `a`.
+# Sieve for linear forms primes of the form `a_1*m + b_1`, `a_2*m + b_2`, ..., `a_k*m + b_k`.
 # Inspired by the PARI program by David A. Corneth from OEIS A372238.
 
 # See also:
@@ -9,13 +9,13 @@
 #   https://oeis.org/A372238/a372238.gp.txt
 #   https://en.wikipedia.org/wiki/Dickson%27s_conjecture
 
-func remainders_for_primes(primes, terms, alpha) is cached {
+func remainders_for_primes(primes, terms) is cached {
 
     var res = [[0, 1]]
 
     primes.each {|p|
 
-        var rems = (^p -> grep {|m| terms.none {|k| k*m + alpha -> is_div(p) } })
+        var rems = (^p -> grep {|m| terms.none {|k| p.is_ntf(k[0]*m + k[1]) } })
 
         if (rems.is_empty) {
             rems = [0]
@@ -34,11 +34,11 @@ func remainders_for_primes(primes, terms, alpha) is cached {
     res.map { .head }.sort
 }
 
-func linear_form_primes_in_range(A, B, terms, alpha = 1) {
+func linear_form_primes_in_range(A, B, terms) {
 
     var primes = terms.len.pn_primes
 
-    var r = remainders_for_primes(primes, terms, alpha)
+    var r = remainders_for_primes(primes, terms)
     var d = r.diffs
     var s = primes.prod
 
@@ -63,16 +63,10 @@ func linear_form_primes_in_range(A, B, terms, alpha = 1) {
 
     var arr = []
 
-    for x in (A .. min(B, terms.len)) {
-        if (terms.all {|k| is_prime(k*x + alpha) }) {
-            arr << x
-        }
-    }
-
     loop {
 
-        if (terms.all {|k| is_prime(k*m + alpha) }) {
-            arr << m if (m > 1)
+        if (terms.all {|k| is_prime(k[0]*m + k[1]) }) {
+            arr << m
         }
 
         m += d[j++ % d_len]
@@ -82,26 +76,26 @@ func linear_form_primes_in_range(A, B, terms, alpha = 1) {
     return arr
 }
 
-assert_eq(linear_form_primes_in_range(1, 50, [1], 1), [1, 2, 4, 6, 10, 12, 16, 18, 22, 28, 30, 36, 40, 42, 46])
-assert_eq(linear_form_primes_in_range(1, 100, [1,2], 1), [1, 2, 6, 18, 30, 36, 78, 96])
-assert_eq(linear_form_primes_in_range(1, 1000, [1,2,3], 1), [2, 6, 36, 210, 270, 306, 330, 336, 600, 726])
-assert_eq(linear_form_primes_in_range(1, 10000, [1,2,3,4], 1), [330, 1530, 3060, 4260, 4950, 6840])
-assert_eq(linear_form_primes_in_range(1, 12000, [1,2,3,4,5], 1), [10830])
-assert_eq(linear_form_primes_in_range(9538620, 9993270, [1,2,3,4,5], 1), [9538620, 9780870, 9783060, 9993270])
-assert_eq(linear_form_primes_in_range(9538620+1, 9993270, [1,2,3,4,5], 1), [9780870, 9783060, 9993270])
+assert_eq(linear_form_primes_in_range(1, 50, [[1,1]]), [1, 2, 4, 6, 10, 12, 16, 18, 22, 28, 30, 36, 40, 42, 46])
+assert_eq(linear_form_primes_in_range(1, 100, [[1,1],[2,1]]), [1, 2, 6, 18, 30, 36, 78, 96])
+assert_eq(linear_form_primes_in_range(1, 1000, [[1,1],[2,1],[3,1]]), [2, 6, 36, 210, 270, 306, 330, 336, 600, 726])
+assert_eq(linear_form_primes_in_range(1, 10000, [[1,1],[2,1],[3,1],[4,1]]), [330, 1530, 3060, 4260, 4950, 6840])
+assert_eq(linear_form_primes_in_range(1, 12000, [[1,1],[2,1],[3,1],[4,1],[5,1]]), [10830])
+assert_eq(linear_form_primes_in_range(9538620, 9993270, [[1,1],[2,1],[3,1],[4,1],[5,1]]), [9538620, 9780870, 9783060, 9993270])
+assert_eq(linear_form_primes_in_range(9538620+1, 9993270, [[1,1],[2,1],[3,1],[4,1],[5,1]]), [9780870, 9783060, 9993270])
 
 say "=> The least Chernick's \"universal form\" Carmichael number with n prime factors"
 
 for n in (3..8) {
 
-    var terms = [6, 12, 1 .. n-2 -> map{|k| 9 * 2**k }...]
+    var terms = [6, 12, 1 .. n-2 -> map{|k| 9 * 2**k }...].map { [_, 1] }
 
     var A = 1
     var B = 2*A
 
     loop {
 
-        var arr = linear_form_primes_in_range(A, B, terms, 1).grep {|k| k.valuation(2) >= n-4 }
+        var arr = linear_form_primes_in_range(A, B, terms).grep {|k| k.valuation(2) >= n-4 }
 
         if (arr) {
             say "a(#{n}) = #{arr[0]}"
