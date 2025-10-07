@@ -42,7 +42,7 @@ func linear_form_primes(terms, callback) {
     var d = r.diffs
     var s = primes.prod
 
-    while (d[0] == 0) {
+    while (!d.is_empty && (d[0] == 0)) {
         d.shift
     }
 
