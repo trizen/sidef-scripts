@@ -1,0 +1,115 @@
+#!/usr/bin/ruby
+
+# Sieve for linear forms primes of the form `a_1*m + b_1`, `a_2*m + b_2`, ..., `a_k*m + b_k`.
+# Inspired by the PARI program by David A. Corneth from OEIS A372238.
+
+# See also:
+#   https://oeis.org/A088250
+#   https://oeis.org/A318646
+#   https://oeis.org/A372238/a372238.gp.txt
+#   https://en.wikipedia.org/wiki/Dickson%27s_conjecture
+
+func combine_crt(arr, M, p, S_p) {
+
+    var Minv_mod_p = invmod(M % p, p)
+
+    gather {
+        arr.each {|r|
+            S_p.each {|s|
+                var k = ((s - (r % p)) % p)
+                k = ((k * Minv_mod_p) % p)
+                var x = ((k*M + r) % (M * p))
+                take(x)
+            }
+        }
+    }
+}
+
+func linear_form_primes_in_range(A, B, terms) {
+
+    var primes = min(terms.len, 7).pn_primes
+
+    var residues = [0]
+    var M        = 1
+
+    primes.each {|p|
+        var S_p = (^p -> grep {|m| terms.none {|k| p.is_ntf(k[0]*m + k[1]) } })
+
+        if (p == S_p.len) {
+            next      # skip nontrivial primes
+        }
+
+        residues = combine_crt(residues, M, p, S_p)
+        M *= p
+    }
+
+    var solutions = []
+
+    residues.each {|r|
+        var from = (r + idiv(A, M)*M)
+
+        while (from < A) {
+            from += M
+        }
+
+        for m in (from .. B `by` M) {
+            if (terms.all {|k| k[0]*m + k[1] -> is_prime }) {
+                solutions << m
+            }
+        }
+    }
+
+    return solutions.sort
+}
+
+assert_eq(linear_form_primes_in_range(1, 41, [[1, 41]]), %n[2, 6, 12, 18, 20, 26, 30, 32, 38])
+assert_eq(linear_form_primes_in_range(1, 50, [[1, 1]]), %n[1, 2, 4, 6, 10, 12, 16, 18, 22, 28, 30, 36, 40, 42, 46])
+assert_eq(linear_form_primes_in_range(1, 100, [[1,1], [2,1]]), %n[1, 2, 6, 18, 30, 36, 78, 96])
+assert_eq(linear_form_primes_in_range(1, 1000, [[1,1],[2,1],[3,1]]), %n[2, 6, 36, 210, 270, 306, 330, 336, 600, 726])
+assert_eq(linear_form_primes_in_range(1, 10000, [[1,1],[2,1],[3,1],[4,1]]), %n[330, 1530, 3060, 4260, 4950, 6840])
+assert_eq(linear_form_primes_in_range(1, 12000,  [[1,1],[2,1],[3,1],[4,1],[5,1]]), %n[10830])
+assert_eq(linear_form_primes_in_range(9538620, 9993270,  [[1,1],[2,1],[3,1],[4,1],[5,1]]), %n[9538620, 9780870, 9783060, 9993270])
+assert_eq(linear_form_primes_in_range(9538620+1, 9993270,  [[1,1],[2,1],[3,1],[4,1], [5,1]]), %n[9780870, 9783060, 9993270])
+
+assert_eq(linear_form_primes_in_range(1, 1000,  [[1,-1],[2,-1],[3,-1]]), %n[4, 6, 24, 30, 84, 90, 174, 234, 240, 294, 420, 660, 954])
+assert_eq(linear_form_primes_in_range(1, 10000, [[1,-1],[2,-1],[3,-1],[4,-1]]), %n[6, 90, 1410, 1890])
+assert_eq(linear_form_primes_in_range(1, 500, [[2,-1],[4,-1],[6,-1]]), %n[2, 3, 12, 15, 42, 45, 87, 117, 120, 147, 210, 330, 477])
+assert_eq(linear_form_primes_in_range(1, 500, [[2,1],[4,3],[8,7]]), %n[2, 5, 20, 44, 89, 179, 254, 359])
+assert_eq(linear_form_primes_in_range(1, 500, [[2,-1],[4,-1],[8,-1]]), %n[3, 6, 21, 45, 90, 180, 255, 360])
+assert_eq(linear_form_primes_in_range(1, 500, [[2,-1],[4,-1],[8,-1],[16,-1]]), %n[3, 45, 90, 180, 255])
+assert_eq(linear_form_primes_in_range(1, 500, [[17,1],[23,5]]), %n[18, 24, 66, 126, 186, 216, 378, 384, 426])
+
+assert_eq(linear_form_primes_in_range(1, 500, [[17,4],[15,-8],[19, 2]]), %n[5, 9, 11, 65, 75, 105, 125, 159, 191, 221, 231, 291, 341, 369, 419, 461, 471, 479])
+assert_eq(linear_form_primes_in_range(1, 500, [[17,4],[15,+8],[19, 2]]), %n[5, 11, 45, 65, 105, 159, 161, 189, 221, 275, 291, 299, 431, 479])
+
+say "=> The least Chernick's \"universal form\" Carmichael number with n prime factors"
+
+for n in (3..8) {
+
+    var terms = [6, 12, 1 .. n-2 -> map{|k| 9 * 2**k }...].map { [_, 1] }
+
+    var A = 1
+    var B = 2*A
+
+    loop {
+
+        var arr = linear_form_primes_in_range(A, B, terms).grep {|k| k.valuation(2) >= n-4 }
+
+        if (arr) {
+            say "a(#{n}) = #{arr[0]}"
+            break
+        }
+
+        A = B+1
+        B = 2*A
+    }
+}
+
+__END__
+=> The least Chernick's "universal form" Carmichael number with n prime factors
+a(3) = 1
+a(4) = 1
+a(5) = 380
+a(6) = 380
+a(7) = 780320
+a(8) = 950560
