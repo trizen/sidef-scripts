@@ -43,23 +43,42 @@ func linear_form_primes_in_range(A, B, terms) {
         M *= p
     }
 
-    var solutions = []
+    residues.sort!
 
-    residues.each {|r|
-        var from = (r + idiv(A, M)*M)
+    var d = residues.diffs
 
-        while (from < A) {
-            from += M
-        }
-
-        for m in (from .. B `by` M) {
-            if (terms.all {|k| k[0]*m + k[1] -> is_prime }) {
-                solutions << m
-            }
-        }
+    while (!d.is_empty && (d[0] == 0)) {
+        d.shift
     }
 
-    return solutions.sort
+    d << (residues[0] + M - residues[-1])
+
+    var m      = residues[0]
+    var d_len  = d.len
+
+    with (d.sum) {|d_sum|
+        m += d_sum*idiv(A, d_sum)
+    }
+
+    var j = 0
+
+    while (m < A) {
+        m += d[j++ % d_len]
+    }
+
+    var arr = []
+
+    loop {
+
+        if (terms.all {|k| is_prime(k[0]*m + k[1]) }) {
+            arr << m
+        }
+
+        m += d[j++ % d_len]
+        break if (m > B)
+    }
+
+    return arr
 }
 
 assert_eq(linear_form_primes_in_range(1, 41, [[1, 41]]), %n[2, 6, 12, 18, 20, 26, 30, 32, 38])
@@ -84,7 +103,7 @@ assert_eq(linear_form_primes_in_range(1, 500, [[17,4],[15,+8],[19, 2]]), %n[5, 1
 
 say "=> The least Chernick's \"universal form\" Carmichael number with n prime factors"
 
-for n in (3..8) {
+for n in (3..9) {
 
     var terms = [6, 12, 1 .. n-2 -> map{|k| 9 * 2**k }...].map { [_, 1] }
 

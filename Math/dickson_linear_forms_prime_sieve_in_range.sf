@@ -12,10 +12,15 @@
 func remainders_for_primes(primes, terms) is cached {
 
     var res = [[0, 1]]
+    var M   = 1
 
     primes.each {|p|
 
         var rems = (^p -> grep {|m| terms.none {|k| p.is_ntf(k[0]*m + k[1]) } })
+
+        if (rems.len == p) {
+            next    # skip trivial primes
+        }
 
         if (rems.is_empty) {
             rems = [0]
@@ -29,24 +34,24 @@ func remainders_for_primes(primes, terms) is cached {
         }
 
         res = nres
+        M *= p
     }
 
-    res.map { .head }.sort
+    return (M, res.map { .head }.sort)
 }
 
 func linear_form_primes_in_range(A, B, terms) {
 
     var primes = terms.len.pn_primes
 
-    var r = remainders_for_primes(primes, terms)
+    var (M, r) = remainders_for_primes(primes, terms)
     var d = r.diffs
-    var s = primes.prod
 
     while (!d.is_empty && (d[0] == 0)) {
         d.shift
     }
 
-    d << (r[0] + s - r[-1])
+    d << (r[0] + M - r[-1])
 
     var m      = r[0]
     var d_len  = d.len

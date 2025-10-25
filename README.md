@@ -273,6 +273,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Dickson linear forms prime sieve](./Math/dickson_linear_forms_prime_sieve.sf)
     * [Dickson linear forms prime sieve in range](./Math/dickson_linear_forms_prime_sieve_in_range.sf)
     * [Dickson linear forms prime sieve in range 2](./Math/dickson_linear_forms_prime_sieve_in_range_2.sf)
+    * [Dickson linear forms prime sieve in range 3](./Math/dickson_linear_forms_prime_sieve_in_range_3.sf)
     * [Difference of matrices factorization method](./Math/difference_of_matrices_factorization_method.sf)
     * [Difference of powers factorization method](./Math/difference_of_powers_factorization_method.sf)
     * [Difference of two rectangles solutions](./Math/difference_of_two_rectangles_solutions.sf)

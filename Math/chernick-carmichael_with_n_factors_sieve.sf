@@ -10,12 +10,12 @@
 
 func isrem(m, p, n) {
 
-    p `divides` ( 6*m + 1) && return false
-    p `divides` (12*m + 1) && return false
-    p `divides` (18*m + 1) && return false
+    p.is_ntf( 6*m + 1) && return false
+    p.is_ntf(12*m + 1) && return false
+    p.is_ntf(18*m + 1) && return false
 
     2 .. n-2 -> each {|k|
-        if (p `divides` (9*m << k + 1)) {
+        if (p.is_ntf(9*m << k + 1)) {
             return false
         }
     }
@@ -30,11 +30,16 @@ func remaindersmodp(p, n) {
 func remainder_for_primes(n, primes) {
 
     var res = [[0, 1]]
+    var M   = 1
 
     for p in (primes) {
 
         var rems = remaindersmodp(p, n)
         var nres = []
+
+        if (rems.len == p) {
+            next    # skip trivial primes
+        }
 
         if (rems.len == 0) {
             rems = [0]
@@ -46,9 +51,10 @@ func remainder_for_primes(n, primes) {
             }
         }
         res = nres
+        M *= p
     }
 
-    res.map{ .head }.sort
+    return (M, res.map{ .head }.sort)
 }
 
 func is(m, n) {
@@ -73,11 +79,10 @@ func chernick_carmichael_with_n_factors(n, maxp = n.prime) {
 
     var primes = maxp.primes
 
-    var r = remainder_for_primes(n, primes)
+    var (M, r) = remainder_for_primes(n, primes)
     var d = r.diffs
-    var s = primes.prod
 
-    d += [r[0] + s - r[-1]]
+    d += [r[0] + M - r[-1]]
 
     var m = r[0]
     var d_len = d.len
