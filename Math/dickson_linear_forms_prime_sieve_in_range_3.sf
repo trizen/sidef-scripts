@@ -27,7 +27,13 @@ func combine_crt(arr, M, p, S_p) {
 
 func linear_form_primes_in_range(A, B, terms) {
 
-    var primes = min(terms.len, 7).pn_primes
+    A > B && return []
+
+    var terms_len  = terms.len
+    var range_size = int(exp(LambertW(log(B - A + 1))))
+
+    var max_p  = nth_prime(min(terms_len, range_size))
+    var primes = max_p.primes
 
     var residues = [0]
     var M        = 1

@@ -42,7 +42,13 @@ func remainders_for_primes(primes, terms) is cached {
 
 func linear_form_primes_in_range(A, B, terms) {
 
-    var primes = terms.len.pn_primes
+    A > B && return []
+
+    var terms_len  = terms.len
+    var range_size = int(exp(LambertW(log(B - A + 1))))
+
+    var max_p  = nth_prime(min(terms_len, range_size))
+    var primes = max_p.primes
 
     var (M, r) = remainders_for_primes(primes, terms)
     var d = r.diffs
