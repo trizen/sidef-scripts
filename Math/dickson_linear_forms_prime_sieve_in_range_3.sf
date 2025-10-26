@@ -1,7 +1,6 @@
 #!/usr/bin/ruby
 
 # Sieve for linear forms primes of the form `a_1*m + b_1`, `a_2*m + b_2`, ..., `a_k*m + b_k`.
-# Inspired by the PARI program by David A. Corneth from OEIS A372238.
 
 # See also:
 #   https://oeis.org/A088250
@@ -39,7 +38,7 @@ func linear_form_primes_in_range(A, B, terms) {
     var M        = 1
 
     primes.each {|p|
-        var S_p = (^p -> grep {|m| terms.none {|k| p.is_ntf(k[0]*m + k[1]) } })
+        var S_p = (^p -> grep {|m| terms.none {|k| p.divides(k[0]*m + k[1]) } })
 
         if (p == S_p.len) {
             next      # skip trivial primes
@@ -59,6 +58,16 @@ func linear_form_primes_in_range(A, B, terms) {
 
     d << (residues[0] + M - residues[-1])
 
+    var compute_small_values = false
+    var small_values_limit   = min(500, B)
+    var original_A           = nil
+
+    if (A < small_values_limit) {
+        original_A           = A;
+        A                    = small_values_limit+1
+        compute_small_values = true
+    }
+
     var m      = residues[0]
     var d_len  = d.len
 
@@ -74,14 +83,21 @@ func linear_form_primes_in_range(A, B, terms) {
 
     var arr = []
 
-    loop {
+    if (compute_small_values) {
+        for v in (original_A .. small_values_limit) {
+            if (terms.all {|k| is_prime(k[0]*v + k[1]) }) {
+                arr << v
+            }
+        }
+    }
+
+    while (m <= B) {
 
         if (terms.all {|k| is_prime(k[0]*m + k[1]) }) {
             arr << m
         }
 
         m += d[j++ % d_len]
-        break if (m > B)
     }
 
     return arr
@@ -106,6 +122,50 @@ assert_eq(linear_form_primes_in_range(1, 500, [[17,1],[23,5]]), %n[18, 24, 66, 1
 
 assert_eq(linear_form_primes_in_range(1, 500, [[17,4],[15,-8],[19, 2]]), %n[5, 9, 11, 65, 75, 105, 125, 159, 191, 221, 231, 291, 341, 369, 419, 461, 471, 479])
 assert_eq(linear_form_primes_in_range(1, 500, [[17,4],[15,+8],[19, 2]]), %n[5, 11, 45, 65, 105, 159, 161, 189, 221, 275, 291, 299, 431, 479])
+
+func f(n, multiple = 1, alpha = 1) {
+
+    var terms = (1..n -> map {|k| [multiple * k, alpha] })
+
+    var A = 1
+    var B = 2*A
+
+    loop {
+        var arr = linear_form_primes_in_range(A, B, terms)
+
+        if (arr) {
+            return arr[0]
+        }
+
+        A = B+1
+        B = 2*A
+    }
+}
+
+assert_eq({ f(_, 1, +1) } `map` 1..8, [1, 1, 2, 330, 10830, 25410,  512820,  512820]);     # A088250
+assert_eq({ f(_, 1, -1) } `map` 1..8, [3, 3, 4, 6,   6,     154770, 2894220, 2894220]);    # A088651
+assert_eq({ f(_, 9, +1) } `map` 1..8, [2, 2, 4, 170, 9860,  23450,  56980,   56980]);      # A372238
+assert_eq({ f(_, 2, -1) } `map` 1..8, [2, 2, 2, 3,   3,     77385,  1447110, 1447110]);    # A124492
+assert_eq({ f(_, 2, +1) } `map` 1..8, [1, 1, 1, 165, 5415,  12705,  256410,  256410]);     # A071576
+
+assert_eq({ f(_, _, +1) } `map` 1..8, [1, 1, 2, 765,  2166, 4235,  73260,  2780085]);
+assert_eq({ f(_, _, -1) } `map` 1..8, [3, 2, 2, 3225, 18,   25795, 413460, 7505190]);
+
+assert_eq({ f(_, _, -13) } `map` 1..6, [15, 8,  6,  15,  24, 2800]);
+assert_eq({ f(_, _, +13) } `map` 1..6, [4,  12, 10, 90,  18, 40705]);
+assert_eq({ f(_, _, -23) } `map` 1..6, [25, 13, 10, 255, 6,  5]);
+assert_eq({ f(_, _, +23) } `map` 1..6, [6,  9,  10, 60,  48, 13300]);
+
+assert_eq({ f(_, 1, +23) } `map` 1..6, [6, 18, 30, 210, 240, 79800]);
+assert_eq({ f(_, 1, -23) } `map` 1..8, [25, 26, 30, 30, 30, 30, 142380, 1319010]);
+
+assert_eq({ f(_, 1, +101) } `map` 1..6, [2,   6,   96,  180, 3990, 1683990]);
+assert_eq({ f(_, 1, -101) } `map` 1..6, [103, 104, 104, 240, 3630, 78540]);
+
+assert_eq(linear_form_primes_in_range(1, 1e3, [[2, 1], [4, 1], [6, 1]]), [1, 3, 18, 105, 135, 153, 165, 168, 300, 363, 585, 618, 648, 765, 828]);    # A124408
+assert_eq(linear_form_primes_in_range(1, 1e4, [[2, 1], [4, 1], [6, 1], [8, 1]]),          [165, 765, 1530, 2130, 2475, 3420, 5415, 7695, 9060]);     # A124409
+assert_eq(linear_form_primes_in_range(1, 1e5, [[2, 1], [4, 1], [6, 1], [8, 1], [10, 1]]), [5415, 12705, 13020, 44370, 82950, 98280]);                # A124410
+assert_eq(linear_form_primes_in_range(1, 1e6, [[2, 1], [4, 1], [6, 1], [8, 1], [10, 1], [12, 1]]), [12705, 13020, 105525, 256410, 966840]);          # A124411
 
 say "=> The least Chernick's \"universal form\" Carmichael number with n prime factors"
 
