@@ -10,40 +10,60 @@
 
 func combine_crt(arr, M, p, S_p) {
 
-    var Minv_mod_p = invmod(M % p, p)
+    var Minv    = invmod(M % p, p)
+    var new_mod = M*p
 
     gather {
         arr.each {|r|
             S_p.each {|s|
-                var k = ((s - (r % p)) % p)
-                k = ((k * Minv_mod_p) % p)
-                var x = ((k*M + r) % (M * p))
-                take(x)
+                take((((((s - (r % p)) % p) * Minv) % p)*M + r) % new_mod)
             }
         }
     }
+}
+
+func remaindersmodp(p, terms) {
+    (^p -> grep {|m| terms.none {|k| p.divides(k[0]*m + k[1]) } })
+}
+
+func select_optimal_primes (A, B, terms) {
+
+    var range = (B - A)
+
+    return [] if (range <= 0)
+
+    var target_modulus = range**(4/5)
+
+    var M = 1
+    var primes = []
+
+    for (var p = 2; true; p.next_prime!) {
+        var S_p = remaindersmodp(p, terms)
+        if (S_p.len == p) {
+            next    # skip trivial primes
+        }
+        primes << [p, S_p]
+        M *= p
+        break if (M > target_modulus)
+    }
+
+    if (primes.len == 0) {
+        primes = [2, remaindersmodp(2, terms)]
+    }
+
+    return primes
 }
 
 func linear_form_primes_in_range(A, B, terms) {
 
     A > B && return []
 
-    var terms_len  = terms.len
-    var range_size = int(exp(LambertW(log(B - A + 1))))
-
-    var max_p  = nth_prime(min(terms_len, range_size))
-    var primes = max_p.primes
+    var primes = select_optimal_primes(A, B, terms)
 
     var residues = [0]
     var M        = 1
 
-    primes.each {|p|
-        var S_p = (^p -> grep {|m| terms.none {|k| p.divides(k[0]*m + k[1]) } })
-
-        if (p == S_p.len) {
-            next      # skip trivial primes
-        }
-
+    primes.each_2d {|p, S_p|
         residues = combine_crt(residues, M, p, S_p)
         M *= p
     }
@@ -63,7 +83,7 @@ func linear_form_primes_in_range(A, B, terms) {
     var original_A           = nil
 
     if (A < small_values_limit) {
-        original_A           = A;
+        original_A           = A
         A                    = small_values_limit+1
         compute_small_values = true
     }
