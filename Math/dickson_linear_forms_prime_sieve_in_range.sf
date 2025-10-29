@@ -22,10 +22,6 @@ func remainders_for_primes(primes, terms) is cached {
             next    # skip trivial primes
         }
 
-        if (rems.is_empty) {
-            rems = [0]
-        }
-
         var nres = []
         res.each {|r|
             rems.each {|rem|

@@ -28,11 +28,11 @@ func remaindersmodp(p, terms) {
 
 func select_optimal_primes (A, B, terms) {
 
-    var range = (B - A)
+    var range = (B - A + 1)
 
     return [] if (range <= 0)
 
-    var target_modulus = range**(4/5)
+    var target_modulus = (1+range.iroot(5))**4
 
     var M = 1
     var primes = []
@@ -45,10 +45,6 @@ func select_optimal_primes (A, B, terms) {
         primes << [p, S_p]
         M *= p
         break if (M > target_modulus)
-    }
-
-    if (primes.len == 0) {
-        primes = [2, remaindersmodp(2, terms)]
     }
 
     return primes
