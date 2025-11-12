@@ -10,20 +10,41 @@
 
 func combine_crt(arr, M, p, S_p) {
 
-    var Minv    = invmod(M % p, p)
-    var new_mod = M*p
+    var Minv = invmod(M % p, p)
 
     gather {
         arr.each {|r|
             S_p.each {|s|
-                take((((((s - (r % p)) % p) * Minv) % p)*M + r) % new_mod)
+                take(((((s - (r % p)) % p) * Minv) % p)*M + r)
             }
         }
     }
 }
 
 func remaindersmodp(p, terms) {
-    (^p -> grep {|m| terms.none {|k| p.divides(k[0]*m + k[1]) } })
+    var bad = []  # bad[m] = true means m is forbidden modulo p
+
+    for m,k in (terms) {
+
+        m %= p
+        k %= p
+
+        if (m == 0) {
+            # Term is constant mod p
+            if (k == 0) {
+                # Always 0 mod p -> no admissible residue exists
+                return []
+            }
+            next  # This term forbids no residue for this p
+        }
+
+        # Forbid the unique residue m ≡ -k * m^{-1} (mod p)
+        var m_inv = invmod(m, p)
+        var m_forbid = ((-k * m_inv) % p)
+        bad[m_forbid] = true
+    }
+
+    0 .. p-1 -> grep { !bad[_] }
 }
 
 func select_optimal_primes (A, B, terms) {
@@ -66,6 +87,8 @@ func linear_form_primes_in_range(A, B, terms) {
 
     residues.sort!
 
+    return [] if residues.is_empty
+
     var d = residues.diffs
 
     while (!d.is_empty && (d[0] == 0)) {
@@ -87,9 +110,7 @@ func linear_form_primes_in_range(A, B, terms) {
     var m      = residues[0]
     var d_len  = d.len
 
-    with (d.sum) {|d_sum|
-        m += d_sum*idiv(A, d_sum)
-    }
+    m += M*idiv(A, M)
 
     var j = 0
 
