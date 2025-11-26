@@ -42,8 +42,6 @@ func combine_pairs(A, B, C, D) {
     return [
             [A*C - B*D, A*D + B*C],
             [A*C + B*D, A*D - B*C],
-            [B*C - A*D, A*C + B*D],
-            [B*C + A*D, A*C - B*D],
            ]
 }
 
@@ -53,9 +51,14 @@ func multiply_sets(A, B) {
     var new = []
     for p in (A), q in (B) {
         for x,y in (combine_pairs(p..., q...)) {
+
+            x = -x if (x < 0)
+            y = -y if (y < 0)
+
             if (x > y) {
                 (x, y) = (y, x)
             }
+
             var key = "#{x},#{y}"
             if (seen.has(key)) {
                 next
@@ -107,7 +110,7 @@ func sum_of_two_squares_solutions(n) {
             base = multiply_sets(base, base)
             exp_k >>= 1
         }
-        reps = multiply_sets(reps, acc).grep { (_[0] >= 0) && (_[1] >= 0) }
+        reps = multiply_sets(reps, acc)
     }
 
     # Handle primes p ≡ 3 (mod 4) with even exponent: they contribute as a perfect square factor s^2.
