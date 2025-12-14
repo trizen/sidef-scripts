@@ -516,6 +516,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Modular fibonacci number cassini](./Math/modular_fibonacci_number_cassini.sf)
     * [Modular fibonacci number fast](./Math/modular_fibonacci_number_fast.sf)
     * [Modular hyperoperation](./Math/modular_hyperoperation.sf)
+    * [Modular k-th root all solutions fast](./Math/modular_k-th_root_all_solutions_fast.sf)
     * [Modular lucas sequence V](./Math/modular_lucas_sequence_V.sf)
     * [Modular lucas sequences U V](./Math/modular_lucas_sequences_U_V.sf)
     * [Modular multiplicative inverse](./Math/modular_multiplicative_inverse.sf)
