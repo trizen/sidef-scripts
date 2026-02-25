@@ -55,6 +55,9 @@ for n in (1..100) {
 }
 
 # These tests may randomly fail
+assert(my_is_almost_prime(4522, 4))
+assert(my_is_almost_prime(40666088, 5))
+assert(my_is_almost_prime(66122822, 3))
 assert(my_is_almost_prime(1762610652661, 4))
 assert(my_is_almost_prime(17295389739104958689918, 6))
 assert(my_is_almost_prime(3194569977264671866214863610, 4))

@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+7#!/usr/bin/ruby
 
 # Factorize a polynomial in Z_n[x], using the Cantor-Zassenhaus algorithm.
 

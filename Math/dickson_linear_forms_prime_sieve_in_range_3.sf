@@ -14,22 +14,23 @@ func combine_crt(arr, M, p, S_p) {
 
     gather {
         arr.each {|r|
+            var r_mod_p = (r % p)
             S_p.each {|s|
-                take(((((s - (r % p)) % p) * Minv) % p)*M + r)
+                take(((((s - r_mod_p) % p) * Minv) % p)*M + r)
             }
         }
     }
 }
 
-func remaindersmodp(p, terms) {
+func remainders_mod_p(p, terms) {
     var bad = []  # bad[m] = true means m is forbidden modulo p
 
-    for m,k in (terms) {
+    for n,k in (terms) {
 
-        m %= p
+        n %= p
         k %= p
 
-        if (m == 0) {
+        if (n == 0) {
             # Term is constant mod p
             if (k == 0) {
                 # Always 0 mod p -> no admissible residue exists
@@ -38,13 +39,13 @@ func remaindersmodp(p, terms) {
             next  # This term forbids no residue for this p
         }
 
-        # Forbid the unique residue m ≡ -k * m^{-1} (mod p)
-        var m_inv = invmod(m, p)
-        var m_forbid = ((-k * m_inv) % p)
+        # Forbid the unique residue m ≡ -k * n^{-1} (mod p)
+        var n_inv = invmod(n, p)
+        var m_forbid = ((-k * n_inv) % p)
         bad[m_forbid] = true
     }
 
-    0 .. p-1 -> grep { !bad[_] }
+    ^p -> grep { !bad[_] }
 }
 
 func select_optimal_primes (A, B, terms) {
@@ -58,14 +59,13 @@ func select_optimal_primes (A, B, terms) {
     var M = 1
     var primes = []
 
-    for (var p = 2; true; p.next_prime!) {
-        var S_p = remaindersmodp(p, terms)
+    for (var p = 2; M <= target_modulus; p.next_prime!) {
+        var S_p = remainders_mod_p(p, terms)
         if (S_p.len == p) {
             next    # skip trivial primes
         }
         primes << [p, S_p]
         M *= p
-        break if (M > target_modulus)
     }
 
     return primes
@@ -77,6 +77,8 @@ func linear_form_primes_in_range(A, B, terms) {
 
     var primes = select_optimal_primes(A, B, terms)
 
+    return [] if primes.is_empty
+
     var residues = [0]
     var M        = 1
 
@@ -85,7 +87,7 @@ func linear_form_primes_in_range(A, B, terms) {
         M *= p
     }
 
-    residues.sort!
+    residues.isort!
 
     return [] if residues.is_empty
 
@@ -130,7 +132,7 @@ func linear_form_primes_in_range(A, B, terms) {
 
     while (m <= B) {
 
-        if (terms.all {|k| is_prime(k[0]*m + k[1]) }) {
+        if (terms.all {|k| (k[0]*m + k[1]).is_prime }) {
             arr << m
         }
 

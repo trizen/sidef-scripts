@@ -93,7 +93,7 @@ func _roots_mod_prime(a, k, p) {
 # Hensel lifting helpers
 #----------------------------------------------------------
 func _hensel_lift_standard(roots, A, k, mod) {
-    roots. map {|s|
+    roots.map {|s|
         var deriv = mulmod(k, powmod(s, (k - 1), mod), mod)
         var residue = submod(A, powmod(s, k, mod), mod)
         var common = gcd(residue, deriv)
@@ -173,7 +173,7 @@ func _roots_mod_composite(r, k, factors) {
         return [] if (sub.is_empty)
 
         var pe = (p ** e)
-        roots = (roots.len ?  _crt_combine(roots, mod, sub, pe) : sub)
+        roots = (roots.len ? _crt_combine(roots, mod, sub, pe) : sub)
         mod *= pe
     }
     return roots
@@ -183,6 +183,7 @@ func _roots_mod_composite(r, k, factors) {
 # Main entry point:   all k-th roots of A modulo n
 #----------------------------------------------------------
 func kth_root_mod(k, A, n) {
+
     n = n. abs
     return [] if (n == 0)
 
