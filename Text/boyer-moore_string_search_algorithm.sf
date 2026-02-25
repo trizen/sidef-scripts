@@ -89,11 +89,11 @@ func bad_character_table(Array S) {
     return R
 }
 
-func good_suffix_table(S) {
+func good_suffix_table(Array S) {
     var L = S.len.of(-1)
     var N = fundamental_preprocess(S.flip).flip
 
-    for j in (0 .. S.end) {         # should the range be exclusive?
+    for j in (0 ..^ S.end) {
         var i = (S.len - N[j])
         if (i != S.len) {
             L[i] = j
@@ -103,13 +103,13 @@ func good_suffix_table(S) {
     return L
 }
 
-func full_shift_table(S) {
+func full_shift_table(Array S) {
     var F = S.len.of(0)
     var Z = fundamental_preprocess(S)
 
     var longest = 0
     Z.flip.each_kv { |i,zv|
-        longest = (zv == i+1 ? (zv `max` longest) : longest)
+        longest = ((zv == S.len-i) ? (zv `max` longest) : longest)
         F[-i - 1] = longest
     }
 
@@ -173,3 +173,5 @@ say(string_search("Bar",      "foo-bar-test-Bar-end-Bar"))  #=> [13, 21]
 say(string_search("-test-",   "foo-bar-test-Bar-end-Bar"))  #=> [7]
 say(string_search("-Bar-end", "foo-Bar-test-Bar-end-Bar"))  #=> [12]
 say(string_search("-Bar",     "foo-Bar-test-Bar-end-Bar"))  #=> [3, 12, 20]
+say(string_search("aaa", "abab"))  #=> []
+say(string_search("aaa", "aaa"))   #=> [-1]
