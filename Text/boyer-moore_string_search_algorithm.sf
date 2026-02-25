@@ -93,7 +93,7 @@ func good_suffix_table(Array S) {
     var L = S.len.of(-1)
     var N = fundamental_preprocess(S.flip).flip
 
-    for j in (0 ..^ S.end) {
+    for j in (0 .. S.end) {
         var i = (S.len - N[j])
         if (i != S.len) {
             L[i] = j
@@ -109,7 +109,7 @@ func full_shift_table(Array S) {
 
     var longest = 0
     Z.flip.each_kv { |i,zv|
-        longest = ((zv == S.len-i) ? (zv `max` longest) : longest)
+        longest = ((zv == i+1) ? (zv `max` longest) : longest)
         F[-i - 1] = longest
     }
 
@@ -141,8 +141,9 @@ func string_search(Array P, Array T) {
             --h
         }
 
-        if ((i == -1) || (h == previous_k)) {  # Match has been found (Galil's rule)
+        if ((i == -1) || (h == previous_k)) {  # Match has been found
             matches.append(k - P.len + 1)
+            previous_k = k                     # Must record the match boundary
             k += (P.len > 1 ? (P.len - F[1]) : 1)
         }
         else {   # No match, shift by max of bad character and good suffix rules
@@ -151,7 +152,7 @@ func string_search(Array P, Array T) {
             var suffix_shift = given (i+1) { |t|
                 case (t == P.len) { 1 }                 # Mismatch happened on first attempt
                 case (L[t] == -1) { P.len - F[t] }      # Matched suffix does not appear anywhere in P
-                default           { P.len - L[t] }      # Matched suffix appears in P
+                default           { P.len - L[t] - 1 }  # Matched suffix appears in P
             }
 
             var shift = (char_shift `max` suffix_shift)
@@ -164,7 +165,31 @@ func string_search(Array P, Array T) {
 }
 
 func string_search(String P, String T) {
-    string_search(P.bytes, T.bytes)
+    string_search(P.graphemes, T.graphemes)
+}
+
+var texts = [
+    "GCTAGCTCTACGAGTCTA",
+    "GGCTATAATGCGTA",
+    "there would have been a time for such a word",
+    "needle need noodle needle",
+    "BharôtভাৰতBharôtভারতIndiaBhāratભારતBhāratभारतBhārataಭಾರತBhāratभारतBhārat"+
+    "amഭാരതംBhāratभारतBhāratभारतBharôtôଭାରତBhāratਭਾਰਤBhāratamभारतम्Bārataபாரத"+
+    "ம்BhāratamഭാരതംBhāratadēsamభారతదేశం",
+    "InhisbookseriesTheArtofComputerProgrammingpublishedbyAddisonWesleyDKnu"+
+    "thusesanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblyl"+
+    "anguagestoillustratetheconceptsandalgorithmsastheyarepresented",
+    "Nearby farms grew a half acre of alfalfa on the dairy's behalf, with ba"+
+    "les of all that alfalfa exchanged for milk.",
+]
+
+var pats = ["TCTA", "TAATAAA", "word", "needle", "ഭാരതം", "put", "and", "alfalfa"]
+
+texts.each_kv {|k,v| say "text#{k} = #{v}" }; say ''
+
+pats.each_kv {|k,v|
+    var j = (k < 6 ? k : k-1)
+    say ("Found '#{v}' in 'text#{j}' at indices ", string_search(v, texts[j]))
 }
 
 say(string_search("bar",      "foobartestbarend"))          #=> [3, 10]
@@ -173,5 +198,3 @@ say(string_search("Bar",      "foo-bar-test-Bar-end-Bar"))  #=> [13, 21]
 say(string_search("-test-",   "foo-bar-test-Bar-end-Bar"))  #=> [7]
 say(string_search("-Bar-end", "foo-Bar-test-Bar-end-Bar"))  #=> [12]
 say(string_search("-Bar",     "foo-Bar-test-Bar-end-Bar"))  #=> [3, 12, 20]
-say(string_search("aaa", "abab"))  #=> []
-say(string_search("aaa", "aaa"))   #=> [-1]
