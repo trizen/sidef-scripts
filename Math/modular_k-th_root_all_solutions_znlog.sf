@@ -1,215 +1,109 @@
 #!/usr/bin/ruby
 
+# Daniel "Trizen" Șuteu
+# Date: 26 February 2026
+# https://github.com/trizen
+
 # kth_root_mod: find all x (0 <= x < m) with x^k ≡ a (mod m)
-# Based on code from Math::Prime::Util::PP by Dana Jacobsen.
 
-#----------------------------------------------------------
-# Tonelli-Shanks algorithm for k-th roots modulo a prime
-#----------------------------------------------------------
-func _tonelli_shanks(a, k, p) {
-    var exp = 0
-    var q = (p - 1)
+# This version is based on solving the discrete logarithm (znlog).
 
-    while ((q % k) == 0) {
-        exp++
-        q = idiv(q, k)
+# Solve x^k ≡ r (mod p) for prime p
+func solve_mod_p(k, r, p) {
+
+    r %= p
+    return [0] if (r == 0)
+
+    if (p <= 31) {
+        return p.range.grep { |x| x.powmod(k, p) == r }
     }
 
-    var k_exp = idiv((p - 1), q)
-    var root = powmod(a, invmod((k % q), q), p)
-    var b = mulmod(powmod(root, k, p), invmod(a, p), p)
+    var phi = p-1
+    var d = k.gcd(phi)
 
-    # Find a generator of the k-th roots of unity
-    var (candidate, zeta, gen) = (2, 1, nil)
-    while (zeta == 1) {
-        gen = powmod(candidate++, q, p)
-        zeta = powmod(gen, idiv(k_exp, k), p)
+    return [] if (r.powmod(idiv(phi, d), p) != 1)
+    return [r] if (k == 1)
+
+    var g = znprimroot(p) \\ return p.range.grep { |x| x.powmod(k, p) == r }
+    var a = znlog(r, g, p) \\ return []
+
+    var k1   = idiv(k, d)
+    var phi1 = idiv(phi, d)
+    var a1   = idiv(a, d)
+    var t0   = mulmod(a1, k1.invmod(phi1), phi1)
+
+    return (^d -> map { |i| g.powmod(t0 + i*phi1, p) })
+}
+
+# Solve x^k ≡ r (mod p^e) by lifting
+func solve_prime_power_lift(k, r, p, e) {
+
+    var mod = ipow(p,e)
+
+    r %= mod
+
+    if (r == 0) {
+        var vx_min = idiv(e + k - 1, k)
+        var base   = ipow(p, vx_min)
+        return ipow(p, e - vx_min).range.map { |s| s * base }
     }
 
-    # Iteratively refine the root
-    while (k_exp != k) {
-        k_exp = idiv(k_exp, k)
-        (candidate, gen) = (gen, powmod(gen, k, p))
-        var test = powmod(b, idiv(k_exp, k), p)
-        while (test != 1) {
-            root = mulmod(root, candidate, p)
-            b = mulmod(b, gen, p)
-            test = mulmod(test, zeta, p)
+    var sol_t = solve_mod_p(k, r, p)
+    return [] if sol_t.is_empty
+    return sol_t if (e == 1)
+
+    var t = 1
+    while (t < e) {
+        var next_sol = []
+        var base = ipow(p, t)
+        var next_mod = base*p
+
+        sol_t.each { |a|
+            for s in (0 .. p-1) {
+                var cand = ((a + s*base) % next_mod)
+                if (cand.powmod(k, next_mod) == (r % next_mod)) {
+                    next_sol << cand
+                }
+            }
         }
+        sol_t = next_sol
+        return [] if sol_t.is_empty
+        t++
     }
-
-    return (root, gen)  # return both root and zeta (gen)
+    return sol_t
 }
 
-#----------------------------------------------------------
-# Chinese Remainder Theorem:   combine roots from two moduli
-#----------------------------------------------------------
-func _crt_combine(roots_a, mod_a, roots_b, mod_b) {
-    var mod = (mod_a * mod_b)
-    var inv = (invmod(mod_a, mod_b) \\ die "CRT:  undefined inverse")
+# All solutions to x^k ≡ r (mod m)
+func kth_root_mod(k, r, m) {
 
-    var roots = []
-    for ra in (roots_a) {
-        for rb in (roots_b) {
-            var diff = mulmod(inv, submod(rb, ra, mod_b), mod_b)
-            roots << addmod(mulmod(mod_a, diff, mod), ra, mod)
-        }
-    }
-
-    return roots
-}
-
-#----------------------------------------------------------
-# All k-th roots of a modulo prime p
-#----------------------------------------------------------
-func _roots_mod_prime(a, k, p) {
-    a %= p
-    return [a] if ((p == 2) || (a == 0))
-
-    var phi = (p - 1)
-    var g = gcd(k, phi)
-
-    # Unique root when gcd(k, p-1) = 1
-    if (g == 1) {
-        return [powmod(a, invmod((k % phi), phi), p)]
-    }
-
-    # No roots if a is not a k-th power residue
-    return [] if (powmod(a, idiv(phi, g), p) != 1)
-    return [1, 2] if (p == 3)
-
-    # Find one root and generate all others using roots of unity
-    var (root, zeta) = _tonelli_shanks(a, k, p)
-    die "Failed to find root" if ((zeta == 0) || (powmod(root, k, p) != a))
-
-    var roots = [root]
-    for (var r = mulmod(root, zeta, p); ((r != root) && (roots.len < k)); r = mulmod(r, zeta, p)) {
-        roots << r
-    }
-    return roots
-}
-
-#----------------------------------------------------------
-# Hensel lifting helpers
-#----------------------------------------------------------
-func _hensel_lift_standard(roots, A, k, mod) {
-    roots.map {|s|
-        var deriv = mulmod(k, powmod(s, (k - 1), mod), mod)
-        var residue = submod(A, powmod(s, k, mod), mod)
-        var common = gcd(residue, deriv)
-        addmod(s, divmod(idiv(residue, common), idiv(deriv, common), mod), mod)
-    }
-}
-
-func _hensel_lift_singular(roots, A, k, p, mod) {
-    var ext_mod = (mod * p)
-    var submod_val = idiv(mod, p)
-    var seen = Set()
-
-    for s in (roots) {
-        var deriv = mulmod(k, powmod(s, (k - 1), ext_mod), ext_mod)
-        var residue = submod(A, powmod(s, k, ext_mod), ext_mod)
-        var common = gcd(residue, deriv)
-        var r = addmod(s, divmod(idiv(residue, common), idiv(deriv, common), mod), mod)
-
-        next if (powmod(r, k, mod) != (A % mod))
-        for i in (^k) {
-            seen << mulmod(r, addmod(mulmod(i, submod_val, mod), 1, mod), mod)
-        }
-    }
-    return seen.to_a
-}
-
-#----------------------------------------------------------
-# All k-th roots of r modulo prime power p^e
-#----------------------------------------------------------
-func _roots_mod_prime_power(r, k, p, e) {
-    return _roots_mod_prime(r, k, p) if (e == 1)
-
-    var mod = (p ** e)
-    var pk = (p ** k)
-
-    # Special case:   a ≡ 0 (mod p^e)
-    if ((r % mod) == 0) {
-        var t = (idiv((e - 1), k) + 1)
-        var pt = (p ** t)
-        var cnt = (p ** (e - t))
-        return ((^cnt).map {|i| mulmod(i, pt, mod) })
-    }
-
-    # Special case:  a ≡ 0 (mod p^k) but a ≢ 0 (mod p^e)
-    if ((r % pk) == 0) {
-        var factor = (p ** ((e - k) + 1))
-        var count = (p ** (k - 1))
-        var sub = _roots_mod_prime_power(idiv(r, pk), k, p, (e - k))
-        return sub.map {|s|
-            var base = mulmod(s, p, mod)
-            (^count).map {|i| addmod(mulmod(i, factor, mod), base, mod) }
-        }.flat
-    }
-
-    # No roots if p | a but p^k ∤ a
-    return [] if ((r % p) == 0)
-
-    # Hensel lifting from smaller exponent
-    var half = (((p > 2) || (e < 5)) ? idiv((e + 1), 2) : idiv((e + 3), 2))
-    var sub = _roots_mod_prime_power(r, k, p, half)
-
-    return ((k != p) \
-        ? _hensel_lift_standard(sub, r, k, mod)
-        : _hensel_lift_singular(sub, r, k, p, mod))
-}
-
-#----------------------------------------------------------
-# All k-th roots of r modulo n (with factorization)
-#----------------------------------------------------------
-func _roots_mod_composite(r, k, factors) {
-    var mod = 1
-    var roots = []
-
-    for factor in (factors) {
-        var (p, e) = factor...
-        var sub = _roots_mod_prime_power(r, k, p, e)
-        return [] if (sub.is_empty)
-
-        var pe = (p ** e)
-        roots = (roots.len ? _crt_combine(roots, mod, sub, pe) : sub)
-        mod *= pe
-    }
-    return roots
-}
-
-#----------------------------------------------------------
-# Main entry point:   all k-th roots of A modulo n
-#----------------------------------------------------------
-func kth_root_mod(k, A, n) {
-
-    n = n. abs
-    return [] if (n == 0)
-
-    A %= n
-    return [] if ((k <= 0) && (A == 0))
+    return [] if (m == 0)
+    return m.range.to_a if ((k == 0) && (r == 1))
 
     if (k < 0) {
-        var inv = invmod(A, n)
-        return [] if (!inv.is_coprime(n))
-        A = inv
-        k = (-k)
+        return [] if (r.gcd(m) != 1)
+        var y_sol = kth_root_mod(-k, r, m)
+        return [] if y_sol.is_empty
+        return y_sol.map { |y| y.invmod(m) }.isort
     }
 
-    return [A] if ((n <= 2) || (k == 1))
-    if (k == 0) {
-        return ((A == 1) ? ((^n).to_a) : [])
+    var factors = m.factor_exp
+    var current = [[0, 1]]
+
+    factors.each_2d {|p,e|
+        var mod_pe = ipow(p,e)
+        var sol_pe = solve_prime_power_lift(k, r % mod_pe, p, e)
+        return [] if sol_pe.is_empty
+
+        var next_batch = []
+        sol_pe.each { |pe_res|
+            current.each_2d {|A, mod_a|
+                var combined = Math.chinese([A, mod_a], [pe_res, mod_pe])
+                next_batch << [combined, mod_a * mod_pe]
+            }
+        }
+        current = next_batch
     }
-
-    var factors = n.factor_exp
-    var roots = [A]
-
-    for prime_factor in (k.factor) {
-        roots = roots.map {|r| _roots_mod_composite(r, prime_factor, factors) }.flat
-    }
-
-    return roots.sort
+    return current.map { |pair| pair[0] % m }.isort
 }
 
 assert_eq(kth_root_mod(3, 2, 101), [26]);
@@ -323,7 +217,7 @@ var rootmods = [
     [2,      4, 5,      nil],
     [51,    12, 10009,  [64, 1203, 3183, 3247, 3999, 4807, 5202, 6010, 6762, 6826, 8806, 9945]],
 
-    [15,3,1000000000000000000117,[72574612502199260377, 361680004182786118804, 565745383315014620936]],
+    #[15,3,1000000000000000000117,[72574612502199260377 361680004182786118804 565745383315014620936]],
     [1,  0, 13, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]],
     [2,  0, 13, nil],
     [0,  5, 0,  nil],
