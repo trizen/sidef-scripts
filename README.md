@@ -285,6 +285,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Dirichlet convolution](./Math/dirichlet_convolution.sf)
     * [Dirichlet hyperbola method](./Math/dirichlet_hyperbola_method.sf)
     * [Discrete fourier transform](./Math/discrete_fourier_transform.sf)
+    * [Discrete logarithm pollard rho](./Math/discrete_logarithm_pollard_rho.sf)
     * [Divisor of p-1 factorization method](./Math/divisor_of_p-1_factorization_method.sf)
     * [Divisors less than k](./Math/divisors_less_than_k.sf)
     * [Divisors of factorial in range iterator](./Math/divisors_of_factorial_in_range_iterator.sf)
