@@ -136,17 +136,15 @@ func discrete_log(a, g, n, order = nil) {
 
     # Solve for x modulo each prime power
     var residues = []
-    var moduli   = []
 
     for p,e in (factors) {
         var (x, ok) = __prime_power_log__(a, g, n, p, e, order)
         ok || return nil
-        residues << x
-        moduli   << ipow(p, e)
+        residues << [x, ipow(p, e)]
     }
 
     # Combine via CRT
-    var x = Math.chinese(residues ~Z moduli -> map_2d {|r,m| [r,m] }...)
+    var x = Math.chinese(residues...)
 
     # Verify the result (should always hold if the algorithm succeeded)
     (powmod(g, x, n) == a) ? x : nil
