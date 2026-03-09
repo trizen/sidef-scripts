@@ -2,6 +2,7 @@
 
 # Daniel "Trizen" Șuteu
 # Date: 29 August 2022
+# Update: 09 March 2026
 # https://github.com/trizen
 
 # Generate all the Carmichael numbers with n prime factors in a given range [a,b]. (not in sorted order)
@@ -38,27 +39,52 @@ func carmichael_numbers_in_range(A, B, k, callback) {
 
         var hi = idiv(B,m).iroot(k)
 
-        if (lo > hi) {
-            return nil
+        lo > hi && return nil
+
+        # Pinch's bound for the second to last prime.
+        if ((k == 2) && (m < 1000)) {
+            var bound = (2*m*m - 3*m + 2)
+            if (bound < hi) {
+                hi = bound
+                lo > hi && return nil
+            }
         }
 
         if (k == 1) {
 
-            hi = max_p if (hi > max_p)
+            hi = m if (m < hi)    # the last prime p_k must be <= m
+            hi = max_p if (max_p < hi)
             lo = max(lo, idiv_ceil(A, m))
             lo > hi && return nil
 
             var t = m.invmod(L)
-
             t > hi && return nil
+
+            var m_inv = t
             t += L*idiv_ceil(lo - t, L) if (t < lo)
             t > hi && return nil
 
-            for p in (range(t, hi, L)) {
-                p.is_prime || next
-                with (m*p) {|n|
-                    if (p.dec `divides` n.dec) {
-                        callback(n)
+            if (idiv(hi - t, L) < 1_000) {
+
+                # Approach 1: Fast linear scan for small search spaces
+                for p in (range(t, hi, L)) {
+                    p.is_prime || next
+                    if ((p-1) `divides` (m*p - 1)) {
+                        callback(m*p)
+                    }
+                }
+            }
+            else {
+                # Approach 2: Combinatorial divisor extraction for large spaces
+                for d in (divisors(m-1, hi)) {
+                    var p = (d + 1)
+
+                    next  if (p < lo)
+                    break if (p > hi)
+
+                    # Only check the congruence and primality
+                    if (p.is_congruent(m_inv, L) && p.is_prime) {
+                        callback(m*p)
                     }
                 }
             }
@@ -67,7 +93,7 @@ func carmichael_numbers_in_range(A, B, k, callback) {
         }
 
         each_prime(lo, hi, {|p|
-            m.is_coprime(p-1) || next
+            m.is_coprime(p >> 1) || next
             __FUNC__(m*p, lcm(L, p-1), p+1, k-1)
         })
     }(1, 1, 3, k)
