@@ -157,7 +157,7 @@ func modular_binomial(n,k,m) {
             Mod(a, pq) / (b * c)
         }))
 
-        if ((p>2 || rq<3) && (q<=e.len)) {
+        if ((p>2 || rq<3) && (rq <= e.len)) {
             v *= (-1)**e[rq-1]
         }
 
