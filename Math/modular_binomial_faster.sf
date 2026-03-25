@@ -1,0 +1,501 @@
+#!/usr/bin/ruby
+
+# Fast algorithm for computing the binomial coefficient modulo some integer m.
+# Based on Lucas' Theorem and Granville's generalization.
+
+# ---------------------------------------------------------------------------
+# Polynomial Operations Modulo p^k
+# ---------------------------------------------------------------------------
+
+func multiply_polynomials(poly_a, poly_b, prime_pow, max_degree) {
+    var result_poly = ([0] * max_degree)
+    for i in (^max_degree) {
+        (poly_a[i] == 0) && next
+        for j in (0 .. (max_degree - i - 1)) {
+            (poly_b[j] == 0) && next
+            result_poly[(i + j)] = ((result_poly[(i + j)] + (poly_a[i] * poly_b[j])) % prime_pow)
+        }
+    }
+    return result_poly
+}
+
+func shift_polynomial(poly, shift_val, prime_pow, max_degree) {
+    var shifted_poly = ([0] * max_degree)
+    for j in (^max_degree) {
+        (poly[j] == 0) && next
+        var h_pow = 1
+        for i in ((0 .. j).reverse) {
+            var term = ((((binomial(j, i) * h_pow) % prime_pow) * poly[j]) % prime_pow)
+            shifted_poly[i] = ((shifted_poly[i] + term) % prime_pow)
+            if (i > 0) {
+                h_pow = ((h_pow * shift_val) % prime_pow)
+            }
+        }
+    }
+    return shifted_poly
+}
+
+func evaluate_polynomial_product(q_val, poly, prime_pow, max_degree) {
+    if (q_val == 0) {
+        var res = ([0] * max_degree)
+        res[0] = 1
+        return res
+    }
+    if (q_val == 1) {
+        return poly
+    }
+
+    var half_q = (q_val // 2)
+    var poly_half = __FUNC__(half_q, poly, prime_pow, max_degree)
+    var poly_double_half = multiply_polynomials(poly_half, shift_polynomial(poly_half, half_q, prime_pow, max_degree), prime_pow, max_degree)
+
+    if (q_val.is_odd) {
+        return multiply_polynomials(poly_double_half, shift_polynomial(poly, (half_q * 2), prime_pow, max_degree), prime_pow, max_degree)
+    }
+    return poly_double_half
+}
+
+# ---------------------------------------------------------------------------
+# Factorial Without Prime Factor Modulo p^k
+# ---------------------------------------------------------------------------
+
+func factorial_without_prime_power(n_val, prime, exponent, prime_pow) {
+    if (n_val < prime) {
+        var result = 1
+        for i in (1 .. n_val) {
+            result = ((result * i) % prime_pow)
+        }
+        return result
+    }
+
+    var coeffs = [1]
+    for _ in (1 ..^ exponent) { coeffs.append(0) }
+    var fact_accum = 1
+
+    for j in (1 ..^ prime) {
+        fact_accum = ((fact_accum * j) % prime_pow)
+        var inv_j = invmod(j, prime_pow)
+        for k in ((1 ..^ exponent).reverse) {
+            if (coeffs[(k - 1)]) {
+                coeffs[k] = ((coeffs[k] + (coeffs[(k - 1)] * inv_j)) % prime_pow)
+            }
+        }
+    }
+
+    var base_poly  = ([0] * exponent)
+    var p_pow_val = 1
+    for k in (0 .. (exponent - 1)) {
+        base_poly[k] = ((((coeffs[k] * fact_accum) % prime_pow) * p_pow_val) % prime_pow)
+        p_pow_val = ((p_pow_val * prime) % prime_pow)
+    }
+
+    var q_val = (n_val // prime)
+    var r_val = (n_val % prime)
+
+    var final_result = evaluate_polynomial_product(q_val, base_poly, prime_pow, exponent)[0]
+
+    if (r_val > 0) {
+        var pq_val = (q_val * prime)
+        for i in (1 .. r_val) {
+            final_result = ((final_result * (pq_val + i)) % prime_pow)
+        }
+    }
+
+    return final_result
+}
+
+func factorial_without_prime(n_val, prime, prime_pow, eval_cache) {
+    if (n_val <= 1) { return 1 }
+    if (prime > n_val) { return factorialmod(n_val, prime_pow) }
+    if (eval_cache[0] == n_val) { return eval_cache[1] }
+
+    if (eval_cache[0] > n_val) {
+        eval_cache[0] = 0
+        eval_cache[1] = 1
+    }
+
+    if ((prime > 2) && (prime_pow == (prime * prime))) {
+        var a_val = (n_val // prime)
+        var b_val = (n_val % prime)
+
+        var h_b = 0
+        if (b_val > 0) {
+            for i in (1 .. b_val) {
+                h_b = ((h_b + invmod(i, prime)) % prime)
+            }
+        }
+
+        var res = ((powmod(factorialmod((prime - 1), prime_pow), a_val, prime_pow) * factorialmod(b_val, prime_pow)) % prime_pow)
+
+        if ((a_val > 0) && (h_b > 0)) {
+            res = ((res * (1 + (((a_val * prime) % prime_pow) * h_b))) % prime_pow)
+        }
+
+        if (eval_cache[0] > 0) {
+            var prev_res = __FUNC__(eval_cache[0], prime, prime_pow, [0, 1])
+            res = ((eval_cache[1] * (res * invmod(prev_res, prime_pow))) % prime_pow)
+        }
+
+        eval_cache[0] = n_val
+        eval_cache[1] = res
+        return res
+    }
+
+    var exponent = 0
+    var temp_pow = prime_pow
+    while ((temp_pow % prime) == 0) {
+        temp_pow = (temp_pow // prime)
+        exponent += 1
+    }
+
+    if ((exponent >= 3) && (temp_pow == 1)) {
+        var res = factorial_without_prime_power(n_val, prime, exponent, prime_pow)
+
+        if (eval_cache[0] > 0) {
+            var prev_res = factorial_without_prime_power(eval_cache[0], prime, exponent, prime_pow)
+            res = ((eval_cache[1] * (res * invmod(prev_res, prime_pow))) % prime_pow)
+        }
+
+        eval_cache[0] = n_val
+        eval_cache[1] = res
+        return res
+    }
+
+    var res = eval_cache[1]
+    for v in ((eval_cache[0] + 1) .. n_val) {
+        if ((v % prime) != 0) {
+            res = ((res * v) % prime_pow)
+        }
+    }
+    eval_cache[0] = n_val
+    eval_cache[1] = res
+    return res
+}
+
+# ---------------------------------------------------------------------------
+# Binomial Coefficient Modulo m (Helpers)
+# ---------------------------------------------------------------------------
+
+func is_small_k_efficient(n_val, k_val, mod_val) {
+    if (n_val < 1000000) { return false }
+    if ((mod_val >= 10000000) && ((n_val >= 10000000) && (k_val <= 1000000))) { return true }
+
+    var sym_k = (n_val - k_val)
+    if ((sym_k > 0) && (sym_k < k_val)) {
+        k_val = sym_k
+    }
+
+    if (k_val > 10000000) { return false }
+
+    return ((mod_val.isqrt > k_val) && ((mod_val // n_val) > k_val))
+}
+
+func binomial_mod_small_k(n_val, k_val, mod_val, prime_val=0) {
+    if ((!prime_val) || (k_val <= 100000)) {
+        return (binomial(n_val, k_val) % mod_val)
+    }
+
+    var valuation = 0
+    var num_mult = 1
+    var den_mult = 1
+
+    for i in (0 .. (k_val - 1)) {
+        var temp = (n_val - i)
+
+        if ((temp % prime_val) == 0) {
+            while ((temp % prime_val) == 0) {
+                temp = (temp // prime_val)
+                valuation = (valuation + 1)
+            }
+        }
+
+        num_mult = ((num_mult * temp) % mod_val)
+
+        var den = (i + 1)
+        if ((den % prime_val) == 0) {
+            while ((den % prime_val) == 0) {
+                den = (den // prime_val)
+                valuation = (valuation - 1)
+            }
+        }
+
+        den_mult = ((den_mult * den) % mod_val)
+    }
+
+    var ans = ((num_mult * invmod(den_mult, mod_val)) % mod_val)
+
+    if (valuation > 0) {
+        ans = ((ans * powmod(prime_val, valuation, mod_val)) % mod_val)
+    }
+
+    return ans
+}
+
+func lucas_theorem(n_val, k_val, prime) {
+    var result = 1
+
+    while (k_val > 0) {
+        var n_mod_p = (n_val % prime)
+        var k_mod_p = (k_val % prime)
+
+        if (k_mod_p > n_mod_p) { return 0 }
+
+        if (k_mod_p > 0) {
+            if (is_small_k_efficient(n_mod_p, k_mod_p, prime)) {
+                result = ((result * binomial_mod_small_k(n_mod_p, k_mod_p, prime)) % prime)
+            } else {
+                var num_fact = factorialmod(n_mod_p, prime)
+                var den_fact = ((factorialmod(k_mod_p, prime) * factorialmod((n_mod_p - k_mod_p), prime)) % prime)
+                result = ((result * ((den_fact != 1) ? ((num_fact * invmod(den_fact, prime)) % prime) : num_fact)) % prime)
+            }
+        }
+
+        n_val = (n_val // prime)
+        k_val = (k_val // prime)
+    }
+
+    return result
+}
+
+# ---------------------------------------------------------------------------
+# Core Modular Binomial Implementation
+# ---------------------------------------------------------------------------
+
+func calculate_modular_binomial(n_val, k_val, mod_val) {
+    if (mod_val == 1) { return 0 }
+
+    if (k_val < 0) {
+        k_val = (n_val - k_val)
+    }
+    if (k_val < 0) { return 0 }
+
+    if (n_val < 0) {
+        var sign_adj  = (k_val.is_even ? 1 : -1)
+        var abs_n = (((-n_val) + k_val) - 1)
+        return (((sign_adj * __FUNC__(abs_n, k_val, mod_val)) + mod_val) % mod_val)
+    }
+
+    if (k_val > n_val) { return 0 }
+
+    if ((k_val == 0) || (k_val == n_val)) { return (1 % mod_val) }
+
+    if ((k_val == 1) || (k_val == (n_val - 1))) { return (n_val % mod_val) }
+
+    var n_minus_k = (n_val - k_val)
+    if (n_minus_k < k_val) {
+        k_val = n_minus_k
+    }
+
+    if (k_val <= 10000) {
+        return (binomial_mod_small_k(n_val, k_val, mod_val) % mod_val)
+    }
+
+    var crt_pairs = []
+    for prime_factor in (mod_val.abs.factor_exp) {
+        var prime = prime_factor[0]
+        var exponent = prime_factor[1]
+
+        if (exponent == 1) {
+            crt_pairs.append([lucas_theorem(n_val, k_val, prime), prime])
+            next
+        }
+
+        var prime_pow = (prime ** exponent)
+
+        if (prime > n_val) {
+            crt_pairs.append([binomial_mod_small_k(n_val, k_val, prime_pow, prime), prime_pow])
+            next
+        }
+
+        var num_digits = (n_val.ilog(prime) + 1)
+
+        var n_base_p = []
+        var k_base_p = []
+        var p_i = 1
+        for i in (0 .. num_digits) {
+            n_base_p.append((n_val // p_i) % prime)
+            k_base_p.append((k_val // p_i) % prime)
+            p_i = (p_i * prime)
+        }
+
+        var carries = []
+        for i in (0 .. num_digits) {
+            var prev_carry = ((i > 0) ? carries[(i - 1)] : 0)
+            carries[i] = ((n_base_p[i] < (k_base_p[i] + prev_carry)) ? 1 : 0)
+        }
+        for i in (^num_digits -> flip) {
+            carries[i] = (carries[i] + carries[(i + 1)])
+        }
+
+        if (carries[0] >= exponent) {
+            crt_pairs.append([0, prime_pow])
+            next
+        }
+
+        var rem_exp  = (exponent - carries[0])
+        var prime_rem_exp = (prime ** rem_exp)
+
+        if (is_small_k_efficient(n_val, k_val, prime_pow)) {
+            crt_pairs.append([binomial_mod_small_k(n_val, k_val, prime_pow), prime_pow])
+            next
+        }
+
+        var n_digits = []
+        var k_digits = []
+        var r_digits = []
+        var p_i_rem = 1
+        var r_val = (n_val - k_val)
+
+        for i in (0 .. num_digits) {
+            n_digits.append((n_val // p_i_rem) % prime_rem_exp)
+            k_digits.append((k_val // p_i_rem) % prime_rem_exp)
+            r_digits.append((r_val // p_i_rem) % prime_rem_exp)
+            p_i_rem = (p_i_rem * prime)
+        }
+
+        var sort_idx = (0 .. n_digits.end).sort({|a, b| ((n_digits[a] + (k_digits[a] + r_digits[a])) <=> (n_digits[b] + (k_digits[b] + r_digits[b]))) })
+        n_digits = sort_idx.map{|i| n_digits[i] }
+        k_digits = sort_idx.map{|i| k_digits[i] }
+        r_digits = sort_idx.map{|i| r_digits[i] }
+
+        var max_val = 0
+        for v in (n_digits + k_digits + r_digits) {
+            if (v > max_val) { max_val = v }
+        }
+        if (max_val > 1000) { max_val = 1000 }
+
+        var fact_acc  = []
+        var n_fact = 1
+        fact_acc[0] = 1
+
+        if ((prime_rem_exp < (2 ** 64)) && (prime < n_val)) {
+            for v in (1 .. max_val) {
+                if ((v % prime) != 0) {
+                    n_fact = ((n_fact * v) % prime_rem_exp)
+                }
+                fact_acc[v] = n_fact
+            }
+        }
+
+        var result_val = powmod(prime, carries[0], prime_pow)
+        var current_cache = [0, 1]
+
+        for j in (0 .. num_digits) {
+            var missing_pairs = []
+            
+            var x_val = fact_acc[n_digits[j]]
+            if (x_val == nil) { missing_pairs.append(["x", n_digits[j]]) }
+
+            var y_val = fact_acc[k_digits[j]]
+            if (y_val == nil) { missing_pairs.append(["y", k_digits[j]]) }
+
+            var z_val = fact_acc[r_digits[j]]
+            if (z_val == nil) { missing_pairs.append(["z", r_digits[j]]) }
+
+            var computed_results = Hash()
+            for pair in (missing_pairs.sort{|a, b| (a[1] <=> b[1]) }) {
+                computed_results{pair[0]} = factorial_without_prime(pair[1], prime, prime_rem_exp, current_cache)
+            }
+
+            if (x_val == nil) { x_val = computed_results{"x"} }
+            if (y_val == nil) { y_val = computed_results{"y"} }
+            if (z_val == nil) { z_val = computed_results{"z"} }
+
+            y_val = ((y_val * z_val) % prime_pow)
+            if (y_val != 1) {
+                x_val = ((x_val * invmod(y_val, prime_pow)) % prime_pow)
+            }
+            result_val = ((result_val * x_val) % prime_pow)
+        }
+
+        if (((prime > 2) || (rem_exp < 3)) && (rem_exp <= carries.len)) {
+            var wilson_sign = (((carries[(rem_exp - 1)] % 2) == 0) ? 1 : -1)
+            result_val = (((result_val * wilson_sign) + prime_pow) % prime_pow)
+        }
+
+        crt_pairs.append([result_val, prime_pow])
+    }
+
+    return Math.chinese(crt_pairs...)
+}
+
+# ---------------------------------------------------------------------------
+# Public Interface & Tests
+# ---------------------------------------------------------------------------
+
+func modular_binomial(n_val, k_val, mod_val) {
+    if (mod_val == 0) { return nil }
+    return calculate_modular_binomial(n_val, k_val, mod_val)
+}
+
+func test_binomialmod(n_val, k_val, mod_val) {
+    ::binomialmod(n_val, k_val, mod_val)
+}
+
+for exponent in (1 .. 4) {
+    var n_val = ((2 ** 33) + 1234.irand)
+    var k_val = ((2 ** 32) - 1234.irand)
+    var mod_val = ((2 + 1000.irand) ** exponent)
+    say ("binomialmod(#{n_val}, #{k_val}, #{mod_val}) = ", modular_binomial(n_val, k_val, mod_val))
+    assert_eq(modular_binomial(n_val, k_val, mod_val), test_binomialmod(n_val, k_val, mod_val))
+}
+
+assert_eq(modular_binomial(10, 2, 43), 2)
+assert_eq(modular_binomial(10, 8, 43), 2)
+
+assert_eq(modular_binomial(10, 2, 24), 21)
+assert_eq(modular_binomial(10, 8, 24), 21)
+
+assert_eq(modular_binomial(100, 42, -127), binomial(100, 42) % -127)
+
+assert_eq(modular_binomial(12,    5,   100000),      792)
+assert_eq(modular_binomial(16,    4,   100000),      1820)
+assert_eq(modular_binomial(100,   50,  139),         71)
+assert_eq(modular_binomial(1000,  10,  1243),        848)
+assert_eq(modular_binomial(124,   42,  1234567),     395154)
+assert_eq(modular_binomial(1e9,   1e4, 1234567),     833120)
+assert_eq(modular_binomial(1e10,  1e5, 1234567),     589372)
+assert_eq(modular_binomial(-1e10, 1e5, 4233330243),  2865877173)
+
+assert_eq(modular_binomial(1e10, 1e4, 13!), 1845043200)
+assert_eq(modular_binomial(1e10, 1e5, 13!), 1556755200)
+assert_eq(modular_binomial(1e10, 1e6, 13!), 5748019200)
+
+assert_eq(modular_binomial(-1e10, 1e4, 13!), 4151347200)
+assert_eq(modular_binomial(-1e10, 1e5, 13!), 1037836800)
+assert_eq(modular_binomial(-1e10, 1e6, 13!), 2075673600)
+
+assert_eq(modular_binomial(3, 1,  9), binomial(3, 1) % 9)
+assert_eq(modular_binomial(4, 1, 16), binomial(4, 1) % 16)
+
+assert_eq(modular_binomial(1e9, 1e5, 43*97*503), 585492)
+assert_eq(modular_binomial(1e9,1e6,5041689707), 15262431)
+assert_eq(modular_binomial(1e7,1e5, 43**2 * 97**3 * 13**4), 1778017500428)
+assert_eq(modular_binomial(1e7,1e5, 42**2 * 97**3 * 13**4), 10015143223176)
+assert_eq(modular_binomial(1e9,1e5,12345678910), 4517333900)
+assert_eq(modular_binomial(1e9,1e6,13**2 * 5**6), 2598375)
+assert_eq(modular_binomial(1e10, 1e5, 1234567), 589372)
+
+assert_eq(modular_binomial(1e5, 1e3, 43), binomial(1e5,1e3)%43)
+assert_eq(modular_binomial(1e5, 1e3, 43*97), binomial(1e5,1e3) % (43*97))
+assert_eq(modular_binomial(1e5, 1e3, 43*97*43), binomial(1e5,1e3) % (43*97*43))
+assert_eq(modular_binomial(1e5, 1e3, 43*97*(5**5)), binomial(1e5,1e3) % (43*97*(5**5)))
+assert_eq(modular_binomial(1e5,1e3, next_prime(1e4)**2), binomial(1e5, 1e3) % next_prime(1e4)**2)
+assert_eq(modular_binomial(1e5,1e3, next_prime(1e4)), binomial(1e5, 1e3) % next_prime(1e4))
+assert_eq(modular_binomial(1e6,1e3, next_prime(1e5)), binomial(1e6, 1e3) % next_prime(1e5))
+assert_eq(modular_binomial(1e6,1e3, next_prime(1e7)), binomial(1e6, 1e3) % next_prime(1e7))
+assert_eq(modular_binomial(1234567, 1e3, 20!), binomial(1234567, 1e3)%20!)
+assert_eq(modular_binomial(1234567, 1e4, 20!), binomial(1234567, 1e4)%20!)
+
+assert_eq(modular_binomial(8589934703, 4294966460, 4182119424), 4133348352)
+assert_eq(modular_binomial(10, 2, 43), 2)
+assert_eq(modular_binomial(100, 42, -127), (binomial(100, 42) % -127))
+assert_eq(modular_binomial(1e10, 1e5, 1234567), 589372)
+
+assert_eq(modular_binomial(8589934823, 4294966769, 52521875),          26643750);
+assert_eq(modular_binomial(8589935272, 429496,     97656250000000000), 57900778336640000);
+assert_eq(modular_binomial(8589935272, 4294965,    97656250000000000), 96886205280000000);
+assert_eq(modular_binomial(8589935272, 4294966820, 97656250000000000), 55077260000000000);
+assert_eq(modular_binomial(8589935272, 42949658,   97656250000000000), 46773145040000000);
+
+say ("binomial(10^10, 10^5) mod 13! = ", modular_binomial(1e10, 1e5, 13.fac))

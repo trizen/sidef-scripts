@@ -511,6 +511,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Modular bell numbers recurrence](./Math/modular_bell_numbers_recurrence.sf)
     * [Modular bernoulli numbers numberphile](./Math/modular_bernoulli_numbers_numberphile.sf)
     * [Modular binomial fast](./Math/modular_binomial_fast.sf)
+    * [Modular binomial faster](./Math/modular_binomial_faster.sf)
     * [Modular cyclotomic polynomial](./Math/modular_cyclotomic_polynomial.sf)
     * [Modular elliptic-curve arithmetic](./Math/modular_elliptic-curve_arithmetic.sf)
     * [Modular exponentiation](./Math/modular_exponentiation.sf)
