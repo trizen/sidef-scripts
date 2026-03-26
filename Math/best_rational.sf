@@ -1,0 +1,65 @@
+#!/usr/bin/ruby
+
+# Given a real number `x` and a positive integer bound `B`, returns a
+# rational number `p/q` that is the best rational approximation to
+# `x` with denominator `q <= B`.
+
+func best_rational(x, max_den) {
+
+    var xabs = x.abs
+
+    var p0 = 1
+    var q0 = 0
+    var p1 = xabs.floor.int
+    var q1 = 1
+    var remainder = (xabs - p1)
+
+    while (remainder > 0) {
+
+        var inv_remainder = remainder.inv
+        var a = inv_remainder.floor.int
+        remainder = (inv_remainder - a)
+
+        if (a == 0) {
+            break
+        }
+
+        var qlimit = idiv(max_den - q0, q1)
+
+        if (a > qlimit) {
+
+            if (qlimit >= 1) {
+                var candidate_p = ((qlimit * p1) + p0)
+                var candidate_q = ((qlimit * q1) + q0)
+
+                var candidate_error = (((candidate_p - (xabs * candidate_q)).abs) * q1)
+                var current_error = (((p1 - (xabs * q1)).abs) * candidate_q)
+
+                if (candidate_error < current_error) {
+                    p1 = candidate_p
+                    q1 = candidate_q
+                }
+            }
+
+            break
+        }
+
+        var p2 = ((a * p1) + p0)
+        var q2 = ((a * q1) + q0)
+
+        p0 = p1
+        q0 = q1
+        p1 = p2
+        q1 = q2
+    }
+
+    return (p1 / q1)
+}
+
+say best_rational(Num.pi, 1000).as_rat       #=> 355/133
+say best_rational(0.44329896f, 1e3).as_rat   #=> 43/97
+
+for k in (0..20) {
+   var r = best_rational(Num.pi, 10**k)
+   say "PI =~ #{r.as_rat}"
+}

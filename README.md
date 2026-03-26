@@ -178,6 +178,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Bernoulli numbers recurrence](./Math/bernoulli_numbers_recurrence.sf)
     * [Bernoulli numbers recurrence 2](./Math/bernoulli_numbers_recurrence_2.sf)
     * [Bernoulli numbers seidel](./Math/bernoulli_numbers_seidel.sf)
+    * [Best rational](./Math/best_rational.sf)
     * [Bi-unitary divisors](./Math/bi-unitary_divisors.sf)
     * [Bi-unitary sigma](./Math/bi-unitary_sigma.sf)
     * [Bi-unitary totient](./Math/bi-unitary_totient.sf)
