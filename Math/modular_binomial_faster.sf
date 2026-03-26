@@ -105,6 +105,7 @@ func factorial_without_prime_power(n_val, prime, exponent, prime_pow) {
 }
 
 func factorial_without_prime(n_val, prime, prime_pow, eval_cache) {
+
     if (n_val <= 1) { return 1 }
     if (prime > n_val) { return factorialmod(n_val, prime_pow) }
     if (eval_cache[0] == n_val) { return eval_cache[1] }
@@ -121,7 +122,7 @@ func factorial_without_prime(n_val, prime, prime_pow, eval_cache) {
         var h_b = 0
         if (b_val > 0) {
             for i in (1 .. b_val) {
-                h_b = ((h_b + invmod(i, prime)) % prime)
+                h_b = addmod(h_b, invmod(i, prime), prime)
             }
         }
 
@@ -131,30 +132,15 @@ func factorial_without_prime(n_val, prime, prime_pow, eval_cache) {
             res = ((res * (1 + (((a_val * prime) % prime_pow) * h_b))) % prime_pow)
         }
 
-        if (eval_cache[0] > 0) {
-            var prev_res = __FUNC__(eval_cache[0], prime, prime_pow, [0, 1])
-            res = ((eval_cache[1] * (res * invmod(prev_res, prime_pow))) % prime_pow)
-        }
-
         eval_cache[0] = n_val
         eval_cache[1] = res
         return res
     }
 
-    var exponent = 0
-    var temp_pow = prime_pow
-    while ((temp_pow % prime) == 0) {
-        temp_pow = (temp_pow // prime)
-        exponent += 1
-    }
+    var exponent = prime_pow.prime_power
 
-    if ((exponent >= 3) && (temp_pow == 1)) {
+    if (exponent >= 3) {
         var res = factorial_without_prime_power(n_val, prime, exponent, prime_pow)
-
-        if (eval_cache[0] > 0) {
-            var prev_res = factorial_without_prime_power(eval_cache[0], prime, exponent, prime_pow)
-            res = ((eval_cache[1] * (res * invmod(prev_res, prime_pow))) % prime_pow)
-        }
 
         eval_cache[0] = n_val
         eval_cache[1] = res
@@ -191,6 +177,11 @@ func is_small_k_efficient(n_val, k_val, mod_val) {
 }
 
 func binomial_mod_small_k(n_val, k_val, mod_val, prime_val=0) {
+
+    if (false && !prime_val && mod_val.is_prime_power) {
+        prime_val = mod_val.prime_root
+    }
+
     if ((!prime_val) || (k_val <= 100000)) {
         return (binomial(n_val, k_val) % mod_val)
     }
@@ -202,24 +193,20 @@ func binomial_mod_small_k(n_val, k_val, mod_val, prime_val=0) {
     for i in (0 .. (k_val - 1)) {
         var temp = (n_val - i)
 
-        if ((temp % prime_val) == 0) {
-            while ((temp % prime_val) == 0) {
-                temp = (temp // prime_val)
-                valuation = (valuation + 1)
-            }
+        if (temp `is_div` prime_val) {
+            valuation += temp.valuation(prime_val)
+            temp = temp.remdiv(prime_val)
         }
 
-        num_mult = ((num_mult * temp) % mod_val)
+        num_mult = mulmod(num_mult, temp, mod_val)
 
         var den = (i + 1)
-        if ((den % prime_val) == 0) {
-            while ((den % prime_val) == 0) {
-                den = (den // prime_val)
-                valuation = (valuation - 1)
-            }
+        if (den `is_div` prime_val) {
+           valuation -= den.valuation(prime_val)
+            den = den.remdiv(prime_val)
         }
 
-        den_mult = ((den_mult * den) % mod_val)
+        den_mult = mulmod(den_mult, den, mod_val)
     }
 
     var ans = ((num_mult * invmod(den_mult, mod_val)) % mod_val)
