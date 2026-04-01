@@ -351,16 +351,15 @@ func calculate_modular_binomial(n_val, k_val, mod_val) {
         }
         if (max_val > 1000) { max_val = 1000 }
 
-        var fact_acc  = []
+        var fact_acc  = Hash("0" => 1)
         var n_fact = 1
-        fact_acc[0] = 1
 
         if ((prime_rem_exp < (2 ** 64)) && (prime < n_val)) {
             for v in (1 .. max_val) {
-                if ((v % prime) != 0) {
+                if (v % prime) {
                     n_fact = ((n_fact * v) % prime_rem_exp)
                 }
-                fact_acc[v] = n_fact
+                fact_acc{v} = n_fact
             }
         }
 
@@ -370,13 +369,13 @@ func calculate_modular_binomial(n_val, k_val, mod_val) {
         for j in (0 .. num_digits) {
             var missing_pairs = []
             
-            var x_val = fact_acc[n_digits[j]]
+            var x_val = fact_acc{n_digits[j]}
             if (x_val == nil) { missing_pairs.append(["x", n_digits[j]]) }
 
-            var y_val = fact_acc[k_digits[j]]
+            var y_val = fact_acc{k_digits[j]}
             if (y_val == nil) { missing_pairs.append(["y", k_digits[j]]) }
 
-            var z_val = fact_acc[r_digits[j]]
+            var z_val = fact_acc{r_digits[j]}
             if (z_val == nil) { missing_pairs.append(["z", r_digits[j]]) }
 
             var computed_results = Hash()
