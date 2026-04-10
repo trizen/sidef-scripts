@@ -8,80 +8,115 @@
 
 func distinct_degree_factorization(f) {
 
-    var p = f.modulus
-    var x = PolyMod(1, p)
-    var w = x
-    var g = []
+    var p       = f.modulus
+    var x_poly  = PolyMod(1 => 1, p)   # monomial x
+    var w       = x_poly
+    var factors = []
 
-    for k in (1..f.deg) {
-        w = (w**p % f)
-        g << gcd(w - x, f)
-        f = (f / g[-1])
+    for k in (1..f.degree) {
+        w = w.powmod(p, f)              # w = x^(p^k) mod f
+        var diff = (w - x_poly)
+        var gk   = diff.monic_gcd(f)
+
+        factors << [k, gk]
+        f /= gk                   # exact division
+        break if (f==1)
     }
 
+    # Safety net for non-squarefree or degenerate input
     if (f != 1) {
-        g << f
+        factors << [f.degree, f]
     }
 
-    return g
+    return factors
 }
 
 func distinct_degree_split(f, d) {
 
-    f.deg == 0 && return []
-    f.deg == 1 && return [f]
-    f.deg == d && return [f]
-
     var p = f.modulus
-    var w = PolyMod(irand(d), p)       # random monic of degree <= d
-    var n_power = idiv(p**d - 1, 2)
-    var g = gcd(w**n_power - 1, f)
+    var deg_f = f.degree
 
-    if (g == f) {
-        return __FUNC__(f, d)
+    return []   if (deg_f == 0)
+    return [f]  if (deg_f == d)
+
+    var is_char2 = (p == 2)
+    var exp = (is_char2 ? nil : ((p**d - 1)/2))
+
+    var g = nil
+    var h = nil
+
+    for (1..200) {
+
+        # Random non-zero polynomial of degree < deg_f
+        var t = PolyMod(deg_f.of { irand(1, p-1) }, p)
+        next if (t == 0)
+
+        if (is_char2) {
+
+            # Absolute trace map
+            h = t%f
+            var ti = h
+
+            for (1 .. d-1) {
+                ti = ti.powmod(p, f)
+                h  = ((h+ti) % f)
+            }
+        } else {
+            # Quadratic-residue split
+            h = (t.powmod(exp, f) - 1)
+        }
+
+        g = h.monic_gcd(f)
+        break if ((g != 1) && (g != f))
     }
 
-    if (g.deg == 0) {   # workaround for infinite recursion
-        return [f/g]
-    }
+    return [f] if !(defined(g) && (g != 1) && (g != f))
 
     __FUNC__(g, d) + __FUNC__(f/g, d)
 }
 
-func cantor_zassenhaus_polynomial_factorization(f) {
+func cantor_zassenhaus_polynomial_factorization(original) {
 
-    var a = f
+    # Stage 1 – preprocessing
+    var lc = original.lift.leading_coefficient
+    var f  = original.normalize_to_monic
 
-    f /= f.leading_coefficient      # make f monic
-    f /= gcd(f, f.derivative)       # make f squarefree
-    f /= f.content                  # make f primitive
+    var df = f.derivative
+    var sq = f.monic_gcd(df)
 
-    var ddf = distinct_degree_factorization(f)
-    var dds = ddf.map_kv {|k,v| distinct_degree_split(v, k+1)... }
+    f = f/sq
+    f = f.normalize_to_monic if !(f==0 || f==1)
 
-    var extra_factor = a/dds.prod
+    # Stage 2 – distinct degree factorization
+    var ddf_groups = (f==1 ? [] : distinct_degree_factorization(f))
 
-    if (extra_factor.deg > 0) {
-        if (dds.none {|g| gcd(g, extra_factor) == g }) {
-            dds << extra_factor
-        }
+    # Stage 3 – equal degree factorization
+    var irreducibles = []
+
+    ddf_groups.each_2d {|d, fk|
+        next if (fk == 1)
+        irreducibles << distinct_degree_split(fk, d)...
     }
 
-    var valuations = []
+    # Stage 4 – multiplicities in the original polynomial
+    var remainder = original
+    var factors = []
 
-    var p = a
-    for g in dds {
+    for irred in (irreducibles) {
         var e = 0
+
         loop {
-            var(q, r) = divmod(p, g)
-            r == 0 || break
-            ++e
-            p = q
+            var (q,r) = remainder.divmod(irred)
+            break if (r != 0)
+            e += 1
+            remainder = q
         }
-        valuations << e
+
+        next if (e == 0)
+        factors << [irred, e]
     }
 
-    [[leading_coefficient(a), 1]] + (dds ~Z valuations)
+    [[lc, 1], factors.sort...]
 }
 
 for f in (
@@ -91,8 +126,12 @@ for f in (
 ) {
 
     say "\nFactoring: #{f} in Z_#{f.modulus}[x]:"
+    var F = cantor_zassenhaus_polynomial_factorization(f)
 
-    cantor_zassenhaus_polynomial_factorization(f).each_2d{|factor, exp|
+    assert_eq(F.prod_2d{|a,b| a**b }, f)
+    assert_eq(f.factor_exp, F)
+
+    F.each_2d{|factor, exp|
         if (exp > 1) {
             say "(#{factor})^#{exp}"
         }
@@ -103,18 +142,18 @@ for f in (
 }
 
 __END__
-Factoring: 8*x^4 in Z_101[x]:
+Factoring: 8*x^4 (mod 101) in Z_101[x]:
 8
-(x)^4
+(x (mod 101))^4
 
-Factoring: 3*x^4 + 3*x^3 + 2*x^2 + 3*x + 4 in Z_5[x]:
+Factoring: 3*x^4 + 3*x^3 + 2*x^2 + 3*x + 4 (mod 5) in Z_5[x]:
 3
-x + 4
-x^2 + 1
-3*x + 1
+(x + 2 (mod 5))^2
+x + 3 (mod 5)
+x + 4 (mod 5)
 
-Factoring: 7*x^5 + 9*x^4 + 11*x^2 + 9*x + 1 in Z_17[x]:
+Factoring: 7*x^5 + 9*x^4 + 11*x^2 + 9*x + 1 (mod 17) in Z_17[x]:
 7
-11*x + 3
-4*x^2 + 4*x + 4
-11*x^2 + 5*x + 9
+x + 8 (mod 17)
+x^2 + x + 1 (mod 17)
+x^2 + 2*x + 7 (mod 17)

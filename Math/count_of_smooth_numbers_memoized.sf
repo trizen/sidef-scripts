@@ -12,7 +12,7 @@ func smooth_count(n, k) {
             0
         }
         elsif(k.is_zero) {
-            1 + n.ilog(2)
+            1 + n.ilog2
         }
         elsif (n < P[k]) {
             n
