@@ -71,14 +71,6 @@ func r10_d(p) {
     var (x, y) = (s, q % s)
     assert_eq(x**2 + y**2, p)
     return 2*(Gauss(x, y)**4 -> re)
-
-    #~ for x in (0 .. Inf `by` 2) {
-        #~ if (p - x*x -> is_square) {
-            #~ var y = isqrt(p - x*x)
-            #~ assert_eq(x**2 + y**2, p)
-            #~ return 2*(Gauss(x, y)**4 -> re)
-        #~ }
-    #~ }
 }
 
 func r10_c(f) is cached {
@@ -163,16 +155,12 @@ func _r12_b(n) {
 
     n.is_odd || return 0
 
-    # Part 3: Apply the sequence logic + 16*b(n) for odd numbers
     var b_n = 1
-
-    # cache of b(p)
     static b_prime_cache = Hash()
 
     for p,e in (n.factor_exp) {
 
-        var p_str = p.to_s
-        var b_p = (b_prime_cache{p_str} := _r12_b_prime(p))
+        var b_p = (b_prime_cache{p} := _r12_b_prime(p))
 
         if (e == 1) {
             b_n *= b_p
@@ -252,8 +240,9 @@ func r(n, k=2) is cached {
     }
 
     if (k == 12) {
-        # r_12(n) = A029751(n) + 16*A000735(n)
+        # r_12(n) = A000145(n)
         #         = 8*σ_5​(n) - 512*σ_5​(n/4) + 16*b(n)
+        #         = 8*sigma_5(n) - f(n) + g(n), where f(n) = 512*sigma_5(n/4) if 4|n, else 0, and g(n) = 16*A000735((n-1)/2) if n is odd, else 0
         var a = 8*sigma(n,5)
         var b = (n.is_div(4) ? 512*sigma(n/4, 5) : 0)
         var c = 16*_r12_b(n)
