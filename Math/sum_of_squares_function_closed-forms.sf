@@ -102,27 +102,105 @@ func r10_c(f) is cached {
     }
 }
 
-func r12_a(n) {
-    (-1)**(n-1) * 8 * n.divisors.sum {|d| (-1)**(n + n/d) * d**5 }
+func _r12_b_prime(p) {
+
+    # M = (p - 1) / 2
+    var M = (p - 1)>>1
+
+    var S2 = ([0] * (M + 1))
+    var A  = []
+
+    # Generate the sparse theta series A(q) up to degree M
+    var k = 0
+    loop {
+        var Tk = ((k * (k + 1)) >> 1)
+        break if (Tk > M)
+
+        var val = (2*k + 1)
+        val = -val if k.is_odd
+
+        A << [Tk, val]
+        k += 1
+    }
+
+    # Compute A(q)^2 in O(M) time due to sparsity
+    for i in (^A) {
+        var (T1, v1) = A[i][0,1]
+        for j in (^A) {
+            var (T2, v2) = A[j][0,1]
+            var sum_T = (T1 + T2)
+            break if (sum_T > M)
+            S2[sum_T] += (v1 * v2)
+        }
+    }
+
+    # Find the coefficient of q^M in (A(q)^2)^2
+    var ans = 0
+    for i in (0 .. M) {
+        var j = (M - i)
+        if ((S2[i] != 0) && (S2[j] != 0)) {
+            ans += (S2[i] * S2[j])
+        }
+    }
+
+    return ans
 }
 
-func r12_b(f) {
-    # A000735(n) = b(2*n + 1) where b(n) is multiplicative with:
+func _r12_b(n) {
 
-    # b(2^e) = 0^e
-    # b(p^e) = b(p) * b(p^(e-1)) - p^5 * b(p^(e-2))
+    # r_12(n) = A029751(n) + 16*A000735(n)
+    #         = 8*σ_5​(n) - 512*σ_5​(n/4) + 16*b(n)
 
-    var n = f.prod_2d {|p,e| ipow(p, e) }
+    # where b(n) is strongly multiplicative with:
+    #   b(p^e) = b(p) * b(p^(e−1)) - p^5 * b(p^(e-2)), for odd prime p.
+    #   b(2^e) = 1
+    #
+    # b(p) is the coefficient of q^((p−1)/2) in A(q)^4, where:
+    #    A(q) = Sum_{k>=0} ​(−1)^k * (2*k+1) * q^(k*(k+1)/2).
 
-    return 0 if (n < 0)
-    return 1 if (n == 0)
+    n  < 0 && return 0
+    n == 0 && return 1
 
-    # TODO: handle base case when n is prime.
-    return ... if n.is_prime
+    n.is_odd || return 0
 
-    f.prod_2d {|p,e|
-        r12_b([[p, 1]]) * r12_b([[p, e-1]]) - (p**5 * r12_b([[p, e-2]]))
+    # Part 3: Apply the sequence logic + 16*b(n) for odd numbers
+    var b_n = 1
+
+    # cache of b(p)
+    static b_prime_cache = Hash()
+
+    for p,e in (n.factor_exp) {
+
+        var p_str = p.to_s
+        var b_p = (b_prime_cache{p_str} := _r12_b_prime(p))
+
+        if (e == 1) {
+            b_n *= b_p
+            next
+        }
+
+        # Handle multiplicative prime powers:
+        # b(p^e) = b(p)*b(p^(e-1)) - p^5*b(p^(e-2))
+        var b_prev = 1
+        var b_curr = b_p
+
+        var p_pow5 = p**5
+        var b_next = 0
+        var term   = 0
+
+        for k in (2 .. e) {
+            b_next = (b_p * b_curr)
+            term   = (p_pow5 * b_prev)
+            b_next -= term
+
+            b_prev = b_curr
+            b_curr = b_next
+        }
+
+        b_n *= b_curr
     }
+
+    return b_n
 }
 
 func r(n, k=2) is cached {
@@ -175,10 +253,11 @@ func r(n, k=2) is cached {
 
     if (k == 12) {
         # r_12(n) = A029751(n) + 16*A000735(n)
-        # But, I don't know how to compute A000735 efficiently...
-        #~ var a = r12_a(n)
-        #~ var b = r12_b(2*n + 1 -> factor_exp)
-        #~ return (a + 16*b)
+        #         = 8*σ_5​(n) - 512*σ_5​(n/4) + 16*b(n)
+        var a = 8*sigma(n,5)
+        var b = (n.is_div(4) ? 512*sigma(n/4, 5) : 0)
+        var c = 16*_r12_b(n)
+        return (a - b + c)
     }
 
     var count = 0
