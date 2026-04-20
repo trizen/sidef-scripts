@@ -57,18 +57,9 @@ func r10_b(f) {
     }
 }
 
-func r10_d(p) {
+func r10_d(p) is cached {
     # 2 * Re( (x + i*y)^4 ) and p = x^2 + y^2 with even x
-
-    var u = p
-    var s = sqrtmod(-1, u) || return NaN
-    var q = u
-
-    while (s*s > u) {
-        (s, q) = (q % s, s)
-    }
-
-    var (x, y) = (s, q % s)
+    var (x, y) = p.sum_of_squares[0]...
     assert_eq(x**2 + y**2, p)
     return 2*(Gauss(x, y)**4 -> re)
 }
@@ -191,6 +182,32 @@ func _r12_b(n) {
     return b_n
 }
 
+func _r24(n) {
+
+    # Sigma_11(n), with the convention that non-integer arguments contribute 0
+    var sigma_n   = sigma(n, 11)
+    var sigma_n_2 = (n.is_div(2) ? sigma(n >> 1, 11) : 0)
+    var sigma_n_4 = (n.is_div(4) ? sigma(n >> 2, 11) : 0)
+
+    # Ramanujan tau(n), with the convention that non-integer arguments contribute 0
+    var tau_n   = ramanujan_tau(n)
+    var tau_n_2 = (n.is_div(2) ? ramanujan_tau(n >> 1) : 0)
+
+    # (-1)^n
+    var sign = (n.is_div(2) ? 1 : -1)
+
+    # 2^4 * (sigma_11(n) - 2*sigma_11(n/2) + 2^12*sigma_11(n/4))
+    var term1 = 16*(sigma_n - 2*sigma_n_2 + 4096*sigma_n_4)
+
+    # 2^7 * 259 * (-1)^n * tau(n)
+    var term2 = 33152*sign*tau_n
+
+    # 2^16 * tau(n/2)
+    var term3 = 65536*tau_n_2
+
+    (term1 - term2 - term3) / 691
+}
+
 func r(n, k=2) is cached {
 
     return 1 if (n == 0)
@@ -249,6 +266,12 @@ func r(n, k=2) is cached {
         return (a - b + c)
     }
 
+    if (k == 24) {
+        # r_24(n) = A000156(n)
+        #         = (2^4*(sigma_{11}(n)- 2*sigma_{11}(n/2) + 2^{12}*sigma_{11}(n/4)) - 2^7*259*(-1)^n*tau(n) - 2^16*tau(n/2))/691
+        return _r24(n)
+    }
+
     var count = 0
     var upto = n.isqrt
     var n_is_square = n.is_square
@@ -265,7 +288,7 @@ func r(n, k=2) is cached {
     return count
 }
 
-for k in (0..20) {
+for k in (0..25) {
     say ("k = #{'%2d' % k}: ", 15.of { r(_, k) })
 
     assert_eq(

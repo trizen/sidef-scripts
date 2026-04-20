@@ -31,7 +31,7 @@ func rational_approximations (x, callback, first = 10) {
         (n1, n2) = (n2, n1)
         (d1, d2) = (d2, d1)
 
-        callback(n2 / d2);
+        callback(n2 / d2)
 
         f -= z
         f.is_zero && break
