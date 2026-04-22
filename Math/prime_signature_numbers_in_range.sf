@@ -1,0 +1,74 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 22 April 2026
+# https://github.com/trizen
+
+# Generate all the k-omega prime numbers <= n that have a given prime signature.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+#   https://en.wikipedia.org/wiki/Prime_signature
+
+func prime_signature_numbers_in_range(A, B, prime_signature, callback) {
+
+    # Handle empty prime signature
+    if (prime_signature.len == 0) {
+        callback(1) if 1.is_between(A,B)
+        return callback
+    }
+
+    A = max(prime_signature.len.pn_primorial, A)
+
+    func generate(m, lo, k, P) {
+
+        var e = P[k-1]
+        var hi = idiv(B,m).iroot(max(k,e))
+
+        if (k == 1) {
+
+            lo = max(lo, idiv_ceil(A, m).iroot_ceil(e))
+
+            if (lo > hi) {
+                return nil
+            }
+
+            primes_each(lo, hi, {|p|
+                callback(m * ipow(p,e))
+            })
+
+            return nil
+        }
+
+        primes_each(lo, hi, {|p|
+            var t = (m * ipow(p,e))
+            var u = idiv(B,t).iroot(P[k-2])
+            break if (p+1 > u)
+            __FUNC__(t, p+1, k-1, P)
+        })
+    }
+
+    var seen = Hash()
+
+    prime_signature.permutations({|*a|
+        var key = a.join(' ')
+        next if seen.has(key)
+        seen{key} = true
+        generate(1, 2, a.len, a)
+    })
+
+    return callback
+}
+
+var prime_signature = [3,2,2]
+
+var A = 2000
+var B = 10000
+
+var arr = []
+prime_signature_numbers_in_range(A, B, prime_signature, {|v| arr << v })
+say arr.sort    #=> [1800, 2700, 3528, 4500, 5292, 8712, 9800]
+
+# Brute-force check
+var bf = (max(A,prime_signature.len.pn_primorial)..B -> grep {.prime_signature == prime_signature})
+assert_eq(arr.sort, bf)

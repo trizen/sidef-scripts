@@ -1,0 +1,90 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 22 April 2026
+# https://github.com/trizen
+
+# Count the number of k-omega prime numbers <= n that have a given prime signature.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+#   https://en.wikipedia.org/wiki/Prime_signature
+
+func count_prime_signature_numbers(n, prime_signature) {
+
+    # Handle empty prime signature
+    if (prime_signature.len == 0) {
+        return 1 if (1 <= n)
+        return 0
+    }
+
+    var count = 0
+
+    func generate(m, lo, k, P, j=0) {
+
+        var e = P[k-1]
+        var hi = idiv(n,m).iroot(max(e, k))
+
+        if (k == 1) {
+            count += (hi.prime_count - j++)
+            return nil
+        }
+
+        primes_each(lo, hi, {|p|
+            var t = (m * ipow(p,e))
+            var u = idiv(n,t).iroot(P[k-2])
+            break if (p+1 > u)
+            __FUNC__(t, p+1, k-1, P, ++j)
+        })
+    }
+
+    var seen = Hash()
+
+    prime_signature.permutations({|*a|
+        var key = a.join(' ')
+        next if seen.has(key)
+        seen{key} = true
+        generate(1, 2, a.len, a)
+    })
+
+    return count
+}
+
+func count_prime_signature_numbers_in_range(A, B, signature) {
+
+    var term_1 = count_prime_signature_numbers(A-1, signature)
+    var term_2 = count_prime_signature_numbers(B, signature)
+
+    term_2 - term_1
+}
+
+#
+## Example
+#
+func A395379(n) {
+
+    var A = prime(n-1)**7
+    var B = (prime(n)**7 - 1)
+
+    var term_1 = count_prime_signature_numbers_in_range(A, B, [7])
+    var term_2 = count_prime_signature_numbers_in_range(A, B, [3,1])
+    var term_3 = 3.squarefree_almost_prime_count(A, B)
+
+    term_1 + term_2 + term_3
+}
+
+assert_eq(A395379.map(1..6), %n[15, 408, 16838, 167649, 4140037, 9474308])
+
+
+var prime_signature = [3,2,2]
+
+var n = 10000
+
+var count = count_prime_signature_numbers(n, prime_signature)
+say count
+
+assert_eq(count_prime_signature_numbers_in_range(2e3, 1e4, prime_signature), 6)
+
+# Brute-force check
+var bf = (prime_signature.len.pn_primorial..n -> count {.prime_signature == prime_signature})
+assert_eq(count, bf)
