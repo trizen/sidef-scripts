@@ -4,7 +4,7 @@
 # Date: 22 April 2026
 # https://github.com/trizen
 
-# Count the number of k-omega prime numbers in a range [A,B] that have a given prime signature.
+# Count the number of k-omega numbers in range [A,B] that have a given prime signature.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Almost_prime
@@ -25,36 +25,32 @@ func count_prime_signature_numbers_in_range(A, B, prime_signature) {
     func generate(m, lo, k, P) {
 
         var e = P[k-1]
-        var hi = idiv(B,m).iroot(max(e,k))
+        var sum_e = P.slice(0, k).sum
+        var hi = idiv(B,m).iroot(sum_e)
+
+        if (lo > hi) {
+            return nil
+        }
 
         if (k == 1) {
-
             lo = max(lo, idiv_ceil(A, m).iroot_ceil(e))
-
-            if (lo > hi) {
-                return nil
-            }
-
             count += prime_count(lo, hi)
             return nil
         }
 
-        primes_each(lo, hi, {|p|
+        var p = lo
+
+        while (p <= hi) {
             var t = (m * ipow(p,e))
-            var u = idiv(B,t).iroot(P[k-2])
-            break if (p+1 > u)
-            __FUNC__(t, p+1, k-1, P)
-        })
+            var r = p.next_prime
+            __FUNC__(t, r, k-1, P)
+            p = r
+        }
     }
 
-    var seen = Hash()
-
-    prime_signature.permutations({|*a|
-        var key = a.join(' ')
-        next if seen.has(key)
-        seen{key} = true
+    prime_signature.sort.uniq_permutations.each {|a|
         generate(1, 2, a.len, a)
-    })
+    }
 
     return count
 }

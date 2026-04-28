@@ -4,7 +4,7 @@
 # Date: 22 April 2026
 # https://github.com/trizen
 
-# Generate all the k-omega prime numbers <= n that have a given prime signature.
+# Generate all the k-omega numbers in range [A,B] that have a given prime signature.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Almost_prime
@@ -23,29 +23,31 @@ func prime_signature_numbers_in_range(A, B, prime_signature, callback) {
     func generate(m, lo, k, P) {
 
         var e = P[k-1]
-        var hi = idiv(B,m).iroot(max(k,e))
+        var sum_e = P.slice(0, k).sum
+        var hi = idiv(B,m).iroot(sum_e)
+
+        if (lo > hi) {
+            return nil
+        }
 
         if (k == 1) {
 
             lo = max(lo, idiv_ceil(A, m).iroot_ceil(e))
 
-            if (lo > hi) {
-                return nil
-            }
-
-            primes_each(lo, hi, {|p|
+            primes(lo, hi).each{|p|
                 callback(m * ipow(p,e))
-            })
+            }
 
             return nil
         }
 
-        primes_each(lo, hi, {|p|
+        var p = lo
+        while (p <= hi) {
             var t = (m * ipow(p,e))
-            var u = idiv(B,t).iroot(P[k-2])
-            break if (p+1 > u)
-            __FUNC__(t, p+1, k-1, P)
-        })
+            var r = p.next_prime
+            __FUNC__(t, r, k-1, P)
+            p = r
+        }
     }
 
     var seen = Hash()

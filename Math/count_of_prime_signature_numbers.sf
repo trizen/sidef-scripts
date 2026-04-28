@@ -4,7 +4,7 @@
 # Date: 22 April 2026
 # https://github.com/trizen
 
-# Count the number of k-omega prime numbers <= n that have a given prime signature.
+# Count the number of k-omega numbers <= n that have a given prime signature.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Almost_prime
@@ -23,29 +23,40 @@ func count_prime_signature_numbers(n, prime_signature) {
     func generate(m, lo, k, P, j=0) {
 
         var e = P[k-1]
-        var hi = idiv(n,m).iroot(max(e, k))
+        var sum_e = P.slice(0, k).sum
+        var hi = idiv(n,m).iroot(sum_e)
 
-        if (k == 1) {
-            count += (hi.prime_count - j++)
+        if (lo > hi) {
             return nil
         }
 
-        primes_each(lo, hi, {|p|
+        if (k == 1) {
+            count += (hi.prime_count - j)
+            return nil
+        }
+
+        if (k == 2) {
+            var e2 = P[0]
+            primes(lo, hi).each {|p|
+                var t = (m * ipow(p, e))
+                var u = idiv(n,t).iroot(e2)
+                count += (u.prime_count - ++j)
+            }
+            return nil
+        }
+
+        var p = lo
+        while (p <= hi) {
             var t = (m * ipow(p,e))
-            var u = idiv(n,t).iroot(P[k-2])
-            break if (p+1 > u)
-            __FUNC__(t, p+1, k-1, P, ++j)
-        })
+            var r = p.next_prime
+            __FUNC__(t, r, k-1, P, ++j)
+            p = r
+        }
     }
 
-    var seen = Hash()
-
-    prime_signature.permutations({|*a|
-        var key = a.join(' ')
-        next if seen.has(key)
-        seen{key} = true
+    prime_signature.sort.uniq_permutations {|*a|
         generate(1, 2, a.len, a)
-    })
+    }
 
     return count
 }
@@ -74,7 +85,6 @@ func A395379(n) {
 }
 
 assert_eq(A395379.map(1..6), %n[15, 408, 16838, 167649, 4140037, 9474308])
-
 
 var prime_signature = [3,2,2]
 
