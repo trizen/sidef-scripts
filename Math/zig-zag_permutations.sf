@@ -1,0 +1,71 @@
+#!/usr/bin/ruby
+
+# Generate Zig-Zag permutations for a set {1..n}.
+
+# See also:
+#   https://rosettacode.org/wiki/Zigzag_numbers
+#   https://en.wikipedia.org/wiki/Alternating_permutation
+
+func zigzag_permutations(n) {
+
+    var arr = []
+    func (dir, have, rest) {
+
+        if (!rest) {
+            arr << have
+            return nil
+        }
+
+        var last = (have.last \\ (1 + rest.last))
+
+        for n in (rest.grep {|k| (k <=> last) == dir }) {
+            var new = rest.clone
+            var t = have.clone
+            if (new.delete_first_by {|k| k == n }) {
+                t << n
+            }
+            __FUNC__(-dir, t, new)
+        }
+    }(-1, [], @(1..n))
+
+    return arr
+}
+
+func zigzag_permutations2(n) {
+
+    var arr  = []
+    var have = []
+    var used = n.of(false)
+
+    func (dir) {
+        if (have.len == n) {
+            arr << have.clone
+            return nil
+        }
+
+        var last = (have.last \\ (n + 1))
+
+        for k in (1..n) {
+            next if used[k - 1]
+            next if ((k <=> last) != dir)
+
+            used[k - 1] = true
+            have << k
+            __FUNC__(-dir)
+            have.pop
+            used[k - 1] = false
+        }
+    }(-1)
+
+    return arr
+}
+
+assert_eq(
+    zigzag_permutations(5),
+    zigzag_permutations2(5)
+)
+
+for n in (1..5) {
+    var arr = zigzag_permutations(n)
+    say "a(#{n}) = #{'%2d' % arr.len}: #{arr}"
+}

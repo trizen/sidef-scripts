@@ -786,6 +786,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Zeta 2n](./Math/zeta_2n.sf)
     * [Zeta 3 fast convergence](./Math/zeta_3_fast_convergence.sf)
     * [Zeta derivative at trivial zeros](./Math/zeta_derivative_at_trivial_zeros.sf)
+    * [Zig-zag permutations](./Math/zig-zag_permutations.sf)
 * Other
     * [Hex randomness info](./Other/hex_randomness_info.sf)
     * [Mortality-natality simulation](./Other/mortality-natality_simulation.sf)
