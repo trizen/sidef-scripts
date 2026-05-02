@@ -20,10 +20,9 @@ func count_prime_signature_numbers(n, prime_signature) {
 
     var count = 0
 
-    func generate(m, lo, k, P, j=0) {
+    func generate(m, lo, k, P, sum_e, j=0) {
 
         var e = P[k-1]
-        var sum_e = P.slice(0, k).sum
         var hi = idiv(n,m).iroot(sum_e)
 
         if (lo > hi) {
@@ -49,13 +48,14 @@ func count_prime_signature_numbers(n, prime_signature) {
         while (p <= hi) {
             var t = (m * ipow(p,e))
             var r = p.next_prime
-            __FUNC__(t, r, k-1, P, ++j)
+            __FUNC__(t, r, k-1, P, sum_e - e, ++j)
             p = r
         }
     }
 
+    var sum_e = prime_signature.sum
     prime_signature.sort.uniq_permutations {|*a|
-        generate(1, 2, a.len, a)
+        generate(1, 2, a.len, a, sum_e)
     }
 
     return count

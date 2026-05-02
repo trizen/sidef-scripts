@@ -20,10 +20,9 @@ func prime_signature_numbers_in_range(A, B, prime_signature, callback) {
 
     A = max(prime_signature.len.pn_primorial, A)
 
-    func generate(m, lo, k, P) {
+    func generate(m, lo, k, P, sum_e) {
 
         var e = P[k-1]
-        var sum_e = P.slice(0, k).sum
         var hi = idiv(B,m).iroot(sum_e)
 
         if (lo > hi) {
@@ -45,19 +44,15 @@ func prime_signature_numbers_in_range(A, B, prime_signature, callback) {
         while (p <= hi) {
             var t = (m * ipow(p,e))
             var r = p.next_prime
-            __FUNC__(t, r, k-1, P)
+            __FUNC__(t, r, k-1, P, sum_e - e)
             p = r
         }
     }
 
-    var seen = Hash()
-
-    prime_signature.permutations({|*a|
-        var key = a.join(' ')
-        next if seen.has(key)
-        seen{key} = true
-        generate(1, 2, a.len, a)
-    })
+    var sum_e = prime_signature.sum
+    prime_signature.sort.uniq_permutations {|*a|
+        generate(1, 2, a.len, a, sum_e)
+    }
 
     return callback
 }
