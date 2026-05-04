@@ -37,6 +37,17 @@ func count_prime_signature_numbers_in_range(A, B, prime_signature) {
             return nil
         }
 
+        if (k == 2) {
+            var e2 = P[0]
+            primes(lo, hi).each {|p|
+                var t = (m * ipow(p, e))
+                lo = max(p+1, idiv_ceil(A, t).iroot_ceil(e2))
+                var u = idiv(B,t).iroot(e2)
+                count += prime_count(lo, u)
+             }
+             return nil
+        }
+
         var p = lo
 
         while (p <= hi) {
