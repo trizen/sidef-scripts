@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
 
 # Daniel "Trizen" Șuteu
-# Date: 22 April 2026
+# Date: 19 May 2026
 # https://github.com/trizen
 
-# Count the number of k-omega numbers <= n that have a given prime signature.
+# Generate all the numbers with exactly `k` divisors in a given range [A,B].
 
 # See also:
 #   https://en.wikipedia.org/wiki/Almost_prime
@@ -76,32 +76,59 @@ func count_prime_signature_numbers_in_range(A, B, signature) {
     term_2 - term_1
 }
 
-#
-## Example
-#
-func A395379(n) {
+func multiplicative_partitions(n, max_value = n) {
 
-    var A = prime(n-1)**7
-    var B = (prime(n)**7 - 1)
+    var results = []
+    var divs = n.divisors.slice(1)  # divisors greater than 1
 
-    var term_1 = count_prime_signature_numbers_in_range(A, B, [7])
-    var term_2 = count_prime_signature_numbers_in_range(A, B, [3,1])
-    var term_3 = 3.squarefree_almost_prime_count(A, B)
+    var path = []
 
-    term_1 + term_2 + term_3
+    func (target, min_idx) {
+
+        if (target == 1) {
+            results << [path...]    # copy
+            return nil
+        }
+
+        for i in (min_idx .. divs.end) {
+            var d = divs[i]
+
+            # Prune branch if the divisor exceeds the remaining target
+            break if (d > target)
+            break if (d > max_value)
+
+            if (target % d == 0) {
+                path.push(d)
+                __FUNC__(target/d, i)
+                path.pop
+            }
+        }
+    }(n, 0)
+
+    return results
 }
 
-assert_eq(A395379.map(1..6), %n[15, 408, 16838, 167649, 4140037, 9474308])
+func count_inverse_tau (A, B, n) {
 
-var prime_signature = [3,2,2]
+    var signatures = multiplicative_partitions(n, B.ilog2 + 1).map {
+        .map{ .dec }
+    }
 
-var n = 10000
+    var count = 0
+    signatures.each {|sig|
+        count += count_prime_signature_numbers_in_range(A, B, sig)
+    }
+    return count
+}
 
-var count = count_prime_signature_numbers(n, prime_signature)
-say count
+assert_eq(count_inverse_tau(1, 462, 16), 16)
+assert_eq(count_inverse_tau(1, 2**9, 10), 13)
+assert_eq(count_inverse_tau(1e5, 1e5 + 500, 48), 10)
+assert_eq(count_inverse_tau(100050, 100500, 48), 10)
+#assert_eq(count_inverse_tau(1, 2**40, 5040), 103)
 
-assert_eq(count_prime_signature_numbers_in_range(2e3, 1e4, prime_signature), 6)
-
-# Brute-force check
-var bf = (prime_signature.len.pn_primorial..n -> count {.prime_signature == prime_signature})
-assert_eq(count, bf)
+# Number of k <= 2^(n-1) such that tau(k) = n
+# https://oeis.org/A393179
+for n in (1 .. 31) {
+    say ("a(#{n}) = ", count_inverse_tau(1, 2**(n-1), n))
+}

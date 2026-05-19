@@ -58,7 +58,12 @@ func count_prime_signature_numbers_in_range(A, B, prime_signature) {
         }
     }
 
-    var sum_e = prime_signature.sum
+    var sum_e = prime_signature.sum || return 0
+
+    if (sum_e > B.ilog2) {
+        return 0
+    }
+
     prime_signature.sort.uniq_permutations.each {|a|
         generate(1, 2, a.len, a, sum_e)
     }

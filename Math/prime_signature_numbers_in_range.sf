@@ -49,7 +49,12 @@ func prime_signature_numbers_in_range(A, B, prime_signature, callback) {
         }
     }
 
-    var sum_e = prime_signature.sum
+    var sum_e = prime_signature.sum || return callback
+
+    if (sum_e > B.ilog2) {
+        return callback
+    }
+
     prime_signature.sort.uniq_permutations {|*a|
         generate(1, 2, a.len, a, sum_e)
     }
