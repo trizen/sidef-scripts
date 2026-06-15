@@ -16,22 +16,28 @@
 #   https://oeis.org/A024924 -- sum of all distinct prime factors composing numbers from 2 to n
 
 func sopf_sum(n) {
-    var A = primes(n.isqrt).sum{|p|
-        p * floor(n/p)
+    var A = n.isqrt.primes.sum {|p|
+        p * idiv(n,p)
     }
 
     var B = sum(1..n.isqrt, {|k|
-        sum_primes(floor(n/k))
+        idiv(n,k).primes_sum
     })
 
-    var C = sum_primes(n.isqrt)*n.isqrt
+    var C = n.isqrt.primes_sum*n.isqrt
 
     A + B - C
 }
 
+func sopf_sum_2(n) {
+    n.dirichlet_hyperbola({ 1 },  { .is_prime ? _ : 0 }, { _ }, { .prime_sum })
+}
+
 for k in (1..7) {
-    var v = sopf_sum(10**k)
-    say "sopf_sum(10^#{k}) = #{v}"
+    var v1 = sopf_sum(10**k)
+    var v2 = sopf_sum_2(10**k)
+    say "sopf_sum(10^#{k}) = #{v1}"
+    assert_eq(v1, v2)
 }
 
 __END__
