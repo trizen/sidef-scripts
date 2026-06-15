@@ -1,0 +1,68 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 15 June 2026
+# https://github.com/trizen
+
+# Formula for computing the following sum in sublinear time:
+#
+#   Sum_{k=2..n} sopfr(k)
+#
+# where:
+#   sopfr(k) = sum of primes dividing k (with repetition).
+
+# See also:
+#   https://oeis.org/A001414 -- sum of primes dividing n (with repetition)
+#   https://oeis.org/A024924 -- sopfr(n!)
+
+# Sublinear formula:
+#   a(n) = -f(floor(sqrt(n)))*floor(sqrt(n)) + Sum_{k=1..floor(sqrt(n))} (A120007(k)*floor(n/k) + f(floor(n/k))).
+#
+# where:
+#   f(n) = A034387(n) + Sum_{p prime <= floor(sqrt(n))} p*floor(log(n)/log(p) - 1)
+#        = Sum_{k=1..floor(log_2(n))} A034387(floor(n^(1/k)))
+
+func f(n) {
+    sum(1..n.ilog2, {|k|
+        n.iroot(k).primes_sum
+    })
+}
+
+func sopfr_sum(n) {
+
+    var s = n.isqrt
+    var A = s.prime_powers.sum {|p|
+        p.rad * idiv(n,p)
+    }
+
+    var B = sum(1..s, {|k|
+        f(idiv(n,k))
+    })
+
+    var C = f(s)*s
+
+    A + B - C
+}
+
+func sopfr_sum_2(n) {
+    n.dirichlet_hyperbola({ .is_prime_power ? .rad : 0 }, { 1 }, f, { _ })
+}
+
+for k in (1..6) {
+    var v1 = sopfr_sum(10**k)
+    var v2 = sopfr_sum_2(10**k)
+    say "sopfr_sum(10^#{k}) = #{v1}"
+    assert_eq(v1, v2)
+}
+
+__END__
+sopfr_sum(10^1) = 45
+sopfr_sum(10^2) = 2280
+sopfr_sum(10^3) = 142707
+sopfr_sum(10^4) = 10243046
+sopfr_sum(10^5) = 795571828
+sopfr_sum(10^6) = 64989338772
+sopfr_sum(10^7) = 5495532284181
+sopfr_sum(10^8) = 476028748414934
+sopfr_sum(10^9) = 41986419147434739
+sopfr_sum(10^10) = 3755773742367560458
