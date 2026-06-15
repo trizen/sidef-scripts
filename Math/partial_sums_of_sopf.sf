@@ -1,0 +1,48 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 15 June 2026
+# https://github.com/trizen
+
+# Formula for computing the following sum in sublinear time:
+#
+#   Sum_{k=2..n} sopf(k)
+#
+# where:
+#   sopf(k) = sum of the distinct prime factors of k
+
+# See also:
+#   https://oeis.org/A008472 -- sum of the distinct primes dividing n
+#   https://oeis.org/A024924 -- sum of all distinct prime factors composing numbers from 2 to n
+
+func sopf_sum(n) {
+    var A = primes(n.isqrt).sum{|p|
+        p * floor(n/p)
+    }
+
+    var B = sum(1..n.isqrt, {|k|
+        sum_primes(floor(n/k))
+    })
+
+    var C = sum_primes(n.isqrt)*n.isqrt
+
+    A + B - C
+}
+
+for k in (1..7) {
+    var v = sopf_sum(10**k)
+    say "sopf_sum(10^#{k}) = #{v}"
+}
+
+__END__
+sopf_sum(10^1) = 36
+sopf_sum(10^2) = 2107
+sopf_sum(10^3) = 140500
+sopf_sum(10^4) = 10218036
+sopf_sum(10^5) = 795296868
+sopf_sum(10^6) = 64986402084
+sopf_sum(10^7) = 5495501355063
+sopf_sum(10^8) = 476028425259175
+sopf_sum(10^9) = 41986415795828892
+sopf_sum(10^10) = 3755773707777399297
+sopf_sum(10^11) = 339760669791885106195

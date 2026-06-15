@@ -4,7 +4,7 @@
 # Date: 19 May 2026
 # https://github.com/trizen
 
-# Generate all the numbers with exactly `k` divisors in a given range [A,B].
+# Count the numbers with exactly `k` divisors in a given range [A,B].
 
 # See also:
 #   https://en.wikipedia.org/wiki/Almost_prime

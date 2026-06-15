@@ -592,6 +592,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Partial sums of sigma function](./Math/partial_sums_of_sigma_function.sf)
     * [Partial sums of sigma function fast](./Math/partial_sums_of_sigma_function_fast.sf)
     * [Partial sums of sigma function times k to the m](./Math/partial_sums_of_sigma_function_times_k_to_the_m.sf)
+    * [Partial sums of sopf](./Math/partial_sums_of_sopf.sf)
     * [Partial sums of squarefree numbers](./Math/partial_sums_of_squarefree_numbers.sf)
     * [Partial sums recursive sublinear formula](./Math/partial_sums_recursive_sublinear_formula.sf)
     * [Partial sums recursive sublinear formula general](./Math/partial_sums_recursive_sublinear_formula_general.sf)
