@@ -1,0 +1,89 @@
+#!/usr/bin/ruby
+
+# Author: Daniel Șuteu
+# Date: 16 June 2026
+# https://github.com/trizen
+
+# A sublinear algorithm for counting the number of primes <= n, using the inclusion-exclusion principle.
+
+# Inspired by the Veritasium video:
+#   https://youtube.com/watch?v=8HBDE-msUjw
+
+# For example, prime_count(100) is computed as:
+#   100 - (100/2 + 100/3 + 100/5 + 100/7)
+#       + (100/(2*3) + 100/(2*5) + 100/(2*7) + 100/(3*5) + 100/(3*7) + 100/(5*7))
+#       - (100/(2*3*5) + 100/(2*3*7) + 100/(2*5*7) + 100/(3*5*7))
+#       + (100/(2*3*5*7))
+#       + 4 (numbers of primes <= sqrt(100))
+#       - 1 (because 1 is not prime)
+
+func almost_prime_numbers_from_factors(n, k, primes, callback, squarefree = false) {
+
+    var sqf = (squarefree ? 1 : 0)
+
+    var factors = primes.sort.uniq
+    var factors_end = factors.end
+
+    if (k == 0) {
+        callback(1)
+        return nil
+    }
+
+    func (m, k, i=0) {
+
+        if (k == 1) {
+
+            var L = idiv(n,m)
+
+            for j in (i..factors_end) {
+                with (factors[j]) {|q|
+                    q > L && break
+                    callback(m*q)
+                }
+            }
+
+            return nil
+        }
+
+        var L = idiv(n,m).iroot(k)
+
+        for j in (i..factors_end) {
+            with (factors[j]) { |q|
+                q > L && break
+                __FUNC__(m*q, k-1, j + sqf)
+            }
+        }
+    }(1, k)
+
+    return nil
+}
+
+func inclusion_exclusion_prime_count(n) {
+
+    var s = n.isqrt
+    var count = n
+    var primes = s.primes
+
+    for k in (1 .. int(n.lgrt + 1)) {
+        count += ((-1)**k * gather { almost_prime_numbers_from_factors(n, k, primes, {|p|
+            take(idiv(n,p))
+        }, true) }.sum)
+    }
+
+    count + primes.len - 1
+}
+
+for n in (1..100) {
+    assert_eq(inclusion_exclusion_prime_count(n), n.pi)
+}
+
+for n in (1..5) {
+    say "pi(10^#{n}) = #{inclusion_exclusion_prime_count(10**n)}"
+}
+
+__END__
+pi(10^1) = 4
+pi(10^2) = 25
+pi(10^3) = 168
+pi(10^4) = 1229
+pi(10^5) = 9592

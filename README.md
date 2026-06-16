@@ -643,6 +643,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Primality testing wilson fourier](./Math/primality_testing_wilson_fourier.sf)
     * [Prime big omega function generalized](./Math/prime_big_omega_function_generalized.sf)
     * [Prime big omega function generalized old](./Math/prime_big_omega_function_generalized_old.sf)
+    * [Prime count inclusion-exclusion formula](./Math/prime_count_inclusion-exclusion_formula.sf)
     * [Prime omega function generalized](./Math/prime_omega_function_generalized.sf)
     * [Prime power counting function](./Math/prime_power_counting_function.sf)
     * [Prime recursive representation](./Math/prime_recursive_representation.sf)
