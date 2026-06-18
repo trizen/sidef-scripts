@@ -53,4 +53,4 @@ func frobenius_primality_test(n) {
 var FPP_list = 50.by(frobenius_primality_test)
 say FPP_list
 
-assert_eq(FPP_list, 50.nprimes)
+assert_eq(FPP_list, 50.next_primes)
