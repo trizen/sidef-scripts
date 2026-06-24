@@ -1,0 +1,68 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 24 June
+# https://github.com/trizen
+
+# A sublinear algorithm for computing the partial-sums of `uphi(k)`, for `1 <= k <= n`:
+#
+#   Sum_{k=1..n} uphi(k)
+#
+# where uphi(k) is the unitary totient function.
+
+# See also:
+#   https://oeis.org/A047994
+
+func f(n, j=1) {
+    n.factor_prod{|p,e| (e >= 2) ? ((e-1)*(p**j - 1)) : 0 }
+}
+
+func partial_sum_of_uphi(n, j=1) {
+    var s = n.isqrt
+    var F = [0]+squarefull(n).map {|k| f(k,j) }
+    var S = F.acc
+
+    var A = squarefull(s).sum {|k|
+        f(k,j) * phi_sum(idiv(n,k), j)
+    }
+
+    var B = sum(1..s, {|k|
+        phi(k,j) * S[squarefull_count(idiv(n,k))]
+    })
+
+    A + B - phi_sum(s,j)*S[squarefull_count(s)]
+}
+
+for k in (1..3) {
+    assert_eq(
+        50.of { partial_sum_of_uphi(_, k) },
+        50.of { .uphi(k) }.acc
+    )
+}
+
+for n in (1..6) {
+    say "S(10^#{n}, 1) = #{partial_sum_of_uphi(10**n, 1)}"
+}
+
+__END__
+S(10^1, 1) = 38
+S(10^2, 1) = 3547
+S(10^3, 1) = 352798
+S(10^4, 1) = 35226152
+S(10^5, 1) = 3522256181
+S(10^6, 1) = 352221532396
+S(10^7, 1) = 35222114211978
+S(10^8, 1) = 3522211043323211
+S(10^9, 1) = 352221101115270062
+S(10^10, 1) = 35222110053700570860
+
+S(10^1, 2) = 338
+S(10^2, 2) = 303135
+S(10^3, 2) = 298910116
+S(10^4, 2) = 298439230544
+S(10^5, 2) = 298393802264349
+S(10^6, 2) = 298389295218599338
+S(10^7, 2) = 298388838471366065630
+S(10^8, 2) = 298388792992837285038867
+S(10^9, 2) = 298388788529543254023638008
+S(10^10, 2) = 298388788053432269053945632380
