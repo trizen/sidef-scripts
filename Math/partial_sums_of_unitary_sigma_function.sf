@@ -1,0 +1,69 @@
+#!/usr/bin/ruby
+
+# Author: Daniel "Trizen" Șuteu
+# Date: 25 June 2026
+# https://github.com/trizen
+
+# A sublinear algorithm for computing the partial-sums of `usigma_j(k)`, for `1 <= k <= n`:
+#
+#   Sum_{k=1..n} usigma_j(k)
+#
+# where usigma_j(n) is the unitary sigma function.
+
+# See also:
+#   https://oeis.org/A047994
+
+func f(n, j=1) {
+    n.is_square ? (n.isqrt**j * n.isqrt.mu) : 0
+}
+
+func partial_sum_of_usigma(n, j=1) {
+
+    var s = n.isqrt
+    var F = [0]+map(1..n.isqrt, {.sqr}).map {|k| f(k,j) }
+    var S = F.acc
+
+    var A = (1..s.isqrt).sum {|k|
+        f(k*k, j) * sigma_sum(idiv(n,k*k), j)
+    }
+
+    var B = sum(1..s, {|k|
+        sigma(k,j) * S[isqrt(idiv(n,k))]
+    })
+
+    A + B - sigma_sum(s,j)*S[isqrt(s)]
+}
+
+for k in (1..3) {
+    assert_eq(
+        50.of { partial_sum_of_usigma(_, k) },
+        50.of { .usigma(k) }.acc
+    )
+}
+
+for n in (1..6) {
+    say "S(10^#{n}, 1) = #{partial_sum_of_usigma(10**n, 1)}"
+}
+
+__END__
+S(10^1, 1) = 76
+S(10^2, 1) = 6889
+S(10^3, 1) = 684578
+S(10^4, 1) = 68425910
+S(10^5, 1) = 6842185909
+S(10^6, 1) = 684216736806
+S(10^7, 1) = 68421643171218
+S(10^8, 1) = 6842163918226589
+S(10^9, 1) = 684216389063572134
+S(10^10, 1) = 68421638885063570894
+
+S(10^1, 2) = 436
+S(10^2, 2) = 375133
+S(10^3, 2) = 370665796
+S(10^4, 2) = 370254727758
+S(10^5, 2) = 370213445135817
+S(10^6, 2) = 370209307662665112
+S(10^7, 2) = 370208891686152913102
+S(10^8, 2) = 370208849789956504311825
+S(10^9, 2) = 370208845552653020009655572
+S(10^10, 2) = 370208845155401284720733402346
