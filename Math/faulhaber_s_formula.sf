@@ -12,7 +12,7 @@
 # See: https://en.wikipedia.org/wiki/Faulhaber%27s_formula
 func faulhaber_formula (n, p) {
     sum(0..p, {|k|
-        binomial(p + 1, k) * bernoulli(k) * n**(p + 1 - k)
+        binomial(p + 1, k) * bernoulli(k, 1) * n**(p - k + 1)
     }) / (p+1)
 }
 
@@ -20,12 +20,12 @@ func faulhaber_formula (n, p) {
 # See: https://en.wikipedia.org/wiki/Faulhaber%27s_formula#Alternate_expressions
 func bernoulli_polynomials (n, x) {
     sum(0..n, {|k|
-        binomial(n, k) * bernoulli(n - k) * x**k
+        binomial(n, k) * bernoulli(n-k) * x**k
     })
 }
 
 func faulhaber_formula_2 (n, p) {
-    (bernoulli_polynomials(p + 1, n) - bernoulli(p + 1)) / (p + 1)
+    (bernoulli_polynomials(p+1, n+1) - bernoulli(p+1, 1)) / (p + 1)
 }
 
 for p in (0..20) {

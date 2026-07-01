@@ -9,11 +9,11 @@
 func bernoulli_numberphile(n) is cached {
 
     return 1    if (n == 0)
-    return 1/2  if (n == 1)
+    return -1/2 if (n == 1)
     return 0    if (n.is_odd)
 
     var x = Poly(1)
-    var t = ((x - 1)**(n+1) - x**(n+1))
+    var t = ((x + 1)**(n+1) - x**(n+1))
 
     var cf = t.coeffs
     var lt = cf.pop
