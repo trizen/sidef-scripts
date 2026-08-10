@@ -1,0 +1,37 @@
+#!/usr/bin/ruby
+
+# Generate the prime partitions of n.
+# That is: the lists of increasing primes that sum to n.
+
+# Inspired by:
+#   https://projecteuler.net/problem=1005
+
+func increasing_prime_partitions(n, p=1, arr=[]) {
+
+    if (n == 0) {
+        say arr
+        return true
+    }
+
+    return false if (p > n)
+
+    for q in (primes(p+1, n)) {
+        __FUNC__(n-q, q, arr + [q])
+    }
+}
+
+increasing_prime_partitions(40)
+
+__END__
+[2, 3, 5, 7, 23]
+[2, 3, 5, 11, 19]
+[2, 3, 5, 13, 17]
+[2, 3, 7, 11, 17]
+[2, 7, 31]
+[3, 5, 13, 19]
+[3, 7, 11, 19]
+[3, 7, 13, 17]
+[3, 37]
+[5, 7, 11, 17]
+[11, 29]
+[17, 23]

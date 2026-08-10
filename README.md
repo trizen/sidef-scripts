@@ -408,6 +408,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Holf-pell factorization](./Math/holf-pell_factorization.sf)
     * [Holf factorization](./Math/holf_factorization.sf)
     * [Home primes](./Math/home_primes.sf)
+    * [Increasing prime partitions](./Math/increasing_prime_partitions.sf)
     * [Infinitary divisors](./Math/infinitary_divisors.sf)
     * [Infinitary sigma](./Math/infinitary_sigma.sf)
     * [Infinitary totient](./Math/infinitary_totient.sf)

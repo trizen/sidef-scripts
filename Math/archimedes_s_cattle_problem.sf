@@ -26,7 +26,7 @@ var y = 185892190138691330945825420863875741352316120197702730106581655085002768
 var D = 410286423278424
 
 # The solution to x and y can be computed as (takes about 2 minutes):
-# var(x, y) = solve_pell(D)
+# var(x, y) = solve_pell(D)[0]...
 
 # Test the Pell solution
 assert_eq(x**2 - D*y**2, 1)
