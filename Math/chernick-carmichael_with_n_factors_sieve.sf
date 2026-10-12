@@ -15,7 +15,7 @@ func isrem(m, p, n) {
     p.is_ntf(18*m + 1) && return false
 
     2 .. n-2 -> each {|k|
-        if (p.is_ntf(9*m << k + 1)) {
+        if (p.is_ntf(9*m << k -> + 1)) {
             return false
         }
     }
@@ -67,12 +67,12 @@ func is(m, n) {
     is_prime(18*m + 1) || return false
 
     2 .. n-2 -> all {|k|
-        is_prime(9*m << k + 1)
+        is_prime(9*m << k -> + 1)
     }
 }
 
 func chernick_carmichael_factors(m, n) {
-    [6*m + 1, 12*m + 1, 1 .. n-2 -> map{|k| 9*m << k + 1 }...]
+    [6*m + 1, 12*m + 1, 1 .. n-2 -> map{|k| 9*m << k -> + 1 }...]
 }
 
 func chernick_carmichael_with_n_factors(n, maxp = n.prime) {

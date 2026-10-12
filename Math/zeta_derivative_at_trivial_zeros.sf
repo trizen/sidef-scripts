@@ -9,7 +9,7 @@ func zeta_derivative_trivial_zero(n) {
 }
 
 each(1..10, {|n|
-    say "zeta'(#{'%3s' % -2*n}) =~ #{zeta_derivative_trivial_zero(n)}"
+    say "zeta'(#{'%3s' % (-2*n)}) =~ #{zeta_derivative_trivial_zero(n)}"
 })
 
 __END__

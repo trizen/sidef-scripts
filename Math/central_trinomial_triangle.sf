@@ -9,7 +9,7 @@ func central_trinomial_triangle(num, callback) {
     { |n|
         callback(row)
         row = [1, {|i| row[i-1] + row[i] + row[i+1] }.map(0 .. n-2)..., 1]
-    } << 1..num
+    } .<< 1..num
 }
 
 central_trinomial_triangle(12, {|row|

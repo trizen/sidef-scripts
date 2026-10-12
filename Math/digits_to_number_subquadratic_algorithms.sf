@@ -31,7 +31,7 @@ func FastIntegerOutput(A, B) {
         return [A]
     }
 
-    var k = (A.ilog(B)>>1 + 1)
+    var k = (A.ilog(B)>>1 ->+ 1)
 
     var (Q,R) = A.divmod(B**k)
     var r     = __FUNC__(R, B)

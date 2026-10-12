@@ -17,7 +17,7 @@ func fibmod(n, m) {
         g = (g*g)%m
         f = (f*f)%m
 
-        var t = (g<<2 - f + a)
+        var t = (g<<2) - f + a
 
         f += g
 

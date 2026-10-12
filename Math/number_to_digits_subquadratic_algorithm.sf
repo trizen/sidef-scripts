@@ -15,7 +15,7 @@ func FastIntegerOutput(A, B) {
     }
 
     # Find k such that B^(2k - 2) <= A < B^(2k)
-    var k = (A.ilog(B)>>1 + 1)
+    var k = (A.ilog(B)>>1 ->+ 1)
 
     #assert(B**(2*k - 2) <= A)
     #assert(A < B**(2*k))
