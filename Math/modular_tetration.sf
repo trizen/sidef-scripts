@@ -10,13 +10,23 @@ func tetration(a, b, m) {
 
     return 0 if (m == 1)
     return 1 if (b == 0)
+    return a % m if (b == 1)
 
-    powmod(a, __FUNC__(a, b-1, m.euler_phi), m)
+    var phi = m.euler_phi
+    var exp = __FUNC__(a, b-1, phi)
+
+    # For tetration towers with height b >= 3 (and large enough base),
+    # the unreduced exponent is guaranteed to exceed phi, requiring + phi offset.
+    if (b >= 3 || exp >= phi) {
+        exp = (exp % phi) + phi
+    }
+
+    powmod(a, exp, m)
 }
 
 for n in (2 .. 1000) {
     var k = n.prime
-    if (tetration(10, 10, k) + 23 % k == 0) {
+    if ((tetration(10, 10, k) + 23) % k == 0) {
         say "#{'%3s' % k} | (10∆10 + 23)"
     }
 }
@@ -24,4 +34,5 @@ for n in (2 .. 1000) {
 __END__
   3 | (10∆10 + 23)
  13 | (10∆10 + 23)
+139 | (10∆10 + 23)
 673 | (10∆10 + 23)
