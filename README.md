@@ -35,6 +35,8 @@ A nice collection of day-to-day Sidef scripts.
     * [Binomial hash function](./Digest/binomial_hash_function.sf)
     * [Crc32](./Digest/crc32.sf)
     * [Md5](./Digest/md5.sf)
+    * [Md5-procedural](./Digest/md5-procedural.sf)
+    * [Sha256](./Digest/sha256.sf)
 * Encoding
     * [Adaptive huffman coding](./Encoding/adaptive_huffman_coding.sf)
     * [Adaptive huffman coding with escape symbols](./Encoding/adaptive_huffman_coding_with_escape_symbols.sf)

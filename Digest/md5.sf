@@ -24,7 +24,7 @@ class MD5(String msg) {
         [6, 10, 15, 21] * 4,
     ].flat
 
-    const T = 64.of {|i| floor(abs(sin(i+1)) * 1<<32) }
+    const T = 64.of {|i| floor(abs(sin(i+1)) * (1<<32)) }
 
     const K = [
         ^16 -> map {|n|    n           },
@@ -112,4 +112,8 @@ for md5,msg in tests {
     if (hash != md5) {
         say "\tHowever, that is incorrect (expected: #{md5})"
     }
+}
+
+with (irand(512, 2048).random_string) {|s|
+    assert_eq(MD5(s).md5_hex, s.md5)
 }
