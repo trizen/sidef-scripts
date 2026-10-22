@@ -33,10 +33,13 @@ A nice collection of day-to-day Sidef scripts.
     * [Cnp](./Decoding/cnp.sf)
 * Digest
     * [Binomial hash function](./Digest/binomial_hash_function.sf)
+    * [Blake2b](./Digest/blake2b.sf)
+    * [Blake2b-v2](./Digest/blake2b-v2.sf)
     * [Crc32](./Digest/crc32.sf)
     * [Md5](./Digest/md5.sf)
-    * [Md5-procedural](./Digest/md5-procedural.sf)
+    * [Md5-v2](./Digest/md5-v2.sf)
     * [Sha256](./Digest/sha256.sf)
+    * [Sha256-v2](./Digest/sha256-v2.sf)
 * Encoding
     * [Adaptive huffman coding](./Encoding/adaptive_huffman_coding.sf)
     * [Adaptive huffman coding with escape symbols](./Encoding/adaptive_huffman_coding_with_escape_symbols.sf)
