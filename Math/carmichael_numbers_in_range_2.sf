@@ -1,0 +1,238 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Date: 12 November 2026
+# https://github.com/trizen
+
+# Generate all regular Carmichael numbers with exactly k distinct prime factors
+# in the inclusive range [A, B], using Korselt's criterion, modular progression
+# stepping, suffix pruning, and forced cofactor factorization.
+
+func generate_carmichael(A, B, k, force_bits = 64, force_count = 16) {
+
+    die "k must be an integer >= 3\n" if (k < 3)
+
+    var results = []
+    return results if (A > B)
+
+    # First k odd primes give the absolute mathematical lower bound (3 * 5 * 7 * ...)
+    var first_primes = []
+    for (var p = 3; first_primes.len < k; p += 2) {
+        if (p.is_prime) {
+            first_primes.append(p)
+        }
+    }
+
+    var prefix_product = [1]
+    for i in (1 .. k) {
+        prefix_product[i] = (prefix_product[i - 1] * first_primes[i - 1])
+    }
+
+    var lower = max(A, prefix_product[k])
+    var upper = B
+    return results if (lower > upper)
+
+    var upper_minus1 = (upper - 1)
+
+    # Compute the global upper bound for every non-terminal prime loop
+    var sieve_limit = first_primes[-1]
+    for depth in (0 .. (k - 2)) {
+        var remaining = (k - depth)
+        var limit     = iroot(floor(upper / prefix_product[depth]), remaining)
+        sieve_limit   = max(sieve_limit, limit)
+    }
+
+    # Extend sieve slightly beyond sieve_limit to guarantee suffix construction
+    var sieve_max = sieve_limit
+    var extra     = 0
+    var candidate = (sieve_limit + 1)
+    ++candidate if candidate.is_even
+
+    while (extra < (k + 2)) {
+        if (candidate.is_prime) {
+            sieve_max = candidate
+            ++extra
+        }
+        candidate += 2
+    }
+
+    # All odd primes up to sieve_max (Carmichael numbers are always odd)
+    var odd_primes = sieve_max.primes.grep { _ >= 3 }
+
+    # -----------------------------------------------------------------------
+    # Verify a forced cofactor q and test Korselt's criterion.
+    # -----------------------------------------------------------------------
+    func test_forced_product(m, old_lcm, q, remaining, smallest_factor) {
+        return if (q <= 0)
+
+        var factorization = q.factor_exp
+        return if (factorization.len != remaining)
+
+        var full_lcm = old_lcm
+
+        for pair in factorization {
+            var (factor, exponent) = pair...
+            return if (exponent != 1)                 # q must be square-free
+            return if (factor < smallest_factor)      # Factors must remain strictly increasing
+
+            full_lcm = lcm(full_lcm, factor - 1)
+            return if (full_lcm > upper_minus1)
+        }
+
+        var candidate_n = (m * q)
+        return if ((candidate_n < lower) || (candidate_n > upper))
+        return if !((candidate_n - 1).is_div(full_lcm))
+
+        results.append(candidate_n)
+    }
+
+    # -----------------------------------------------------------------------
+    # Try to finish a subtree by factoring the few possible remaining products.
+    # -----------------------------------------------------------------------
+    func try_forced_completion(m, old_lcm, smallest_factor, remaining, q_min_in, q_max_in) {
+        return false if ((old_lcm <= 1) || (q_max_in <= 0))
+
+        var q_min = max(q_min_in, ceil(lower / m))
+        return true if (q_min > q_max_in)
+
+        var step  = old_lcm
+        var first = m.invmod(old_lcm)
+
+        if (first < q_min) {
+            var jumps = ceil((q_min - first) / step)
+            first += (jumps * step)
+        }
+
+        return true if (first > q_max_in)
+
+        # Check bit size and candidate count thresholds
+        return false if (q_max_in.len(2) > force_bits)
+
+        var count_minus1 = floor((q_max_in - first) / step)
+        return false if (count_minus1 > (force_count - 1))
+
+        var q = first
+        while (q <= q_max_in) {
+            test_forced_product(m, old_lcm, q, remaining, smallest_factor)
+            q += step
+        }
+
+        return true
+    }
+
+    # -----------------------------------------------------------------------
+    # Depth-first search with bounding and congruence stepping.
+    # -----------------------------------------------------------------------
+    func search_dfs(m, old_lcm, smallest_factor, prime_index, remaining) {
+
+        # ---- Final prime: solve p == m^(-1) (mod old_lcm) directly
+        if (remaining == 1) {
+            # p <= upper/m, and p-1 | m-1 implies p <= m
+            var p_max = min(floor(upper / m), m)
+            var p_min = max(ceil(lower / m), smallest_factor)
+            return if (p_min > p_max)
+
+            var step    = old_lcm
+            var residue = m.invmod(old_lcm)
+
+            if (residue < p_min) {
+                var jumps = ceil((p_min - residue) / step)
+                residue += (jumps * step)
+            }
+
+            return if (residue > p_max)
+
+            var m_minus1 = (m - 1)
+            var p        = residue
+
+            while (p <= p_max) {
+                if (m_minus1.is_div(p - 1) && p.is_prime) {
+                    results.append(m * p)
+                }
+                p += step
+            }
+
+            return
+        }
+
+        # ---- Minimum possible product of the remaining distinct odd primes
+        return if (prime_index + remaining - 1 > odd_primes.end)
+
+        var q_min = 1
+        for i in (prime_index .. (prime_index + remaining - 1)) {
+            q_min *= odd_primes[i]
+            return if (q_min > upper)
+        }
+
+        var q_max = floor(upper / m)
+        return if (q_min > q_max)
+
+        # Attempt direct cofactor factorization shortcut before branching further
+        return if try_forced_completion(m, old_lcm, smallest_factor, remaining, q_min, q_max)
+
+        var p_max_bound = iroot(q_max, remaining)
+        return if (p_max_bound < smallest_factor)
+
+        var last = odd_primes.end
+
+        for i in (prime_index .. last) {
+            var p = odd_primes[i]
+            break if (p > p_max_bound)
+
+            var p_minus1 = (p - 1)
+
+            # Necessary for m*q == 1 (mod p-1): gcd(m, p-1) must be 1
+            next if (gcd(m, p_minus1) != 1)
+
+            var child_lcm = lcm(old_lcm, p_minus1)
+            next if (child_lcm >= upper)
+
+            var child_m = (m * p)
+
+            # Bound branch by completing it with the smallest available suffix primes
+            var min_full   = child_m
+            var impossible = false
+
+            for j in ((i + 1) .. (i + remaining - 1)) {
+                if (j > last) {
+                    impossible = true
+                    break
+                }
+                min_full *= odd_primes[j]
+                if (min_full > upper) {
+                    impossible = true
+                    break
+                }
+            }
+
+            break if impossible
+            __FUNC__(child_m, child_lcm, p + 1, i + 1, remaining - 1)
+        }
+    }
+
+    search_dfs(1, 1, 3, 0, k)
+    return results.sort
+}
+
+# ---------------------------------------------------------------------------
+# Example Usage
+# ---------------------------------------------------------------------------
+
+say "3-factor Carmichael numbers in [1, 10000]:"
+say generate_carmichael(1, 10000, 3)
+
+say "\n4-factor Carmichael numbers in [1, 1000000]:"
+say generate_carmichael(1, 1000000, 4)
+
+say "\n5-Carmichael numbers in the range [1050985+1, 18162001]"
+say generate_carmichael(1050985+1, 18162001, 5)
+
+__END__
+3-factor Carmichael numbers in [1, 10000]:
+[561, 1105, 1729, 2465, 2821, 6601, 8911]
+
+4-factor Carmichael numbers in [1, 1000000]:
+[41041, 62745, 63973, 75361, 101101, 126217, 172081, 188461, 278545, 340561, 449065, 552721, 656601, 658801, 670033, 748657, 838201, 852841, 997633]
+
+5-Carmichael numbers in the range [1050985+1, 18162001]
+[9890881, 10877581, 12945745, 13992265, 16778881, 18162001]
