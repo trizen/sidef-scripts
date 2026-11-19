@@ -1,0 +1,92 @@
+#!/usr/bin/env sidef
+
+# A* Pathfinding Algorithm in Sidef (simple)
+
+# Define a 5x5 grid (0 = walkable, 1 = obstacle)
+var grid = [
+    [0, 0, 0, 0, 0],
+    [0, 1, 1, 0, 0],
+    [0, 0, 0, 1, 0],
+    [0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0]
+];
+
+var rows = grid.len;
+var cols = grid[0].len;
+
+# Heuristic function: Manhattan distance
+func heuristic(a, b) {
+    (a[0] - b[0]).abs + (a[1] - b[1]).abs
+}
+
+# A* Search function
+func a_star(grid, start, goal) {
+    var open_set = [start];
+    var came_from = Hash();
+    
+    var g_score = Hash();
+    g_score{start.join(',')} = 0;
+    
+    var f_score = Hash();
+    f_score{start.join(',')} = heuristic(start, goal);
+    
+    while (open_set.len > 0) {
+        # Sort open_set to get the node with the lowest f_score first
+        open_set.sort_by! { |node| f_score{node.join(',')} \\ Inf };
+        
+        var current = open_set.shift();
+        
+        # If we reached the goal, reconstruct and return the path
+        if (current == goal) {
+            var path = [current];
+            var key = current.join(',');
+            while (came_from.has(key)) {
+                current = came_from{key};
+                key = current.join(',');
+                path.unshift(current);
+            }
+            return path;
+        }
+        
+        var (r, c) = (current[0], current[1]);
+        var neighbors = [
+            [r - 1, c], [r + 1, c],
+            [r, c - 1], [r, c + 1]
+        ];
+        
+        for nb in neighbors {
+            var (nr, nc) = (nb[0], nb[1]);
+            
+            # Check grid boundaries and obstacles
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] == 0) {
+                var tentative_g = g_score{current.join(',')} + 1;
+                var nb_key = nb.join(',');
+                
+                if (tentative_g < (g_score{nb_key} \\ Inf)) {
+                    came_from{nb_key} = current;
+                    g_score{nb_key} = tentative_g;
+                    f_score{nb_key} = tentative_g + heuristic(nb, goal);
+                    
+                    if (!open_set.any { |n| n[0] == nr && n[1] == nc }) {
+                        open_set.append(nb);
+                    }
+                }
+            }
+        }
+    }
+    
+    return []; # Return empty array if no path exists
+}
+
+# Define start and goal positions [row, col]
+var start = [0, 0];
+var goal = [4, 4];
+
+var path = a_star(grid, start, goal);
+
+if (path.len > 0) {
+    say "Path found successfully:";
+    path.each { |p| say "  #{p}" }
+} else {
+    say "No path found!";
+}

@@ -113,6 +113,8 @@ A nice collection of day-to-day Sidef scripts.
 * Genetic
     * [Genetic algorithm](./Genetic/genetic_algorithm.sf)
 * Graph
+    * [A star algorithm](./Graph/a_star_algorithm.sf)
+    * [A star algorithm simple](./Graph/a_star_algorithm_simple.sf)
     * [Dijkstra's algorithm](./Graph/dijkstra_s_algorithm.sf)
 * GUI
     * [Fbrowse tray](./GUI/fbrowse_tray.sf)

@@ -1,0 +1,189 @@
+#!/usr/bin/env sidef
+
+# A* Search Algorithm Implementation in Sidef
+
+class PriorityQueue {
+    has _heap = []
+    
+    method push(item, priority) {
+        self._heap.push([priority, item])
+        self._sift_up(self._heap.size - 1)
+    }
+    
+    method pop() {
+        return nil if self._heap.is_empty
+        self._swap(0, self._heap.size - 1)
+        var min_item = self._heap.pop()
+        self._sift_down(0) if self._heap.size > 0
+        return min_item[1]
+    }
+    
+    method is_empty() { self._heap.is_empty }
+    method size()      { self._heap.size }
+    method any(block)  { self._heap.any { |pair| block(pair[1]) } }
+    
+    method _sift_up(idx) {
+        while (idx > 0) {
+            var parent = (idx - 1) >> 1
+            if (self._heap[idx][0] < self._heap[parent][0]) {
+                self._swap(idx, parent)
+                idx = parent
+            } else { break }
+        }
+    }
+    
+    method _sift_down(idx) {
+        var size = self._heap.size
+        while (true) {
+            var smallest = idx
+            var left = 2 * idx + 1
+            var right = 2 * idx + 2
+            
+            smallest = left if (left < size && self._heap[left][0] < self._heap[smallest][0])
+            smallest = right if (right < size && self._heap[right][0] < self._heap[smallest][0])
+            
+            if (smallest != idx) {
+                self._swap(idx, smallest)
+                idx = smallest
+            } else { break }
+        }
+    }
+    
+    method _swap(i, j) { self._heap.swap(i, j) }
+}
+
+class Point(x, y) {
+    method +(other) { Point.new(self.x + other.x, self.y + other.y) }
+    method -(other) { Point.new(self.x - other.x, self.y - other.y) }
+    method hash()   { (self.x * 31 + self.y).hash }
+    method <=>(other) { self.x != other.x ? self.x <=> other.x : self.y <=> other.y }
+    method ==(other)  { self.x == other.x && self.y == other.y }
+    method to_s()     { "(#{self.x}, #{self.y})" }
+}
+
+class Node(point, g_score=0, h_score=0, parent=nil) {
+    has f_score = g_score + h_score
+    method hash()     { self.point.hash }
+    method <=>(other) { self.f_score <=> other.f_score }
+    method ==(other)  { self.point == other.point }
+}
+
+class GridMap(width, height, obstacles=[], start=nil, end=nil) {
+    has grid = Hash()
+    
+    method init {
+        for i in range(0, width-1), j in range(0, height-1) {
+            self.grid(){"#{i},#{j}"} = false
+        }
+        for obs in obstacles {
+            var pt = obs.is_a(Point) ? obs : Point.new(obs[0], obs[1])
+            self.grid(){"#{pt.x},#{pt.y}"} = true
+        }
+        self.start = start || Point.new(0, 0)
+        self.end = end || Point.new(width - 1, height - 1)
+    }
+    
+    method is_walkable(pt) {
+        pt.x >= 0 && pt.x < self.width && pt.y >= 0 && pt.y < self.height && !self.grid(){"#{pt.x},#{pt.y}"}
+    }
+    
+    method get_neighbors(pt, allow_diagonal) {
+        var dirs = [Point.new(-1,0), Point.new(1,0), Point.new(0,-1), Point.new(0,1)]
+        if allow_diagonal {
+            dirs.append(Point.new(-1,-1), Point.new(1,-1), Point.new(-1,1), Point.new(1,1))
+        }
+        dirs.map { |d| pt + d }.grep { |n| self.is_walkable(n) }
+    }
+    
+    method heuristic(a, b) {
+        sqrt((a.x - b.x)**2 + (a.y - b.y)**2)
+    }
+    
+    method astar(allow_diagonal=false) {
+        var open_set = PriorityQueue.new()
+        var came_from = Hash()
+        var g_score = Hash()
+        
+        for key in (self.grid.keys) {
+            g_score{key} = Num.inf
+        }
+        
+        var start_key = "#{self.start.x},#{self.start.y}"
+        g_score{start_key} = 0
+        open_set.push(Node.new(self.start, 0, self.heuristic(self.start, self.end)), self.heuristic(self.start, self.end))
+        
+        while (!open_set.is_empty) {
+            var current = open_set.pop()
+            
+            return self.reconstruct_path(came_from, current) if (current.point == self.end)
+            
+            for neighbor in self.get_neighbors(current.point, allow_diagonal) {
+                var n_key = "#{neighbor.x},#{neighbor.y}"
+                var dir = neighbor - current.point
+                var cost = (dir.x.abs() == 1 && dir.y.abs() == 1) ? 1.414 : 1
+                var tentative_g = current.g_score + cost
+                
+                if (tentative_g < g_score{n_key}) {
+                    came_from{n_key} = current
+                    g_score{n_key} = tentative_g
+                    var h = self.heuristic(neighbor, self.end)
+                    
+                    if (!open_set.any { |n| n.point == neighbor }) {
+                        open_set.push(Node.new(neighbor, tentative_g, h, current), tentative_g + h)
+                    }
+                }
+            }
+        }
+        nil
+    }
+    
+    method reconstruct_path(came_from, current) {
+        var path = [current.point]
+        var key = "#{current.point.x},#{current.point.y}"
+        while (came_from.has_key(key)) {
+            current = came_from{key}
+            path.prepend(current.point)
+            key = "#{current.point.x},#{current.point.y}"
+        }
+        path
+    }
+    
+    method display_path(path) {
+        return say "No path found!" if (path == nil)
+        
+        var display = Hash()
+        for i in range(0, self.width-1), j in range(0, self.height-1) {
+            display{"#{i},#{j}"} = self.grid(){"#{i},#{j}"} ? 'X' : '.'
+        }
+        for pt in path { display{"#{pt.x},#{pt.y}"} = '*' }
+        display{"#{self.start.x},#{self.start.y}"} = 'S'
+        display{"#{self.end.x},#{self.end.y}"} = 'E'
+        
+        for j in range(0, self.height-1) {
+            var row = []
+            for i in range(0, self.width-1) {
+                row.push(display{"#{i},#{j}"})
+            }
+            say row.join(' ')
+        }
+        say "\nPath length: #{path.size - 1} steps"
+    }
+}
+
+func MAIN() {
+    say "A* Search Algorithm Demo\n" + "=" * 30
+    
+    var obstacles = [
+        [2,2], [2,3], [2,4], [5,5], [5,6], [5,7],
+        [8,1], [8,2], [8,3], [3,7], [4,7], [6,2],
+        [7,2], [9,5], [9,6]
+    ]
+
+    var grid_map = GridMap.new(10, 10, obstacles)
+    
+    say "\nOrthogonal Path:"
+    grid_map.display_path(grid_map.astar(false))
+    
+    say "\nDiagonal Path:"
+    grid_map.display_path(grid_map.astar(true))
+}
