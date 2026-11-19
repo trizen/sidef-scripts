@@ -1,0 +1,95 @@
+#!/usr/bin/env sidef
+
+# Minimal Path Sum using A* in Sidef
+
+# Admissible heuristic: Manhattan distance scaled by minimal grid value
+func heuristic(a, b) {
+    (a[0] - b[0]).abs + (a[1] - b[1]).abs
+}
+
+func min_path_sum_a_star(grid, start, goal) {
+
+	var rows = grid.len;
+	var cols = grid[0].len;
+
+    var open_set = [start];
+    var came_from = Hash();
+    
+    var g_score = Hash();
+    var start_key = start.join(',');
+    
+    # Path cost includes the starting cell's value
+    g_score{start_key} = grid[start[0]][start[1]];
+    
+    var f_score = Hash();
+    f_score{start_key} = g_score{start_key} + heuristic(start, goal);
+    
+    while (open_set.len > 0) {
+        # Select the node with the lowest f_score
+        open_set.sort_by! { |node| f_score{node.join(',')} \\ Inf };
+        var current = open_set.shift();
+        
+        # If goal is reached, reconstruct the path and total sum
+        if (current == goal) {
+            var path = [current];
+            var key = current.join(',');
+            while (came_from.has(key)) {
+                current = came_from{key};
+                key = current.join(',');
+                path.unshift(current);
+            }
+            return (g_score{goal.join(',')}, path);
+        }
+        
+        var (r, c) = (current[0], current[1]);
+        var neighbors = [
+            [r - 1, c], [r + 1, c],
+            [r, c - 1], [r, c + 1]
+        ];
+        
+        for nb in neighbors {
+            var (nr, nc) = (nb[0], nb[1]);
+            
+            # Check grid boundaries
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                # Tentative g_score is current path cost + destination cell value
+                var tentative_g = g_score{current.join(',')} + grid[nr][nc];
+                var nb_key = nb.join(',');
+                
+                if (tentative_g < (g_score{nb_key} \\ Inf)) {
+                    came_from{nb_key} = current;
+                    g_score{nb_key} = tentative_g;
+                    f_score{nb_key} = tentative_g + heuristic(nb, goal);
+                    
+                    if (!open_set.any { |n| n[0] == nr && n[1] == nc }) {
+                        open_set.append(nb);
+                    }
+                }
+            }
+        }
+    }
+    
+    return (-1, []); # Path not found
+}
+
+var grid = [
+    [131, 673, 234, 103, 18],
+    [201,  96, 342, 965, 150],
+    [630, 803, 746, 422, 111],
+    [537, 699, 497, 121, 956],
+    [805, 732, 524,  37, 331]
+];
+
+var rows = grid.len;
+var cols = grid[0].len;
+
+var start = [0, 0];
+var goal = [rows - 1, cols - 1];
+
+var (total_sum, path) = min_path_sum_a_star(grid, start, goal);
+
+say "Minimal Path Sum: #{total_sum}";
+
+say "\nCrossed Values:";
+var values = path.map { |p| grid[p[0]][p[1]] };
+say values.join(" -> ");

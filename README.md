@@ -116,6 +116,8 @@ A nice collection of day-to-day Sidef scripts.
     * [A star algorithm](./Graph/a_star_algorithm.sf)
     * [A star algorithm simple](./Graph/a_star_algorithm_simple.sf)
     * [Dijkstra's algorithm](./Graph/dijkstra_s_algorithm.sf)
+    * [Minimum path sum](./Graph/minimum_path_sum.sf)
+    * [Minimum path sum simple](./Graph/minimum_path_sum_simple.sf)
 * GUI
     * [Fbrowse tray](./GUI/fbrowse_tray.sf)
 * Image

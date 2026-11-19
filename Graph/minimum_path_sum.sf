@@ -1,0 +1,140 @@
+#!/usr/bin/env sidef
+
+# Minimum Path Sum Grid Search (4-directional movement)
+
+class PriorityQueue {
+    has _heap = []
+
+    method push(item, priority) {
+        self._heap.push([priority, item])
+        self._sift_up(self._heap.len - 1)
+    }
+
+    method pop() {
+        return nil if self._heap.is_empty
+        self._swap(0, self._heap.len - 1)
+        var entry = self._heap.pop
+        self._sift_down(0) if (self._heap.len > 0)
+        entry
+    }
+
+    method is_empty() {
+        self._heap.is_empty
+    }
+
+    method _sift_up(i) {
+        while (i > 0) {
+            var p = (i - 1) >> 1
+            if (self._heap[i][0] < self._heap[p][0]) {
+                self._swap(i, p)
+                i = p
+            } else {
+                break
+            }
+        }
+    }
+
+    method _sift_down(i) {
+        var n = self._heap.len
+        while (true) {
+            var smallest = i
+            var left  = 2*i + 1
+            var right = left + 1
+
+            if (left < n && self._heap[left][0] < self._heap[smallest][0]) {
+                smallest = left
+            }
+            if (right < n && self._heap[right][0] < self._heap[smallest][0]) {
+                smallest = right
+            }
+            if (smallest == i) {
+                break
+            }
+
+            self._swap(i, smallest)
+            i = smallest
+        }
+    }
+
+    method _swap(i, j) {
+        self._heap.swap(i, j)
+    }
+}
+
+func min_path_sum_astar(grid) {
+
+    var rows = grid.len
+    var cols = grid[0].len
+    var goal_r = rows - 1
+    var goal_c = cols - 1
+
+    func id(r, c) {
+        r * cols + c
+    }
+
+    var start_id = id(0, 0)
+    var goal_id  = id(goal_r, goal_c)
+
+    var pq = PriorityQueue.new()
+    var g_score = []
+    var parent  = []
+
+    g_score[start_id] = grid[0][0]
+    pq.push([0, 0], grid[0][0])
+
+    var dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+
+    while (!pq.is_empty) {
+
+        var (f, node) = pq.pop...
+        var (r, c) = node...
+        var curr_id = id(r, c)
+
+        # Lazy deletion check
+        if (f > g_score[curr_id]) {
+            next
+        }
+
+        if (curr_id == goal_id) {
+            var path = []
+            var k = goal_id
+            while (true) {
+                path.prepend([k.idiv(cols), k % cols])
+                break if (k == start_id)
+                k = parent[k]
+            }
+            return (g_score[goal_id], path)
+        }
+
+        for d in dirs {
+            var nr = r + d[0]
+            var nc = c + d[1]
+
+            next if (nr < 0 || nr >= rows || nc < 0 || nc >= cols)
+
+            var nid = id(nr, nc)
+            var tentative = g_score[curr_id] + grid[nr][nc]
+
+            if (!g_score.exists(nid) || tentative < g_score[nid]) {
+                g_score[nid] = tentative
+                parent[nid]  = curr_id
+                pq.push([nr, nc], tentative)
+            }
+        }
+    }
+
+    (-1, [])
+}
+
+var grid = [
+    [131, 673, 234, 103,  18],
+    [201,  96, 342, 965, 150],
+    [630, 803, 746, 422, 111],
+    [537, 699, 497, 121, 956],
+    [805, 732, 524,  37, 331]
+]
+
+var (cost, path) = min_path_sum_astar(grid)
+
+say "Minimum Path Sum: #{cost}"
+say path.map { |p| grid[p[0]][p[1]] }.join(" -> ")
