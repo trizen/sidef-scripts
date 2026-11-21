@@ -2,6 +2,7 @@
 
 # Daniel "Trizen" Șuteu
 # Date: 14 March 2021
+# Edit: 21 November 2026 (simpler k == 2 case)
 # https://github.com/trizen
 
 # Count the number of k-omega primes <= n.
@@ -13,7 +14,11 @@
 #   https://en.wikipedia.org/wiki/Almost_prime
 #   https://en.wikipedia.org/wiki/Prime_omega_function
 
-func omega_prime_count(n, k=1) {
+func omega_prime_count(n, k = 1) {
+
+    if (n < 1 || k < 1 || k > n.ilog2) {
+        return 0
+    }
 
     if (k == 1) {
         return prime_power_count(n)
@@ -21,50 +26,29 @@ func omega_prime_count(n, k=1) {
 
     var count = 0
 
-    func (m, p, k, j = 1, s = idiv(n,m).iroot(k)) {
-
-        if (k == 2) {
-
-            for (true; p <= s; ++j) {
-
-                var r = p.next_prime
-
-                for (var t = m*p ; t <= n; t *= p) {
-
-                    var w = idiv(n, t)
-                    break if (p > w)
-                    count += (prime_count(w) - j)
-
-                    for (var r2 = r; r2 <= w; r2.next_prime!) {
-
-                        var u = t*r2*r2
-                        break if (u > n)
-
-                        for (true; u <= n; u *= r2) {
-                            ++count
-                        }
-                    }
-                }
-
-                p = r
-            }
-
-            return nil
-        }
+    func (m, p, k, j = 1, s = idiv(n, m).iroot(k)) {
 
         for (true; p <= s; ++j) {
-
             var r = p.next_prime
 
-            for (var t = m*p ; t <= n; t *= p) {
-                var s = idiv(n,t).iroot(k-1)
-                break if (s < r)
-                __FUNC__(t, r, k-1, j+1, s)
-            }
+            for (var t = m*p; t <= n; t *= p) {
+                if (k == 2) {
+                    var w = idiv(n, t)
+                    break if (w < r)
+                    var root = w
 
+                    for (var e = 1; root >= r; root = iroot(w, ++e)) {
+                        count += root.prime_count - j
+                    }
+                }
+                else {
+                    var sub_s = idiv(n, t).iroot(k - 1)
+                    break if (sub_s < r)
+                    __FUNC__(t, r, k - 1, j + 1, sub_s)
+                }
+            }
             p = r
         }
-
     }(1, 2, k)
 
     return count
@@ -89,7 +73,7 @@ for k in (1..10) {
 say ''
 
 for k in (1..6) {
-    say ("Count of #{'%2d' % k}-omega primes for 10^n: ", 7.of {|n| omega_prime_count(10**n, k) })
+    say ("Count of #{'%2d' % k}-omega primes for 10^n: ", 8.of {|n| omega_prime_count(10**n, k) })
 }
 
 __END__
