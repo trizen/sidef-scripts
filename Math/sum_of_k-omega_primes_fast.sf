@@ -1,0 +1,83 @@
+#!/usr/bin/ruby
+
+# Daniel "Trizen" Șuteu
+# Author: Trizen
+# Date: 16 August 2023
+# Edit: 23 November 2026 (simplified and faster k == 2 case)
+# https://github.com/trizen
+
+# Sum of k-omega primes <= n.
+
+# Definition:
+#   k-omega primes are numbers n such that omega(n) = k.
+
+# See also:
+#   https://en.wikipedia.org/wiki/Almost_prime
+#   https://en.wikipedia.org/wiki/Prime_omega_function
+
+func omega_prime_sum(n, k = 1) {
+
+    if (n < 1 || k < 1 || k > n.ilog2) {
+        return 0
+    }
+
+    if (k == 1) {
+        return prime_power_sum(n)
+    }
+
+    var count = 0
+
+    func (m, p, k, s = idiv(n, m).iroot(k)) {
+        while (p <= s) {
+            var r = p.next_prime
+            for (var t = m*p; t <= n; t *= p) {
+                if (k == 2) {
+                    var w = idiv(n, t)
+                    break if (w < r)
+                    var root = w
+                    for (var e = 1; root >= r; root = iroot(w, ++e)) {
+                        count += t*(prime_sum(r, root, e))
+                    }
+                }
+                else {
+                    var sub_s = idiv(n, t).iroot(k - 1)
+                    break if (sub_s < r)
+                    __FUNC__(t, r, k - 1, sub_s)
+                }
+            }
+            p = r
+        }
+    }(1, 2, k)
+
+    return count
+}
+
+# Run some tests
+
+for k in (1..10) {
+
+    var upto = k.pn_primorial+1e5.irand
+
+    var x = omega_prime_sum(upto, k)
+    var y = k.omega_primes(upto).sum
+    var z = k.omega_prime_sum(upto)
+
+    say "Testing: #{k} with n = #{upto} -> #{x}"
+
+    assert_eq(x, y)
+    assert_eq(x, z)
+}
+
+say ''
+
+for k in (1..6) {
+    say ("Sum of #{'%d' % k}-omega primes <= 10^n: ", 7.of {|n| omega_prime_sum(10**n, k) })
+}
+
+__END__
+Sum of 1-omega primes <= 10^n: [0, 38, 1375, 82674, 5850315, 457028152, 37610438089]
+Sum of 2-omega primes <= 10^n: [0, 16, 3154, 246957, 19482806, 1617408111, 139609332607]
+Sum of 3-omega primes <= 10^n: [0, 0, 520, 155100, 19186879, 1950808962, 188528132884]
+Sum of 4-omega primes <= 10^n: [0, 0, 0, 15768, 5253939, 862088040, 108760507666]
+Sum of 5-omega primes <= 10^n: [0, 0, 0, 0, 231060, 110903324, 24034871493]
+Sum of 6-omega primes <= 10^n: [0, 0, 0, 0, 0, 1813410, 1451112560]

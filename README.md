@@ -758,6 +758,7 @@ A nice collection of day-to-day Sidef scripts.
     * [Sum of digits subquadratic algorithm](./Math/sum_of_digits_subquadratic_algorithm.sf)
     * [Sum of k-almost primes](./Math/sum_of_k-almost_primes.sf)
     * [Sum of k-omega primes](./Math/sum_of_k-omega_primes.sf)
+    * [Sum of k-omega primes fast](./Math/sum_of_k-omega_primes_fast.sf)
     * [Sum of k-powerful numbers](./Math/sum_of_k-powerful_numbers.sf)
     * [Sum of k-powerful numbers in range](./Math/sum_of_k-powerful_numbers_in_range.sf)
     * [Sum of nth power digits](./Math/sum_of_nth_power_digits.sf)
